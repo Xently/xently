@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unknown_error">Something went wrong. Please try again.</string>
+    <string name="error_gps_disabled">GPS/location disabled</string>
+    <string name="error_permission_denied">Location permission denied.</string>
+    <string name="error_no_known_location">Unknown location</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="page_dashboard">Dashboard</string>
+    <string name="page_catalogue">Shop</string>
+    <string name="page_routes">Routes</string>
+    <string name="page_complaints">Complaints</string>
+</resources>
