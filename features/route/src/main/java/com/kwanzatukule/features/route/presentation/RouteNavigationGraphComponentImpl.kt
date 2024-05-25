@@ -36,7 +36,6 @@ class RouteNavigationGraphComponentImpl(
             is Configuration.RouteList -> Child.RouteList(
                 component = RouteListComponentImpl(
                     context = context,
-                    repository = repository,
                     component = object : RouteListComponent {
                         override fun onClickRouteEntry() {
                             if (navigateInIsolation) {
@@ -50,6 +49,7 @@ class RouteNavigationGraphComponentImpl(
                             this@RouteNavigationGraphComponentImpl.onClickRoute(route)
                         }
                     },
+                    repository = repository,
                 ),
             )
 

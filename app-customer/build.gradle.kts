@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
+    alias(libs.plugins.secrets)
 }
 
 ksp {
@@ -103,5 +104,8 @@ dependencies {
     implementation(project(":features:authentication"))
     implementation(project(":features:shopping-cart"))
     implementation(project(":features:catalogue"))
+    implementation(project(":features:route"))
+    implementation(project(":features:order"))
+    implementation(project(":features:customer"))
     implementation(project(":features:customer-landing"))
 }

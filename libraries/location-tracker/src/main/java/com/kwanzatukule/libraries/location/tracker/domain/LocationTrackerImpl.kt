@@ -36,6 +36,8 @@ class LocationTrackerImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCurrentLocation(): Result<Location, Error> {
+        if (!isGPSEnabled()) return Result.Failure(PermissionError.GPS_DISABLED)
+
         val hasAccessFineLocationPermission = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -45,13 +47,6 @@ class LocationTrackerImpl @Inject constructor(
             context,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-
-        if (!isGPSEnabled()) {
-            if (!(hasAccessCoarseLocationPermission || hasAccessFineLocationPermission)) {
-                return Result.Failure(PermissionError.PERMISSION_DENIED)
-            }
-            return Result.Failure(PermissionError.GPS_DISABLED)
-        }
 
         if (!(hasAccessCoarseLocationPermission || hasAccessFineLocationPermission)) {
             return Result.Failure(PermissionError.PERMISSION_DENIED)

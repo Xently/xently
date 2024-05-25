@@ -10,13 +10,13 @@ import kotlinx.serialization.Serializable
 @Stable
 data class ShoppingCart(
     val items: List<Item>,
+    val shippingPrice: Int = 0,
     val numberOfItems: Int = items.size,
     val totalPrice: Int = items.sumOf { it.totalPrice },
+    val tax: Int = ((totalPrice + shippingPrice) * 0.16).toInt(),
+    val totalPriceIncludingTax: Int = totalPrice + tax,
+    val totalPriceIncludingTaxAndShipping: Int = totalPriceIncludingTax + shippingPrice,
 ) {
-    fun hasItem(product: Product): Boolean {
-        return product.id in items.map { it.id }
-    }
-
     @Serializable
     @Entity(tableName = "shopping_cart")
     @Stable

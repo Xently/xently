@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.backStack
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.popWhile
@@ -207,7 +208,9 @@ class RootComponent @Inject constructor(
                         }
 
                         override fun onClickCustomer(route: Route, customer: Customer) {
-                            navigation.push(Configuration.OrderSummary(route, customer))
+                            if (this@RootComponent.childStack.backStack.any { it.configuration is Configuration.ShoppingCart }) {
+                                navigation.push(Configuration.OrderSummary(route, customer))
+                            }
                         }
                     },
                     navigateInIsolation = true,
@@ -225,7 +228,9 @@ class RootComponent @Inject constructor(
                         }
 
                         override fun onClickCustomer(customer: Customer) {
-                            navigation.push(Configuration.OrderSummary(config.route, customer))
+                            if (this@RootComponent.childStack.backStack.any { it.configuration is Configuration.ShoppingCart }) {
+                                navigation.push(Configuration.OrderSummary(config.route, customer))
+                            }
                         }
                     },
                     repository = landingRepository,

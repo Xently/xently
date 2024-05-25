@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.popWhile
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
@@ -26,6 +27,15 @@ import com.kwanzatukule.features.core.domain.models.AuthenticationState
 import com.kwanzatukule.features.customer.landing.data.LandingRepository
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraphComponent
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraphComponentImpl
+import com.kwanzatukule.features.order.data.OrderRepository
+import com.kwanzatukule.features.order.presentation.OrderSummaryComponent
+import com.kwanzatukule.features.order.presentation.OrderSummaryComponentImpl
+import com.kwanzatukule.features.route.presentation.list.RouteListComponent
+import com.kwanzatukule.features.route.presentation.list.RouteListComponentImpl
+import com.kwanzatukule.libraries.data.customer.data.CustomerRepository
+import com.kwanzatukule.libraries.data.customer.domain.Customer
+import com.kwanzatukule.libraries.data.route.data.RouteRepository
+import com.kwanzatukule.libraries.data.route.domain.Route
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +60,9 @@ class RootComponent @Inject constructor(
     private val landingRepository: LandingRepository,
     private val catalogueRepository: CatalogueRepository,
     private val shoppingCartRepository: ShoppingCartRepository,
+    private val orderRepository: OrderRepository,
+    private val routeRepository: RouteRepository,
+    private val customerRepository: CustomerRepository,
 ) : AuthenticationStateManager, ComponentContext by context {
     private val componentScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val isSignOutInProgress = MutableStateFlow(false)
@@ -163,9 +176,68 @@ class RootComponent @Inject constructor(
                         }
 
                         override fun handleCheckout() {
-                            // TODO("Not yet implemented")
+                            navigation.push(Configuration.SelectRoute)
                         }
                     },
+                )
+            )
+
+            is Configuration.OrderSummary -> Child.OrderSummary(
+                component = OrderSummaryComponentImpl(
+                    context = context,
+                    route = config.route,
+                    customer = config.customer,
+                    repository = orderRepository,
+                    component = object : OrderSummaryComponent {
+                        override fun handleBackPress() {
+                            navigation.pop()
+                        }
+
+                        override fun onOrderPlaced() {
+                            navigation.popWhile {
+                                it !is Configuration.Landing
+                            }
+                        }
+
+                        override fun onClickUpdateRoute() {
+                            navigation.popWhile {
+                                it !is Configuration.SelectRoute
+                            }
+                        }
+
+                        override fun onClickUpdateCustomer() {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onClickUpdateShoppingCart() {
+                            navigation.popWhile {
+                                it !is Configuration.ShoppingCart
+                            }
+                        }
+                    },
+                )
+            )
+
+            Configuration.SelectRoute -> Child.SelectRoute(
+                RouteListComponentImpl(
+                    context = context,
+                    component = object : RouteListComponent {
+                        override fun onClickRouteEntry() {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onClickRoute(route: Route) {
+                            componentScope.launch {
+                                navigation.push(
+                                    Configuration.OrderSummary(
+                                        route,
+                                        customer = customerRepository.getMyCustomer(),
+                                    )
+                                )
+                            }
+                        }
+                    },
+                    repository = routeRepository
                 )
             )
         }
@@ -188,12 +260,18 @@ class RootComponent @Inject constructor(
         }
     }
 
+    fun handleBackPress() {
+        navigation.pop()
+    }
+
     @Stable
     sealed class Child {
         data class Authentication(val component: AuthenticationNavigationGraphComponent) : Child()
         data class Landing(val component: LandingNavigationGraphComponent) : Child()
         data class ShoppingCart(val component: ShoppingCartNavigationGraphComponent) : Child()
         data class Catalogue(val component: CatalogueNavigationGraphComponent) : Child()
+        data class SelectRoute(val component: RouteListComponent) : Child()
+        data class OrderSummary(val component: OrderSummaryComponent) : Child()
     }
 
     @Serializable
@@ -209,5 +287,11 @@ class RootComponent @Inject constructor(
 
         @Serializable
         data class Catalogue(val screen: NavigationScreen) : Configuration()
+
+        @Serializable
+        data object SelectRoute : Configuration()
+
+        @Serializable
+        data class OrderSummary(val route: Route, val customer: Customer) : Configuration()
     }
 }

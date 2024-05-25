@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,51 +69,53 @@ fun RouteListItem(
             supportingContent = { Text(text = route.description) },
             trailingContent = trailingContent
         )
-        var seeMore by remember { mutableStateOf(false) }
+        if (LocalCanViewRouteSummary.current) {
+            var seeMore by rememberSaveable(route.id) { mutableStateOf(false) }
 
-        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            ) {
+            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(.85f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 ) {
-                    Icon(Icons.Default.Route, contentDescription = null)
-                    Text(
-                        text = "Route Summary",
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.basicMarquee(),
-                        style = MaterialTheme.typography.labelLarge,
-                        textDecoration = TextDecoration.Underline,
-                    )
-                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(.85f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Icon(Icons.Default.Route, contentDescription = null)
+                        Text(
+                            text = "Route Summary",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.basicMarquee(),
+                            style = MaterialTheme.typography.labelLarge,
+                            textDecoration = TextDecoration.Underline,
+                        )
+                    }
 
-                IconButton(onClick = { seeMore = !seeMore }) {
-                    AnimatedContent(targetState = seeMore, label = "Expand/Collapse more") {
-                        if (it) {
-                            Icon(
-                                Icons.Default.KeyboardArrowUp,
-                                contentDescription = "See less",
-                            )
-                        } else {
-                            Icon(
-                                Icons.Default.KeyboardArrowDown,
-                                contentDescription = "See more",
-                            )
+                    IconButton(onClick = { seeMore = !seeMore }) {
+                        AnimatedContent(targetState = seeMore, label = "Expand/Collapse more") {
+                            if (it) {
+                                Icon(
+                                    Icons.Default.KeyboardArrowUp,
+                                    contentDescription = "See less",
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "See more",
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
-        AnimatedVisibility(visible = seeMore) {
-            RouteSummaryLazyRow(route = route)
+            AnimatedVisibility(visible = seeMore) {
+                RouteSummaryLazyRow(route = route)
+            }
         }
     }
 }

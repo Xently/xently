@@ -91,11 +91,13 @@ fun RouteListScreen(
         contentWindowInsets = contentWindowInsets,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = component::onClickRouteEntry,
-                text = { Text("Add route") },
-                icon = { Icon(Icons.Default.AddRoad, contentDescription = "Add route") },
-            )
+            if (LocalCanAddRoute.current) {
+                ExtendedFloatingActionButton(
+                    onClick = component::onClickRouteEntry,
+                    text = { Text("Add route") },
+                    icon = { Icon(Icons.Default.AddRoad, contentDescription = "Add route") },
+                )
+            }
         },
     ) { paddingValues ->
         Column(

@@ -32,6 +32,7 @@ import com.kwanzatukule.features.core.domain.models.AuthenticationState
 import com.kwanzatukule.features.core.presentation.App
 import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraph
+import com.kwanzatukule.features.customer.presentation.list.LocalCanViewMissedOpportunities
 import com.kwanzatukule.features.order.presentation.OrderSummaryScreen
 import com.kwanzatukule.features.route.presentation.entry.RouteEntryScreen
 import com.kwanzatukule.features.sales.customer.onboarding.presentation.CustomerOnboardingNavigationGraph
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalShoppingCartState provides shoppingCart,
                     LocalAuthenticationState provides authenticationState,
+                    LocalCanViewMissedOpportunities provides true,
                 ) {
                     val childStack by root.childStack.subscribeAsState()
                     Children(stack = childStack, animation = stackAnimation(scale())) { child ->

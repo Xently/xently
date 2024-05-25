@@ -29,7 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +44,7 @@ import com.kwanzatukule.features.core.domain.formatPrice
 import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.TextIconButton
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
+import com.kwanzatukule.features.customer.presentation.list.LocalCanViewMissedOpportunities
 import com.kwanzatukule.libraries.data.customer.domain.Customer
 import kotlin.random.Random
 
@@ -94,7 +95,7 @@ fun CustomerListItem(
             },
             trailingContent = trailingContent,
         )
-        var seeMore by remember { mutableStateOf(false) }
+        var seeMore by rememberSaveable(customer.id) { mutableStateOf(false) }
 
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
             Row(
@@ -181,16 +182,18 @@ fun CustomerListItem(
                         )
                     },
                 )
-                CustomerSummary(
-                    label = "Missed opportunities",
-                    modifier = Modifier.clickable(role = Role.Button, onClick = { /* TODO */ }),
-                    value = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                        )
-                    },
-                )
+                if (LocalCanViewMissedOpportunities.current) {
+                    CustomerSummary(
+                        label = "Missed opportunities",
+                        modifier = Modifier.clickable(role = Role.Button, onClick = { /* TODO */ }),
+                        value = {
+                            Icon(
+                                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                            )
+                        },
+                    )
+                }
                 CustomerSummary(
                     label = "Customer complaints",
                     modifier = Modifier.clickable(role = Role.Button, onClick = { /* TODO */ }),

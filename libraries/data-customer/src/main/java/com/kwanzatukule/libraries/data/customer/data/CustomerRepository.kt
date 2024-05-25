@@ -8,4 +8,5 @@ import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 interface CustomerRepository {
     fun getCustomers(url: String?, filter: Filter): PagedResponse<Customer>
     suspend fun save(customer: Customer): Result<Unit, DataError>
+    suspend fun getMyCustomer(): Customer
 }

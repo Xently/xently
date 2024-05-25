@@ -76,4 +76,13 @@ class CustomerRepositoryImpl @Inject constructor(
             Result.Failure(DataError.Network.UNKNOWN)
         }
     }
+
+    override suspend fun getMyCustomer(): Customer {
+        return Customer(
+            id = 1,
+            name = "John Doe",
+            email = "john.doe@example.com",
+            phone = "+2547${Random.nextLong(10000000, 99999999)}",
+        )
+    }
 }

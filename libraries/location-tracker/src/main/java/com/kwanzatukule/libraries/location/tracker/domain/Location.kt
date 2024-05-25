@@ -20,9 +20,7 @@ data class Location(
         return if (!name.isNullOrBlank()) {
             name
         } else {
-            coordinatesString()
+            "x=$longitude,y=$latitude"
         }
     }
-
-    fun coordinatesString() = "x=$longitude,y=$latitude"
 }

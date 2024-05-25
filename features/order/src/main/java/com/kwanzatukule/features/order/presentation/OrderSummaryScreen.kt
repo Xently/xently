@@ -132,12 +132,14 @@ fun OrderSummaryScreen(component: OrderSummaryComponent, modifier: Modifier) {
                                 textDecoration = TextDecoration.Underline,
                             )
                         },
-                        trailingContent = {
-                            IconButton(onClick = component::onClickUpdateCustomer) {
-                                Icon(
-                                    Icons.Default.Edit,
-                                    contentDescription = "Update customer",
-                                )
+                        trailingContent = if (!LocalCanUpdateOrderSummaryCustomer.current) null else {
+                            {
+                                IconButton(onClick = component::onClickUpdateCustomer) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Update customer",
+                                    )
+                                }
                             }
                         },
                     )
@@ -148,7 +150,7 @@ fun OrderSummaryScreen(component: OrderSummaryComponent, modifier: Modifier) {
                     ListItem(
                         headlineContent = {
                             Text(
-                                text = "Route",
+                                text = "Shipping address",
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.Underline,
                             )
