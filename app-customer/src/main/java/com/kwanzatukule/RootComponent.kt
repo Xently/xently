@@ -28,8 +28,8 @@ import com.kwanzatukule.features.customer.landing.data.LandingRepository
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraphComponent
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraphComponentImpl
 import com.kwanzatukule.features.order.data.OrderRepository
-import com.kwanzatukule.features.order.presentation.OrderSummaryComponent
-import com.kwanzatukule.features.order.presentation.OrderSummaryComponentImpl
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryComponent
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryComponentImpl
 import com.kwanzatukule.features.route.presentation.list.RouteListComponent
 import com.kwanzatukule.features.route.presentation.list.RouteListComponentImpl
 import com.kwanzatukule.libraries.data.customer.data.CustomerRepository

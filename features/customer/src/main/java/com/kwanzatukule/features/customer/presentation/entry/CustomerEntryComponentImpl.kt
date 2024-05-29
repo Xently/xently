@@ -88,6 +88,7 @@ class CustomerEntryComponentImpl(
                 name = state.name,
                 email = state.email,
                 phone = state.phone,
+                location = state.location,
             )
             when (val result = repository.save(customer)) {
                 is Result.Failure -> {

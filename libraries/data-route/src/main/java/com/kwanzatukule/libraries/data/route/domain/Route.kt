@@ -8,5 +8,5 @@ data class Route(
     val name: String,
     val description: String,
     val id: Long = -1,
-    val summary: RouteSummary,
+    val summary: RouteSummary?,
 )

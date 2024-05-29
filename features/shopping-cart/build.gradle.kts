@@ -85,5 +85,5 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     api(project(":features:ui-core"))
     implementation(project(":libraries:pagination"))
-    implementation(project(":features:catalogue"))
+    api(project(":features:catalogue"))
 }

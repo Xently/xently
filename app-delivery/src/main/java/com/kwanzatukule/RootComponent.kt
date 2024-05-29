@@ -13,8 +13,16 @@ import com.kwanzatukule.features.authentication.data.UserRepository
 import com.kwanzatukule.features.authentication.presentation.AuthenticationNavigationGraphComponent
 import com.kwanzatukule.features.core.domain.AuthenticationStateManager
 import com.kwanzatukule.features.core.domain.models.AuthenticationState
-import com.kwanzatukule.features.delivery.landing.presentation.DefaultLandingNavigationGraphComponent
+import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
+import com.kwanzatukule.features.delivery.landing.data.LandingRepository
 import com.kwanzatukule.features.delivery.landing.presentation.LandingNavigationGraphComponent
+import com.kwanzatukule.features.delivery.landing.presentation.LandingNavigationGraphComponentImpl
+import com.kwanzatukule.features.delivery.route.presentation.DispatchRouteNavigationGraphComponent
+import com.kwanzatukule.features.delivery.route.presentation.DispatchRouteNavigationGraphComponentImpl
+import com.kwanzatukule.features.order.data.OrderRepository
+import com.kwanzatukule.features.order.domain.Order
+import com.kwanzatukule.features.order.presentation.OrderNavigationGraphComponent
+import com.kwanzatukule.features.order.presentation.OrderNavigationGraphComponentImpl
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +44,8 @@ import javax.inject.Inject
 class RootComponent @Inject constructor(
     context: ComponentContext,
     private val userRepository: UserRepository,
+    private val orderRepository: OrderRepository,
+    private val landingRepository: LandingRepository,
 ) : AuthenticationStateManager, ComponentContext by context {
     private val componentScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val isSignOutInProgress = MutableStateFlow(false)
@@ -80,8 +90,9 @@ class RootComponent @Inject constructor(
             )
 
             Configuration.Landing -> Child.Landing(
-                DefaultLandingNavigationGraphComponent(
+                LandingNavigationGraphComponentImpl(
                     context = context,
+                    repository = landingRepository,
                     component = object : LandingNavigationGraphComponent {
                         override fun onSignInRequested() {
                             signIn()
@@ -89,6 +100,44 @@ class RootComponent @Inject constructor(
 
                         override fun onSignOutRequested() {
                             signOut()
+                        }
+
+                        override fun onClickViewRoute(dispatch: Dispatch) {
+                            navigation.push(Configuration.DispatchRoute(dispatch))
+                        }
+
+                        override fun onClickViewOrders(dispatch: Dispatch) {
+                            navigation.push(Configuration.DispatchOrders(dispatch))
+                        }
+                    },
+                )
+            )
+
+            is Configuration.DispatchRoute -> Child.DispatchRoute(
+                dispatch = config.dispatch,
+                component = DispatchRouteNavigationGraphComponentImpl(
+                    context = context,
+                    repository = orderRepository,
+                    orderStatus = when (config.dispatch.status) {
+                        Dispatch.Status.Delivered -> Order.Status.Delivered
+                        Dispatch.Status.Pending -> Order.Status.Pending
+                        Dispatch.Status.Cancelled -> Order.Status.Cancelled
+                    },
+                    component = object : DispatchRouteNavigationGraphComponent {
+                        override fun handleBackPress() {
+                            navigation.pop()
+                        }
+                    },
+                )
+            )
+
+            is Configuration.DispatchOrders -> Child.DispatchOrders(
+                OrderNavigationGraphComponentImpl(
+                    context = context,
+                    repository = orderRepository,
+                    component = object : OrderNavigationGraphComponent {
+                        override fun handleBackPress() {
+                            navigation.pop()
                         }
                     },
                 )
@@ -117,6 +166,11 @@ class RootComponent @Inject constructor(
     sealed class Child {
         data class Authentication(val component: AuthenticationNavigationGraphComponent) : Child()
         data class Landing(val component: LandingNavigationGraphComponent) : Child()
+        data class DispatchOrders(val component: OrderNavigationGraphComponent) : Child()
+        data class DispatchRoute(
+            val dispatch: Dispatch,
+            val component: DispatchRouteNavigationGraphComponent,
+        ) : Child()
     }
 
     @Serializable
@@ -126,5 +180,11 @@ class RootComponent @Inject constructor(
 
         @Serializable
         data object Landing : Configuration()
+
+        @Serializable
+        data class DispatchRoute(val dispatch: Dispatch) : Configuration()
+
+        @Serializable
+        data class DispatchOrders(val dispatch: Dispatch) : Configuration()
     }
 }

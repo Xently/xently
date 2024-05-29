@@ -84,4 +84,6 @@ dependencies {
     implementation(libs.ktor.client.contentNegotiation)
     implementation(libs.androidx.material.icons.extended)
     api(project(":features:ui-core"))
+    implementation(project(":features:delivery-home"))
+    implementation(project(":features:delivery-profile"))
 }

@@ -2,7 +2,6 @@ package com.kwanzatukule.features.customer.presentation.entry
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -45,10 +44,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.widgets.ScaleBar
 import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.presentation.entry.components.CustomerLocationPickerMap
@@ -195,30 +190,15 @@ fun CustomerEntryScreen(component: CustomerEntryComponent, modifier: Modifier) {
                     },
                 ) { Text(text = "Use my current location") }
 
-                Box(
+                CustomerLocationPickerMap(
                     modifier = Modifier
                         .height(400.dp)
                         .padding(horizontal = 16.dp),
-                ) {
-                    val singapore = LatLng(1.35, 103.87)
-                    val cameraPositionState = rememberCameraPositionState {
-                        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-                    }
-                    CustomerLocationPickerMap(
-                        modifier = Modifier.fillMaxSize(),
-                        location = state.location,
-                        positionMarkerAtTheCentre = true,
-                        enableMyLocation = locationPermissionGranted,
-                        onMarkerPositionChange = component::setLocation,
-                    )
-
-                    ScaleBar(
-                        modifier = Modifier
-                            .padding(top = 5.dp, end = 15.dp)
-                            .align(Alignment.TopStart),
-                        cameraPositionState = cameraPositionState,
-                    )
-                }
+                    location = state.location,
+                    positionMarkerAtTheCentre = true,
+                    enableMyLocation = locationPermissionGranted,
+                    onMarkerPositionChange = component::setLocation,
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

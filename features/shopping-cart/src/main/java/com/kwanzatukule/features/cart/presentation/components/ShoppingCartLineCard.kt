@@ -41,31 +41,7 @@ fun ShoppingCartLineCart(
     subTrailingContent: @Composable RowScope.() -> Unit = { },
 ) {
     Card(modifier = modifier, colors = CardDefaults.outlinedCardColors()) {
-        ListItem(
-            leadingContent = {
-                Card(
-                    modifier = Modifier.size(60.dp),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    XentlyAsyncImage(
-                        item.product.image,
-                        contentDescription = "Image of ${item.product.name}",
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-            },
-            headlineContent = {
-                Text(
-                    text = item.product.name,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
-            supportingContent = {
-                Text(text = "Qty: ${item.quantity}")
-            },
-            trailingContent = trailingContent,
-        )
+        ShoppingListItem(item = item, trailingContent = trailingContent)
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -81,6 +57,38 @@ fun ShoppingCartLineCart(
             }
         }
     }
+}
+
+@Composable
+fun ShoppingListItem(
+    item: ShoppingCart.Item,
+    trailingContent: @Composable (() -> Unit)? = null,
+) {
+    ListItem(
+        leadingContent = {
+            Card(
+                modifier = Modifier.size(60.dp),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                XentlyAsyncImage(
+                    item.product.image,
+                    contentDescription = "Image of ${item.product.name}",
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        },
+        headlineContent = {
+            Text(
+                text = item.product.name,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        supportingContent = {
+            Text(text = "Qty: ${item.quantity}")
+        },
+        trailingContent = trailingContent,
+    )
 }
 
 @Composable

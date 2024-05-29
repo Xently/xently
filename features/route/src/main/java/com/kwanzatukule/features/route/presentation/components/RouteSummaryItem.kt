@@ -34,28 +34,28 @@ data class Summary(
 )
 
 @Composable
-fun Route.rememberSummaries(): List<Summary> {
+fun RouteSummary.rememberSummaries(): List<Summary> {
     return remember(this) {
         listOf(
             Summary(
                 label = "Booked Order",
-                value = summary.numberOfCustomers.formatNumber(),
+                value = numberOfCustomers.formatNumber(),
             ),
             Summary(
                 label = "Variance",
-                value = summary.variance.formatNumber(),
+                value = variance.formatNumber(),
             ),
             Summary(
                 label = "No. of Customers",
-                value = summary.numberOfCustomers.formatNumber(),
+                value = numberOfCustomers.formatNumber(),
             ),
             Summary(
                 label = "Total route Customers",
-                value = summary.totalRouteCustomers.formatNumber(),
+                value = totalRouteCustomers.formatNumber(),
             ),
             Summary(
                 label = "Geographical Distance",
-                value = summary.geographicalDistance.formatNumber(),
+                value = geographicalDistance.formatNumber(),
             ),
         )
     }
@@ -86,13 +86,15 @@ fun RouteSummaryItem(route: Route) {
                 Text(text = route.name)
             },
         )
-        RouteSummaryLazyRow(route = route)
+        route.summary?.let { summary ->
+            RouteSummaryLazyRow(summary = summary)
+        }
     }
 }
 
 @Composable
-fun RouteSummaryLazyRow(route: Route, modifier: Modifier = Modifier) {
-    val summaries = route.rememberSummaries()
+fun RouteSummaryLazyRow(summary: RouteSummary, modifier: Modifier = Modifier) {
+    val summaries = summary.rememberSummaries()
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp),

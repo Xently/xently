@@ -1,17 +1,25 @@
 package com.kwanzatukule.libraries.location.tracker.domain
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.SaverScope
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Serializable
+@Stable
 data class Location(
     @SerialName("latitude")
-    val latitude: Double,
+    val latitude: Double = Double.NaN,
     @SerialName("longitude")
-    val longitude: Double,
+    val longitude: Double = Double.NaN,
     @Transient
     val name: String? = null,
+    val averageCoordinates: Double = ((latitude + longitude) / 2),
 ) {
     fun isUsable() = (!latitude.isNaN()
             || !longitude.isNaN())
@@ -21,6 +29,26 @@ data class Location(
             name
         } else {
             "x=$longitude,y=$latitude"
+        }
+    }
+
+    object Saver : androidx.compose.runtime.saveable.Saver<MutableState<Location?>, String> {
+        private val json = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = true
+            isLenient = true
+            allowSpecialFloatingPointValues = true
+            allowStructuredMapKeys = true
+            prettyPrint = false
+            useArrayPolymorphism = false
+        }
+
+        override fun restore(value: String): MutableState<Location?> {
+            return mutableStateOf(json.decodeFromString(value))
+        }
+
+        override fun SaverScope.save(value: MutableState<Location?>): String {
+            return json.encodeToString(value.value)
         }
     }
 }

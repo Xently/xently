@@ -8,5 +8,4 @@ data class CustomerListUiState(
     val route: Route,
     val query: String = "",
     val isLoading: Boolean = false,
-) {
-}
+)

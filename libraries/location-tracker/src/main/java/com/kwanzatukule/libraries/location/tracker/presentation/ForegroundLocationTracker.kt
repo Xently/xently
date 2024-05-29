@@ -10,6 +10,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.kwanzatukule.libraries.location.tracker.data.LocationSettingDelegate
 import com.kwanzatukule.libraries.location.tracker.domain.Location
 import com.kwanzatukule.libraries.location.tracker.domain.Settings
 
@@ -23,6 +24,7 @@ inline fun ForegroundLocationTracker(
     val client = remember(context) {
         LocationServices.getFusedLocationProviderClient(context)
     }
+    var currentLocation by LocationSettingDelegate(null)
     DisposableEffect(client) {
         val locationRequest = LocationRequest.Builder(
             settings.accuracy.priority,
@@ -32,13 +34,12 @@ inline fun ForegroundLocationTracker(
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 super.onLocationResult(p0)
-                p0.lastLocation?.also {
-                    val location = Location(
-                        latitude = it.latitude,
-                        longitude = it.longitude
-                    )
-                    onLocationUpdates(location)
-                }
+                (p0.lastLocation?.run {
+                    Location(
+                        latitude = latitude,
+                        longitude = longitude,
+                    ).also { currentLocation = it }
+                } ?: currentLocation)?.also(onLocationUpdates)
             }
         }
 

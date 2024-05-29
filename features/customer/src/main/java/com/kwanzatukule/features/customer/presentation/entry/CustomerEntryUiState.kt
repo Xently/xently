@@ -11,7 +11,7 @@ data class CustomerEntryUiState(
     val email: String = "",
     val phone: String = "",
     val query: String = "",
-    val location: Location? = null,
+    val location: Location = Location(),
     val isLoading: Boolean = false,
 ) {
     @Stable
@@ -19,7 +19,6 @@ data class CustomerEntryUiState(
         get() = name.isNotBlank()
                 && email.isNotBlank()
                 && phone.isNotBlank()
-                && location != null
                 && location.isUsable()
                 && !isLoading
 }

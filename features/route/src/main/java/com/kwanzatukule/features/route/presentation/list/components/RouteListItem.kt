@@ -69,7 +69,7 @@ fun RouteListItem(
             supportingContent = { Text(text = route.description) },
             trailingContent = trailingContent
         )
-        if (LocalCanViewRouteSummary.current) {
+        if (LocalCanViewRouteSummary.current && route.summary != null) {
             var seeMore by rememberSaveable(route.id) { mutableStateOf(false) }
 
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
@@ -114,7 +114,7 @@ fun RouteListItem(
             }
 
             AnimatedVisibility(visible = seeMore) {
-                RouteSummaryLazyRow(route = route)
+                RouteSummaryLazyRow(summary = route.summary!!)
             }
         }
     }

@@ -34,7 +34,7 @@ class RouteRepositoryImpl @Inject constructor(
             /*val content = httpClient.get("https://example.com")
                 .body<List<RouteSummary>>()*/
             delay(Random.nextLong(100, 2000))
-            val content = route.summary
+            val content = route.summary!!
             withContext(NonCancellable) {
                 val entity = RouteSummaryEntity(
                     id = route.id,
@@ -52,7 +52,7 @@ class RouteRepositoryImpl @Inject constructor(
             .getRouteSummary(route.id)
             .map {
                 if (it == null) {
-                    route.summary
+                    route.summary!!
                 } else {
                     RouteSummary(
                         bookedOrder = it.bookedOrder,

@@ -33,7 +33,7 @@ import com.kwanzatukule.features.core.presentation.App
 import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraph
 import com.kwanzatukule.features.customer.presentation.list.LocalCanViewMissedOpportunities
-import com.kwanzatukule.features.order.presentation.OrderSummaryScreen
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryScreen
 import com.kwanzatukule.features.route.presentation.entry.RouteEntryScreen
 import com.kwanzatukule.features.sales.customer.onboarding.presentation.CustomerOnboardingNavigationGraph
 import com.kwanzatukule.features.sales.landing.presentation.LandingNavigationGraph

@@ -33,8 +33,8 @@ import com.kwanzatukule.features.core.domain.models.AuthenticationState
 import com.kwanzatukule.features.core.presentation.App
 import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraph
-import com.kwanzatukule.features.order.presentation.LocalCanUpdateOrderSummaryCustomer
-import com.kwanzatukule.features.order.presentation.OrderSummaryScreen
+import com.kwanzatukule.features.order.presentation.summary.LocalCanUpdateOrderSummaryCustomer
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryScreen
 import com.kwanzatukule.features.route.presentation.list.LocalCanAddRoute
 import com.kwanzatukule.features.route.presentation.list.RouteListScreen
 import com.kwanzatukule.features.route.presentation.list.components.LocalCanViewRouteSummary

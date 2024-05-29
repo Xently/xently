@@ -69,5 +69,6 @@ dependencies {
     implementation(libs.ktor.client.serialization)
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":libraries:data-core"))
+    implementation(project(":libraries:location-tracker"))
     api(project(":libraries:pagination"))
 }

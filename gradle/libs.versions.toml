@@ -1,7 +1,7 @@
 [versions]
-accompanistPermissions = "0.31.1-alpha"
+accompanistPermissions = "0.34.0"
 activityCompose = "1.9.0"
-agp = "8.4.0"
+agp = "8.4.1"
 android-compile-sdk = "34"
 android-jvm-target = "1.8"
 android-jvm-compatibility = "VERSION_1_8"
@@ -14,16 +14,16 @@ coil-kt-coil = "3.0.0-alpha06"
 compose-compiler = "1.5.13"
 composeBom = "2024.05.00"
 coreKtx = "1.13.1"
-date-time = "0.5.0"
+date-time = "0.6.0"
 decompose = "3.0.0"
 espressoCore = "3.5.1"
-hilt = "2.48"
+hilt = "2.51.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 kotlin = "1.9.23"
 kotlinxSerializationJson = "1.6.3"
 ksp = "1.9.23-1.0.20"
-ktor = "2.3.10"
+ktor = "2.3.11"
 lifecycleRuntimeKtx = "2.8.0"
 mapsCompose = "5.0.1"
 multiplatformSettings = "1.1.1"
@@ -91,3 +91,9 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+
+[bundles]
+coil = ["coil-compose", "coil-network", "coil-svg", "coil3-coil"]
+decompose = ["decompose", "decompose-extensions-compose"]
+ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-logging", "ktor-client-okhttp", "ktor-client-okhttp-jvm", "ktor-client-serialization"]
+map = ["maps-compose", "maps-compose-widgets"]

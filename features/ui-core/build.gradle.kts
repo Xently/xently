@@ -75,6 +75,7 @@ dependencies {
 
     testImplementation(libs.androidx.room.testing)
     implementation(libs.timber)
+    implementation(libs.date.time)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.okhttp.jvm)
@@ -85,9 +86,6 @@ dependencies {
     implementation(libs.ktor.client.contentNegotiation)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation(libs.coil3.coil)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network)
-    implementation(libs.coil.svg)
+    implementation(libs.bundles.coil)
     api(project(":libraries:data-core"))
 }

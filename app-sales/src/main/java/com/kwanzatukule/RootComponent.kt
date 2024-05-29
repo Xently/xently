@@ -28,8 +28,8 @@ import com.kwanzatukule.features.core.domain.models.AuthenticationState
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraphComponent
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraphComponentImpl
 import com.kwanzatukule.features.order.data.OrderRepository
-import com.kwanzatukule.features.order.presentation.OrderSummaryComponent
-import com.kwanzatukule.features.order.presentation.OrderSummaryComponentImpl
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryComponent
+import com.kwanzatukule.features.order.presentation.summary.OrderSummaryComponentImpl
 import com.kwanzatukule.features.route.presentation.entry.RouteEntryComponent
 import com.kwanzatukule.features.route.presentation.entry.RouteEntryComponentImpl
 import com.kwanzatukule.features.sales.customer.onboarding.presentation.CustomerOnboardingNavigationGraphComponent

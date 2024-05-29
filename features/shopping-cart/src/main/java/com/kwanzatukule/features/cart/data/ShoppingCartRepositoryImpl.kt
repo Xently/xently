@@ -2,12 +2,15 @@ package com.kwanzatukule.features.cart.data
 
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.catalogue.domain.Product
+import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class ShoppingCartRepositoryImpl @Inject constructor(
@@ -17,6 +20,10 @@ class ShoppingCartRepositoryImpl @Inject constructor(
         return database.shoppingCartItemDao()
             .getShoppingCartItems()
             .map { ShoppingCart(items = it) }
+    }
+
+    override suspend fun clearShoppingCart() {
+        database.shoppingCartItemDao().deleteAll()
     }
 
     override suspend fun addToOrRemoveFromShoppingCart(product: Product) {
@@ -60,6 +67,22 @@ class ShoppingCartRepositoryImpl @Inject constructor(
             database.shoppingCartItemDao()
                 .removeZeroQuantityItems()
         }
+    }
+
+    override suspend fun getShoppingList(url: String?): PagedResponse<ShoppingCart.Item> {
+        val items = List(Random.nextInt(3, 20)) {
+            ShoppingCart.Item(
+                product = Product(
+                    id = (it + 1).toLong(),
+                    name = "Random product name",
+                    price = Random.nextInt(200, 10_500),
+                    image = "https://picsum.photos/200/300",
+                ),
+                quantity = Random.nextInt(1, 10),
+            )
+        }
+        delay(Random.nextLong(2_000))
+        return PagedResponse(embedded = mapOf("views" to items))
     }
 
     override suspend fun containsProduct(product: Product): Boolean {

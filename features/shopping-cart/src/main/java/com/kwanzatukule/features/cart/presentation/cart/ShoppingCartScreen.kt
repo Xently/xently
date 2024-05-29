@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +58,7 @@ import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.domain.error.DataError
 import com.kwanzatukule.features.cart.presentation.LocalShoppingCartState
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartLineCart
-import com.kwanzatukule.features.cart.presentation.components.ShoppingCartTotalCard
+import com.kwanzatukule.features.cart.presentation.components.ShoppingCartTotalBottomBarCard
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
@@ -126,11 +125,10 @@ fun ShoppingCartScreen(component: ShoppingCartComponent, modifier: Modifier = Mo
             )
         },
         bottomBar = {
-            ShoppingCartTotalCard(
+            ShoppingCartTotalBottomBarCard(
                 shoppingCart = shoppingCart,
                 submitLabel = "Checkout",
                 onClickSubmit = component::handleCheckout,
-                modifier = Modifier.navigationBarsPadding(),
             )
         },
     ) { paddingValues ->
