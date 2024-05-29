@@ -1,0 +1,6 @@
+app-customer/google-services.json filter=git-crypt diff=git-crypt
+app-delivery/google-services.json filter=git-crypt diff=git-crypt
+app-sales/google-services.json filter=git-crypt diff=git-crypt
+secrets/** filter=git-crypt diff=git-crypt
+secrets.default.properties filter=git-crypt diff=git-crypt
+.gitattributes !filter !diff

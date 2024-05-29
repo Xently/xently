@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -8,6 +11,10 @@ plugins {
     alias(libs.plugins.secrets)
 }
 
+secrets {
+    defaultPropertiesFileName = "secrets.default.properties"
+}
+
 ksp {
     arg("room.generateKotlin", "true")
 }
@@ -16,7 +23,19 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(rootProject.file("secrets/keystore.properties")))
+
 android {
+    signingConfigs {
+        create("config") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = file(keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
     namespace = "com.kwanzatukule"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
@@ -34,8 +53,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("config")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
