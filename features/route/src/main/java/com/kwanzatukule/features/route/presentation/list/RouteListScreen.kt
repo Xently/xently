@@ -38,8 +38,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.route.presentation.list.components.RouteListItem
 import com.kwanzatukule.libraries.data.route.domain.Route
@@ -207,7 +207,7 @@ private class RouteListContentParameterProvider : PreviewParameterProvider<Route
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun RouteListScreenPreview(
     @PreviewParameter(RouteListContentParameterProvider::class)

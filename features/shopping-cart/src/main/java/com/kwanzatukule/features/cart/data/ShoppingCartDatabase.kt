@@ -1,7 +1,5 @@
 package com.kwanzatukule.features.cart.data
 
-import com.kwanzatukule.libraries.core.data.TransactionFacadeDatabase
-
-interface ShoppingCartDatabase : TransactionFacadeDatabase {
+interface ShoppingCartDatabase : co.ke.xently.libraries.data.local.TransactionFacadeDatabase {
     fun shoppingCartItemDao(): ShoppingCartItemDao
 }

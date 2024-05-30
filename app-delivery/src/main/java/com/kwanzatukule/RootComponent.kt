@@ -11,8 +11,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.kwanzatukule.features.authentication.data.UserRepository
 import com.kwanzatukule.features.authentication.presentation.AuthenticationNavigationGraphComponent
-import com.kwanzatukule.features.core.domain.AuthenticationStateManager
-import com.kwanzatukule.features.core.domain.models.AuthenticationState
+import co.ke.xently.libraries.data.auth.AuthenticationState
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.landing.data.LandingRepository
 import com.kwanzatukule.features.delivery.landing.presentation.LandingNavigationGraphComponent
@@ -46,7 +45,7 @@ class RootComponent @Inject constructor(
     private val userRepository: UserRepository,
     private val orderRepository: OrderRepository,
     private val landingRepository: LandingRepository,
-) : AuthenticationStateManager, ComponentContext by context {
+) : co.ke.xently.libraries.data.auth.AuthenticationStateManager, ComponentContext by context {
     private val componentScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val isSignOutInProgress = MutableStateFlow(false)
 

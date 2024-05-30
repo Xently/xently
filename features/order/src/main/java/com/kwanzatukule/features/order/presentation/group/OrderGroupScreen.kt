@@ -19,11 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.pages.Pages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.order.domain.Order
 import com.kwanzatukule.features.order.presentation.list.OrderList
@@ -89,7 +89,7 @@ fun OrderGroupScreen(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun OrderGroupScreenPreview() {
     KwanzaTukuleTheme {

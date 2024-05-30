@@ -15,9 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Category
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.XentlyAsyncImage
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @Composable
@@ -31,7 +30,7 @@ fun CategoryCard(modifier: Modifier = Modifier, category: Category, onClick: () 
             modifier = Modifier.size(128.dp),
             shape = MaterialTheme.shapes.medium,
         ) {
-            XentlyAsyncImage(
+            co.ke.xently.libraries.ui.image.XentlyAsyncImage(
                 category.image,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
@@ -56,7 +55,7 @@ private class CategoryPreviewProvider : PreviewParameterProvider<Category> {
         )
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun CategoryCardPreview(
     @PreviewParameter(CategoryPreviewProvider::class)

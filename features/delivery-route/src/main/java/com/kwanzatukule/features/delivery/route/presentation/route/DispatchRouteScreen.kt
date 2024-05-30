@@ -25,11 +25,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.pages.Pages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.delivery.route.domain.Page
 import com.kwanzatukule.features.delivery.route.presentation.map.OrderMap
@@ -199,7 +199,7 @@ private class DispatchRouteContentParameterProvider :
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun DispatchRouteScreenPreview(
     @PreviewParameter(DispatchRouteContentParameterProvider::class)

@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.dispatch.domain.Driver
@@ -71,7 +71,7 @@ fun DispatchRouteBottomBarCard(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun DispatchRouteBottomBarCardPreview() {
     KwanzaTukuleTheme {

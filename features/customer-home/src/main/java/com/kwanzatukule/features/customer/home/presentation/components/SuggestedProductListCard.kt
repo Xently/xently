@@ -21,9 +21,9 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.presentation.components.ProductCard
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.home.R
 import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyRow
@@ -79,7 +79,7 @@ fun SuggestedProductListCard(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun SuggestedProductListCardPreview() {
     val suggestedProducts = listOf(

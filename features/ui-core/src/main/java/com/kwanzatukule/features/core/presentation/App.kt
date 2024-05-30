@@ -1,6 +1,7 @@
 package com.kwanzatukule.features.core.presentation
 
 import androidx.compose.runtime.Composable
+import co.ke.xently.libraries.ui.image.newImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.setSingletonImageLoaderFactory
 import com.kwanzatukule.features.core.BuildConfig

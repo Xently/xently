@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.domain.error.DataError
@@ -60,7 +61,6 @@ import com.kwanzatukule.features.cart.presentation.LocalShoppingCartState
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartLineCart
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartTotalBottomBarCard
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import kotlinx.coroutines.launch
 
@@ -278,7 +278,7 @@ private class ShoppingCartUiStateParameterProvider : PreviewParameterProvider<Sh
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ShoppingCartScreenPreview(
     @PreviewParameter(ShoppingCartUiStateParameterProvider::class)

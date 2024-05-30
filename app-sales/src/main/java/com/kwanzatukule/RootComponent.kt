@@ -23,8 +23,7 @@ import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.presentation.CatalogueNavigationGraphComponent
 import com.kwanzatukule.features.catalogue.presentation.CatalogueNavigationGraphComponentImpl
 import com.kwanzatukule.features.catalogue.presentation.NavigationScreen
-import com.kwanzatukule.features.core.domain.AuthenticationStateManager
-import com.kwanzatukule.features.core.domain.models.AuthenticationState
+import co.ke.xently.libraries.data.auth.AuthenticationState
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraphComponent
 import com.kwanzatukule.features.customer.presentation.CustomerNavigationGraphComponentImpl
 import com.kwanzatukule.features.order.data.OrderRepository
@@ -64,7 +63,7 @@ class RootComponent @Inject constructor(
     private val catalogueRepository: CatalogueRepository,
     private val shoppingCartRepository: ShoppingCartRepository,
     private val orderRepository: OrderRepository,
-) : AuthenticationStateManager, ComponentContext by context {
+) : co.ke.xently.libraries.data.auth.AuthenticationStateManager, ComponentContext by context {
     private val componentScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val isSignOutInProgress = MutableStateFlow(false)
 

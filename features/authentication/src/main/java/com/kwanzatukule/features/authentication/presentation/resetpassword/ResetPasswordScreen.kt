@@ -7,7 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 
@@ -24,7 +24,7 @@ fun ResetPasswordScreen(component: ResetPasswordComponent, modifier: Modifier = 
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ResetPasswordScreenPreview() {
     KwanzaTukuleTheme {

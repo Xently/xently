@@ -27,12 +27,12 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.presentation.components.CategoryLazyRow
 import com.kwanzatukule.features.catalogue.presentation.components.ProductCard
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.home.R
 import com.kwanzatukule.features.customer.home.data.Advert
@@ -410,7 +410,7 @@ private class HomeContentParameterProvider : PreviewParameterProvider<HomeConten
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun HomeScreenPreview(
     @PreviewParameter(HomeContentParameterProvider::class)

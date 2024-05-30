@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.complaints.domain.CustomerComplaint
 import kotlin.random.Random
@@ -59,7 +59,7 @@ internal fun CustomerComplaintListItem(customer: CustomerComplaint) {
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun CustomerComplaintListItemPreview() {
     KwanzaTukuleTheme {

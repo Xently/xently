@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.pages.Pages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.dispatch.presentation.DispatchList
@@ -78,7 +78,7 @@ fun HomeScreen(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun HomeScreenPreview() {
     KwanzaTukuleTheme {

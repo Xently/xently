@@ -68,6 +68,6 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.serialization)
     implementation(libs.kotlinx.serialization.json)
-    implementation(project(":libraries:data-core"))
+    implementation(project(":xently:libraries:data-core"))
     api(project(":libraries:pagination"))
 }

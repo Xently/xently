@@ -29,9 +29,9 @@ import com.kwanzatukule.features.cart.presentation.LocalShoppingCartState
 import com.kwanzatukule.features.cart.presentation.ShoppingCartNavigationGraph
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartBadge
 import com.kwanzatukule.features.catalogue.presentation.CatalogueNavigationGraph
-import com.kwanzatukule.features.core.domain.models.AuthenticationState
+import co.ke.xently.libraries.data.auth.AuthenticationState
 import com.kwanzatukule.features.core.presentation.App
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.customer.landing.presentation.LandingNavigationGraph
 import com.kwanzatukule.features.order.presentation.summary.LocalCanUpdateOrderSummaryCustomer
 import com.kwanzatukule.features.order.presentation.summary.OrderSummaryScreen

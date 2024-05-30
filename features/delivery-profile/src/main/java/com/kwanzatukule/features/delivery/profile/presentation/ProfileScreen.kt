@@ -19,8 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @Composable
@@ -79,7 +79,7 @@ fun ProfileScreen(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ProfileScreenPreview() {
     KwanzaTukuleTheme {

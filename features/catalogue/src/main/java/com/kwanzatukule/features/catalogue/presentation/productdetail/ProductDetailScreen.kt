@@ -83,12 +83,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.domain.error.DataError
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.XentlyAsyncImage
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
@@ -227,7 +226,7 @@ private fun TopAppBar(
                     .height(270.dp),
             ) {
                 HorizontalPager(state = pagerState) { index ->
-                    XentlyAsyncImage(
+                    co.ke.xently.libraries.ui.image.XentlyAsyncImage(
                         contentScale = ContentScale.FillBounds,
                         data = product.images[index],
                         modifier = Modifier
@@ -385,7 +384,7 @@ While some contexts were considered better for some carousel designs, all design
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ProductDetailScreenPreview(
     @PreviewParameter(ProductDetailUiStateParameterProvider::class)

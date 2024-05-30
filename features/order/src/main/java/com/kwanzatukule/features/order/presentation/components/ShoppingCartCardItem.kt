@@ -4,12 +4,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartLineCart
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.core.domain.formatNumber
 import com.kwanzatukule.features.core.domain.formatPrice
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 
@@ -31,7 +31,7 @@ internal fun ShoppingCartLineCart(item: ShoppingCart.Item, modifier: Modifier = 
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ShoppingCartLineCartPreview() {
     KwanzaTukuleTheme {

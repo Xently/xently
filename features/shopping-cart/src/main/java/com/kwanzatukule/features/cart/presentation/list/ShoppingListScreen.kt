@@ -35,13 +35,13 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.domain.error.DataError
 import com.kwanzatukule.features.cart.presentation.components.ShoppingListItem
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyColumn
 
@@ -187,7 +187,7 @@ private class ShoppingListContentParameterProvider : PreviewParameterProvider<Sh
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ShoppingListScreenPreview(
     @PreviewParameter(ShoppingListContentParameterProvider::class)

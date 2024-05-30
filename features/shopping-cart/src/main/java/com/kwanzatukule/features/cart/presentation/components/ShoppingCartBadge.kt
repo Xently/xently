@@ -19,8 +19,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.cart.presentation.LocalShoppingCartState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @Composable
@@ -65,7 +65,7 @@ fun ShoppingCartBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
     )
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ShoppingCartBadgePreview() {
     KwanzaTukuleTheme {

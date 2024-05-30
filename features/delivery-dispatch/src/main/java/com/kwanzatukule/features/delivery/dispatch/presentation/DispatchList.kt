@@ -26,9 +26,9 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.dispatch.domain.Driver
@@ -169,7 +169,7 @@ private class DispatchListContentParameterProvider : PreviewParameterProvider<Di
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun DispatchListScreenPreview(
     @PreviewParameter(DispatchListContentParameterProvider::class)

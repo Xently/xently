@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.domain.Time
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.dispatch.domain.Driver
@@ -129,7 +129,7 @@ fun DispatchCardContent(dispatch: Dispatch, modifier: Modifier = Modifier) {
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun DispatchCardItemPreview() {
     val dispatch = remember {

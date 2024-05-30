@@ -39,8 +39,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.presentation.list.components.CustomerListItem
 import com.kwanzatukule.features.route.presentation.components.RouteSummaryItem
@@ -251,7 +251,7 @@ private class CustomerListContentParameterProvider : PreviewParameterProvider<Cu
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun CustomerListScreenPreview(
     @PreviewParameter(CustomerListContentParameterProvider::class)

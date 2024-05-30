@@ -39,9 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.domain.formatNumber
 import com.kwanzatukule.features.core.domain.formatPrice
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.TextIconButton
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.presentation.list.LocalCanViewMissedOpportunities
@@ -228,7 +228,7 @@ private fun CustomerSummary(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun CustomerListItemPreview() {
     KwanzaTukuleTheme {

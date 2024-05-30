@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.order.domain.Order
 import com.kwanzatukule.libraries.data.customer.domain.Customer
@@ -119,7 +119,7 @@ fun OrderCardItem(
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun OrderCardItemPreview() {
     val order = remember {

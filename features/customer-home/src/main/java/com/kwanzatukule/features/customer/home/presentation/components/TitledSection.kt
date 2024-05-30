@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @Composable
@@ -27,7 +27,7 @@ fun TitledSection(title: String, modifier: Modifier = Modifier, content: @Compos
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun TitledSectionPreview() {
     KwanzaTukuleTheme {

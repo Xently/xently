@@ -13,8 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.XentlyAsyncImage
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 
@@ -56,7 +55,7 @@ fun AdvertCard(
         },
         trailingContent = if (advert.image == null) null else {
             {
-                XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
                     data = advert.image,
                     contentDescription = null,
                     modifier = Modifier
@@ -108,7 +107,7 @@ class AdvertParameterProvider :
     )
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun AdvertCardPreview(
     @PreviewParameter(AdvertParameterProvider::class)

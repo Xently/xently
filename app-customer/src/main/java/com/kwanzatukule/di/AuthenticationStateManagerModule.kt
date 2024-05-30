@@ -1,7 +1,7 @@
 package com.kwanzatukule.di
 
 import com.kwanzatukule.RootComponent
-import com.kwanzatukule.features.core.domain.AuthenticationStateManager
+import co.ke.xently.libraries.data.auth.AuthenticationStateManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ abstract class AuthenticationStateManagerModule {
     @Binds
     abstract fun bindAuthenticationStateManager(
         manager: RootComponent,
-    ): AuthenticationStateManager
+    ): co.ke.xently.libraries.data.auth.AuthenticationStateManager
 }

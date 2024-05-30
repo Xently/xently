@@ -41,10 +41,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.authentication.R
 import com.kwanzatukule.features.authentication.domain.error.DataError
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 
@@ -199,7 +199,7 @@ class SignInUIStateParameterProvider : PreviewParameterProvider<SignInUIState> {
         )
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun SignInScreenPreview(
     @PreviewParameter(SignInUIStateParameterProvider::class)

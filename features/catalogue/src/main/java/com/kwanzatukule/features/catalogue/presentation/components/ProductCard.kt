@@ -39,10 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.core.domain.formatPrice
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.XentlyAsyncImage
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,7 +67,7 @@ fun ProductCard(
                     .fillMaxWidth()
                     .height(128.dp),
             ) {
-                XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
                     data = product.image,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
@@ -157,7 +156,7 @@ private class ProductPreviewProvider : PreviewParameterProvider<Product> {
         )
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun ProductCardPreview(
     @PreviewParameter(ProductPreviewProvider::class)

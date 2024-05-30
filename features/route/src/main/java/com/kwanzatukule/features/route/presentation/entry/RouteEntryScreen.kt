@@ -39,8 +39,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.libraries.data.route.domain.error.DataError
 
@@ -177,7 +177,7 @@ private class RouteEntryUiStateParameterProvider : PreviewParameterProvider<Rout
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun RouteEntryScreenPreview(
     @PreviewParameter(RouteEntryUiStateParameterProvider::class)

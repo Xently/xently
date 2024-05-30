@@ -1,7 +1,5 @@
 package com.kwanzatukule.features.sales.dashboard.data
 
-import com.kwanzatukule.libraries.core.data.TransactionFacadeDatabase
-
-interface SalesDashboardDatabase : TransactionFacadeDatabase {
+interface SalesDashboardDatabase : co.ke.xently.libraries.data.local.TransactionFacadeDatabase {
     fun salesDashboardItemEntityDao(): SalesDashboardItemEntityDao
 }

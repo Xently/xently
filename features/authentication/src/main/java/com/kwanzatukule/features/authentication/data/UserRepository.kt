@@ -2,7 +2,7 @@ package com.kwanzatukule.features.authentication.data
 
 import com.kwanzatukule.features.authentication.domain.error.DataError
 import com.kwanzatukule.features.authentication.domain.error.Result
-import com.kwanzatukule.features.core.domain.models.CurrentUser
+import co.ke.xently.libraries.data.auth.CurrentUser
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope

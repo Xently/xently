@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.core.domain.formatNumber
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
@@ -106,7 +106,7 @@ fun RouteSummaryLazyRow(summary: RouteSummary, modifier: Modifier = Modifier) {
     }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun RouteSummaryItemPreview() {
     KwanzaTukuleTheme {

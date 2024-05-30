@@ -26,9 +26,9 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
-import com.kwanzatukule.features.core.presentation.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.order.domain.Order
 import com.kwanzatukule.features.order.domain.error.DataError
@@ -183,7 +183,7 @@ private class OrderListContentParameterProvider : PreviewParameterProvider<Order
         }
 }
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun OrderListScreenPreview(
     @PreviewParameter(OrderListContentParameterProvider::class)

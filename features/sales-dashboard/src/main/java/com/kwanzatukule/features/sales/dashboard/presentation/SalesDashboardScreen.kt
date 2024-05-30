@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.kwanzatukule.features.core.presentation.KwanzaPreview
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.sales.dashboard.domain.SalesDashboardItem
 import kotlin.random.Random
@@ -124,7 +124,7 @@ private class SalesDashboardUiStatePreviewProvider :
 }
 
 
-@KwanzaPreview
+@XentlyPreview
 @Composable
 private fun SalesDashboardScreenPreview(
     @PreviewParameter(SalesDashboardUiStatePreviewProvider::class)

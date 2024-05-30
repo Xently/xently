@@ -1,7 +1,5 @@
 package com.kwanzatukule.features.customer.complaints.data
 
-import com.kwanzatukule.libraries.core.data.TransactionFacadeDatabase
-
-interface CustomerComplaintDatabase : TransactionFacadeDatabase {
+interface CustomerComplaintDatabase : co.ke.xently.libraries.data.local.TransactionFacadeDatabase {
     fun customerComplaintDao(): CustomerComplaintDao
 }
