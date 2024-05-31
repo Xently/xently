@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.location.tracker.presentation.ForegroundLocationTracker
+import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -25,8 +27,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
 import com.kwanzatukule.features.order.presentation.list.OrderListComponent
-import com.kwanzatukule.libraries.location.tracker.presentation.ForegroundLocationTracker
-import com.kwanzatukule.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 
 @Composable
 internal fun OrderMap(

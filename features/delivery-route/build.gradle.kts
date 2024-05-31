@@ -81,5 +81,5 @@ dependencies {
     implementation(project(":features:route"))
     implementation(project(":features:order"))
     implementation(project(":features:shopping-cart"))
-    api(project(":libraries:location-tracker"))
+    api(project(":xently:libraries:location-tracker"))
 }

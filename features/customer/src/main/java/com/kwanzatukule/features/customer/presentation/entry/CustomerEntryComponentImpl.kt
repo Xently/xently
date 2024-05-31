@@ -1,5 +1,6 @@
 package com.kwanzatukule.features.customer.presentation.entry
 
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -11,7 +12,6 @@ import com.kwanzatukule.libraries.data.customer.domain.Customer
 import com.kwanzatukule.libraries.data.customer.domain.error.Result
 import com.kwanzatukule.libraries.data.customer.presentation.utils.asUiText
 import com.kwanzatukule.libraries.data.route.domain.Route
-import com.kwanzatukule.libraries.location.tracker.domain.Location
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

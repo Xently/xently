@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.kwanzatukule.libraries.data.customer"
+    namespace = "co.ke.xently.libraries.location.tracker"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
@@ -56,19 +56,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.date.time)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.multiplatform.settings)
+    implementation(libs.play.services.location)
+    implementation(libs.timber)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.paging)
-    testImplementation(libs.androidx.room.testing)
-    implementation(libs.timber)
-
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(project(":xently:libraries:data-core"))
-    implementation(project(":xently:libraries:location-tracker"))
-    api(project(":libraries:pagination"))
 }

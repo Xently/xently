@@ -80,6 +80,6 @@ dependencies {
     api(project(":features:ui-core"))
     api(project(":libraries:data-customer"))
     api(project(":libraries:data-route"))
-    api(project(":libraries:location-tracker"))
+    api(project(":xently:libraries:location-tracker"))
     implementation(project(":features:route"))
 }

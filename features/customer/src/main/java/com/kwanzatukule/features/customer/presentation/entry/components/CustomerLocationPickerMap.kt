@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
@@ -26,7 +27,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
 import com.kwanzatukule.features.customer.R
-import com.kwanzatukule.libraries.location.tracker.domain.Location
 
 @Composable
 internal inline fun CustomerLocationPickerMap(

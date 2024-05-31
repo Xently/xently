@@ -1,8 +1,8 @@
 package com.kwanzatukule.features.customer.presentation.entry
 
 import androidx.compose.runtime.Stable
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.kwanzatukule.libraries.data.route.domain.Route
-import com.kwanzatukule.libraries.location.tracker.domain.Location
 
 @Stable
 data class CustomerEntryUiState(

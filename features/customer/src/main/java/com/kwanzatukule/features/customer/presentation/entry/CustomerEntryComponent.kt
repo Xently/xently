@@ -1,8 +1,8 @@
 package com.kwanzatukule.features.customer.presentation.entry
 
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.kwanzatukule.libraries.location.tracker.domain.Location
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

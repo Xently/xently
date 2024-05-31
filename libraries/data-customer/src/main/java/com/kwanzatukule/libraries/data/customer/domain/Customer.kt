@@ -1,6 +1,6 @@
 package com.kwanzatukule.libraries.data.customer.domain
 
-import com.kwanzatukule.libraries.location.tracker.domain.Location
+import co.ke.xently.libraries.location.tracker.domain.Location
 import kotlinx.serialization.Serializable
 
 

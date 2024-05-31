@@ -1,7 +1,7 @@
 package com.kwanzatukule.features.order.presentation.list
 
+import co.ke.xently.libraries.location.tracker.domain.DirectionNavigation
 import com.kwanzatukule.features.order.presentation.utils.UiText
-import com.kwanzatukule.libraries.location.tracker.domain.DirectionNavigation
 
 sealed interface OrderListEvent {
     data class Error(

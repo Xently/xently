@@ -1,5 +1,7 @@
 package com.kwanzatukule.features.order.data
 
+import co.ke.xently.libraries.location.tracker.domain.DirectionNavigation
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.kwanzatukule.features.cart.data.ShoppingCartRepository
 import com.kwanzatukule.features.order.domain.Order
 import com.kwanzatukule.features.order.domain.error.DataError
@@ -7,8 +9,6 @@ import com.kwanzatukule.features.order.domain.error.Result
 import com.kwanzatukule.libraries.data.customer.domain.Customer
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
-import com.kwanzatukule.libraries.location.tracker.domain.DirectionNavigation
-import com.kwanzatukule.libraries.location.tracker.domain.Location
 import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.NonCancellable
