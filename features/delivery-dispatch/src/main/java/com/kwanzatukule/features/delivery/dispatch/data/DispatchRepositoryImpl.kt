@@ -1,10 +1,10 @@
 package com.kwanzatukule.features.delivery.dispatch.data
 
+import co.ke.xently.libraries.pagination.domain.models.PagedResponse
 import com.kwanzatukule.features.delivery.dispatch.domain.Dispatch
 import com.kwanzatukule.features.delivery.dispatch.domain.Driver
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
-import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.datetime.Clock
 import javax.inject.Inject

@@ -35,15 +35,15 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.pagination.presentation.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.domain.error.DataError
 import com.kwanzatukule.features.cart.presentation.components.ShoppingListItem
 import com.kwanzatukule.features.catalogue.domain.Product
-import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
-import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyColumn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -27,19 +27,19 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.pagination.presentation.PaginatedLazyVerticalGrid
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.presentation.components.CategoryLazyRow
 import com.kwanzatukule.features.catalogue.presentation.components.ProductCard
-import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.home.R
 import com.kwanzatukule.features.customer.home.data.Advert
 import com.kwanzatukule.features.customer.home.presentation.components.AdvertCard
 import com.kwanzatukule.features.customer.home.presentation.components.SuggestedProductListCard
 import com.kwanzatukule.features.customer.home.presentation.components.TitledSection
-import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyVerticalGrid
 
 @Composable
 fun HomeScreen(component: HomeComponent, modifier: Modifier = Modifier) {

@@ -1,9 +1,9 @@
 package com.kwanzatukule.libraries.data.customer.data
 
+import co.ke.xently.libraries.pagination.domain.models.PagedResponse
 import com.kwanzatukule.libraries.data.customer.domain.Customer
 import com.kwanzatukule.libraries.data.customer.domain.error.DataError
 import com.kwanzatukule.libraries.data.customer.domain.error.Result
-import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

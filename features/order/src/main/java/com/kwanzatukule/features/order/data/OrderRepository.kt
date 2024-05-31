@@ -2,11 +2,11 @@ package com.kwanzatukule.features.order.data
 
 import co.ke.xently.libraries.location.tracker.domain.DirectionNavigation
 import co.ke.xently.libraries.location.tracker.domain.Location
+import co.ke.xently.libraries.pagination.domain.models.PagedResponse
 import com.kwanzatukule.features.cart.data.ShoppingCartRepository
 import com.kwanzatukule.features.order.domain.Order
 import com.kwanzatukule.features.order.domain.error.DataError
 import com.kwanzatukule.features.order.domain.error.Result
-import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 
 interface OrderRepository : ShoppingCartRepository {
     suspend fun placeOrder(order: Order): Result<Unit, DataError>

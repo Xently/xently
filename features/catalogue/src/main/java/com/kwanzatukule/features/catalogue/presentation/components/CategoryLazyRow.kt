@@ -13,10 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.pagination.presentation.PaginatedLazyRow
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
-import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyRow
 import kotlinx.coroutines.flow.flow
 
 

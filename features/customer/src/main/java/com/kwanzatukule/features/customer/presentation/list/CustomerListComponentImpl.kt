@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import co.ke.xently.libraries.pagination.domain.PagingSource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -12,7 +13,6 @@ import com.kwanzatukule.libraries.data.customer.data.CustomerRepository
 import com.kwanzatukule.libraries.data.customer.data.Filter
 import com.kwanzatukule.libraries.data.customer.domain.Customer
 import com.kwanzatukule.libraries.data.route.domain.Route
-import com.kwanzatukule.libraries.pagination.domain.PagingSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

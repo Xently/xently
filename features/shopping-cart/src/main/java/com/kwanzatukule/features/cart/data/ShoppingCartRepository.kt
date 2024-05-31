@@ -1,9 +1,9 @@
 package com.kwanzatukule.features.cart.data
 
+import co.ke.xently.libraries.pagination.domain.models.PagedResponse
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.catalogue.data.ShoppingCartChecker
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.libraries.pagination.domain.models.PagedResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ShoppingCartRepository : ShoppingCartChecker {

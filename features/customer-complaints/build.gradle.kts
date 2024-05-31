@@ -84,6 +84,6 @@ dependencies {
     implementation(libs.ktor.client.contentNegotiation)
     implementation(libs.androidx.material.icons.extended)
     api(project(":features:ui-core"))
-    api(project(":libraries:pagination"))
+    api(project(":xently:libraries:pagination"))
     implementation(project(":libraries:data-customer"))
 }

@@ -39,6 +39,7 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.pagination.presentation.PaginatedLazyColumn
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
@@ -48,7 +49,6 @@ import com.kwanzatukule.libraries.data.customer.domain.Customer
 import com.kwanzatukule.libraries.data.customer.domain.error.DataError
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
-import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyColumn
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)

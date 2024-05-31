@@ -39,13 +39,13 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.libraries.pagination.presentation.PaginatedLazyColumn
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.customer.complaints.domain.CustomerComplaint
 import com.kwanzatukule.features.customer.complaints.domain.error.DataError
 import com.kwanzatukule.features.customer.complaints.presentation.list.components.CustomerComplaintListItem
-import com.kwanzatukule.libraries.pagination.presentation.PaginatedLazyColumn
 import kotlin.random.Random
 
 @Composable

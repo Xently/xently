@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     api(project(":features:ui-core"))
     api(project(":features:catalogue"))
-    api(project(":libraries:pagination"))
+    api(project(":xently:libraries:pagination"))
     api(project(":features:sales-dashboard"))
     api(project(":features:sales-customer-onboarding"))
     api(project(":features:customer-home"))
