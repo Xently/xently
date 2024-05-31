@@ -1,4 +1,4 @@
-package com.kwanzatukule.features.core.domain
+package co.ke.xently.libraries.data.core
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
