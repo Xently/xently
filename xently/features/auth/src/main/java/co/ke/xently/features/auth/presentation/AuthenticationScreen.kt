@@ -1,78 +1,40 @@
 package co.ke.xently.features.auth.presentation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
+import co.ke.xently.features.auth.domain.AuthenticationNavGraph
+import co.ke.xently.features.auth.presentation.login.SignInScreen
+import co.ke.xently.features.auth.presentation.login.SignInUiState
+import co.ke.xently.features.auth.presentation.login.SignInViewModel
 
-enum class AppDestinations(
-    val label: String,
-    val icon: ImageVector,
-    val contentDescription: String,
-) {
-    HOME("Home", Icons.Default.Home, "Home"),
-    FAVORITES("Favourites", Icons.Default.Favorite, "Favourites"),
-    SHOPPING("Shopping", Icons.Default.ShoppingCart, "Shopping"),
-    PROFILE("Profile", Icons.Default.AccountBox, "Profile"),
-}
-
-@Composable
-fun AuthenticationScreen(modifier: Modifier = Modifier) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-    NavigationSuiteScaffold(
-        modifier = modifier,
-        navigationSuiteItems = {
-            AppDestinations.entries.forEach {
-                item(
-                    icon = {
-                        Icon(
-                            it.icon,
-                            contentDescription = it.contentDescription,
-                        )
-                    },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
-                )
-            }
-        },
-    ) {
-        when (currentDestination) {
-            AppDestinations.HOME -> HomeDestination()
-            AppDestinations.FAVORITES -> FavoritesDestination()
-            AppDestinations.SHOPPING -> ShoppingDestination()
-            AppDestinations.PROFILE -> ProfileDestination()
+fun NavGraphBuilder.authenticationNavigation(onClickBack: () -> Unit) {
+    navigation<AuthenticationNavGraph>(startDestination = AuthenticationNavGraph.SignIn) {
+        composable<AuthenticationNavGraph.SignIn> {
+            val viewModel = hiltViewModel<SignInViewModel>()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val event by viewModel.event.collectAsStateWithLifecycle(null)
+            SignInScreen(
+                state = state,
+                event = event,
+                onClickBack = onClickBack,
+                onAction = viewModel::onAction,
+                onClickCreateAccount = {},
+                onClickForgotPassword = {},
+            )
+        }
+        composable<AuthenticationNavGraph.SignUp> {
+            SignInScreen(
+                state = SignInUiState(),
+                event = null,
+                onClickBack = onClickBack,
+                onAction = { /*TODO*/ },
+                onClickCreateAccount = {},
+                onClickForgotPassword = {},
+            )
         }
     }
-}
-
-@Composable
-fun ProfileDestination() {
-    Text(text = "Profile")
-}
-
-@Composable
-fun ShoppingDestination() {
-    Text(text = "Shopping")
-}
-
-@Composable
-fun FavoritesDestination() {
-    Text(text = "Favorites")
-}
-
-@Composable
-fun HomeDestination() {
-    Text(text = "Home")
 }

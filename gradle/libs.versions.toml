@@ -21,6 +21,7 @@ decompose = "3.0.0"
 espressoCore = "3.5.1"
 googleid = "1.1.0"
 hilt = "2.51.1"
+hilt-navigation = "1.0.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 kotlin = "1.9.23"
@@ -74,6 +75,7 @@ decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-co
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
@@ -108,5 +110,5 @@ decompose = ["decompose", "decompose-extensions-compose"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-logging", "ktor-client-okhttp", "ktor-client-okhttp-jvm", "ktor-client-serialization"]
 map = ["maps-compose", "maps-compose-widgets"]
 room = ["androidx-room-ktx", "androidx-room-runtime", "androidx-room-paging"]
-ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended", "adaptive-navigation"]
+ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended", "adaptive-navigation", "hilt-navigation-compose"]
 ui-debug = ["androidx-ui-tooling", "androidx-ui-test-manifest"]

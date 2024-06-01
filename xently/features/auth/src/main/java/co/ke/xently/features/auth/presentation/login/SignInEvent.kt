@@ -8,4 +8,6 @@ sealed interface SignInEvent {
         val error: UiText,
         val type: co.ke.xently.features.auth.data.domain.error.Error,
     ) : SignInEvent
+
+    data object Success : SignInEvent
 }

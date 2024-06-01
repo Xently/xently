@@ -5,4 +5,5 @@ internal sealed interface SignInAction {
     data class ChangePassword(val password: String) : SignInAction
     data object TogglePasswordVisibility : SignInAction
     data object ClickSubmitCredentials : SignInAction
+    data object ClickSignInWithGoogle : SignInAction
 }

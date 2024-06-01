@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import co.ke.xently.business.landing.LandingScreen
 import co.ke.xently.business.landing.domain.LandingScreen
-import co.ke.xently.features.auth.domain.AuthenticationScreen
-import co.ke.xently.features.auth.presentation.AuthenticationScreen
+import co.ke.xently.features.auth.domain.AuthenticationNavGraph
+import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.ui.core.presentation.App
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,13 +22,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             App {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = AuthenticationScreen) {
+                NavHost(navController = navController, startDestination = AuthenticationNavGraph) {
                     composable<LandingScreen> {
                         LandingScreen()
                     }
-                    composable<AuthenticationScreen> {
-                        AuthenticationScreen()
-                    }
+                    authenticationNavigation(onClickBack = navController::navigateUp)
                 }
             }
         }
