@@ -2,6 +2,7 @@ package co.ke.xently.features.ui.core.presentation.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -105,7 +106,7 @@ fun XentlyTheme(
     AppTheme(
         dynamicColor = dynamicColor,
         setting = setting,
-        content = content,
+        content = { Surface(content = content) },
         shapes = AppShapes,
         typography = AppTypography,
         colorScheme = { if (it) DarkColorScheme else LightColorScheme },
