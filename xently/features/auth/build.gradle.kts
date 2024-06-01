@@ -54,7 +54,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.ui)
     implementation(libs.navigation.compose)
-    implementation(libs.adaptive.navigation)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
@@ -67,8 +66,10 @@ dependencies {
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.bundles.android.credentials)
+
     implementation(project(":xently:features:ui-core"))
-    implementation(project(":xently:features:auth-data"))
+    api(project(":xently:features:auth-data"))
 
     debugImplementation(libs.bundles.ui.debug)
 

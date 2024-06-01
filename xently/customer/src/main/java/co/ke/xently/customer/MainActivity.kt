@@ -4,44 +4,33 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import co.ke.xently.customer.ui.theme.XentlyTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import co.ke.xently.customer.landing.LandingScreen
+import co.ke.xently.customer.landing.domain.LandingScreen
+import co.ke.xently.features.auth.domain.AuthenticationScreen
+import co.ke.xently.features.auth.presentation.AuthenticationScreen
+import co.ke.xently.features.ui.core.presentation.App
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            XentlyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            App {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = AuthenticationScreen) {
+                    composable<LandingScreen> {
+                        LandingScreen()
+                    }
+                    composable<AuthenticationScreen> {
+                        AuthenticationScreen()
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    XentlyTheme {
-        Greeting("Android")
     }
 }

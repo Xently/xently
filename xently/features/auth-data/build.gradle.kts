@@ -45,6 +45,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:libraries:data-local"))
+    implementation(project(":xently:libraries:data-auth"))
+    implementation(project(":xently:libraries:data-network"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)

@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
-    implementation(project(":xently:features:qrcode-data"))
+    api(project(":xently:features:qrcode-data"))
 
     debugImplementation(libs.bundles.ui.debug)
 

@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
-    implementation(project(":xently:features:stores-data"))
+    api(project(":xently:features:stores-data"))
 
     debugImplementation(libs.bundles.ui.debug)
 

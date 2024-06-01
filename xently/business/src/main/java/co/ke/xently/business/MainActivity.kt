@@ -12,7 +12,9 @@ import co.ke.xently.business.landing.domain.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationScreen
 import co.ke.xently.features.auth.presentation.AuthenticationScreen
 import co.ke.xently.features.ui.core.presentation.App
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
