@@ -1,4 +1,4 @@
-package co.ke.xently.features.auth.presentation.login
+package co.ke.xently.features.auth.presentation.signin
 
 import co.ke.xently.features.auth.presentation.utils.UiText
 

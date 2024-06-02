@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     composable<LandingScreen> {
                         LandingScreen()
                     }
-                    authenticationNavigation(onClickBack = navController::navigateUp)
+                    authenticationNavigation(navController)
                 }
             }
         }

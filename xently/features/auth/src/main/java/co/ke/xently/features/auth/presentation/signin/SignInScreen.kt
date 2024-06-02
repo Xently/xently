@@ -1,8 +1,6 @@
-package co.ke.xently.features.auth.presentation.login
+package co.ke.xently.features.auth.presentation.signin
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,17 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -85,7 +82,11 @@ internal fun SignInScreen(
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) "Retry" else null,
+                    actionLabel = if (event.type is DataError.Network) {
+                        context.getString(R.string.action_retry)
+                    } else {
+                        null
+                    },
                 )
 
                 when (result) {
@@ -135,13 +136,13 @@ private fun SignInScreen(
         contentAlignment = Alignment.Center,
     ) {
         Column(modifier = Modifier.align(Alignment.Center)) {
-            Image(
+            /*Image(
                 Icons.Default.Business,
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .size(50.dp),
-            )
+            )*/
             Text(
                 text = stringResource(R.string.action_sign_in),
                 style = MaterialTheme.typography.displaySmall,
@@ -149,7 +150,10 @@ private fun SignInScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Card(
+            ElevatedCard(
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 30.dp,
+                ),
                 shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -160,7 +164,7 @@ private fun SignInScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "Email",
+                    text = stringResource(R.string.field_label_email),
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
@@ -178,7 +182,7 @@ private fun SignInScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Password",
+                    stringResource(R.string.field_label_password),
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
@@ -200,21 +204,16 @@ private fun SignInScreen(
                     }.value,
                     trailingIcon = {
                         IconButton(onClick = { onAction(SignInAction.TogglePasswordVisibility) }) {
-                            AnimatedContent(
-                                state.isPasswordVisible,
-                                label = "toggle password visibility",
-                            ) { isPasswordShowing ->
-                                if (isPasswordShowing) {
-                                    Icon(
-                                        Icons.Default.VisibilityOff,
-                                        contentDescription = "Hide password",
-                                    )
-                                } else {
-                                    Icon(
-                                        Icons.Default.Visibility,
-                                        contentDescription = "Show password",
-                                    )
-                                }
+                            if (state.isPasswordVisible) {
+                                Icon(
+                                    Icons.Default.VisibilityOff,
+                                    contentDescription = stringResource(R.string.action_hide_password),
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Visibility,
+                                    contentDescription = stringResource(R.string.action_show_password),
+                                )
                             }
                         }
                     },
@@ -230,7 +229,7 @@ private fun SignInScreen(
                         .padding(horizontal = 16.dp),
                 ) {
                     Text(
-                        text = "Forgot Password?",
+                        text = stringResource(R.string.action_label_forgot_password),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -248,7 +247,7 @@ private fun SignInScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
-                ) { Text(text = "Sign in") }
+                ) { Text(text = stringResource(R.string.action_sign_in)) }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier
@@ -259,7 +258,7 @@ private fun SignInScreen(
                 ) {
                     HorizontalDivider(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Or",
+                        text = stringResource(R.string.or),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelMedium,
                     )
@@ -269,6 +268,7 @@ private fun SignInScreen(
                 if (!LocalInspectionMode.current) {
                     val isDark by LocalThemeIsDark.current
                     GoogleSignInButton(
+                        text = stringResource(R.string.action_sign_in_with_google),
                         onClick = { onAction(SignInAction.ClickSignInWithGoogle) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -289,7 +289,7 @@ private fun SignInScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                 ) {
                     Text(
-                        text = "Create an account",
+                        text = stringResource(R.string.action_register),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )

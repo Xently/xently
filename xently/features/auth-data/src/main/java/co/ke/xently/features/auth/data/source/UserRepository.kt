@@ -39,8 +39,36 @@ class UserRepository @Inject constructor(
             }
     }
 
+    suspend fun requestPasswordReset(email: String): Result<Unit, DataError> {
+        val duration = Random.nextLong(1_000, 5_000).milliseconds
+        try {
+            delay(duration)
+            return Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            return Result.Failure(DataError.Network.NO_INTERNET)
+        }
+    }
+
+    suspend fun signUp(name: String, email: String, password: String): Result<Unit, DataError> {
+        val duration = Random.nextLong(1_000, 5_000).milliseconds
+        try {
+            delay(duration)
+            database.withTransactionFacade {
+                database.userDao().deleteAll()
+                database.userDao().insertAll(User(1, email, password, email, null))
+            }
+            return Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            return Result.Failure(DataError.Network.NO_INTERNET)
+        }
+    }
+
     suspend fun signIn(email: String, password: String): Result<Unit, DataError> {
-        val duration = Random.nextLong(1000, 3000).milliseconds
+        val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
             database.withTransactionFacade {
@@ -56,7 +84,7 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun signOut(): Result<Unit, DataError.Local> {
-        delay(Random.nextLong(1000, 3000))
+        delay(Random.nextLong(1_000, 3_000))
         coroutineScope {
             launch(NonCancellable) {
                 database.userDao().deleteAll()

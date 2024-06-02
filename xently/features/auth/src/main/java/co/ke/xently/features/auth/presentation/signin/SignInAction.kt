@@ -1,4 +1,4 @@
-package co.ke.xently.features.auth.presentation.login
+package co.ke.xently.features.auth.presentation.signin
 
 internal sealed interface SignInAction {
     data class ChangeEmail(val email: String) : SignInAction

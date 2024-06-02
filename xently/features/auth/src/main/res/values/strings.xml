@@ -10,4 +10,15 @@
     <string name="error_disk_full">Failed to save the item because your device\'s disk is full</string>
     <string name="error_serialization">Oops, couldn\'t parse data.</string>
     <string name="error_password_too_short">The password is too short</string>
+    <string name="action_register">Create an account</string>
+    <string name="or">Or</string>
+    <string name="action_label_forgot_password">Forgot Password?</string>
+    <string name="action_hide_password">Hide password</string>
+    <string name="action_show_password">Show password</string>
+    <string name="field_label_password">Password</string>
+    <string name="field_label_email">Email</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_sign_in_with_google">Continue with Google</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="field_label_name">Name</string>
 </resources>
