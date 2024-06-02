@@ -21,4 +21,5 @@
     <string name="action_sign_in_with_google">Continue with Google</string>
     <string name="action_sign_up">Sign Up</string>
     <string name="field_label_name">Name</string>
+    <string name="action_request_password_reset">Request Password Reset</string>
 </resources>

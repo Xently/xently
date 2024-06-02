@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
+import co.ke.xently.features.auth.presentation.resetpassword.RequestPasswordResetScreen
+import co.ke.xently.features.auth.presentation.resetpassword.RequestPasswordResetViewModel
 import co.ke.xently.features.auth.presentation.signin.SignInScreen
 import co.ke.xently.features.auth.presentation.signin.SignInViewModel
 import co.ke.xently.features.auth.presentation.signup.SignUpScreen
@@ -25,7 +27,7 @@ fun NavGraphBuilder.authenticationNavigation(navController: NavHostController) {
                 onClickBack = navController::navigateUp,
                 onAction = viewModel::onAction,
                 onClickCreateAccount = { navController.navigate(AuthenticationNavGraph.SignUp) },
-                onClickForgotPassword = {},
+                onClickForgotPassword = { navController.navigate(AuthenticationNavGraph.RequestPasswordReset) },
             )
         }
         composable<AuthenticationNavGraph.SignUp> {
@@ -33,6 +35,18 @@ fun NavGraphBuilder.authenticationNavigation(navController: NavHostController) {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val event by viewModel.event.collectAsStateWithLifecycle(null)
             SignUpScreen(
+                state = state,
+                event = event,
+                onClickBack = navController::navigateUp,
+                onAction = viewModel::onAction,
+                onClickSignIn = navController::navigateUp,
+            )
+        }
+        composable<AuthenticationNavGraph.RequestPasswordReset> {
+            val viewModel = hiltViewModel<RequestPasswordResetViewModel>()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val event by viewModel.event.collectAsStateWithLifecycle(null)
+            RequestPasswordResetScreen(
                 state = state,
                 event = event,
                 onClickBack = navController::navigateUp,

@@ -1,4 +1,4 @@
-package co.ke.xently.features.auth.presentation.signin
+package co.ke.xently.features.auth.presentation.resetpassword
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -13,16 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,20 +30,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -57,19 +47,15 @@ import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
-import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
-import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 
 @Composable
-internal fun SignInScreen(
-    state: SignInUiState,
-    event: SignInEvent?,
+internal fun RequestPasswordResetScreen(
+    state: RequestPasswordResetUiState,
+    event: RequestPasswordResetEvent?,
     modifier: Modifier = Modifier,
-    onAction: (SignInAction) -> Unit,
+    onAction: (RequestPasswordResetAction) -> Unit,
     onClickBack: () -> Unit,
-    onClickCreateAccount: () -> Unit,
-    onClickForgotPassword: () -> Unit,
+    onClickSignIn: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -78,7 +64,7 @@ internal fun SignInScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
-            is SignInEvent.Error -> {
+            is RequestPasswordResetEvent.Error -> {
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
@@ -100,7 +86,7 @@ internal fun SignInScreen(
                 }
             }
 
-            SignInEvent.Success -> onClickBack()
+            RequestPasswordResetEvent.Success -> onClickBack()
         }
     }
 
@@ -108,25 +94,23 @@ internal fun SignInScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { paddingValues ->
-        SignInScreen(
+        RequestPasswordResetScreen(
+            state = state,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            state = state,
             onAction = onAction,
-            onClickCreateAccount = onClickCreateAccount,
-            onClickForgotPassword = onClickForgotPassword,
+            onClickSignIn = onClickSignIn,
         )
     }
 }
 
 @Composable
-private fun SignInScreen(
-    state: SignInUiState,
+private fun RequestPasswordResetScreen(
+    state: RequestPasswordResetUiState,
     modifier: Modifier = Modifier,
-    onAction: (SignInAction) -> Unit,
-    onClickCreateAccount: () -> Unit,
-    onClickForgotPassword: () -> Unit,
+    onAction: (RequestPasswordResetAction) -> Unit,
+    onClickSignIn: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     Box(
@@ -144,7 +128,7 @@ private fun SignInScreen(
                     .size(50.dp),
             )*/
             Text(
-                text = stringResource(R.string.action_sign_in),
+                text = stringResource(R.string.action_request_password_reset),
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -173,7 +157,7 @@ private fun SignInScreen(
                 )
                 OutlinedTextField(
                     value = state.email,
-                    onValueChange = { onAction(SignInAction.ChangeEmail(it)) },
+                    onValueChange = { onAction(RequestPasswordResetAction.ChangeEmail(it)) },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email,
@@ -185,65 +169,11 @@ private fun SignInScreen(
                         .padding(horizontal = 16.dp),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    stringResource(R.string.field_label_password),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-                OutlinedTextField(
-                    value = state.password,
-                    onValueChange = { onAction(SignInAction.ChangePassword(it)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Password,
-                    ),
-                    placeholder = { Text(text = "************") },
-                    visualTransformation = remember(state.isPasswordVisible) {
-                        derivedStateOf {
-                            if (state.isPasswordVisible) {
-                                VisualTransformation.None
-                            } else {
-                                PasswordVisualTransformation()
-                            }
-                        }
-                    }.value,
-                    trailingIcon = {
-                        IconButton(onClick = { onAction(SignInAction.TogglePasswordVisibility) }) {
-                            if (state.isPasswordVisible) {
-                                Icon(
-                                    Icons.Default.VisibilityOff,
-                                    contentDescription = stringResource(R.string.action_hide_password),
-                                )
-                            } else {
-                                Icon(
-                                    Icons.Default.Visibility,
-                                    contentDescription = stringResource(R.string.action_show_password),
-                                )
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(35),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                )
-                TextButton(
-                    onClick = onClickForgotPassword,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = 16.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_label_forgot_password),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
                 Button(
-                    enabled = state.enableSignInButton,
+                    enabled = state.enableRequestPasswordResetButton,
                     onClick = {
                         focusManager.clearFocus()
-                        onAction(SignInAction.ClickSubmitCredentials)
+                        onAction(RequestPasswordResetAction.ClickSubmitCredentials)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -252,7 +182,7 @@ private fun SignInScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
-                ) { Text(text = stringResource(R.string.action_sign_in)) }
+                ) { Text(text = stringResource(R.string.action_request_password_reset)) }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier
@@ -270,31 +200,12 @@ private fun SignInScreen(
                     HorizontalDivider(modifier = Modifier.weight(1f))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                if (!LocalInspectionMode.current) {
-                    val isDark by LocalThemeIsDark.current
-                    GoogleSignInButton(
-                        text = stringResource(R.string.action_sign_in_with_google),
-                        onClick = { onAction(SignInAction.ClickSignInWithGoogle) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        mode = remember(isDark) {
-                            derivedStateOf {
-                                if (isDark) {
-                                    GoogleButtonMode.Dark
-                                } else {
-                                    GoogleButtonMode.Light
-                                }
-                            }
-                        }.value,
-                    )
-                }
                 TextButton(
-                    onClick = onClickCreateAccount,
+                    onClick = onClickSignIn,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                 ) {
                     Text(
-                        text = stringResource(R.string.action_register),
+                        text = stringResource(R.string.action_sign_in),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -305,30 +216,16 @@ private fun SignInScreen(
 }
 
 
-private class SignInUiStateParameterProvider : PreviewParameterProvider<SignInUiState> {
-    override val values: Sequence<SignInUiState>
+private class RequestPasswordResetUiStateParameterProvider :
+    PreviewParameterProvider<RequestPasswordResetUiState> {
+    override val values: Sequence<RequestPasswordResetUiState>
         get() = sequenceOf(
-            SignInUiState(),
-            SignInUiState(
-                email = "example",
-                password = "",
+            RequestPasswordResetUiState(),
+            RequestPasswordResetUiState(
+                email = "john.doe@example.com",
             ),
-            SignInUiState(
-                email = "",
-                password = "password",
-            ),
-            SignInUiState(
-                email = "example",
-                password = "password",
-            ),
-            SignInUiState(
-                email = "example",
-                password = "password",
-                isPasswordVisible = true,
-            ),
-            SignInUiState(
-                email = "example",
-                password = "password",
+            RequestPasswordResetUiState(
+                email = "john.doe@example.com",
                 isLoading = true,
             ),
         )
@@ -336,19 +233,18 @@ private class SignInUiStateParameterProvider : PreviewParameterProvider<SignInUi
 
 @XentlyPreview
 @Composable
-private fun SignInScreenPreview(
-    @PreviewParameter(SignInUiStateParameterProvider::class)
-    state: SignInUiState,
+private fun RequestPasswordResetScreenPreview(
+    @PreviewParameter(RequestPasswordResetUiStateParameterProvider::class)
+    state: RequestPasswordResetUiState,
 ) {
     XentlyTheme {
-        SignInScreen(
+        RequestPasswordResetScreen(
             state = state,
             event = null,
-            onClickBack = {},
-            onAction = {},
-            onClickCreateAccount = {},
-            onClickForgotPassword = {},
             modifier = Modifier.fillMaxSize(),
+            onAction = {},
+            onClickBack = {},
+            onClickSignIn = {},
         )
     }
 }

@@ -140,7 +140,10 @@ private fun SignUpScreen(
                 text = stringResource(R.string.action_sign_up),
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .widthIn(min = 300.dp, max = 300.dp),
             )
             Spacer(modifier = Modifier.height(20.dp))
             ElevatedCard(
@@ -170,6 +173,7 @@ private fun SignUpScreen(
                         capitalization = KeyboardCapitalization.Words,
                     ),
                     shape = RoundedCornerShape(35),
+                    placeholder = { Text(text = "John Doe") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -187,6 +191,7 @@ private fun SignUpScreen(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email,
                     ),
+                    placeholder = { Text(text = "john.doe@example.com") },
                     shape = RoundedCornerShape(35),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -205,6 +210,7 @@ private fun SignUpScreen(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password,
                     ),
+                    placeholder = { Text(text = "************") },
                     visualTransformation = remember(state.isPasswordVisible) {
                         derivedStateOf {
                             if (state.isPasswordVisible) {

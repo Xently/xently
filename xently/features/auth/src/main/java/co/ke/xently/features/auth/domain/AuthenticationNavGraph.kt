@@ -9,5 +9,5 @@ data object AuthenticationNavGraph{
     @Serializable
     internal data object SignUp
     @Serializable
-    internal data object ResetPassword
+    internal data object RequestPasswordReset
 }
