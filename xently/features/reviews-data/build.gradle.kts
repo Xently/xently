@@ -60,6 +60,7 @@ dependencies {
 
     implementation(project(":xently:libraries:data-core"))
     implementation(project(":xently:libraries:pagination-data"))
+    api(project(":xently:features:reviewcategory-data"))
 
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)

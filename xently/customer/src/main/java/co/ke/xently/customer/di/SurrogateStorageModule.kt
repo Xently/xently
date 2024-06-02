@@ -3,11 +3,14 @@ package co.ke.xently.customer.di
 import co.ke.xently.customer.AppDatabase
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
+import co.ke.xently.features.productcategory.data.source.local.ProductCategoryDatabase
 import co.ke.xently.features.products.data.source.local.ProductDatabase
-import co.ke.xently.features.reviews.data.source.local.ReviewCategoryDatabase
+import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
+import co.ke.xently.features.storecategory.data.source.local.StoreCategoryDatabase
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
+import co.ke.xently.features.storeservice.data.source.local.StoreServiceDatabase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,6 +35,16 @@ abstract class SurrogateStorageModule {
     ): StoreDatabase
 
     @Binds
+    abstract fun bindStoreCategoryDatabase(
+        database: AppDatabase,
+    ): StoreCategoryDatabase
+
+    @Binds
+    abstract fun bindStoreServiceDatabase(
+        database: AppDatabase,
+    ): StoreServiceDatabase
+
+    @Binds
     abstract fun bindReviewDatabase(
         database: AppDatabase,
     ): ReviewDatabase
@@ -45,6 +58,11 @@ abstract class SurrogateStorageModule {
     abstract fun bindProductDatabase(
         database: AppDatabase,
     ): ProductDatabase
+
+    @Binds
+    abstract fun bindProductCategoryDatabase(
+        database: AppDatabase,
+    ): ProductCategoryDatabase
 
     @Binds
     abstract fun bindCustomerDatabase(

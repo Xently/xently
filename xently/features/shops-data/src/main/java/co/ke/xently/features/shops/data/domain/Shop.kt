@@ -10,4 +10,6 @@ data class Shop(
     val name: String,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
+    val onlineShopUrl: String? = null,
+    val slug: String = name.lowercase().replace(' ', '-'),
 )
