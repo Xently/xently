@@ -33,9 +33,6 @@ android {
     kotlinOptions {
         jvmTarget = libs.versions.android.jvm.target.get()
     }
-    buildFeatures {
-        buildConfig = true
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -57,6 +54,8 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(project(":xently:libraries:data-core"))
 
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)

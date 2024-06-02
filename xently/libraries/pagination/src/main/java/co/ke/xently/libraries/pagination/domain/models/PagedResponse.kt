@@ -1,5 +1,6 @@
 package co.ke.xently.libraries.pagination.domain.models
 
+import co.ke.xently.libraries.data.core.Link
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

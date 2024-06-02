@@ -59,5 +59,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     api(libs.androidx.paging.compose)
     api(libs.androidx.paging.runtime)
+    implementation(project(":xently:libraries:data-core"))
     testImplementation(libs.androidx.paging.common)
 }

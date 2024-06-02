@@ -67,7 +67,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.bundles.android.credentials)
-    implementation("io.github.mirzemehdi:kmpauth-uihelper:1.4.0")
 
     implementation(project(":xently:features:ui-core"))
     api(project(":xently:features:auth-data"))

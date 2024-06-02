@@ -45,9 +45,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
-    implementation(project(":xently:libraries:data-local"))
-    implementation(project(":xently:libraries:data-auth"))
-    implementation(project(":xently:libraries:data-network"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
@@ -57,6 +54,9 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(project(":xently:libraries:data-auth"))
+    implementation(project(":xently:libraries:data-core"))
 
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)

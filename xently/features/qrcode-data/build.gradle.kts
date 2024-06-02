@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(project(":xently:libraries:data-core"))
+
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
 }
