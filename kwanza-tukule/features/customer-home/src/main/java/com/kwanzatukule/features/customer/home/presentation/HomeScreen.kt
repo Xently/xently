@@ -27,9 +27,9 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import co.ke.xently.libraries.pagination.presentation.PaginatedLazyVerticalGrid
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.pagination.PaginatedLazyVerticalGrid
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.catalogue.presentation.components.CategoryLazyRow

@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     api(project(":kwanza-tukule:features:ui-core"))
     api(project(":kwanza-tukule:features:catalogue"))
-    api(project(":xently:libraries:pagination"))
+    api(project(":xently:libraries:ui-pagination"))
     api(project(":kwanza-tukule:features:sales-dashboard"))
     api(project(":kwanza-tukule:features:sales-customer-onboarding"))
     api(project(":kwanza-tukule:features:customer-home"))

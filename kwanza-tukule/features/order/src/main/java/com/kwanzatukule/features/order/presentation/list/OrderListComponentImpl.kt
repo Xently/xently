@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import co.ke.xently.libraries.location.tracker.domain.Location
-import co.ke.xently.libraries.pagination.domain.PagingSource
+import co.ke.xently.libraries.pagination.data.PagingSource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value

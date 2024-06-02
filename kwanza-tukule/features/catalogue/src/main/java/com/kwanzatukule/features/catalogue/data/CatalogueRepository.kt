@@ -1,6 +1,6 @@
 package com.kwanzatukule.features.catalogue.data
 
-import co.ke.xently.libraries.pagination.domain.models.PagedResponse
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 

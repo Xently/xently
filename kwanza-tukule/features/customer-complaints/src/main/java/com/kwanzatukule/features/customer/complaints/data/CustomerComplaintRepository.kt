@@ -1,6 +1,6 @@
 package com.kwanzatukule.features.customer.complaints.data
 
-import co.ke.xently.libraries.pagination.domain.models.PagedResponse
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import com.kwanzatukule.features.customer.complaints.domain.CustomerComplaint
 import com.kwanzatukule.features.customer.complaints.domain.error.DataError
 import com.kwanzatukule.features.customer.complaints.domain.error.Result
