@@ -1,4 +1,4 @@
-package com.kwanzatukule.features.customer.presentation.entry.components
+package co.ke.xently.libraries.location.tracker.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.location.tracker.domain.Location
 import com.google.android.gms.maps.model.CameraPosition
@@ -26,14 +25,14 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
-import com.kwanzatukule.features.customer.R
 
 @Composable
-internal inline fun CustomerLocationPickerMap(
+inline fun LocationPickerMap(
     modifier: Modifier,
     location: Location?,
     positionMarkerAtTheCentre: Boolean,
     enableMyLocation: Boolean,
+    contentDescription: String? = null,
     crossinline onMarkerPositionChange: (Location) -> Unit,
 ) {
     val markerState = rememberMarkerState()
@@ -84,7 +83,7 @@ internal inline fun CustomerLocationPickerMap(
             properties = remember { MapProperties(isMyLocationEnabled = enableMyLocation) },
             uiSettings = remember { MapUiSettings(myLocationButtonEnabled = enableMyLocation) },
             cameraPositionState = cameraPositionState,
-            contentDescription = stringResource(R.string.content_desc_customer_entry_map),
+            contentDescription = contentDescription,
             onMapClick = {
                 Location(
                     latitude = it.latitude,

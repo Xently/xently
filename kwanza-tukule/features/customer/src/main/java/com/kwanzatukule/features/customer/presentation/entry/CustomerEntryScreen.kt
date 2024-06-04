@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,11 +45,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.location.tracker.presentation.ForegroundLocationTracker
+import co.ke.xently.libraries.location.tracker.presentation.LocationPickerMap
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
-import com.kwanzatukule.features.customer.presentation.entry.components.CustomerLocationPickerMap
+import com.kwanzatukule.features.customer.R
 import com.kwanzatukule.libraries.data.customer.domain.error.DataError
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
@@ -190,7 +192,7 @@ fun CustomerEntryScreen(component: CustomerEntryComponent, modifier: Modifier) {
                     },
                 ) { Text(text = "Use my current location") }
 
-                CustomerLocationPickerMap(
+                LocationPickerMap(
                     modifier = Modifier
                         .height(400.dp)
                         .padding(horizontal = 16.dp),
@@ -198,6 +200,7 @@ fun CustomerEntryScreen(component: CustomerEntryComponent, modifier: Modifier) {
                     positionMarkerAtTheCentre = true,
                     enableMyLocation = locationPermissionGranted,
                     onMarkerPositionChange = component::setLocation,
+                    contentDescription = stringResource(R.string.content_desc_customer_entry_map),
                 )
                 Row(
                     modifier = Modifier

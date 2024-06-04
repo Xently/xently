@@ -34,4 +34,7 @@
     <string name="text_field_label_store_services">Added value for customer</string>
     <string name="action_add_store">Add Store</string>
     <string name="top_bar_title_edit_store_details">Edit details</string>
+    <string name="appbar_title_pick_store_location">Pick Location</string>
+    <string name="action_confirm_selection">Confirm Selection</string>
+    <string name="action_use_my_current_location">Use my Current Location</string>
 </resources>
