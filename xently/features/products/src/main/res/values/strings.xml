@@ -19,4 +19,7 @@
     <string name="content_desc_upload_image">Upload image</string>
     <string name="headline_upload_product_images">Click to upload image</string>
     <string name="action_remove">Remove</string>
+    <string name="top_bar_title_product_list">Menu/Products</string>
+    <string name="search_products_placeholder">Search product or category</string>
+    <string name="action_add_product">Add Product</string>
 </resources>

@@ -274,7 +274,7 @@ private class ProductEditDetailUiStateParameterProvider :
     private val product = Product(
         name = "Example product name",
         unitPrice = 1234.0,
-        description = "Short description about the business/hotel will go here. Lorem ipsum dolor trui loerm ipsum is a repetitive alternative place holder text for design projects.",
+        description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
     )
     override val values: Sequence<ProductEditDetailScreenUiState>
         get() = sequenceOf(

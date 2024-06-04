@@ -1,9 +1,11 @@
 package co.ke.xently.features.products.data.source
 
 import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.products.data.domain.ProductFilters
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.local.ProductDatabase
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -19,6 +21,13 @@ internal class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun findById(id: Long): Flow<Result<Product, DataError>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getProducts(
+        url: String?,
+        filters: ProductFilters,
+    ): PagedResponse<Product> {
         TODO("Not yet implemented")
     }
 }

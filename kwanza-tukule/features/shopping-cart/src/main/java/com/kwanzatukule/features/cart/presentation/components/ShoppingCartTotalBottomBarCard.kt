@@ -28,9 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.domain.formatPrice
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.domain.formatPrice
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import kotlin.random.Random
 

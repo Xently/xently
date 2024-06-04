@@ -5,11 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.domain.formatNumber
+import co.ke.xently.libraries.ui.core.domain.formatPrice
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.cart.presentation.components.ShoppingCartLineCart
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.domain.formatNumber
-import com.kwanzatukule.features.core.domain.formatPrice
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 
