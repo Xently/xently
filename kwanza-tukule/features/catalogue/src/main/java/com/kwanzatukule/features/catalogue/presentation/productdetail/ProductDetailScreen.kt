@@ -226,7 +226,7 @@ private fun TopAppBar(
                     .height(270.dp),
             ) {
                 HorizontalPager(state = pagerState) { index ->
-                    co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                    co.ke.xently.libraries.ui.image.XentlyImage(
                         contentScale = ContentScale.FillBounds,
                         data = product.images[index],
                         modifier = Modifier

@@ -82,4 +82,9 @@ dependencies {
     implementation(libs.okhttp.logging)
 
     api(libs.bundles.coil)
+    implementation(project(":xently:libraries:data-core"))
+
+    implementation(libs.androidx.work.manager)
+
+    androidTestImplementation(libs.androidx.work.manager.testing)
 }

@@ -28,6 +28,15 @@ import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String = ""): URLBuilder {
+    val baseURlBuilder = URLBuilder(baseURL)
+    return apply {
+        if (baseURlBuilder.host == host && baseURlBuilder.protocol.name != protocol.name) {
+            protocol = baseURlBuilder.protocol
+        }
+    }
+}
+
 
 class HttpClientFactory(
     private val context: Context,
@@ -109,15 +118,6 @@ class HttpClientFactory(
             connectTimeoutMillis = timeout
             requestTimeoutMillis = timeout
             socketTimeoutMillis = timeout
-        }
-    }
-
-    private fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String = ""): URLBuilder {
-        val baseURlBuilder = URLBuilder(baseURL)
-        return apply {
-            if (baseURlBuilder.host == host && baseURlBuilder.protocol.name != protocol.name) {
-                protocol = baseURlBuilder.protocol
-            }
         }
     }
 

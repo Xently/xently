@@ -1,13 +1,30 @@
 package co.ke.xently.features.products.data.domain
 
+import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.libraries.data.core.Link
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Product(
-    val id: Long,
-    val name: String,
+    @SerialName("images")
+    val images: List<ProductImage> = emptyList(),
+    @SerialName("name")
+    val name: String = "",
+    @SerialName("descriptiveName")
+    val descriptiveName: String = "",
+    @SerialName("id")
+    val id: Long = -1,
+    @SerialName("packCount")
+    val packCount: Int = 1,
+    @SerialName("slug")
+    val slug: String = "",
+    @SerialName("categories")
+    val categories: List<ProductCategory> = emptyList(),
+    @SerialName("unitPrice")
+    val unitPrice: Double = 0.0,
+    @SerialName("description")
+    val description: String? = null,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
 )

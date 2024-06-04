@@ -69,7 +69,7 @@ fun ShoppingListItem(
                 modifier = Modifier.size(60.dp),
                 shape = MaterialTheme.shapes.medium,
             ) {
-                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyImage(
                     item.product.image,
                     contentDescription = "Image of ${item.product.name}",
                     modifier = Modifier.fillMaxSize(),

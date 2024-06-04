@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,15 +15,66 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
+import co.ke.xently.libraries.ui.image.domain.Upload
 import coil3.Extras
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import io.ktor.http.URLBuilder
 import timber.log.Timber
 
+
 @Composable
-fun XentlyAsyncImage(
+fun XentlyImage(
+    data: Any?,
+    modifier: Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    contentDescription: String? = null,
+) {
+    AnimatedContent(data, label = "xently-image") {
+        when (it) {
+            null, is Upload.Progress -> Unit
+
+            is Upload.Request -> {
+                XentlyAsyncImage(
+                    data = it.uri,
+                    modifier = modifier,
+                    contentScale = contentScale,
+                    contentDescription = contentDescription,
+                )
+            }
+
+            is Upload.Response -> {
+                val url by remember {
+                    derivedStateOf {
+                        URLBuilder(it.url()).urlWithSchemaMatchingBaseURL()
+                            .buildString()
+                    }
+                }
+                XentlyAsyncImage(
+                    data = url,
+                    modifier = modifier,
+                    contentScale = contentScale,
+                    contentDescription = contentDescription,
+                )
+            }
+
+            else -> {
+                XentlyAsyncImage(
+                    data = it,
+                    modifier = modifier,
+                    contentScale = contentScale,
+                    contentDescription = contentDescription,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun XentlyAsyncImage(
     data: Any?,
     modifier: Modifier,
     contentScale: ContentScale = ContentScale.Crop,

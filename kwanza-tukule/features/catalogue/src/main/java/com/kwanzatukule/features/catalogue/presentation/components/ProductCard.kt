@@ -67,7 +67,7 @@ fun ProductCard(
                     .fillMaxWidth()
                     .height(128.dp),
             ) {
-                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyImage(
                     data = product.image,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),

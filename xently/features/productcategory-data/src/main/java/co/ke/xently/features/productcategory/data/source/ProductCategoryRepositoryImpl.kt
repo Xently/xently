@@ -4,6 +4,7 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.domain.error.DataError
 import co.ke.xently.features.productcategory.data.domain.error.Result
 import co.ke.xently.features.productcategory.data.source.local.ProductCategoryDatabase
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -19,6 +20,10 @@ internal class ProductCategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun findById(id: Long): Flow<Result<ProductCategory, DataError>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getCategories(url: String?): PagedResponse<ProductCategory> {
         TODO("Not yet implemented")
     }
 }

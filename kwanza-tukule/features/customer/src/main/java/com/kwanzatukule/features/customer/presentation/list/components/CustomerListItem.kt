@@ -68,7 +68,7 @@ fun CustomerListItem(
                     modifier = Modifier.size(60.dp),
                     shape = MaterialTheme.shapes.medium,
                 ) {
-                    /*XentlyAsyncImage(
+                    /*XentlyImage(
                         customer.image,
                         contentDescription = "Image of ${customer.name}",
                         modifier = Modifier.fillMaxSize(),

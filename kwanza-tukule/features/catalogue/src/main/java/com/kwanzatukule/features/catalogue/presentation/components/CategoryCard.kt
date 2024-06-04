@@ -30,7 +30,7 @@ fun CategoryCard(modifier: Modifier = Modifier, category: Category, onClick: () 
             modifier = Modifier.size(128.dp),
             shape = MaterialTheme.shapes.medium,
         ) {
-            co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+            co.ke.xently.libraries.ui.image.XentlyImage(
                 category.image,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),

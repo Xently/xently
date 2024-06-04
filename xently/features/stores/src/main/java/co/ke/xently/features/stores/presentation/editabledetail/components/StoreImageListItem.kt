@@ -33,7 +33,7 @@ import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpd
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.image.XentlyAsyncImage
+import co.ke.xently.libraries.ui.image.XentlyImage
 
 
 @Composable
@@ -76,7 +76,7 @@ internal fun StoreImageListItem(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.matchParentSize(),
             ) {
-                XentlyAsyncImage(
+                XentlyImage(
                     data = image.url(),
                     modifier = Modifier.matchParentSize(),
                 )

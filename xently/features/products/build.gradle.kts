@@ -69,6 +69,8 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:productcategory"))
+    implementation(project(":xently:libraries:ui-pagination"))
+    implementation(project(":xently:libraries:pagination-data"))
     api(project(":xently:features:products-data"))
 
     debugImplementation(libs.bundles.ui.debug)

@@ -38,6 +38,7 @@ playServicesLocation = "21.3.0"
 room = "2.6.1"
 secrets = "2.0.1"
 timber = "5.0.1"
+work-manager = "2.9.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -66,6 +67,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 adaptive-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android", version.ref = "adaptive-navigation" }
+androidx-work-manager = { module = "androidx.work:work-runtime-ktx", version.ref = "work-manager" }
+androidx-work-manager-testing = { module = "androidx.work:work-testing", version.ref = "work-manager" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-kt-coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil-kt-coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil-kt-coil" }
