@@ -69,6 +69,9 @@ dependencies {
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:storecategory"))
     implementation(project(":xently:features:storeservice"))
+    implementation(project(":xently:features:openinghours"))
+    implementation(project(":xently:libraries:ui-pagination"))
+    implementation(project(":xently:libraries:pagination-data"))
     api(project(":xently:features:stores-data"))
 
     debugImplementation(libs.bundles.ui.debug)

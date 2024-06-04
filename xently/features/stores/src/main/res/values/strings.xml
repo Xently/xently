@@ -11,4 +11,27 @@
     <string name="error_serialization">Oops, couldn\'t parse data.</string>
     <string name="error_password_too_short">The password is too short</string>
     <string name="action_retry">Retry</string>
+    <string name="action_more_details">More Details</string>
+    <string name="action_upload_image">Upload image</string>
+    <string name="content_desc_edit_store">Edit store</string>
+    <string name="action_select_branch">Select Branch</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="error_select_branch">Select a branch to get started.</string>
+    <string name="error_select_shop">Select a shop to get started.</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="message_empty_store_image_list">No images yet. Click the upload image button to add.</string>
+    <string name="text_field_label_store_name">Branch name</string>
+    <string name="text_field_label_store_location">Location</string>
+    <string name="content_desc_store_pick_location">Pick branch location</string>
+    <string name="text_field_supporting_text_location">Click the icon to pick the branch location on a map</string>
+    <string name="text_field_label_store_email_address">Email address</string>
+    <string name="text_field_label_store_phone_number">Contact details</string>
+    <string name="text_field_label_store_short_description">Short description</string>
+    <string name="action_submit_store_details">Save Details</string>
+    <string name="text_field_placeholder_services">e.g. Swimming, Accommodation e.t.c</string>
+    <string name="text_field_supporting_text_services">Comma-separate multiple</string>
+    <string name="text_field_label_store_services">Added value for customer</string>
+    <string name="action_add_store">Add Store</string>
+    <string name="top_bar_title_edit_store_details">Edit details</string>
 </resources>

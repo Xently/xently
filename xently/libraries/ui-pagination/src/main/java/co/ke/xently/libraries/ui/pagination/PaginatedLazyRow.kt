@@ -41,9 +41,7 @@ fun <T : Any> PaginatedLazyRow(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(text = emptyContentMessage)
-                }
+                ) { Text(text = emptyContentMessage) }
             }
 
             is PaginatedUiState.Error -> {
@@ -51,9 +49,7 @@ fun <T : Any> PaginatedLazyRow(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    errorStateContent(state.error)
-                }
+                ) { errorStateContent(state.error) }
             }
 
             PaginatedUiState.Loading -> {

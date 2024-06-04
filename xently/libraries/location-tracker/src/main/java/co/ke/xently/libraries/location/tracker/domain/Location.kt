@@ -28,9 +28,11 @@ data class Location(
         return if (!name.isNullOrBlank()) {
             name
         } else {
-            "x=$longitude,y=$latitude"
+            coordinatesString()
         }
     }
+
+    fun coordinatesString() = "x=$longitude,y=$latitude"
 
     object Saver : androidx.compose.runtime.saveable.Saver<MutableState<Location?>, String> {
         private val json = Json {

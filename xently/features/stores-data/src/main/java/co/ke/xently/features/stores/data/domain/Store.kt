@@ -28,13 +28,13 @@ data class Store(
     @SerialName("services")
     val services: List<StoreService> = emptyList(),
     @SerialName("images")
-    val images: List<String> = emptyList(),
+    val images: List<StoreImage> = emptyList(),
     @SerialName("description")
     val description: String? = null,
     @SerialName("slug")
     val slug: String = "",
     @SerialName("telephone")
     val telephone: String? = null,
-    val shop: Shop = Shop(id = -1, name = ""),
+    val shop: Shop = Shop(name = ""),
     val openingHours: List<OpeningHour> = emptyList(),
 )

@@ -6,7 +6,7 @@ import kotlinx.coroutines.CancellationException
 import androidx.paging.PagingSource as AndroidPagingSource
 
 
-class PagingSource<T : Any>(
+class XentlyPagingSource<T : Any>(
     private val dataLookupKey: String? = null,
     private val apiCall: suspend (initialKey: String?) -> PagedResponse<T>,
 ) : AndroidPagingSource<String, T>() {

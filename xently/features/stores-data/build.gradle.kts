@@ -57,8 +57,8 @@ dependencies {
 
     implementation(project(":xently:libraries:data-core"))
     implementation(project(":xently:libraries:pagination-data"))
-    implementation(project(":xently:libraries:location-tracker"))
-    implementation(project(":xently:features:shops-data"))
+    api(project(":xently:libraries:location-tracker"))
+    api(project(":xently:features:shops-data"))
     api(project(":xently:features:openinghours-data"))
     api(project(":xently:features:storecategory-data"))
     api(project(":xently:features:storeservice-data"))

@@ -20,16 +20,16 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 
 @Composable
-internal fun <T : Any> PaginatedContentLazyRow(
+fun <T : Any> PaginatedContentLazyRow(
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     state: LazyListState = rememberLazyListState(),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     prePrependLoadingContent: LazyListScope.() -> Unit = {},
+    prependErrorStateContent: @Composable ColumnScope.(Throwable) -> Unit = {},
+    appendErrorStateContent: @Composable ColumnScope.(Throwable) -> Unit = {},
     postPrependLoadingContent: LazyListScope.() -> Unit,
-    prependErrorStateContent: @Composable ColumnScope.(Throwable) -> Unit,
-    appendErrorStateContent: @Composable ColumnScope.(Throwable) -> Unit,
 ) {
     LazyRow(
         state = state,

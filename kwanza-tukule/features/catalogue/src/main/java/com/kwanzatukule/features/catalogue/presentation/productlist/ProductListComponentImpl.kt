@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.libraries.pagination.data.PagingSource
+import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -41,7 +41,7 @@ class ProductListComponentImpl(
             initialLoadSize = 20,
         )
     ) {
-        PagingSource { url ->
+        XentlyPagingSource { url ->
             repository.getProducts(
                 url = url,
                 filters = CatalogueFilters(category = category),

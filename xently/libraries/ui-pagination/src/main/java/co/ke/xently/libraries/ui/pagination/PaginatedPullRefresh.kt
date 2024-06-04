@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 
@@ -39,6 +40,13 @@ internal fun <T : Any> PaginatedPullRefresh(
             refreshLoadState == LoadState.Loading
                     && items.itemCount > 0
         }
+    }
+
+    if (LocalInspectionMode.current) {
+        Box(modifier = modifier) {
+            preIndicatorContent(LoadState.NotLoading(true) to refreshing)
+        }
+        return
     }
 
     val state = rememberPullToRefreshState()
