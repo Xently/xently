@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.editabledetail
+package co.ke.xently.features.stores.presentation.active
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,27 +30,27 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.DataError
-import co.ke.xently.features.stores.presentation.editabledetail.components.NonNullStoreContent
-import co.ke.xently.features.stores.presentation.editabledetail.components.NullStoreContent
+import co.ke.xently.features.stores.presentation.active.components.NonNullStoreContent
+import co.ke.xently.features.stores.presentation.active.components.NullStoreContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 
 @Composable
-fun EditableStoreDetailScreen(
+internal fun ActiveStoreScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
-    onClickEdit: () -> Unit,
-    onClickMoreDetails: () -> Unit,
+    onClickEdit: (Store) -> Unit,
+    onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
 ) {
-    val viewModel = hiltViewModel<EditableStoreDetailViewModel>()
+    val viewModel = hiltViewModel<ActiveStoreViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
 
-    EditableStoreDetailScreen(
+    ActiveStoreScreen(
         state = state,
         event = event,
         modifier = modifier,
@@ -65,17 +65,17 @@ fun EditableStoreDetailScreen(
 }
 
 @Composable
-internal fun EditableStoreDetailScreen(
-    state: EditableStoreDetailUiState,
-    event: EditableStoreDetailEvent?,
+internal fun ActiveStoreScreen(
+    state: ActiveStoreUiState,
+    event: ActiveStoreEvent?,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
-    onClickEdit: () -> Unit,
-    onClickMoreDetails: () -> Unit,
+    onClickEdit: (Store) -> Unit,
+    onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
-    onAction: (EditableStoreDetailAction) -> Unit,
+    onAction: (ActiveStoreAction) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -84,7 +84,7 @@ internal fun EditableStoreDetailScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
-            is EditableStoreDetailEvent.Error -> {
+            is ActiveStoreEvent.Error -> {
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
@@ -106,7 +106,7 @@ internal fun EditableStoreDetailScreen(
                 }
             }
 
-            EditableStoreDetailEvent.Success -> onClickBack()
+            ActiveStoreEvent.Success -> onClickBack()
         }
     }
 
@@ -156,8 +156,8 @@ internal fun EditableStoreDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
-                    onClickEdit = onClickEdit,
-                    onClickMoreDetails = onClickMoreDetails,
+                    onClickEdit = { onClickEdit(state.store) },
+                    onClickMoreDetails = { onClickMoreDetails(state.store) },
                     onClickUploadImage = { /*TODO*/ },
                     onClickUpdateImage = { /*TODO*/ },
                     onClickDeleteImage = { /*TODO*/ },
@@ -167,30 +167,29 @@ internal fun EditableStoreDetailScreen(
     }
 }
 
-private class EditableStoreDetailUiStateParameterProvider :
-    PreviewParameterProvider<EditableStoreDetailUiState> {
+private class ActiveStoreUiStateParameterProvider : PreviewParameterProvider<ActiveStoreUiState> {
     private val store = Store(
         name = "Westlands",
         shop = Shop(name = "Ranalo K'Osewe"),
         description = "Short description about the business/hotel will go here. Lorem ipsum dolor trui loerm ipsum is a repetitive alternative place holder text for design projects.",
     )
-    override val values: Sequence<EditableStoreDetailUiState>
+    override val values: Sequence<ActiveStoreUiState>
         get() = sequenceOf(
-            EditableStoreDetailUiState(store = store, canAddStore = true),
-            EditableStoreDetailUiState(store = store, isImageUploading = true),
-            EditableStoreDetailUiState(),
-            EditableStoreDetailUiState(isLoading = true),
+            ActiveStoreUiState(store = store, canAddStore = true),
+            ActiveStoreUiState(store = store, isImageUploading = true),
+            ActiveStoreUiState(),
+            ActiveStoreUiState(isLoading = true),
         )
 }
 
 @XentlyPreview
 @Composable
-private fun EditableStoreDetailScreenPreview(
-    @PreviewParameter(EditableStoreDetailUiStateParameterProvider::class)
-    state: EditableStoreDetailUiState,
+private fun ActiveStoreScreenPreview(
+    @PreviewParameter(ActiveStoreUiStateParameterProvider::class)
+    state: ActiveStoreUiState,
 ) {
     XentlyTheme {
-        EditableStoreDetailScreen(
+        ActiveStoreScreen(
             state = state,
             event = null,
             modifier = Modifier.fillMaxSize(),

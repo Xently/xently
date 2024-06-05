@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.editabledetail.components
+package co.ke.xently.features.stores.presentation.active.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person

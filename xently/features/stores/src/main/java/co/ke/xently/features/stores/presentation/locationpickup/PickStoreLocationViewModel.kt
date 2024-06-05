@@ -28,7 +28,7 @@ internal class PickStoreLocationViewModel @Inject constructor(
             }
 
             is PickStoreLocationAction.ConfirmSelection -> {
-                savedStateHandle[SELECTED_STORE_LOCATION_KEY] = action
+                savedStateHandle[SELECTED_STORE_LOCATION_KEY] = _uiState.value.location
             }
         }
 

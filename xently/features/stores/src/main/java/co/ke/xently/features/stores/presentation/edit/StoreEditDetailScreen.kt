@@ -60,6 +60,7 @@ import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
+import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
@@ -68,7 +69,11 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
 @Composable
-fun StoreEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
+internal fun StoreEditDetailScreen(
+    modifier: Modifier = Modifier,
+    onClickBack: () -> Unit,
+    onClickPickLocation: (Location) -> Unit,
+) {
     val viewModel = hiltViewModel<StoreEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -82,6 +87,7 @@ fun StoreEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
         categories = categories,
+        onClickPickLocation = onClickPickLocation,
     )
 }
 
@@ -93,6 +99,7 @@ internal fun StoreEditDetailScreen(
     categories: LazyPagingItems<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
+    onClickPickLocation: (Location) -> Unit,
     onAction: (StoreEditDetailAction) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -154,7 +161,7 @@ internal fun StoreEditDetailScreen(
             AddCategorySection(
                 name = state.categoryName,
                 onNameValueChange = { onAction(StoreEditDetailAction.ChangeCategoryName(it)) },
-                onAddClick = { /*TODO*/ },
+                onAddClick = { onAction(StoreEditDetailAction.ClickAddCategory) },
                 shape = RectangleShape,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -210,7 +217,7 @@ internal fun StoreEditDetailScreen(
                 onValueChange = {},
                 placeholder = { Text(text = stringResource(R.string.text_field_label_store_location)) },
                 trailingIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { onClickPickLocation(state.location) }) {
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = stringResource(R.string.content_desc_store_pick_location),
@@ -225,7 +232,7 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .clickable { /*TODO*/ },
+                    .clickable(onClick = { onClickPickLocation(state.location) }),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             )
             OutlinedTextField(
@@ -296,7 +303,7 @@ internal fun StoreEditDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    onTimeChange = { /*TODO*/ },
+                    onTimeChange = { onAction(StoreEditDetailAction.ChangeOpeningHourTime(it)) },
                     onSelectedOpeningHourChange = {
                         onAction(
                             StoreEditDetailAction.ChangeOpeningHour(
@@ -397,6 +404,7 @@ private fun StoreEditDetailScreenPreview(
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},
+            onClickPickLocation = {},
         )
     }
 }

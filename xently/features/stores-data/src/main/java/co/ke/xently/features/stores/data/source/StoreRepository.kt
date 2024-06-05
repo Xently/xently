@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface StoreRepository {
     suspend fun save(store: Store): Result<Unit, DataError>
-    suspend fun findById(id: Long): Flow<Result<Store, DataError>>
+    fun findById(id: Long): Flow<Result<Store, DataError>>
+    fun findActiveStore(): Flow<Store?>
 }

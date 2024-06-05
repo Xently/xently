@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.editabledetail.components
+package co.ke.xently.features.stores.presentation.active.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable

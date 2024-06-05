@@ -64,6 +64,21 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }.cachedIn(viewModelScope)
 
+    init {
+        viewModelScope.launch {
+            repository.findActiveStore().collect { store ->
+                if (store != null) {
+                    _uiState.update {
+                        it.copy(store = store)
+                    }
+                    if (savedStateHandle.get<List<StoreCategory>>(KEY) == null) {
+                        savedStateHandle[KEY] = store.categories
+                    }
+                }
+            }
+        }
+    }
+
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
             is StoreEditDetailAction.SelectCategory -> {
@@ -83,6 +98,14 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(categoryName = action.name)
                 }
+            }
+
+            is StoreEditDetailAction.ClickAddCategory -> {
+                val storeCategories = (savedStateHandle.get<List<StoreCategory>>(KEY)
+                    ?: emptyList())
+
+                savedStateHandle[KEY] =
+                    storeCategories + StoreCategory(name = _uiState.value.categoryName)
             }
 
             is StoreEditDetailAction.AddService -> {
@@ -158,6 +181,10 @@ internal class StoreEditDetailViewModel @Inject constructor(
                         it.copy(isLoading = false)
                     }
                 }
+            }
+
+            is StoreEditDetailAction.ChangeOpeningHourTime -> {
+                //TODO
             }
         }
     }
