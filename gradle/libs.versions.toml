@@ -11,6 +11,7 @@ android-target-sdk = "34"
 android-version-code = "1"
 android-version-name = "1.0"
 androidx-paging = "3.3.0"
+charts = "Beta-0.0.5"
 coil-kt-coil = "3.0.0-alpha06"
 compose-compiler = "1.5.13"
 composeBom = "2024.05.00"
@@ -69,6 +70,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 adaptive-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android", version.ref = "adaptive-navigation" }
 androidx-work-manager = { module = "androidx.work:work-runtime-ktx", version.ref = "work-manager" }
 androidx-work-manager-testing = { module = "androidx.work:work-testing", version.ref = "work-manager" }
+charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-kt-coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil-kt-coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil-kt-coil" }

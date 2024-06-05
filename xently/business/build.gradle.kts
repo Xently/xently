@@ -110,6 +110,7 @@ dependencies {
     implementation(project(":xently:features:customers"))
     implementation(project(":xently:features:merchant"))
     implementation(project(":xently:features:notifications"))
+    implementation(project(":xently:features:notification-topic"))
     implementation(project(":xently:features:products"))
     implementation(project(":xently:features:profile"))
     implementation(project(":xently:features:qrcode"))

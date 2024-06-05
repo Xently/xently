@@ -4,6 +4,8 @@ import co.ke.xently.business.AppDatabase
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
 import co.ke.xently.features.merchant.data.source.local.MerchantDatabase
+import co.ke.xently.features.notification.topic.data.source.local.NotificationTopicDatabase
+import co.ke.xently.features.notifications.data.source.local.NotificationDatabase
 import co.ke.xently.features.productcategory.data.source.local.ProductCategoryDatabase
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
@@ -74,4 +76,14 @@ abstract class SurrogateStorageModule {
     abstract fun bindCustomerDatabase(
         database: AppDatabase,
     ): CustomerDatabase
+
+    @Binds
+    abstract fun bindNotificationDatabase(
+        database: AppDatabase,
+    ): NotificationDatabase
+
+    @Binds
+    abstract fun bindNotificationTopicDatabase(
+        database: AppDatabase,
+    ): NotificationTopicDatabase
 }

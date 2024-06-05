@@ -8,5 +8,5 @@ import co.ke.xently.features.reviews.data.domain.Review
 data class ReviewEntity(
     val review: Review,
     @PrimaryKey
-    val id: Long = review.id,
+    val id: String = review.links["self"]!!.hrefWithoutContentsFrom('{'),
 )

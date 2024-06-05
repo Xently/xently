@@ -66,9 +66,11 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.charts)
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:reviewcategory"))
+    implementation(project(":xently:features:notification-topic"))
     api(project(":xently:features:reviews-data"))
 
     debugImplementation(libs.bundles.ui.debug)

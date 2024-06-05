@@ -12,6 +12,12 @@ import co.ke.xently.features.customers.data.source.local.RoomTypeConverters.Cust
 import co.ke.xently.features.merchant.data.source.local.MerchantDatabase
 import co.ke.xently.features.merchant.data.source.local.MerchantEntity
 import co.ke.xently.features.merchant.data.source.local.RoomTypeConverters.MerchantConverter
+import co.ke.xently.features.notification.topic.data.source.local.NotificationTopicDatabase
+import co.ke.xently.features.notification.topic.data.source.local.NotificationTopicEntity
+import co.ke.xently.features.notification.topic.data.source.local.RoomTypeConverters.NotificationTopicConverter
+import co.ke.xently.features.notifications.data.source.local.NotificationDatabase
+import co.ke.xently.features.notifications.data.source.local.NotificationEntity
+import co.ke.xently.features.notifications.data.source.local.RoomTypeConverters.NotificationConverter
 import co.ke.xently.features.productcategory.data.source.local.ProductCategoryDatabase
 import co.ke.xently.features.productcategory.data.source.local.ProductCategoryEntity
 import co.ke.xently.features.productcategory.data.source.local.RoomTypeConverters.ProductCategoryConverter
@@ -51,6 +57,8 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
         ProductEntity::class,
         ProductCategoryEntity::class,
         CustomerEntity::class,
+        NotificationEntity::class,
+        NotificationTopicEntity::class,
     ],
 )
 @TypeConverters(
@@ -64,6 +72,8 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
     ProductConverter::class,
     ProductCategoryConverter::class,
     CustomerConverter::class,
+    NotificationConverter::class,
+    NotificationTopicConverter::class,
 )
 abstract class AppDatabase : RoomDatabase(),
     AuthenticationDatabase,
@@ -76,7 +86,9 @@ abstract class AppDatabase : RoomDatabase(),
     MerchantDatabase,
     ProductDatabase,
     ProductCategoryDatabase,
-    CustomerDatabase {
+    CustomerDatabase,
+    NotificationDatabase,
+    NotificationTopicDatabase {
     override suspend fun <R> withTransactionFacade(block: suspend () -> R): R {
         return withTransaction(block)
     }
