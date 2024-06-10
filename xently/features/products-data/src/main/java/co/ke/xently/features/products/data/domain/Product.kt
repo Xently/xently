@@ -28,4 +28,8 @@ data class Product(
     val description: String? = null,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
-)
+) {
+    override fun toString(): String {
+        return descriptiveName.ifBlank { name }
+    }
+}

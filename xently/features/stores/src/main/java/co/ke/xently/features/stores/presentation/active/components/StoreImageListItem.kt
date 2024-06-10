@@ -105,7 +105,7 @@ internal fun StoreImageListItem(
                 DropdownMenuWithUpdateAndDelete(
                     expanded = expanded,
                     onExpandChanged = { expanded = it },
-                    onClickUpdate = onClickUpdate,
+                    onClickUpdate = { onClickUpdate(); expanded = false },
                     onClickDelete = {
                         showDeleteDialog = true
                         expanded = false

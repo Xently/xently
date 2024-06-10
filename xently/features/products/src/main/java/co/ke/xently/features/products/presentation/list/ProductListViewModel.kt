@@ -12,7 +12,9 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
+import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
+import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -111,6 +114,32 @@ internal class ProductListViewModel @Inject constructor(
 
             is ProductListAction.Search -> {
                 _filters.update { it.copy(query = action.query) }
+            }
+
+            is ProductListAction.DeleteProduct -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        it.copy(isLoading = true)
+                    }
+                    when (val result = repository.deleteProduct(product = action.product)) {
+                        is Result.Failure -> {
+                            _event.send(
+                                ProductListEvent.Error(
+                                    result.error.asUiText(),
+                                    result.error
+                                )
+                            )
+                        }
+
+                        is Result.Success -> {
+                            _event.send(ProductListEvent.Success(action))
+                        }
+                    }
+                }.invokeOnCompletion {
+                    _uiState.update {
+                        it.copy(isLoading = false)
+                    }
+                }
             }
         }
     }

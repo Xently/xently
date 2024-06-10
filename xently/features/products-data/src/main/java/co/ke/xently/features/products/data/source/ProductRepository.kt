@@ -11,4 +11,5 @@ interface ProductRepository {
     suspend fun save(product: Product): Result<Unit, DataError>
     suspend fun findById(id: Long): Flow<Result<Product, DataError>>
     suspend fun getProducts(url: String?, filters: ProductFilters): PagedResponse<Product>
+    suspend fun deleteProduct(product: Product): Result<Unit, DataError>
 }

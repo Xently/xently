@@ -45,7 +45,6 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.list.components.ProductListItem
-import co.ke.xently.features.products.presentation.list.components.SearchBar
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
@@ -122,7 +121,18 @@ internal fun ProductListScreen(
                 }
             }
 
-            ProductListEvent.Success -> onClickBack()
+            is ProductListEvent.Success -> {
+                when (event.action) {
+                    is ProductListAction.DeleteProduct -> {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.message_product_deleted),
+                            duration = SnackbarDuration.Short,
+                        )
+                    }
+
+                    else -> throw NotImplementedError()
+                }
+            }
         }
     }
 
@@ -140,12 +150,12 @@ internal fun ProductListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                SearchBar(
+                /*SearchBar(
                     query = state.query,
                     onSearch = { onAction(ProductListAction.Search(it)) },
                     onQueryChange = { onAction(ProductListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_products_placeholder),
-                )
+                )*/
 
                 if (categories.itemCount > 0) {
                     PaginatedContentLazyRow(
@@ -193,8 +203,7 @@ internal fun ProductListScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             items = products,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             emptyContentMessage = "No products found",
             prependErrorStateContent = {},
             appendErrorStateContent = {},
@@ -209,7 +218,11 @@ internal fun ProductListScreen(
             ) {
                 val product = products[it]!!
 
-                ProductListItem(product = product)
+                ProductListItem(
+                    product = product,
+                    onClickUpdate = { onClickEditProduct(product) },
+                    onClickConfirmDelete = { onAction(ProductListAction.DeleteProduct(product)) },
+                )
             }
         }
     }

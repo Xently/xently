@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListScope
@@ -32,12 +31,10 @@ fun <T : Any> PaginatedContentLazyRow(
     postPrependLoadingContent: LazyListScope.() -> Unit,
 ) {
     LazyRow(
+        modifier = modifier,
         state = state,
         contentPadding = contentPadding,
         horizontalArrangement = horizontalArrangement,
-        modifier = Modifier
-            .fillMaxSize()
-            .then(modifier),
     ) {
         prePrependLoadingContent()
 

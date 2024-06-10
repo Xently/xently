@@ -54,7 +54,11 @@ internal fun NonNullStoreContent(
     onClickDeleteImage: (ImageResponse) -> Unit,
     onClickUpdateImage: (ImageResponse) -> Unit,
 ) {
-    LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         item(key = "store_summary") {
             StoreDetailContent(
                 store = store,
