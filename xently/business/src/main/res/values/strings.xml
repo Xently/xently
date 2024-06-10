@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Xently Business</string>
+    <string name="app_destination_dashboard">Dashboard</string>
+    <string name="app_destination_products">Products</string>
+    <string name="app_destination_customers">Customers</string>
+    <string name="app_destination_notifications">Notifications</string>
+    <string name="app_destination_reviews">Reviews</string>
 </resources>

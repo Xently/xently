@@ -10,8 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import co.ke.xently.business.landing.LandingScreen
 import co.ke.xently.business.landing.domain.LandingScreen
 import co.ke.xently.features.auth.presentation.authenticationNavigation
-import co.ke.xently.features.stores.domain.ActiveStoreNavGraph
-import co.ke.xently.features.stores.presentation.activeStoreNavigation
+import co.ke.xently.features.stores.domain.EditStoreNavGraph
+import co.ke.xently.features.stores.presentation.editStoreNavigation
 import co.ke.xently.features.ui.core.presentation.App
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,16 +23,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             App {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = ActiveStoreNavGraph) {
+                NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
-                        LandingScreen()
+                        LandingScreen(
+                            onClickBack = navController::navigateUp,
+                            onClickSelectShop = { /*TODO*/ },
+                            onClickSelectBranch = { /*TODO*/ },
+                            onClickAddStore = { navController.navigate(EditStoreNavGraph) },
+                            onClickEditStore = { navController.navigate(EditStoreNavGraph) },
+                            onClickAddProduct = { /*navController.navigate(EditProductNavGraph)*/ },
+                            onClickEditProduct = { /*navController.navigate(EditProductNavGraph)*/ },
+                        )
                     }
-                    authenticationNavigation(navController)
-                    activeStoreNavigation(
-                        navController = navController,
-                        onClickSelectShop = { /*TODO*/ },
-                        onClickSelectBranch = { /*TODO*/ },
-                    )
+                    authenticationNavigation(navController = navController)
+                    editStoreNavigation(navController = navController)
                 }
             }
         }

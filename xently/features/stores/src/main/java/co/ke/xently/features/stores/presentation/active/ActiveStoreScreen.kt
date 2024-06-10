@@ -36,7 +36,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 
 @Composable
-internal fun ActiveStoreScreen(
+fun ActiveStoreScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,

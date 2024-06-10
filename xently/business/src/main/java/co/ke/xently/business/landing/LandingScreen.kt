@@ -1,78 +1,94 @@
 package co.ke.xently.business.landing
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-
-enum class AppDestinations(
-    val label: String,
-    val icon: ImageVector,
-    val contentDescription: String,
-) {
-    HOME("Home", Icons.Default.Home, "Home"),
-    FAVORITES("Favourites", Icons.Default.Favorite, "Favourites"),
-    SHOPPING("Shopping", Icons.Default.ShoppingCart, "Shopping"),
-    PROFILE("Profile", Icons.Default.AccountBox, "Profile"),
-}
+import androidx.compose.ui.res.stringResource
+import androidx.window.core.layout.WindowWidthSizeClass
+import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.products.presentation.list.ProductListScreen
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsScreen
+import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.presentation.active.ActiveStoreScreen
 
 @Composable
-fun LandingScreen(modifier: Modifier = Modifier) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+fun LandingScreen(
+    modifier: Modifier = Modifier,
+    onClickBack: () -> Unit,
+    onClickSelectShop: () -> Unit,
+    onClickSelectBranch: () -> Unit,
+    onClickAddStore: () -> Unit,
+    onClickEditStore: (Store) -> Unit,
+    onClickAddProduct: () -> Unit,
+    onClickEditProduct: (Product) -> Unit,
+) {
+    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DASHBOARD) }
+    val adaptiveInfo = currentWindowAdaptiveInfo()
+    val customNavSuiteType = with(adaptiveInfo) {
+        if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
+            NavigationSuiteType.NavigationDrawer
+        } else {
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+        }
+    }
+
     NavigationSuiteScaffold(
         modifier = modifier,
+        layoutType = customNavSuiteType,
         navigationSuiteItems = {
-            AppDestinations.entries.forEach {
+            AppDestination.entries.forEach { destination ->
                 item(
                     icon = {
                         Icon(
-                            it.icon,
-                            contentDescription = it.contentDescription,
+                            destination.icon,
+                            contentDescription = stringResource(destination.contentDescription),
                         )
                     },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
+                    label = {
+                        Text(
+                            text = stringResource(destination.label),
+                            modifier = Modifier.basicMarquee(),
+                        )
+                    },
+                    selected = destination == currentDestination,
+                    onClick = { currentDestination = destination },
+                    alwaysShowLabel = adaptiveInfo.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
                 )
             }
         },
     ) {
         when (currentDestination) {
-            AppDestinations.HOME -> HomeDestination()
-            AppDestinations.FAVORITES -> FavoritesDestination()
-            AppDestinations.SHOPPING -> ShoppingDestination()
-            AppDestinations.PROFILE -> ProfileDestination()
+            AppDestination.DASHBOARD -> ActiveStoreScreen(
+                onClickBack = onClickBack,
+                onClickSelectShop = onClickSelectShop,
+                onClickSelectBranch = onClickSelectBranch,
+                onClickEdit = onClickEditStore,
+                onClickMoreDetails = onClickEditStore,
+                onClickAddStore = onClickAddStore,
+            )
+
+            AppDestination.PRODUCTS -> ProductListScreen(
+                onClickBack = onClickBack,
+                onClickAddProduct = onClickAddProduct,
+                onClickEditProduct = onClickEditProduct,
+            )
+
+            AppDestination.CUSTOMERS -> Text(text = "Shopping")
+            AppDestination.NOTIFICATIONS -> Text(text = "Profile")
+            AppDestination.REVIEWS -> ReviewsScreen(
+                onClickBack = onClickBack,
+                onClickAddNewReviewCategory = { /*TODO*/ },
+            )
         }
     }
-}
-
-@Composable
-fun ProfileDestination() {
-    Text(text = "Profile")
-}
-
-@Composable
-fun ShoppingDestination() {
-    Text(text = "Shopping")
-}
-
-@Composable
-fun FavoritesDestination() {
-    Text(text = "Favorites")
-}
-
-@Composable
-fun HomeDestination() {
-    Text(text = "Home")
 }

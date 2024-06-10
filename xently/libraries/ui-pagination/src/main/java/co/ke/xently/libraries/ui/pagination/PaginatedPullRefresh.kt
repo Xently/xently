@@ -4,7 +4,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +71,7 @@ internal fun <T : Any> PaginatedPullRefresh(
 
     Box(modifier = modifier.nestedScroll(state.nestedScrollConnection)) {
         preIndicatorContent(refreshLoadState to refreshing)
-        PullToRefreshContainer(
+        PullToRefreshDefaults.Indicator(
             state = state,
             modifier = Modifier
                 .align(alignment)

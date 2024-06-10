@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.flowOf
 fun ProductListScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
+    onClickEditProduct: (Product) -> Unit,
     onClickAddProduct: () -> Unit,
 ) {
     val viewModel = hiltViewModel<ProductListViewModel>()
@@ -70,6 +71,7 @@ fun ProductListScreen(
         categories = categories,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
+        onClickEditProduct = onClickEditProduct,
         onClickAddProduct = onClickAddProduct,
     )
 }
@@ -84,6 +86,7 @@ internal fun ProductListScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickAddProduct: () -> Unit,
+    onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -255,6 +258,7 @@ private fun ProductListScreenPreview(
             onClickBack = {},
             onAction = {},
             onClickAddProduct = {},
+            onClickEditProduct = {},
         )
     }
 }
