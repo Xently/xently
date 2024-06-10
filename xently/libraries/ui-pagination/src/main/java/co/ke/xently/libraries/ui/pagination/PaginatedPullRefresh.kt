@@ -4,7 +4,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 
@@ -42,13 +41,6 @@ internal fun <T : Any> PaginatedPullRefresh(
         }
     }
 
-    if (LocalInspectionMode.current) {
-        Box(modifier = modifier) {
-            preIndicatorContent(LoadState.NotLoading(true) to refreshing)
-        }
-        return
-    }
-
     val state = rememberPullToRefreshState()
 
     if (state.isRefreshing) {
@@ -71,7 +63,7 @@ internal fun <T : Any> PaginatedPullRefresh(
 
     Box(modifier = modifier.nestedScroll(state.nestedScrollConnection)) {
         preIndicatorContent(refreshLoadState to refreshing)
-        PullToRefreshDefaults.Indicator(
+        PullToRefreshContainer(
             state = state,
             modifier = Modifier
                 .align(alignment)

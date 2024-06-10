@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.ui)
-    implementation(libs.navigation.compose)
+    implementation(libs.bundles.ui.navigation)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

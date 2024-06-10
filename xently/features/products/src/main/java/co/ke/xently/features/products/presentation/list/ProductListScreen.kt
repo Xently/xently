@@ -190,7 +190,7 @@ internal fun ProductListScreen(
             items = products,
             contentPadding = PaddingValues(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            emptyContentMessage = "",
+            emptyContentMessage = "No products found",
             prependErrorStateContent = {},
             appendErrorStateContent = {},
             errorStateContent = {},

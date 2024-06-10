@@ -67,7 +67,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-adaptive-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android", version.ref = "adaptive-navigation" }
+adaptive-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "adaptive-navigation" }
 androidx-work-manager = { module = "androidx.work:work-runtime-ktx", version.ref = "work-manager" }
 androidx-work-manager-testing = { module = "androidx.work:work-testing", version.ref = "work-manager" }
 charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
@@ -117,5 +117,6 @@ decompose = ["decompose", "decompose-extensions-compose"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-logging", "ktor-client-okhttp", "ktor-client-okhttp-jvm", "ktor-client-serialization"]
 map = ["maps-compose", "maps-compose-widgets"]
 room = ["androidx-room-ktx", "androidx-room-runtime", "androidx-room-paging"]
-ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended", "adaptive-navigation", "hilt-navigation-compose"]
+ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended"]
 ui-debug = ["androidx-ui-tooling", "androidx-ui-test-manifest"]
+ui-navigation = ["navigation-compose", "hilt-navigation-compose"]
