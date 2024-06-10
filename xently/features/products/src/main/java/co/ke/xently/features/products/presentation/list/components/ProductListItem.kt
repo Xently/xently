@@ -134,7 +134,7 @@ internal fun ProductListItem(
                         .minimumInteractiveComponentSize()
                         .clickable(
                             role = Role.Checkbox,
-                            indication = null,
+                            indication = ripple(),
                             interactionSource = remember { MutableInteractionSource() },
                         ) { expand = !expand },
                 )

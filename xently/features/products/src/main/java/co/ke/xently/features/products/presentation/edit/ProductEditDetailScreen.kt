@@ -58,7 +58,7 @@ import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
+internal fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
     val viewModel = hiltViewModel<ProductEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
