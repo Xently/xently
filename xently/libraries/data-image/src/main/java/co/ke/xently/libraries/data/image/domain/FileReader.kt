@@ -1,4 +1,4 @@
-package co.ke.xently.libraries.ui.image.domain
+package co.ke.xently.libraries.data.image.domain
 
 import android.content.ContentResolver
 import kotlinx.coroutines.Dispatchers

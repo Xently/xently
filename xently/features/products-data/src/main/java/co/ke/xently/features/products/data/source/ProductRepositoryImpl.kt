@@ -3,11 +3,11 @@ package co.ke.xently.features.products.data.source
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
-import co.ke.xently.features.products.data.domain.ProductImage
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -41,7 +41,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/cache/3b/ac/3bac8cc2023794721ab87177abfb049d.webp",
@@ -55,7 +55,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/images/HVAC_Clearance_Sale_Apri.width-600.format-webp-lossless.webp",
@@ -69,7 +69,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/images/Generic_KV.width-600.format-webp-lossless.webp",
@@ -83,7 +83,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/images/BUILT_IN_SALE.width-600.format-webp-lossless.webp",
@@ -97,7 +97,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/images/tvs_n_audio.width-600.format-webp-lossless.webp",
@@ -111,7 +111,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 unitPrice = Random.nextInt(200, 5_000).toDouble(),
                 description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
                 images = List(1) {
-                    ProductImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://hotpoint.co.ke/media/images/fridges_n_freezers.width-600.format-webp-lossless.webp",

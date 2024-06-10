@@ -4,13 +4,13 @@ import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.StoreImage
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
+import co.ke.xently.libraries.data.image.domain.ImageResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -55,7 +55,7 @@ internal class StoreRepositoryImpl @Inject constructor(
                     StoreCategory(name = "Category ${it + 1}")
                 },
                 images = List(5) {
-                    StoreImage(
+                    ImageResponse(
                         links = mapOf(
                             "media" to Link(
                                 href = "https://picsum.photos/id/237/${100 * (it + 1)}/${100 * (it + 1)}",

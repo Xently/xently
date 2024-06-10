@@ -15,7 +15,11 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import co.ke.xently.libraries.ui.image.domain.exceptions.InvalidFileException
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
 import coil3.toAndroidUri
 import coil3.toCoilUri
 import java.util.UUID
@@ -85,25 +89,25 @@ class ImageCompressionWorker(
         )
 
         return when (upload) {
-            is Upload.Error.InvalidFileError -> Result.failure(
+            is Image.Error.InvalidFileError -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.InvalidFile.name,
                 )
             )
 
-            is Upload.Progress -> Result.failure(
+            is LoadingProgress -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.UnknownResponse.name,
                 )
             )
 
-            is Upload.Response -> Result.failure(
+            is ImageResponse -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.UnknownResponse.name,
                 )
             )
 
-            is Upload.Error.FileTooLargeError -> Result.failure(
+            is Image.Error.FileTooLargeError -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.FileTooLarge.name,
                     EXTRA_OUTPUT_FAILURE_FILE_SIZE to upload.fileSize,
@@ -111,7 +115,7 @@ class ImageCompressionWorker(
                 )
             )
 
-            is Upload.Request -> {
+            is UploadRequest -> {
                 Result.success(
                     workDataOf(
                         EXTRA_OUTPUT_COMPRESSED_IMAGE_URI to upload.uri.toAndroidUri()
@@ -149,15 +153,15 @@ class ImageCompressionWorker(
             "EXTRA_OUTPUT_FAILURE_EXPECTED_FILE_SIZE"
 
         @Composable
-        fun uploadState(uri: Uri): State<Upload> {
+        fun uploadState(uri: Uri): State<Image> {
             val context = LocalContext.current.applicationContext
 
             val imageId = remember(uri, context) {
                 UUID.randomUUID().toString()
             }
 
-            return produceState<Upload>(
-                Upload.Request(uri.toCoilUri(), id = imageId),
+            return produceState<Image>(
+                UploadRequest(uri.toCoilUri(), id = imageId),
                 imageId,
                 uri,
                 context,
@@ -172,7 +176,7 @@ class ImageCompressionWorker(
                     .setInputData(inputData)
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .build()
-                value = Upload.Progress(id = imageId)
+                value = LoadingProgress(id = imageId)
 
                 val workManager = WorkManager.getInstance(context)
                 workManager.enqueue(workRequest)
@@ -186,7 +190,7 @@ class ImageCompressionWorker(
                             val mimeType = it.outputData.getString(EXTRA_OUTPUT_IMAGE_MIME_TYPE)
                             val fileSize = it.outputData.getLong(EXTRA_OUTPUT_IMAGE_SIZE, 0)
                             val outputUri = Uri.parse(outputUriString)
-                            value = Upload.Request(
+                            value = UploadRequest(
                                 id = imageId,
                                 mimeType = mimeType ?: "image/jpeg",
                                 fileName = fileName,
@@ -203,11 +207,11 @@ class ImageCompressionWorker(
                                 FailureType.UnknownResponse -> Unit
 
                                 FailureType.InvalidFile -> {
-                                    value = Upload.Error.InvalidFileError(id = imageId)
+                                    value = Image.Error.InvalidFileError(id = imageId)
                                 }
 
                                 FailureType.FileTooLarge -> {
-                                    value = Upload.Error.FileTooLargeError(
+                                    value = Image.Error.FileTooLargeError(
                                         id = imageId,
                                         fileSize = it.outputData.getLong(
                                             EXTRA_OUTPUT_FAILURE_FILE_SIZE,

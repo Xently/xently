@@ -27,18 +27,18 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.stores.R
-import co.ke.xently.features.stores.data.domain.StoreImage
 import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.image.XentlyImage
 
 
 @Composable
 internal fun StoreImageListItem(
-    image: StoreImage,
+    image: ImageResponse,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onClickUpdate: () -> Unit,
@@ -130,7 +130,7 @@ private fun StoreImageListItemPreview(
     XentlyTheme {
         val image = remember {
             val link = Link(href = "https://picsum.photos/id/1/300/300")
-            StoreImage(links = mapOf("media" to link))
+            ImageResponse(links = mapOf("media" to link))
         }
         StoreImageListItem(
             image = image,

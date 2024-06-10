@@ -16,14 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.image.domain.Image
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.image.domain.Upload
 
 typealias Index = Int
 
 @Composable
 internal fun EditProductImagesCard(
-    images: List<Upload?>,
+    images: List<Image?>,
     modifier: Modifier = Modifier,
     shape: Shape = CardDefaults.shape,
     onClickImage: (Index) -> Unit,

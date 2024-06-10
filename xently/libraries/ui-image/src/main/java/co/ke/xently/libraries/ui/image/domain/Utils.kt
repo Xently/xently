@@ -5,6 +5,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import co.ke.xently.libraries.data.image.domain.FileReader
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.UploadRequest
 import coil3.toCoilUri
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
@@ -22,7 +25,7 @@ suspend fun Uri.toCompressedUpload(
     ensureCompressedNotLargerThanInBytes: Long = Long.MAX_VALUE,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
     ioDispatcher: CoroutineContext = Dispatchers.IO,
-): Upload {
+): Image {
     val contentResolver = context.contentResolver
 
     val reader = FileReader(
@@ -30,7 +33,7 @@ suspend fun Uri.toCompressedUpload(
         ioDispatcher = ioDispatcher,
     )
     var bytes = reader.readUri(this)
-        ?: return Upload.Error.InvalidFileError(id = fileName)
+        ?: return Image.Error.InvalidFileError(id = fileName)
 
     val compressor = ImageCompressor(
         compressionThresholdInBytes = compressionThresholdInBytes,
@@ -40,7 +43,7 @@ suspend fun Uri.toCompressedUpload(
     bytes = compressor.getCompressedByteArray(bytes)
 
     if (bytes.size > ensureCompressedNotLargerThanInBytes) {
-        return Upload.Error.FileTooLargeError(
+        return Image.Error.FileTooLargeError(
             fileSize = bytes.size.toLong(),
             expectedFileSize = ensureCompressedNotLargerThanInBytes,
             id = fileName,
@@ -54,7 +57,7 @@ suspend fun Uri.toCompressedUpload(
     )
     val uri = writer.writeBytes(bytes)
 
-    return Upload.Request(
+    return UploadRequest(
         mimeType = contentResolver.getType(this),
         fileName = fileName,
         fileSize = bytes.size.toLong(),

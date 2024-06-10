@@ -24,14 +24,17 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.products.R
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.XentlyImage
-import co.ke.xently.libraries.ui.image.domain.Upload
 import coil3.toUri
 
 @Composable
 internal fun EditProductImageCard(
-    image: Upload?,
+    image: Image?,
     modifier: Modifier = Modifier,
     onClickImage: () -> Unit,
     onClickRemoveImage: () -> Unit,
@@ -55,7 +58,7 @@ internal fun EditProductImageCard(
                         data = image,
                         modifier = Modifier.matchParentSize(),
                     )
-                    if (image is Upload.Progress) {
+                    if (image is LoadingProgress) {
                         CircularProgressIndicator()
                     }
                 }
@@ -67,23 +70,23 @@ internal fun EditProductImageCard(
             enabled = remember(image) {
                 derivedStateOf {
                     image != null
-                            && image !is Upload.Progress
+                            && image !is LoadingProgress
                 }
             }.value,
         ) { Text(stringResource(R.string.action_remove)) }
     }
 }
 
-private class ImageParameterProvider : PreviewParameterProvider<Upload?> {
-    override val values: Sequence<Upload?>
+private class ImageParameterProvider : PreviewParameterProvider<Image?> {
+    override val values: Sequence<Image?>
         get() = sequenceOf(
-            Upload.Error.FileTooLargeError(2_000, 4_000),
+            Image.Error.FileTooLargeError(2_000, 4_000),
             null,
-            Upload.Response(
+            ImageResponse(
                 links = mapOf("media" to Link(href = "https://example.com/image.jpg")),
             ),
-            Upload.Progress(45, 100),
-            Upload.Request(
+            LoadingProgress(45, 100),
+            UploadRequest(
                 uri = "".toUri(),
                 fileSize = 100,
                 mimeType = "image/jpeg",
@@ -96,7 +99,7 @@ private class ImageParameterProvider : PreviewParameterProvider<Upload?> {
 @Composable
 private fun ProductImageCardPreview(
     @PreviewParameter(ImageParameterProvider::class)
-    image: Upload?,
+    image: Image?,
 ) {
     XentlyTheme {
         EditProductImageCard(

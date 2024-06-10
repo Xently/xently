@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:libraries:data-core"))
+    implementation(project(":xently:libraries:data-image"))
     implementation(project(":xently:libraries:pagination-data"))
     api(project(":xently:libraries:location-tracker"))
     api(project(":xently:features:shops-data"))

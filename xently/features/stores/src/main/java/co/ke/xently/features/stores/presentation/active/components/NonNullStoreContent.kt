@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.StoreImage
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
 
 @Composable
@@ -51,8 +51,8 @@ internal fun NonNullStoreContent(
     onClickEdit: () -> Unit,
     onClickMoreDetails: () -> Unit,
     onClickUploadImage: () -> Unit,
-    onClickDeleteImage: (StoreImage) -> Unit,
-    onClickUpdateImage: (StoreImage) -> Unit,
+    onClickDeleteImage: (ImageResponse) -> Unit,
+    onClickUpdateImage: (ImageResponse) -> Unit,
 ) {
     LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item(key = "store_summary") {
@@ -152,7 +152,7 @@ private class NonNullStoreContentUiStateParameterProvider :
         shop = Shop(name = "Ranalo K'Osewe"),
         description = "Short description about the business/hotel will go here. Lorem ipsum dolor trui loerm ipsum is a repetitive alternative place holder text for design projects.",
         images = List(10) {
-            StoreImage(links = mapOf("media" to Link(href = "https://picsum.photos/id/${it + 1}/200/300")))
+            ImageResponse(links = mapOf("media" to Link(href = "https://picsum.photos/id/${it + 1}/200/300")))
         },
     )
     override val values: Sequence<NonNullStoreContentUiState>

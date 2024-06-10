@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class FileWriter(
+internal class FileWriter(
     private val directory: File,
     private val fileName: String,
     private val ioDispatcher: CoroutineContext = Dispatchers.IO,

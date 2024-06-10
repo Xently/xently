@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
-import co.ke.xently.libraries.ui.image.domain.Upload
 import coil3.Extras
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -35,9 +37,9 @@ fun XentlyImage(
 ) {
     AnimatedContent(data, label = "xently-image") {
         when (it) {
-            null, is Upload.Progress -> Unit
+            null, is LoadingProgress -> Unit
 
-            is Upload.Request -> {
+            is UploadRequest -> {
                 XentlyAsyncImage(
                     data = it.uri,
                     modifier = modifier,
@@ -46,7 +48,7 @@ fun XentlyImage(
                 )
             }
 
-            is Upload.Response -> {
+            is ImageResponse -> {
                 val url by remember {
                     derivedStateOf {
                         URLBuilder(it.url()).urlWithSchemaMatchingBaseURL()

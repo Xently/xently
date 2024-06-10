@@ -5,6 +5,7 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.location.tracker.domain.Location
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -28,7 +29,7 @@ data class Store(
     @SerialName("services")
     val services: List<StoreService> = emptyList(),
     @SerialName("images")
-    val images: List<StoreImage> = emptyList(),
+    val images: List<ImageResponse> = emptyList(),
     @SerialName("description")
     val description: String? = null,
     @SerialName("slug")
