@@ -45,6 +45,9 @@
     <string name="message_no_review_categories">No categories. Click the + button above to begin surveying.</string>
     <string name="top_bar_title_review_comments">Comments</string>
     <string name="anonymous">Anonymous</string>
+    <string name="search_reviews_placeholder">Search comments...</string>
+    <string name="action_label_numbered_star">%1$s-star</string>
+    <string name="content_desc_unselect_numbered_star">Unselect %1$s-star</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>

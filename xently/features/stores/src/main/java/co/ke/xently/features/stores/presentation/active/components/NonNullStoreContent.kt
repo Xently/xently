@@ -2,6 +2,7 @@ package co.ke.xently.features.stores.presentation.active.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,12 +25,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -74,7 +79,7 @@ internal fun NonNullStoreContent(
                 EmptyStoreImageListContent(modifier = Modifier.fillMaxWidth())
             }
         } else {
-            items(store.images, key = { image -> image.url() }) { image ->
+            items(store.images, key = { image -> image.key() }) { image ->
                 StoreImageListItem(
                     image = image,
                     isLoading = false,
@@ -100,14 +105,18 @@ private fun StoreDetailContent(
         StoreSummaryListItem(store = store, onClickEdit = onClickEdit)
 
         if (!store.description.isNullOrBlank()) {
-            val isExpanded by rememberSaveable { mutableStateOf(false) }
+            var expand by rememberSaveable { mutableStateOf(false) }
             Text(
                 text = store.description!!,
-                maxLines = if (isExpanded) Int.MAX_VALUE else 4,
+                maxLines = if (expand) Int.MAX_VALUE else 4,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .clickable { isExpanded != isExpanded },
+                    .clickable(
+                        role = Role.Checkbox,
+                        indication = ripple(radius = 1_000.dp),
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { expand = !expand },
             )
         }
         TextButton(
@@ -154,7 +163,10 @@ private class NonNullStoreContentUiStateParameterProvider :
     private val store = Store(
         name = "Westlands",
         shop = Shop(name = "Ranalo K'Osewe"),
-        description = "Short description about the business/hotel will go here. Lorem ipsum dolor trui loerm ipsum is a repetitive alternative place holder text for design projects.",
+        description = """Short description about the business/hotel will go here.
+                |Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                |
+                |Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.""".trimMargin(),
         images = List(10) {
             ImageResponse(links = mapOf("media" to Link(href = "https://picsum.photos/id/${it + 1}/200/300")))
         },

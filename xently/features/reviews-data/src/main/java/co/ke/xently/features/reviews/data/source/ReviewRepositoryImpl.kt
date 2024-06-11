@@ -11,7 +11,6 @@ import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

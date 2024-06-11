@@ -39,7 +39,8 @@ internal class SignInViewModel @Inject constructor(
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
                     }
-                    when (val result = repository.signIn(email = state.email, password = state.password)) {
+                    when (val result =
+                        repository.signIn(email = state.email, password = state.password)) {
                         is Result.Failure -> {
                             _event.send(SignInEvent.Error(result.error.asUiText(), result.error))
                         }

@@ -1,7 +1,6 @@
 package co.ke.xently.features.stores.presentation.edit
 
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
-import co.ke.xently.features.openinghours.domain.ChangeOpeningHourTime
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 
 internal sealed interface StoreEditDetailAction {

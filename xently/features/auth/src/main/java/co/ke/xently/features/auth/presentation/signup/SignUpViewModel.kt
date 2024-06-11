@@ -37,7 +37,11 @@ internal class SignUpViewModel @Inject constructor(
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
                     }
-                    when (val result = repository.signUp(name = state.name, email = state.email, password = state.password)) {
+                    when (val result = repository.signUp(
+                        name = state.name,
+                        email = state.email,
+                        password = state.password
+                    )) {
                         is Result.Failure -> {
                             _event.send(SignUpEvent.Error(result.error.asUiText(), result.error))
                         }

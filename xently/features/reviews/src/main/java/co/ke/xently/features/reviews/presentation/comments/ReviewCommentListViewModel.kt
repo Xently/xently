@@ -12,18 +12,19 @@ import co.ke.xently.features.reviews.data.domain.ReviewFilters
 import co.ke.xently.features.reviews.data.source.ReviewRepository
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class ReviewCommentListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -41,26 +42,21 @@ internal class ReviewCommentListViewModel @Inject constructor(
 
     private val _selectedStar = savedStateHandle.getStateFlow<Int?>(KEY, null)
 
-    private val _filters = MutableStateFlow(ReviewFilters())
-
-    val reviews: Flow<PagingData<Review>> =
-        _selectedStar.combineTransform(_filters) { selectedStar, filters ->
-            emitAll(
-                Pager(
-                    PagingConfig(
-                        pageSize = 20,
-                        initialLoadSize = 20,
-                    )
-                ) {
-                    XentlyPagingSource { url ->
-                        repository.getReviews(
-                            url = url,
-                            filters = filters.copy(starRating = selectedStar),
-                        )
-                    }
-                }.flow
+    val reviews: Flow<PagingData<Review>> = _selectedStar.flatMapLatest { selectedStar ->
+        Pager(
+            PagingConfig(
+                pageSize = 20,
+                initialLoadSize = 20,
             )
-        }.cachedIn(viewModelScope)
+        ) {
+            XentlyPagingSource { url ->
+                repository.getReviews(
+                    url = url,
+                    filters = ReviewFilters(starRating = selectedStar),
+                )
+            }
+        }.flow
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: ReviewCommentListAction) {
         when (action) {
@@ -70,10 +66,24 @@ internal class ReviewCommentListViewModel @Inject constructor(
 
             is ReviewCommentListAction.SelectStarRating -> {
                 savedStateHandle[KEY] = action.star.number
+                _uiState.update { state ->
+                    state.copy(
+                        stars = state.stars.map {
+                            it.copy(selected = it.number == action.star.number)
+                        },
+                    )
+                }
             }
 
             is ReviewCommentListAction.RemoveStarRating -> {
                 savedStateHandle[KEY] = null
+                _uiState.update { state ->
+                    state.copy(
+                        stars = state.stars.map {
+                            it.copy(selected = false)
+                        },
+                    )
+                }
             }
 
             is ReviewCommentListAction.Search -> {

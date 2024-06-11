@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -28,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -127,7 +127,7 @@ internal fun ReviewCommentListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                CenterAlignedTopAppBar(
+                TopAppBar(
                     windowInsets = WindowInsets.waterfall,
                     title = { Text(text = stringResource(R.string.top_bar_title_review_comments)) },
                     navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
@@ -145,8 +145,8 @@ internal fun ReviewCommentListScreen(
 
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(
                         state.stars,
@@ -158,13 +158,21 @@ internal fun ReviewCommentListScreen(
                                 onAction(ReviewCommentListAction.SelectStarRating(star))
                             },
                             label = {
-                                Text(text = "${star}-star")
+                                Text(
+                                    text = stringResource(
+                                        R.string.action_label_numbered_star,
+                                        star
+                                    )
+                                )
                             },
                             trailingIcon = if (!star.selected) null else {
                                 {
                                     Icon(
                                         imageVector = Icons.Default.Close,
-                                        contentDescription = "Unselect ${star}-star",
+                                        contentDescription = stringResource(
+                                            R.string.content_desc_unselect_numbered_star,
+                                            star,
+                                        ),
                                         modifier = Modifier
                                             .size(InputChipDefaults.AvatarSize)
                                             .clickable {
@@ -189,7 +197,7 @@ internal fun ReviewCommentListScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             items = reviews,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             emptyContentMessage = "No reviews found",
             prependErrorStateContent = {},
             appendErrorStateContent = {},

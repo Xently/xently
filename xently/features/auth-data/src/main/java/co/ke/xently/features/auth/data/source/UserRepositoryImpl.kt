@@ -50,7 +50,11 @@ internal class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(name: String, email: String, password: String): Result<Unit, DataError> {
+    override suspend fun signUp(
+        name: String,
+        email: String,
+        password: String,
+    ): Result<Unit, DataError> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
