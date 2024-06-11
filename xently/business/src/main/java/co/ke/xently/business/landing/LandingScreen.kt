@@ -50,6 +50,8 @@ fun LandingScreen(
         layoutType = customNavSuiteType,
         navigationSuiteItems = {
             AppDestination.entries.forEach { destination ->
+                val showLabel =
+                    adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
                 item(
                     icon = {
                         Icon(
@@ -57,15 +59,16 @@ fun LandingScreen(
                             contentDescription = stringResource(destination.contentDescription),
                         )
                     },
-                    label = {
-                        Text(
-                            text = stringResource(destination.label),
-                            modifier = Modifier.basicMarquee(),
-                        )
+                    label = if (showLabel) null else {
+                        {
+                            Text(
+                                text = stringResource(destination.label),
+                                modifier = Modifier.basicMarquee(),
+                            )
+                        }
                     },
                     selected = destination == currentDestination,
                     onClick = { currentDestination = destination },
-                    alwaysShowLabel = adaptiveInfo.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT,
                 )
             }
         },
