@@ -9,4 +9,8 @@
     <string name="error_disk_full">Failed to save the item because your device\'s disk is full</string>
     <string name="error_serialization">Oops, couldn\'t parse data.</string>
     <string name="error_password_too_short">The password is too short</string>
+    <string name="action_retry">Retry</string>
+    <string name="top_bar_title_edit_review_category_details">Edit category details</string>
+    <string name="text_field_label_review_category_name">Category name</string>
+    <string name="action_submit_review_category_details">Save Details</string>
 </resources>

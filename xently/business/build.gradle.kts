@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.adaptive.navigation)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:features:reviewcategory"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)

@@ -4,6 +4,7 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.DataError
 import co.ke.xently.features.reviewcategory.data.domain.error.Result
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
+import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEntity
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,19 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
     private val database: ReviewCategoryDatabase,
 ) : ReviewCategoryRepository {
     override suspend fun save(reviewCategory: ReviewCategory): Result<Unit, DataError> {
-        TODO("Not yet implemented")
+        val duration = Random.nextLong(5_000, 10_000).milliseconds
+        return try {
+            delay(duration)
+            database.withTransactionFacade {
+                database.reviewCategoryDao()
+                    .insertAll(ReviewCategoryEntity(reviewCategory = reviewCategory))
+            }
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(DataError.Network.entries.random())
+        }
     }
 
     override suspend fun findAllReviewCategories(): Flow<Result<List<ReviewCategory>, DataError>> {
