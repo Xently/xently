@@ -1,12 +1,9 @@
 package co.ke.xently.features.reviews.presentation.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,18 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,31 +46,36 @@ import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.BarChart
+import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.Month
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun StatisticsSuccessContent(
     modifier: Modifier = Modifier,
     category: ReviewCategory,
     filters: ReviewStatisticsFilters,
     success: StatisticsResponse.Success,
+    isLoading: Boolean = false,
     onClickViewComments: () -> Unit,
     onClickApplyFilters: () -> Unit,
     onClickSelectYear: (Int) -> Unit,
+    onClickRemoveYear: (Int) -> Unit,
     onClickSelectMonth: (Month) -> Unit,
+    onClickRemoveMonth: (Month) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
         UnderlinedHeadline(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             dividerSpace = 0.dp,
             headline = stringResource(R.string.reviews_statistics_title),
             trailingContent = {
                 TextButton(
-                    onClick = {
-                        onClickViewComments()
-                    },
+                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                    enabled = !isLoading,
+                    onClick = { onClickViewComments() },
                     content = {
                         Text(
                             text = stringResource(R.string.button_label_view_comments),
@@ -89,46 +88,53 @@ internal fun StatisticsSuccessContent(
                 )
             },
         )
-        Row(
+        LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.horizontalScroll(
-                rememberScrollState()
-            ),
+            contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
-            StatisticSummaryCard(
-                modifier = Modifier.width(120.dp),
-                stat = success.data.totalReviews.coolFormat(),
-                title = stringResource(R.string.reviews_statistics_total_reviews_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
-            StatisticSummaryCard(
-                modifier = Modifier.width(120.dp),
-                stat = success.data.generalSentiment.text,
-                title = stringResource(R.string.reviews_statistics_general_sentiments_title),
-                statColor = when (success.data.generalSentiment) {
-                    ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
-                    ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
-                },
-            )
-            StatisticSummaryCard(
-                modifier = Modifier.width(120.dp),
-                stat = "${success.data.percentageSatisfaction}%",
-                title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
-            StatisticSummaryCard(
-                modifier = Modifier.width(120.dp),
-                stat = success.data.averageRating.toString(),
-                title = stringResource(R.string.reviews_statistics_average_rating_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
+            item("total-reviews") {
+                StatisticSummaryCard(
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    stat = success.data.totalReviews.coolFormat(),
+                    title = stringResource(R.string.reviews_statistics_total_reviews_title),
+                    statColor = MaterialTheme.colorScheme.primary,
+                )
+            }
+            item("general-sentiment") {
+                StatisticSummaryCard(
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    stat = success.data.generalSentiment.text,
+                    title = stringResource(R.string.reviews_statistics_general_sentiments_title),
+                    statColor = when (success.data.generalSentiment) {
+                        ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
+                        ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
+                    },
+                )
+            }
+            item("percentage-satisfaction") {
+                StatisticSummaryCard(
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    stat = "${success.data.percentageSatisfaction}%",
+                    title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
+                    statColor = MaterialTheme.colorScheme.primary,
+                )
+            }
+            item("average-rating") {
+                StatisticSummaryCard(
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    stat = success.data.averageRating.toString(),
+                    title = stringResource(R.string.reviews_statistics_average_rating_title),
+                    statColor = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
-        var showFilters by rememberSaveable {
-            mutableStateOf(false)
-        }
+        var showFilters by rememberSaveable { mutableStateOf(false) }
+        val selectedYear = filters.year
+        val selectedMonth = filters.month
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Column(
                 modifier = Modifier.weight(1f),
@@ -138,17 +144,18 @@ internal fun StatisticsSuccessContent(
                     text = category.name,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelLarge,
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier),
                 )
                 val text = remember(filters) {
                     buildString {
-                        filters.month?.let { month ->
+                        selectedMonth?.let { month ->
                             month.name.toLowerCase(Locale.current).replaceFirstChar {
                                 it.uppercaseChar()
                             }.also(::append)
                             append(' ')
                         }
-                        if (filters.year != null) {
-                            append(filters.year)
+                        if (selectedYear != null) {
+                            append(selectedYear)
                         }
                     }.trim()
                 }
@@ -156,10 +163,13 @@ internal fun StatisticsSuccessContent(
                     Text(
                         text = text,
                         style = MaterialTheme.typography.labelMedium,
+                        modifier = (if (isLoading) Modifier.shimmer() else Modifier),
                     )
                 }
             }
             TextButton(
+                enabled = !isLoading,
+                modifier = (if (isLoading) Modifier.shimmer() else Modifier),
                 onClick = {
                     showFilters = !showFilters
                 },
@@ -187,78 +197,25 @@ internal fun StatisticsSuccessContent(
         }
 
         if (showFilters) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    text = stringResource(R.string.year_filter_headline),
-                    textDecoration = TextDecoration.Underline,
-                )
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    for (year in success.data.years) {
-                        FilterChip(
-                            selected = year == filters.year,
-                            onClick = {
-                                onClickSelectYear(year)
-                            },
-                            label = {
-                                Text(text = year.toString())
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                        )
-                    }
-                }
-
-                if (filters.year != null) {
-                    Text(
-                        text = stringResource(R.string.month_filter_headline),
-                        textDecoration = TextDecoration.Underline,
-                    )
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        for (month in Month.entries) {
-                            FilterChip(
-                                selected = month == filters.month,
-                                onClick = {
-                                    onClickSelectMonth(month)
-                                },
-                                label = {
-                                    Text(text = month.toString())
-                                },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                ),
-                            )
-                        }
-                    }
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        showFilters = false
-                        onClickApplyFilters()
-                    },
-                    content = {
-                        Text(text = stringResource(R.string.button_label_apply_filters))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(4.dp),
-                )
-            }
+            StatisticsFilters(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                years = success.data.years,
+                selectedYear = selectedYear,
+                selectedMonth = selectedMonth,
+                onClickSelectYear = onClickSelectYear,
+                onClickSelectMonth = onClickSelectMonth,
+                onClickApplyFilters = { showFilters = false; onClickApplyFilters() },
+                onClickRemoveYear = onClickRemoveYear,
+                onClickRemoveMonth = onClickRemoveMonth,
+            )
         }
 
         if (success.data.groupedStatistics.isNotEmpty()) {
             Box(
-                modifier = Modifier
+                modifier = (if (isLoading) Modifier.shimmer() else Modifier)
                     .fillMaxWidth()
                     .height(400.dp)
+                    .padding(horizontal = 16.dp),
             ) {
                 BarChart(
 //                    yAxisRange = 15,

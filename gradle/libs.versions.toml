@@ -14,6 +14,7 @@ charts = "Beta-0.0.5"
 coil-kt-coil = "3.0.0-alpha06"
 compose-compiler = "1.5.13"
 compose-material3 = "1.3.0-beta02"
+compose-shimmer = "1.3.0"
 composeBom = "2024.05.00"
 coreKtx = "1.13.1"
 credentials = "1.3.0-beta01"
@@ -75,6 +76,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-k
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil-kt-coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil-kt-coil" }
 coil3-coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil-kt-coil" }
+compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
 date-time = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "date-time" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
@@ -117,6 +119,6 @@ decompose = ["decompose", "decompose-extensions-compose"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-logging", "ktor-client-okhttp", "ktor-client-okhttp-jvm", "ktor-client-serialization"]
 map = ["maps-compose", "maps-compose-widgets"]
 room = ["androidx-room-ktx", "androidx-room-runtime", "androidx-room-paging"]
-ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended"]
+ui = ["androidx-ui", "androidx-ui-graphics", "androidx-ui-tooling-preview", "androidx-material3", "androidx-material-icons-extended", "compose-shimmer"]
 ui-debug = ["androidx-ui-tooling", "androidx-ui-test-manifest"]
 ui-navigation = ["navigation-compose", "hilt-navigation-compose"]

@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReviewCategoryRepository {
     suspend fun save(reviewCategory: ReviewCategory): Result<Unit, DataError>
-    suspend fun findById(id: Long): Flow<Result<ReviewCategory, DataError>>
+    suspend fun findAllReviewCategories(): Flow<Result<List<ReviewCategory>, DataError>>
 }

@@ -17,7 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowWidthSizeClass
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.presentation.list.ProductListScreen
-import co.ke.xently.features.reviews.presentation.reviews.ReviewsScreen
+import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackScreen
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.active.ActiveStoreScreen
 
@@ -31,6 +32,8 @@ fun LandingScreen(
     onClickEditStore: (Store) -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
+    onClickAddNewReviewCategory: () -> Unit,
+    onClickViewComments: (ReviewCategory) -> Unit,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DASHBOARD) }
     val adaptiveInfo = currentWindowAdaptiveInfo()
@@ -85,9 +88,10 @@ fun LandingScreen(
 
             AppDestination.CUSTOMERS -> Text(text = "Shopping")
             AppDestination.NOTIFICATIONS -> Text(text = "Profile")
-            AppDestination.REVIEWS -> ReviewsScreen(
+            AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
                 onClickBack = onClickBack,
-                onClickAddNewReviewCategory = { /*TODO*/ },
+                onClickViewComments = onClickViewComments,
+                onClickAddNewReviewCategory = onClickAddNewReviewCategory,
             )
         }
     }

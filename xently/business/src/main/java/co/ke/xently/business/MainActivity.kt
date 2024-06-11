@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity() {
                             onClickEditStore = { navController.navigate(EditStoreNavGraph) },
                             onClickAddProduct = { navController.navigate(EditProductNavGraph) },
                             onClickEditProduct = { navController.navigate(EditProductNavGraph) },
+                            onClickViewComments = { /*TODO*/ },
+                            onClickAddNewReviewCategory = { /*TODO*/ },
                         )
                     }
                     authenticationNavigation(navController = navController)

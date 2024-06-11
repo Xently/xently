@@ -34,7 +34,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.NO_INTERNET)
+            return Result.Failure(DataError.Network.entries.random())
         }
     }
 
@@ -232,7 +232,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.NO_INTERNET)
+            return Result.Failure(DataError.Network.entries.random())
         }
     }
 }

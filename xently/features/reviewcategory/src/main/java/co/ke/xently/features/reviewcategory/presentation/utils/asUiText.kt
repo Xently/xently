@@ -1,10 +1,10 @@
-package co.ke.xently.features.reviews.presentation.utils
+package co.ke.xently.features.reviewcategory.presentation.utils
 
-import co.ke.xently.features.reviews.R
-import co.ke.xently.features.reviews.data.domain.error.DataError
-import co.ke.xently.features.reviews.data.domain.error.Result
+import co.ke.xently.features.reviewcategory.R
+import co.ke.xently.features.reviewcategory.data.domain.error.DataError
+import co.ke.xently.features.reviewcategory.data.domain.error.Result
 
-internal fun DataError.asUiText(): UiText {
+fun DataError.asUiText(): UiText {
     return when (this) {
         DataError.Network.REQUEST_TIMEOUT -> UiText.StringResource(
             R.string.the_request_timed_out
