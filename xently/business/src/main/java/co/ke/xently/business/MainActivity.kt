@@ -10,10 +10,12 @@ import androidx.navigation.compose.rememberNavController
 import co.ke.xently.business.landing.LandingScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.landing.domain.LandingScreen
+import co.ke.xently.business.landing.domain.ReviewCommentListScreen
 import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.products.domain.EditProductNavGraph
 import co.ke.xently.features.products.presentation.editProductNavigation
 import co.ke.xently.features.reviewcategory.presentation.edit.ReviewCategoryEditDetailScreen
+import co.ke.xently.features.reviews.presentation.comments.ReviewCommentListScreen
 import co.ke.xently.features.stores.domain.EditStoreNavGraph
 import co.ke.xently.features.stores.presentation.editStoreNavigation
 import co.ke.xently.features.ui.core.presentation.App
@@ -37,7 +39,9 @@ class MainActivity : ComponentActivity() {
                             onClickEditStore = { navController.navigate(EditStoreNavGraph) },
                             onClickAddProduct = { navController.navigate(EditProductNavGraph) },
                             onClickEditProduct = { navController.navigate(EditProductNavGraph) },
-                            onClickViewComments = { /*TODO*/ },
+                            onClickViewComments = {
+                                navController.navigate(ReviewCommentListScreen)
+                            },
                             onClickAddNewReviewCategory = {
                                 navController.navigate(EditStoreReviewCategoryScreen)
                             },
@@ -48,6 +52,11 @@ class MainActivity : ComponentActivity() {
                     editProductNavigation(navController = navController)
                     composable<EditStoreReviewCategoryScreen> {
                         ReviewCategoryEditDetailScreen(
+                            onClickBack = navController::navigateUp,
+                        )
+                    }
+                    composable<ReviewCommentListScreen> {
+                        ReviewCommentListScreen(
                             onClickBack = navController::navigateUp,
                         )
                     }

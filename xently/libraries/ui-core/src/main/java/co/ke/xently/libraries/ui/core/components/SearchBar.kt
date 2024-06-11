@@ -1,5 +1,4 @@
-package co.ke.xently.features.products.presentation.list.components
-
+package co.ke.xently.libraries.ui.core.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-internal fun SearchBar(
+fun SearchBar(
     query: String,
     placeholder: String,
     onQueryChange: (String) -> Unit,

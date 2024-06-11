@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:reviewcategory"))
     implementation(project(":xently:features:notification-topic"))
+    implementation(project(":xently:libraries:ui-pagination"))
     api(project(":xently:features:reviews-data"))
 
     debugImplementation(libs.bundles.ui.debug)

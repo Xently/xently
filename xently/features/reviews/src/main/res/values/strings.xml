@@ -43,4 +43,10 @@
     <string name="section_title_shop_review_summary">Shop Performance Analysis</string>
     <string name="section_title_store_review_summary">Store Performance Analysis</string>
     <string name="message_no_review_categories">No categories. Click the + button above to begin surveying.</string>
+    <string name="top_bar_title_review_comments">Comments</string>
+    <string name="anonymous">Anonymous</string>
+    <plurals name="star_rating">
+        <item quantity="one">%d-star</item>
+        <item quantity="other">%d-stars</item>
+    </plurals>
 </resources>

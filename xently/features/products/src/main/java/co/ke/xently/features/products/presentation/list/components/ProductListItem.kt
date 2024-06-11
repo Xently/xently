@@ -16,7 +16,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -130,13 +129,11 @@ internal fun ProductListItem(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Light,
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                        .clickable(
-                            role = Role.Checkbox,
-                            indication = ripple(),
-                            interactionSource = remember { MutableInteractionSource() },
-                        ) { expand = !expand },
+                    modifier = Modifier.clickable(
+                        role = Role.Checkbox,
+                        indication = ripple(radius = 1_000.dp),
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { expand = !expand },
                 )
             }
         },
