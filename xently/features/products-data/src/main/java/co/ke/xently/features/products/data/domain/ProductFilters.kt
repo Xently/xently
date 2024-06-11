@@ -7,5 +7,5 @@ data class ProductFilters(
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
     val minRating: Double? = null,
-    val categories: List<ProductCategory>? = null,
+    val categories: Set<ProductCategory>? = null,
 )

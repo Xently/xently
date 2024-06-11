@@ -48,7 +48,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
     val event: Flow<ProductEditDetailEvent> = _event.receiveAsFlow()
 
     val categories: Flow<PagingData<ProductCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptyList<ProductCategory>())
+        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
             .flatMapLatest { selectedCategories ->
                 Pager(
                     PagingConfig(
@@ -67,15 +67,15 @@ internal class ProductEditDetailViewModel @Inject constructor(
     fun onAction(action: ProductEditDetailAction) {
         when (action) {
             is ProductEditDetailAction.SelectCategory -> {
-                val productCategories = (savedStateHandle.get<List<ProductCategory>>(KEY)
-                    ?: emptyList())
+                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(KEY)
+                    ?: emptySet())
 
                 savedStateHandle[KEY] = productCategories + action.category
             }
 
             is ProductEditDetailAction.RemoveCategory -> {
-                val productCategories = (savedStateHandle.get<List<ProductCategory>>(KEY)
-                    ?: emptyList())
+                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(KEY)
+                    ?: emptySet())
                 savedStateHandle[KEY] = productCategories - action.category
             }
 

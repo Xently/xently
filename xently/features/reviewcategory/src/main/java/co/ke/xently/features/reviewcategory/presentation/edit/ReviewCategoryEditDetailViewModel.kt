@@ -26,7 +26,7 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
 ) : ViewModel() {
     private companion object {
         private const val KEY =
-            "co.ke.xently.features.reviewcategory.presentation.edit.SELECTED_PRODUCT_CATEGORIES"
+            "co.ke.xently.features.reviewcategory.presentation.edit.SELECTED_REVIEW_CATEGORIES"
     }
 
     private val _uiState = MutableStateFlow(ReviewCategoryEditDetailUiState())
@@ -38,15 +38,15 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
     fun onAction(action: ReviewCategoryEditDetailAction) {
         when (action) {
             is ReviewCategoryEditDetailAction.SelectCategory -> {
-                val reviewCategories = (savedStateHandle.get<List<ReviewCategory>>(KEY)
-                    ?: emptyList())
+                val reviewCategories = (savedStateHandle.get<Set<ReviewCategory>>(KEY)
+                    ?: emptySet())
 
                 savedStateHandle[KEY] = reviewCategories + action.category
             }
 
             is ReviewCategoryEditDetailAction.RemoveCategory -> {
-                val reviewCategories = (savedStateHandle.get<List<ReviewCategory>>(KEY)
-                    ?: emptyList())
+                val reviewCategories = (savedStateHandle.get<Set<ReviewCategory>>(KEY)
+                    ?: emptySet())
                 savedStateHandle[KEY] = reviewCategories - action.category
             }
 

@@ -48,7 +48,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
 
     val categories: Flow<PagingData<StoreCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptyList<StoreCategory>())
+        savedStateHandle.getStateFlow(KEY, emptySet<StoreCategory>())
             .flatMapLatest { selectedCategories ->
                 Pager(
                     PagingConfig(
@@ -71,7 +71,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(store = store)
                     }
-                    if (savedStateHandle.get<List<StoreCategory>>(KEY) == null) {
+                    if (savedStateHandle.get<Set<StoreCategory>>(KEY) == null) {
                         savedStateHandle[KEY] = store.categories
                     }
                 }
@@ -82,15 +82,15 @@ internal class StoreEditDetailViewModel @Inject constructor(
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
             is StoreEditDetailAction.SelectCategory -> {
-                val storeCategories = (savedStateHandle.get<List<StoreCategory>>(KEY)
-                    ?: emptyList())
+                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
+                    ?: emptySet())
 
                 savedStateHandle[KEY] = storeCategories + action.category
             }
 
             is StoreEditDetailAction.RemoveCategory -> {
-                val storeCategories = (savedStateHandle.get<List<StoreCategory>>(KEY)
-                    ?: emptyList())
+                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
+                    ?: emptySet())
                 savedStateHandle[KEY] = storeCategories - action.category
             }
 
@@ -101,8 +101,8 @@ internal class StoreEditDetailViewModel @Inject constructor(
             }
 
             is StoreEditDetailAction.ClickAddCategory -> {
-                val storeCategories = (savedStateHandle.get<List<StoreCategory>>(KEY)
-                    ?: emptyList())
+                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
+                    ?: emptySet())
 
                 savedStateHandle[KEY] =
                     storeCategories + StoreCategory(name = _uiState.value.categoryName)

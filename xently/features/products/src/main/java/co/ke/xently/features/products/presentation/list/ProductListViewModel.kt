@@ -52,7 +52,7 @@ internal class ProductListViewModel @Inject constructor(
     val event: Flow<ProductListEvent> = _event.receiveAsFlow()
 
     private val _selectedCategories =
-        savedStateHandle.getStateFlow(KEY, emptyList<ProductCategory>())
+        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
 
     val categories: Flow<PagingData<ProductCategory>> = _selectedCategories
         .flatMapLatest { selectedCategories ->
@@ -98,17 +98,17 @@ internal class ProductListViewModel @Inject constructor(
             }
 
             is ProductListAction.SelectCategory -> {
-                val productCategories = (savedStateHandle.get<List<ProductCategory>>(
+                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(
                     KEY
-                ) ?: emptyList())
+                ) ?: emptySet())
 
                 savedStateHandle[KEY] = productCategories + action.category
             }
 
             is ProductListAction.RemoveCategory -> {
-                val productCategories = (savedStateHandle.get<List<ProductCategory>>(
+                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(
                     KEY
-                ) ?: emptyList())
+                ) ?: emptySet())
                 savedStateHandle[KEY] = productCategories - action.category
             }
 
