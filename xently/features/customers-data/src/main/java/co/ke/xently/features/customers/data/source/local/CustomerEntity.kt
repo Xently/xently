@@ -8,5 +8,5 @@ import co.ke.xently.features.customers.data.domain.Customer
 data class CustomerEntity(
     val customer: Customer,
     @PrimaryKey
-    val id: Long = customer.id,
+    val id: String = customer.id,
 )

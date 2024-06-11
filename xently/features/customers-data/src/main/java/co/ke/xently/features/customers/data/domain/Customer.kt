@@ -6,8 +6,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Customer(
-    val id: Long,
-    val name: String,
+    @SerialName("userId")
+    val id: String,
+    val name: String? = null,
+    val visitCount: Int = 0,
+    val placesVisitedCount: Int = 0,
+    val totalPoints: Int = 0,
+    val position: Int = 0,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
 )

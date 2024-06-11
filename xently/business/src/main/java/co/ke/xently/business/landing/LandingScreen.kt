@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowWidthSizeClass
+import co.ke.xently.features.customers.presentation.list.CustomerListScreen
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.presentation.list.ProductListScreen
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
@@ -89,7 +90,10 @@ fun LandingScreen(
                 onClickEditProduct = onClickEditProduct,
             )
 
-            AppDestination.CUSTOMERS -> Text(text = "Shopping")
+            AppDestination.CUSTOMERS -> CustomerListScreen(
+                onClickBack = onClickBack,
+            )
+
             AppDestination.NOTIFICATIONS -> Text(text = "Profile")
             AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
                 onClickBack = onClickBack,
