@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
+    api(libs.multiplatform.settings)
+
     implementation(libs.bundles.ktor)
     implementation(libs.timber)
     implementation(libs.date.time)
