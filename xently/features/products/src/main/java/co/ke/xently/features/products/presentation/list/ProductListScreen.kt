@@ -47,7 +47,6 @@ import co.ke.xently.features.products.presentation.components.ProductCategoryFil
 import co.ke.xently.features.products.presentation.list.components.ProductListItem
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
 import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
 import kotlinx.coroutines.flow.flowOf
@@ -55,9 +54,9 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
-    onClickEditProduct: (Product) -> Unit,
     onClickAddProduct: () -> Unit,
+    onClickEditProduct: (Product) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<ProductListViewModel>()
 
@@ -69,13 +68,13 @@ fun ProductListScreen(
     ProductListScreen(
         state = state,
         event = event,
-        modifier = modifier,
         products = products,
         categories = categories,
-        onClickBack = onClickBack,
-        onAction = viewModel::onAction,
-        onClickEditProduct = onClickEditProduct,
+        modifier = modifier,
         onClickAddProduct = onClickAddProduct,
+        onClickEditProduct = onClickEditProduct,
+        onAction = viewModel::onAction,
+        navigationIcon = navigationIcon,
     )
 }
 
@@ -87,10 +86,10 @@ internal fun ProductListScreen(
     products: LazyPagingItems<Product>,
     categories: LazyPagingItems<ProductCategory>,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -142,9 +141,9 @@ internal fun ProductListScreen(
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 CenterAlignedTopAppBar(
+                    navigationIcon = navigationIcon,
                     windowInsets = WindowInsets.waterfall,
                     title = { Text(text = stringResource(R.string.top_bar_title_product_list)) },
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -273,10 +272,9 @@ private fun ProductListScreenPreview(
             products = products,
             categories = categories,
             modifier = Modifier.fillMaxSize(),
-            onClickBack = {},
-            onAction = {},
             onClickAddProduct = {},
             onClickEditProduct = {},
+            onAction = {},
         )
     }
 }

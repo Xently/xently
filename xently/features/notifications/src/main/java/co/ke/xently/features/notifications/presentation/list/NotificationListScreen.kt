@@ -41,7 +41,6 @@ import co.ke.xently.features.notifications.data.domain.error.DataError
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListItem
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.Clock
@@ -49,7 +48,7 @@ import kotlinx.datetime.Clock
 @Composable
 fun NotificationListScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<NotificationListViewModel>()
 
@@ -62,8 +61,8 @@ fun NotificationListScreen(
         event = event,
         notifications = notifications,
         modifier = modifier,
-        onClickBack = onClickBack,
         onAction = viewModel::onAction,
+        navigationIcon = navigationIcon,
     )
 }
 
@@ -74,8 +73,8 @@ internal fun NotificationListScreen(
     event: NotificationListEvent?,
     notifications: LazyPagingItems<Notification>,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onAction: (NotificationListAction) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -116,8 +115,8 @@ internal fun NotificationListScreen(
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 CenterAlignedTopAppBar(
                     windowInsets = WindowInsets.waterfall,
+                    navigationIcon = navigationIcon,
                     title = { Text(text = stringResource(R.string.top_bar_title_notification_list)) },
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -199,7 +198,6 @@ private fun NotificationListScreenPreview(
             event = null,
             notifications = notifications,
             modifier = Modifier.fillMaxSize(),
-            onClickBack = {},
             onAction = {},
         )
     }

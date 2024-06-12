@@ -38,12 +38,12 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 @Composable
 fun ActiveStoreScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
+    topBar: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<ActiveStoreViewModel>()
 
@@ -54,13 +54,12 @@ fun ActiveStoreScreen(
         state = state,
         event = event,
         modifier = modifier,
-        onClickBack = onClickBack,
         onClickSelectShop = onClickSelectShop,
         onClickSelectBranch = onClickSelectBranch,
         onClickEdit = onClickEdit,
         onClickMoreDetails = onClickMoreDetails,
         onClickAddStore = onClickAddStore,
-        onAction = viewModel::onAction
+        topBar = topBar,
     )
 }
 
@@ -69,13 +68,12 @@ internal fun ActiveStoreScreen(
     state: ActiveStoreUiState,
     event: ActiveStoreEvent?,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
-    onAction: (ActiveStoreAction) -> Unit,
+    topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -83,7 +81,7 @@ internal fun ActiveStoreScreen(
 
     LaunchedEffect(event) {
         when (event) {
-            null -> Unit
+            null, ActiveStoreEvent.Success -> Unit
             is ActiveStoreEvent.Error -> {
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
@@ -105,14 +103,13 @@ internal fun ActiveStoreScreen(
                     }
                 }
             }
-
-            ActiveStoreEvent.Success -> onClickBack()
         }
     }
 
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = topBar,
         floatingActionButton = {
             if (state.canAddStore) {
                 ExtendedFloatingActionButton(
@@ -196,13 +193,11 @@ private fun ActiveStoreScreenPreview(
             state = state,
             event = null,
             modifier = Modifier.fillMaxSize(),
-            onAction = {},
-            onClickBack = {},
+            onClickSelectShop = {},
+            onClickSelectBranch = {},
+            onClickEdit = {},
             onClickMoreDetails = {},
             onClickAddStore = {},
-            onClickSelectBranch = {},
-            onClickSelectShop = {},
-            onClickEdit = {},
         )
     }
 }

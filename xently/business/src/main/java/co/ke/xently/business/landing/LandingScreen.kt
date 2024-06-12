@@ -1,7 +1,12 @@
 package co.ke.xently.business.landing
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -15,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowWidthSizeClass
+import co.ke.xently.business.R
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
 import co.ke.xently.features.products.data.domain.Product
@@ -24,6 +30,7 @@ import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackScre
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.active.ActiveStoreScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LandingScreen(
     modifier: Modifier = Modifier,
@@ -75,32 +82,48 @@ fun LandingScreen(
             }
         },
     ) {
+        val navigationIcon: @Composable () -> Unit = {
+            IconButton(
+                onClick = {
+                    /*scope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }*/
+                },
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Notes,
+                    contentDescription = null,
+                )
+            }
+        }
         when (currentDestination) {
             AppDestination.DASHBOARD -> ActiveStoreScreen(
-                onClickBack = onClickBack,
                 onClickSelectShop = onClickSelectShop,
                 onClickSelectBranch = onClickSelectBranch,
                 onClickEdit = onClickEditStore,
                 onClickMoreDetails = onClickEditStore,
                 onClickAddStore = onClickAddStore,
-            )
+            ) {
+                CenterAlignedTopAppBar(
+                    navigationIcon = navigationIcon,
+                    title = { Text(text = stringResource(R.string.app_name)) },
+                )
+            }
 
             AppDestination.PRODUCTS -> ProductListScreen(
-                onClickBack = onClickBack,
-                onClickAddProduct = onClickAddProduct,
                 onClickEditProduct = onClickEditProduct,
+                onClickAddProduct = onClickAddProduct,
+                navigationIcon = navigationIcon,
             )
 
-            AppDestination.CUSTOMERS -> CustomerListScreen(
-                onClickBack = onClickBack,
-            )
+            AppDestination.CUSTOMERS -> CustomerListScreen(navigationIcon = navigationIcon)
 
-            AppDestination.NOTIFICATIONS -> NotificationListScreen(
-                onClickBack = onClickBack,
-            )
+            AppDestination.NOTIFICATIONS -> NotificationListScreen(navigationIcon = navigationIcon)
 
             AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
-                onClickBack = onClickBack,
+                navigationIcon = navigationIcon,
                 onClickViewComments = onClickViewComments,
                 onClickAddNewReviewCategory = onClickAddNewReviewCategory,
             )

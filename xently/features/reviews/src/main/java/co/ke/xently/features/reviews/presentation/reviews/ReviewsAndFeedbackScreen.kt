@@ -39,7 +39,6 @@ import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import com.aay.compose.barChart.model.BarParameters
 import kotlinx.datetime.Month
 import kotlin.random.Random
@@ -48,9 +47,9 @@ import co.ke.xently.features.reviewcategory.data.domain.error.DataError as Revie
 @Composable
 fun ReviewsAndFeedbackScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<ReviewsAndFeedbackViewModel>()
 
@@ -61,10 +60,10 @@ fun ReviewsAndFeedbackScreen(
         state = state,
         event = event,
         modifier = modifier,
-        onClickBack = onClickBack,
+        onClickAddNewReviewCategory = onClickAddNewReviewCategory,
         onAction = viewModel::onAction,
         onClickViewComments = onClickViewComments,
-        onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+        navigationIcon = navigationIcon,
     )
 }
 
@@ -74,10 +73,10 @@ internal fun ReviewsAndFeedbackScreen(
     state: ReviewsAndFeedbackUiState,
     event: ReviewsAndFeedbackEvent?,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onAction: (ReviewsAndFeedbackAction) -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -85,8 +84,7 @@ internal fun ReviewsAndFeedbackScreen(
 
     LaunchedEffect(event) {
         when (event) {
-            null -> Unit
-            ReviewsAndFeedbackEvent.Success -> onClickBack()
+            null, ReviewsAndFeedbackEvent.Success -> Unit
             is ReviewsAndFeedbackEvent.Error.ReviewCategories -> {
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
@@ -138,6 +136,7 @@ internal fun ReviewsAndFeedbackScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
+                navigationIcon = navigationIcon,
                 title = {
                     Text(
                         text = stringResource(id = R.string.topbar_title_reviews),
@@ -145,7 +144,6 @@ internal fun ReviewsAndFeedbackScreen(
                         modifier = Modifier.basicMarquee(),
                     )
                 },
-                navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
             )
         },
     ) { paddingValues ->
@@ -307,7 +305,6 @@ private fun ReviewsScreenPreview(
         ReviewsAndFeedbackScreen(
             state = state,
             event = null,
-            onClickBack = {},
             onClickAddNewReviewCategory = {},
             onAction = {},
             onClickViewComments = {},

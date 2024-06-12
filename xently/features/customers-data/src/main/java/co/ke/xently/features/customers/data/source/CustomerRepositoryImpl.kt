@@ -2,13 +2,11 @@ package co.ke.xently.features.customers.data.source
 
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.CustomerFilters
-import co.ke.xently.features.customers.data.domain.error.DataError
-import co.ke.xently.features.customers.data.domain.error.Result
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -18,14 +16,6 @@ internal class CustomerRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: CustomerDatabase,
 ) : CustomerRepository {
-    override suspend fun save(customer: Customer): Result<Unit, DataError> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun findById(id: Long): Flow<Result<Customer, DataError>> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun getCustomers(
         url: String?,
         filters: CustomerFilters,
@@ -42,6 +32,7 @@ internal class CustomerRepositoryImpl @Inject constructor(
                 ),
             )
         }
+        delay(Random.nextLong(1000, 5000))
         return PagedResponse(embedded = mapOf("views" to customers))
     }
 }

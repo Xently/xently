@@ -43,14 +43,13 @@ import co.ke.xently.features.customers.data.domain.error.DataError
 import co.ke.xently.features.customers.presentation.list.components.CustomerListItem
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<CustomerListViewModel>()
 
@@ -63,8 +62,8 @@ fun CustomerListScreen(
         event = event,
         customers = customers,
         modifier = modifier,
-        onClickBack = onClickBack,
         onAction = viewModel::onAction,
+        navigationIcon = navigationIcon,
     )
 }
 
@@ -75,8 +74,8 @@ internal fun CustomerListScreen(
     event: CustomerListEvent?,
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onAction: (CustomerListAction) -> Unit,
+    navigationIcon: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -117,8 +116,8 @@ internal fun CustomerListScreen(
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 CenterAlignedTopAppBar(
                     windowInsets = WindowInsets.waterfall,
+                    navigationIcon = navigationIcon,
                     title = { Text(text = stringResource(R.string.top_bar_title_customer_list)) },
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -208,7 +207,6 @@ private fun CustomerListScreenPreview(
             event = null,
             customers = customers,
             modifier = Modifier.fillMaxSize(),
-            onClickBack = {},
             onAction = {},
         )
     }
