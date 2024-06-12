@@ -167,16 +167,11 @@ internal class StoreEditDetailViewModel @Inject constructor(
                     }
                     val store = validatedStore(state)
 
-                    if (!_uiState.value.isFormValid) {
-                        _uiState.update {
-                            it.copy(isLoading = false)
+                    if (_uiState.value.isFormValid) {
+                        when (val result = repository.save(store = store)) {
+                            is Result.Success -> _event.send(StoreEditDetailEvent.Success)
+                            is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
                         }
-                        return@launch
-                    }
-
-                    when (val result = repository.save(store = store)) {
-                        is Result.Success -> _event.send(StoreEditDetailEvent.Success)
-                        is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
