@@ -32,18 +32,17 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
-                            onClickBack = navController::navigateUp,
                             onClickSelectShop = { /*TODO*/ },
                             onClickSelectBranch = { /*TODO*/ },
                             onClickAddStore = { navController.navigate(EditStoreNavGraph) },
                             onClickEditStore = { navController.navigate(EditStoreNavGraph) },
                             onClickAddProduct = { navController.navigate(EditProductNavGraph) },
                             onClickEditProduct = { navController.navigate(EditProductNavGraph) },
-                            onClickViewComments = {
-                                navController.navigate(ReviewCommentListScreen)
-                            },
                             onClickAddNewReviewCategory = {
                                 navController.navigate(EditStoreReviewCategoryScreen)
+                            },
+                            onClickViewComments = {
+                                navController.navigate(ReviewCommentListScreen)
                             },
                         )
                     }

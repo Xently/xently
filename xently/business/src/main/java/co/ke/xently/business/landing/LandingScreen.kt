@@ -37,7 +37,6 @@ import co.ke.xently.features.stores.presentation.active.ActiveStoreScreen
 @Composable
 fun LandingScreen(
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
     onClickAddStore: () -> Unit,
