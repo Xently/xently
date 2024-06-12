@@ -5,4 +5,8 @@
     <string name="app_destination_customers">Customers</string>
     <string name="app_destination_notifications">Notifications</string>
     <string name="app_destination_reviews">Reviews</string>
+    <string name="topbar_title_reviews">Reviews &amp; Feedback</string>
+    <string name="topbar_title_notifications">Notifications</string>
+    <string name="topbar_title_customers">Customer Ranking</string>
+    <string name="topbar_title_products">Menu/Products</string>
 </resources>

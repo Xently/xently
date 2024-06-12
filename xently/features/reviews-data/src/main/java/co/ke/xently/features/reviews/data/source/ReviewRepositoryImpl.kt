@@ -116,7 +116,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
     )
 
     override suspend fun getReviews(url: String?, filters: ReviewFilters): PagedResponse<Review> {
-        val body = httpClient.get("https://jsonplaceholder.typicode.com/posts")
+//        val body = httpClient.get("https://jsonplaceholder.typicode.com/posts")
 
         val reviews = List(20) {
             Review(
@@ -128,6 +128,7 @@ Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dolor
                 ),
             )
         }
+        delay(Random.nextLong(1_000, 5_000))
         return PagedResponse(embedded = mapOf("views" to reviews))
     }
 }

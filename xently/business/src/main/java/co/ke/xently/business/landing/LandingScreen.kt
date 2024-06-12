@@ -1,6 +1,8 @@
 package co.ke.xently.business.landing
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.window.core.layout.WindowWidthSizeClass
 import co.ke.xently.business.R
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
@@ -115,18 +118,45 @@ fun LandingScreen(
             AppDestination.PRODUCTS -> ProductListScreen(
                 onClickEditProduct = onClickEditProduct,
                 onClickAddProduct = onClickAddProduct,
-                navigationIcon = navigationIcon,
-            )
+            ) {
+                CenterAlignedTopAppBar(
+                    navigationIcon = navigationIcon,
+                    windowInsets = WindowInsets.waterfall,
+                    title = { Text(text = stringResource(R.string.topbar_title_products)) },
+                )
+            }
 
-            AppDestination.CUSTOMERS -> CustomerListScreen(navigationIcon = navigationIcon)
+            AppDestination.CUSTOMERS -> CustomerListScreen {
+                CenterAlignedTopAppBar(
+                    windowInsets = WindowInsets.waterfall,
+                    navigationIcon = navigationIcon,
+                    title = { Text(text = stringResource(R.string.topbar_title_customers)) },
+                )
+            }
 
-            AppDestination.NOTIFICATIONS -> NotificationListScreen(navigationIcon = navigationIcon)
+            AppDestination.NOTIFICATIONS -> NotificationListScreen {
+                CenterAlignedTopAppBar(
+                    windowInsets = WindowInsets.waterfall,
+                    navigationIcon = navigationIcon,
+                    title = { Text(text = stringResource(R.string.topbar_title_notifications)) },
+                )
+            }
 
             AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
-                navigationIcon = navigationIcon,
                 onClickViewComments = onClickViewComments,
                 onClickAddNewReviewCategory = onClickAddNewReviewCategory,
-            )
+            ) {
+                CenterAlignedTopAppBar(
+                    navigationIcon = navigationIcon,
+                    title = {
+                        Text(
+                            text = stringResource(id = R.string.topbar_title_reviews),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.basicMarquee(),
+                        )
+                    },
+                )
+            }
         }
     }
 }

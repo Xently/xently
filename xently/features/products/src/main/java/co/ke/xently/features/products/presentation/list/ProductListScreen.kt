@@ -4,15 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -56,7 +53,7 @@ fun ProductListScreen(
     modifier: Modifier = Modifier,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
-    navigationIcon: @Composable () -> Unit = {},
+    topBar: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<ProductListViewModel>()
 
@@ -74,7 +71,7 @@ fun ProductListScreen(
         onClickAddProduct = onClickAddProduct,
         onClickEditProduct = onClickEditProduct,
         onAction = viewModel::onAction,
-        navigationIcon = navigationIcon,
+        topBar = topBar,
     )
 }
 
@@ -89,7 +86,7 @@ internal fun ProductListScreen(
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
-    navigationIcon: @Composable () -> Unit = {},
+    topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -140,11 +137,7 @@ internal fun ProductListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                CenterAlignedTopAppBar(
-                    navigationIcon = navigationIcon,
-                    windowInsets = WindowInsets.waterfall,
-                    title = { Text(text = stringResource(R.string.top_bar_title_product_list)) },
-                )
+                topBar()
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }

@@ -10,13 +10,9 @@
     <string name="error_disk_full">Failed to save the item because your device\'s disk is full</string>
     <string name="error_serialization">Oops, couldn\'t parse data.</string>
     <string name="error_password_too_short">The password is too short</string>
-    <string name="message_no_customer_rankings">No customer rankings</string>
 
     <string name="button_label_view_comments">View Comments</string>
-    <string name="message_select_review_category">Please select a category above to view statistics.</string>
 
-    <string name="toolbar_title_review_comments">Customer Comments</string>
-    <string name="message_no_comments">No comments.</string>
     <string name="message_no_graph_data">There weren\'t any items that fit your exact search. Maybe try adjusting the filters slightly?.
     </string>
     <string name="button_label_adjust_filters">Adjust filters</string>
@@ -25,18 +21,12 @@
     <string name="button_label_apply_filters">APPLY FILTERS</string>
     <string name="year_filter_headline">Select Year</string>
     <string name="month_filter_headline">Select Month</string>
-    <string name="reviews">Reviews</string>
-    <string name="topbar_title_reviews">Reviews &amp; Feedback</string>
 
-    <string name="reviews_shop_summary_title">General Review Performance of the shop</string>
-    <string name="reviews_store_summary_title">General Review Performance of the branch</string>
-    <string name="reviews_store_summary_total">Total - %s</string>
     <string name="reviews_statistics_title">Statistics</string>
     <string name="reviews_statistics_total_reviews_title">Total review received</string>
     <string name="reviews_statistics_general_sentiments_title">General Sentiment</string>
     <string name="reviews_statistics_percentage_satisfaction_title">Percentage satisfaction</string>
     <string name="reviews_statistics_average_rating_title">Average rating</string>
-    <string name="star_rating">%d star</string>
     <string name="action_retry">Retry</string>
     <string name="action_add_review_category">Add Category</string>
     <string name="section_title_review_category">Categories</string>
@@ -45,7 +35,6 @@
     <string name="message_no_review_categories">No categories. Click the + button above to begin surveying.</string>
     <string name="top_bar_title_review_comments">Comments</string>
     <string name="anonymous">Anonymous</string>
-    <string name="search_reviews_placeholder">Search comments...</string>
     <string name="action_label_numbered_star">%1$s-star</string>
     <string name="content_desc_unselect_numbered_star">Unselect %1$s-star</string>
     <plurals name="star_rating">

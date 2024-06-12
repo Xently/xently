@@ -4,13 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -27,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -49,7 +45,7 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
+    topBar: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<CustomerListViewModel>()
 
@@ -62,8 +58,7 @@ fun CustomerListScreen(
         event = event,
         customers = customers,
         modifier = modifier,
-        onAction = viewModel::onAction,
-        navigationIcon = navigationIcon,
+        topBar = topBar,
     )
 }
 
@@ -74,8 +69,7 @@ internal fun CustomerListScreen(
     event: CustomerListEvent?,
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
-    onAction: (CustomerListAction) -> Unit,
-    navigationIcon: @Composable () -> Unit = {},
+    topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -114,11 +108,7 @@ internal fun CustomerListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    navigationIcon = navigationIcon,
-                    title = { Text(text = stringResource(R.string.top_bar_title_customer_list)) },
-                )
+                topBar()
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
@@ -207,7 +197,6 @@ private fun CustomerListScreenPreview(
             event = null,
             customers = customers,
             modifier = Modifier.fillMaxSize(),
-            onAction = {},
         )
     }
 }
