@@ -33,6 +33,7 @@ internal class UserRepositoryImpl @Inject constructor(
                         uid = user.id,
                         firstName = user.firstName,
                         lastName = user.lastName,
+                        email = user.email,
                     )
                 }
             }

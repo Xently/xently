@@ -1,4 +1,4 @@
-package co.ke.xently.business.landing
+package co.ke.xently.business.landing.domain
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons

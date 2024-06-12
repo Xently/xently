@@ -7,10 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import co.ke.xently.business.landing.LandingScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.landing.domain.LandingScreen
 import co.ke.xently.business.landing.domain.ReviewCommentListScreen
+import co.ke.xently.business.landing.presentation.LandingScreen
+import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.products.domain.EditProductNavGraph
 import co.ke.xently.features.products.presentation.editProductNavigation
@@ -32,17 +33,48 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
-                            onClickSelectShop = { /*TODO*/ },
-                            onClickSelectBranch = { /*TODO*/ },
-                            onClickAddStore = { navController.navigate(EditStoreNavGraph) },
-                            onClickEditStore = { navController.navigate(EditStoreNavGraph) },
-                            onClickAddProduct = { navController.navigate(EditProductNavGraph) },
-                            onClickEditProduct = { navController.navigate(EditProductNavGraph) },
+                            canAddShop = false,
+                            onClickAddStore = {
+                                navController.navigate(EditStoreNavGraph)
+                            },
+                            onClickEditStore = {
+                                navController.navigate(EditStoreNavGraph)
+                            },
+                            onClickAddProduct = {
+                                navController.navigate(EditProductNavGraph)
+                            },
+                            onClickEditProduct = {
+                                navController.navigate(EditProductNavGraph)
+                            },
                             onClickAddNewReviewCategory = {
                                 navController.navigate(EditStoreReviewCategoryScreen)
                             },
                             onClickViewComments = {
                                 navController.navigate(ReviewCommentListScreen)
+                            },
+                            onClickLogin = {
+                                navController.navigate(AuthenticationNavGraph)
+                            },
+                            onClickLogout = {
+                                /*TODO*/
+                            },
+                            onClickSelectShop = {
+                                /*TODO*/
+                            },
+                            onClickSelectBranch = {
+                                /*TODO*/
+                            },
+                            onClickShop = {
+                                /*TODO*/
+                            },
+                            onClickAddShop = {
+                                /*TODO*/
+                            },
+                            onClickQrCode = {
+                                /*TODO*/
+                            },
+                            onClickSettings = {
+                                /*TODO*/
                             },
                         )
                     }
