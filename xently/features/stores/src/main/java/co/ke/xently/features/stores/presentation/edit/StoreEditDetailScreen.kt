@@ -5,9 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.waterfall
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -24,8 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,7 +57,6 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
@@ -111,29 +114,13 @@ internal fun StoreEditDetailScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
+            StoreEditDetailEvent.Success -> onClickBack()
             is StoreEditDetailEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
-
-            StoreEditDetailEvent.Success -> onClickBack()
         }
     }
 
@@ -141,13 +128,18 @@ internal fun StoreEditDetailScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Column {
+            Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 CenterAlignedTopAppBar(
+                    windowInsets = WindowInsets.waterfall,
                     title = { Text(text = stringResource(R.string.top_bar_title_edit_store_details)) },
                     navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                    )
                 }
             }
         },
@@ -156,6 +148,7 @@ internal fun StoreEditDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),

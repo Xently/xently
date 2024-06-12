@@ -4,9 +4,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.waterfall
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -20,8 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,7 +50,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
-import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
@@ -92,29 +95,13 @@ internal fun ProductEditDetailScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
+            ProductEditDetailEvent.Success -> onClickBack()
             is ProductEditDetailEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
-
-            ProductEditDetailEvent.Success -> onClickBack()
         }
     }
 
@@ -122,13 +109,18 @@ internal fun ProductEditDetailScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Column {
+            Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 CenterAlignedTopAppBar(
+                    windowInsets = WindowInsets.waterfall,
                     title = { Text(text = stringResource(R.string.top_bar_title_edit_product_details)) },
                     navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                    )
                 }
             }
         },
@@ -137,6 +129,7 @@ internal fun ProductEditDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),

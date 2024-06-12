@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -21,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,7 +41,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.reviewcategory.R
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
-import co.ke.xently.features.reviewcategory.data.domain.error.DataError
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -82,29 +81,13 @@ internal fun ReviewCategoryEditDetailScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
+            ReviewCategoryEditDetailEvent.Success -> onClickBack()
             is ReviewCategoryEditDetailEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
-
-            ReviewCategoryEditDetailEvent.Success -> onClickBack()
         }
     }
 
@@ -132,6 +115,7 @@ internal fun ReviewCategoryEditDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),

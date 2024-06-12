@@ -5,8 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
 import com.dokar.chiptextfield.Chip
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.isoDayNumber
 
 @Stable
 data class StoreEditDetailUiState(
@@ -20,7 +23,20 @@ data class StoreEditDetailUiState(
     @Stable
     val services: List<Chip> = store.services.map { Chip(it.name) },
     @Stable
-    val openingHours: List<OpeningHour> = store.openingHours,
+    val openingHours: List<OpeningHour> = buildMap {
+        putAll(store.openingHours.associateBy { it.dayOfWeek })
+        DayOfWeek.entries.forEach { dayOfWeek ->
+            putIfAbsent(
+                dayOfWeek,
+                OpeningHour(
+                    dayOfWeek = dayOfWeek,
+                    openTime = Time(7, 0),
+                    closeTime = Time(17, 0),
+                    open = dayOfWeek.isoDayNumber !in setOf(6, 7),
+                ),
+            )
+        }
+    }.values.toList(),
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
 ) {
