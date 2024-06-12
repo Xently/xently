@@ -32,7 +32,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -289,16 +292,30 @@ internal fun StoreEditDetailScreen(
                 },
             )
 
-            val chipState = rememberChipTextFieldState(
-                chips = state.services
-            )
+            val chipState = rememberChipTextFieldState(chips = state.services)
+
+            var serviceValue by remember { mutableStateOf(TextFieldValue()) }
             OutlinedChipTextField(
                 shape = CardDefaults.shape,
                 state = chipState,
                 enabled = !state.disableFields,
+                value = serviceValue,
+                onValueChange = {
+                    serviceValue = if (!it.text.trimEnd().endsWith(",")) it else {
+                        val service = it.text.replace(",\\s*$".toRegex(), "").trimStart()
+                        if (service.isNotBlank()) {
+                            onAction(StoreEditDetailAction.AddService(service))
+                        }
+                        chipState.addChip(Chip(service))
+                        TextFieldValue()
+                    }
+                },
                 onSubmit = {
-                    onAction(StoreEditDetailAction.AddService(it))
-                    Chip(it)
+                    val service = it.text.trim()
+                    if (service.isNotBlank()) {
+                        onAction(StoreEditDetailAction.AddService(service))
+                    }
+                    Chip(service)
                 },
                 label = {
                     Text(text = stringResource(R.string.text_field_label_store_services))
