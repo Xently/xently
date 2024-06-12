@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -64,6 +63,9 @@ import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
+import com.dokar.chiptextfield.Chip
+import com.dokar.chiptextfield.m3.OutlinedChipTextField
+import com.dokar.chiptextfield.rememberChipTextFieldState
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
@@ -253,29 +255,26 @@ internal fun StoreEditDetailScreen(
                     imeAction = ImeAction.Next,
                 ),
             )
-            OutlinedTextField(
+            val chipState = rememberChipTextFieldState(
+                chips = state.services
+            )
+            OutlinedChipTextField(
                 shape = CardDefaults.shape,
-                value = rememberSaveable(state.services) { state.services.joinToString() },
+                state = chipState,
                 enabled = !state.disableFields,
-                onValueChange = { onAction(StoreEditDetailAction.AddService(it)) },
+                onSubmit = {
+                    onAction(StoreEditDetailAction.AddService(it))
+                    Chip(it)
+                },
                 label = {
                     Text(text = stringResource(R.string.text_field_label_store_services))
-                },
-                supportingText = {
-                    Text(text = stringResource(R.string.text_field_supporting_text_services))
                 },
                 placeholder = {
                     Text(text = stringResource(R.string.text_field_placeholder_services))
                 },
-                singleLine = true,
-                maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next,
-                    capitalization = KeyboardCapitalization.Words,
-                ),
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,

@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.location.tracker.domain.Location
+import com.dokar.chiptextfield.Chip
 
 @Stable
 data class StoreEditDetailUiState(
@@ -18,7 +18,7 @@ data class StoreEditDetailUiState(
     val description: String = store.description ?: "",
     val location: Location = store.location,
     @Stable
-    val services: List<StoreService> = store.services,
+    val services: List<Chip> = store.services.map { Chip(it.name) },
     @Stable
     val openingHours: List<OpeningHour> = store.openingHours,
     val isLoading: Boolean = false,

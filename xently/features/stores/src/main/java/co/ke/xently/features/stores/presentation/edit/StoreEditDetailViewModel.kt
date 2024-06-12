@@ -15,6 +15,7 @@ import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
+import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -111,7 +112,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
             is StoreEditDetailAction.AddService -> {
                 _uiState.update {
-                    it.copy(services = it.services.plus(StoreService(action.service)))
+                    it.copy(services = it.services + Chip(action.service))
                 }
             }
 
@@ -156,8 +157,8 @@ internal class StoreEditDetailViewModel @Inject constructor(
                         name = state.name,
                         email = state.email,
                         telephone = state.phone,
-                        services = state.services,
                         openingHours = state.openingHours,
+                        services = state.services.map { StoreService(it.text) },
                     )
                     when (val result = repository.save(store = store)) {
                         is Result.Failure -> {
@@ -169,13 +170,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                             )
                         }
 
-                        is Result.Success -> {
-                            // Sign-in can be requested from any screen after an access token is
-                            // flagged as expired by the server. Therefore, instead of navigating
-                            // to a dedicated screen, we should simply retain the screen the
-                            // authentication was requested from, hence creating a good UX.
-                            _event.send(StoreEditDetailEvent.Success)
-                        }
+                        is Result.Success -> _event.send(StoreEditDetailEvent.Success)
                     }
                 }.invokeOnCompletion {
                     _uiState.update {

@@ -55,6 +55,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.ui)
     implementation(libs.bundles.ui.navigation)
+    implementation(libs.chip.text.field)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
