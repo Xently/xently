@@ -1,12 +1,8 @@
 package co.ke.xently.business.landing
 
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.waterfall
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Notes
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -21,19 +17,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.window.core.layout.WindowWidthSizeClass
-import co.ke.xently.business.R
-import co.ke.xently.features.customers.presentation.list.CustomerListScreen
-import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
+import co.ke.xently.business.landing.components.LandingScreenContent
 import co.ke.xently.features.products.data.domain.Product
-import co.ke.xently.features.products.presentation.list.ProductListScreen
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
-import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackScreen
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.presentation.active.ActiveStoreScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LandingScreen(
     modifier: Modifier = Modifier,
@@ -63,6 +52,7 @@ fun LandingScreen(
             AppDestination.entries.forEach { destination ->
                 val showLabel =
                     adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+                            && customNavSuiteType == NavigationSuiteType.NavigationBar
                 item(
                     icon = {
                         Icon(
@@ -100,62 +90,17 @@ fun LandingScreen(
                 )
             }
         }
-        when (currentDestination) {
-            AppDestination.DASHBOARD -> ActiveStoreScreen(
-                onClickSelectShop = onClickSelectShop,
-                onClickSelectBranch = onClickSelectBranch,
-                onClickEdit = onClickEditStore,
-                onClickMoreDetails = onClickEditStore,
-                onClickAddStore = onClickAddStore,
-            ) {
-                CenterAlignedTopAppBar(
-                    navigationIcon = navigationIcon,
-                    title = { Text(text = stringResource(R.string.app_name)) },
-                )
-            }
-
-            AppDestination.PRODUCTS -> ProductListScreen(
-                onClickEditProduct = onClickEditProduct,
-                onClickAddProduct = onClickAddProduct,
-            ) {
-                CenterAlignedTopAppBar(
-                    navigationIcon = navigationIcon,
-                    windowInsets = WindowInsets.waterfall,
-                    title = { Text(text = stringResource(R.string.topbar_title_products)) },
-                )
-            }
-
-            AppDestination.CUSTOMERS -> CustomerListScreen {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    navigationIcon = navigationIcon,
-                    title = { Text(text = stringResource(R.string.topbar_title_customers)) },
-                )
-            }
-
-            AppDestination.NOTIFICATIONS -> NotificationListScreen {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    navigationIcon = navigationIcon,
-                    title = { Text(text = stringResource(R.string.topbar_title_notifications)) },
-                )
-            }
-
-            AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
-                onClickViewComments = onClickViewComments,
-                onClickAddNewReviewCategory = onClickAddNewReviewCategory,
-            ) {
-                CenterAlignedTopAppBar(
-                    navigationIcon = navigationIcon,
-                    title = {
-                        Text(
-                            text = stringResource(id = R.string.topbar_title_reviews),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.basicMarquee(),
-                        )
-                    },
-                )
-            }
-        }
+        LandingScreenContent(
+            currentDestination = currentDestination,
+            onClickSelectShop = onClickSelectShop,
+            onClickSelectBranch = onClickSelectBranch,
+            onClickEditStore = onClickEditStore,
+            onClickAddStore = onClickAddStore,
+            navigationIcon = navigationIcon,
+            onClickEditProduct = onClickEditProduct,
+            onClickAddProduct = onClickAddProduct,
+            onClickViewComments = onClickViewComments,
+            onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+        )
     }
 }
