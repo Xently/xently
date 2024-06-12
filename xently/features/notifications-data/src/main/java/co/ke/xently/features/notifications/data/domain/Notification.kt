@@ -1,30 +1,35 @@
 package co.ke.xently.features.notifications.data.domain
 
-import co.ke.xently.libraries.data.core.Link
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class Notification(
-    val fcmTopic: String,
-    val subscribed: Boolean,
-    val topic: Topic,
-    @SerialName("_links")
-    val links: Map<String, Link> = emptyMap(),
+    val id: Long,
+    val timeSent: Instant,
+    @SerialName("data")
+    val message: Message,
 ) {
     @Serializable
-    data class Topic(
-        val channel: Channel,
-        val id: Long,
-        val name: String,
-        val slug: String,
+    data class Message(
+        val title: String = "",
+        val message: String = "",
+        val topic: String = "",
+        val channel: Channel = Channel(),
     ) {
         @Serializable
         data class Channel(
-            val id: Long,
-            val name: String,
-            val slug: String,
-        )
+            val id: String = "",
+            val name: String = "",
+            val group: Group? = null,
+        ) {
+            @Serializable
+            data class Group(
+                val id: String,
+                val name: String,
+            )
+        }
     }
 }

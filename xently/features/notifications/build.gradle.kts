@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
+    implementation(project(":xently:libraries:ui-pagination"))
     api(project(":xently:features:notifications-data"))
 
     debugImplementation(libs.bundles.ui.debug)

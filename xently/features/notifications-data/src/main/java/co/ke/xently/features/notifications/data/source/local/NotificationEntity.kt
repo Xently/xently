@@ -8,5 +8,5 @@ import co.ke.xently.features.notifications.data.domain.Notification
 data class NotificationEntity(
     val notification: Notification,
     @PrimaryKey
-    val id: Long = notification.topic.id,
+    val id: Long = notification.id,
 )

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowWidthSizeClass
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
+import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.presentation.list.ProductListScreen
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
@@ -94,7 +95,10 @@ fun LandingScreen(
                 onClickBack = onClickBack,
             )
 
-            AppDestination.NOTIFICATIONS -> Text(text = "Profile")
+            AppDestination.NOTIFICATIONS -> NotificationListScreen(
+                onClickBack = onClickBack,
+            )
+
             AppDestination.REVIEWS -> ReviewsAndFeedbackScreen(
                 onClickBack = onClickBack,
                 onClickViewComments = onClickViewComments,
