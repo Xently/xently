@@ -37,4 +37,11 @@
     <string name="appbar_title_pick_store_location">Pick Location</string>
     <string name="action_confirm_selection">Confirm Selection</string>
     <string name="action_use_my_current_location">Use My Location</string>
+    <string name="error_location_invalid_format">Invalid format. Should be latitude,longitude</string>
+    <string name="error_location_invalid_latitude">Invalid latitude (y-coordinate)</string>
+    <string name="error_location_invalid_longitude">Invalid latitude (x-coordinate)</string>
+    <string name="error_location_missing">Required field</string>
+    <string name="error_email_invalid_format">Invalid email address format</string>
+    <string name="error_phone_invalid_format">Invalid phone number format</string>
+    <string name="error_name_missing">Required field</string>
 </resources>

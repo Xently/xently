@@ -10,9 +10,10 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
+import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.StoreDataValidator
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import com.dokar.chiptextfield.Chip
@@ -37,6 +38,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: StoreRepository,
     private val storeCategoryRepository: StoreCategoryRepository,
+    private val dataValidator: StoreDataValidator,
 ) : ViewModel() {
     private companion object {
         private const val KEY =
@@ -134,12 +136,10 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }
 
-            is StoreEditDetailAction.ChangeOpeningHour -> {
-
-            }
-
-            is StoreEditDetailAction.ChangeOpeningHourOpenStatus -> {
-
+            is StoreEditDetailAction.ChangeLocation -> {
+                _uiState.update {
+                    it.copy(locationString = action.location)
+                }
             }
 
             is StoreEditDetailAction.ChangePhoneNumber -> {
@@ -148,29 +148,35 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is StoreEditDetailAction.ChangeOpeningHour -> {
+
+            }
+
+            is StoreEditDetailAction.ChangeOpeningHourOpenStatus -> {
+
+            }
+
+            is StoreEditDetailAction.ChangeOpeningHourTime -> {
+                //TODO
+            }
+
             StoreEditDetailAction.ClickSaveDetails -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
                     }
-                    val store = state.store.copy(
-                        name = state.name,
-                        email = state.email,
-                        telephone = state.phone,
-                        openingHours = state.openingHours,
-                        services = state.services.map { StoreService(it.text) },
-                    )
-                    when (val result = repository.save(store = store)) {
-                        is Result.Failure -> {
-                            _event.send(
-                                StoreEditDetailEvent.Error(
-                                    result.error.asUiText(),
-                                    result.error,
-                                )
-                            )
-                        }
+                    val store = validatedStore(state)
 
+                    if (!_uiState.value.isFormValid) {
+                        _uiState.update {
+                            it.copy(isLoading = false)
+                        }
+                        return@launch
+                    }
+
+                    when (val result = repository.save(store = store)) {
                         is Result.Success -> _event.send(StoreEditDetailEvent.Success)
+                        is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
@@ -178,10 +184,49 @@ internal class StoreEditDetailViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
 
-            is StoreEditDetailAction.ChangeOpeningHourTime -> {
-                //TODO
+    private fun validatedStore(state: StoreEditDetailUiState): Store {
+        var store = state.store.copy(
+            name = state.name,
+            description = state.description.takeIf { it.isNotBlank() },
+            openingHours = state.openingHours,
+            services = state.services.map { StoreService(name = it.text) },
+        )
+
+        when (val result = dataValidator.validatedLocation(state.locationString)) {
+            is Result.Failure -> _uiState.update { it.copy(locationError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(locationError = null) }
+                store = store.copy(location = result.data)
             }
         }
+
+        when (val result = dataValidator.validatedEmail(state.email)) {
+            is Result.Failure -> _uiState.update { it.copy(emailError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(emailError = null) }
+                store = store.copy(email = result.data)
+            }
+        }
+
+        when (val result = dataValidator.validatedPhone(state.phone)) {
+            is Result.Failure -> _uiState.update { it.copy(phoneError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(phoneError = null) }
+                store = store.copy(telephone = result.data)
+            }
+        }
+
+        when (val result = dataValidator.validatedName(state.name)) {
+            is Result.Failure -> _uiState.update { it.copy(nameError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(nameError = null) }
+                store = store.copy(name = result.data)
+            }
+        }
+
+        return store
     }
 }

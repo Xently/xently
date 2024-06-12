@@ -11,6 +11,7 @@ internal sealed interface StoreEditDetailAction {
     class SelectCategory(val category: StoreCategory) : StoreEditDetailAction
     class RemoveCategory(val category: StoreCategory) : StoreEditDetailAction
     class ChangeName(val name: String) : StoreEditDetailAction
+    class ChangeLocation(val location: String) : StoreEditDetailAction
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction

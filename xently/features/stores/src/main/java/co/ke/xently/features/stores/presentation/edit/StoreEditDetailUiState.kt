@@ -1,10 +1,12 @@
 package co.ke.xently.features.stores.presentation.edit
 
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.error.EmailError
+import co.ke.xently.features.stores.data.domain.error.LocationError
+import co.ke.xently.features.stores.data.domain.error.NameError
+import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
 import com.dokar.chiptextfield.Chip
@@ -16,10 +18,16 @@ data class StoreEditDetailUiState(
     val categoryName: String = "",
     val store: Store = Store(),
     val name: String = store.name,
+    val nameError: NameError? = null,
     val email: String = store.email ?: "",
+    val emailError: EmailError? = null,
     val phone: String = store.telephone ?: "",
+    val phoneError: PhoneError? = null,
     val description: String = store.description ?: "",
     val location: Location = store.location,
+    val locationError: LocationError? = null,
+    val locationString: String = location.takeIf(Location::isUsable)
+        ?.coordinatesString() ?: "",
     @Stable
     val services: List<Chip> = store.services.map { Chip(it.name) },
     @Stable
@@ -40,8 +48,8 @@ data class StoreEditDetailUiState(
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
 ) {
-    val locationString: String by mutableStateOf(
-        location.takeIf(Location::isUsable)
-            ?.coordinatesString() ?: ""
-    )
+    val isFormValid: Boolean = nameError == null
+            && emailError == null
+            && phoneError == null
+            && locationError == null
 }

@@ -1,7 +1,6 @@
 package co.ke.xently.features.stores.presentation.edit
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -57,7 +56,13 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.error.EmailError
+import co.ke.xently.features.stores.data.domain.error.FieldError
+import co.ke.xently.features.stores.data.domain.error.LocationError
+import co.ke.xently.features.stores.data.domain.error.NameError
+import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
+import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
@@ -116,10 +121,12 @@ internal fun StoreEditDetailScreen(
             null -> Unit
             StoreEditDetailEvent.Success -> onClickBack()
             is StoreEditDetailEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
+                if (event.error !is FieldError) {
+                    snackbarHostState.showSnackbar(
+                        event.error.asUiText().asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
             }
         }
     }
@@ -203,13 +210,15 @@ internal fun StoreEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
+                isError = state.nameError != null,
+                supportingText = state.nameError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.locationString,
-                readOnly = true,
-                enabled = false,
-                onValueChange = {},
+                onValueChange = { onAction(StoreEditDetailAction.ChangeLocation(it)) },
                 placeholder = { Text(text = stringResource(R.string.text_field_label_store_location)) },
                 trailingIcon = {
                     IconButton(onClick = { onClickPickLocation(state.location) }) {
@@ -219,15 +228,20 @@ internal fun StoreEditDetailScreen(
                         )
                     }
                 },
+                isError = state.locationError != null,
                 supportingText = {
-                    Text(text = stringResource(R.string.text_field_supporting_text_location))
+                    val error = state.locationError
+                    if (error != null) {
+                        Text(text = error.asUiText().asString(context = context))
+                    } else {
+                        Text(text = stringResource(R.string.text_field_supporting_text_location))
+                    }
                 },
                 singleLine = true,
                 maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .clickable(onClick = { onClickPickLocation(state.location) }),
+                    .padding(horizontal = 16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             )
             OutlinedTextField(
@@ -247,7 +261,34 @@ internal fun StoreEditDetailScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
                 ),
+                isError = state.emailError != null,
+                supportingText = state.emailError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
+            OutlinedTextField(
+                shape = CardDefaults.shape,
+                value = state.phone,
+                enabled = !state.disableFields,
+                onValueChange = { onAction(StoreEditDetailAction.ChangePhoneNumber(it)) },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_store_phone_number))
+                },
+                singleLine = true,
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next,
+                ),
+                isError = state.phoneError != null,
+                supportingText = state.phoneError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
+            )
+
             val chipState = rememberChipTextFieldState(
                 chips = state.services
             )
@@ -269,24 +310,6 @@ internal fun StoreEditDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
-            OutlinedTextField(
-                shape = CardDefaults.shape,
-                value = state.phone,
-                enabled = !state.disableFields,
-                onValueChange = { onAction(StoreEditDetailAction.ChangePhoneNumber(it)) },
-                label = {
-                    Text(text = stringResource(R.string.text_field_label_store_phone_number))
-                },
-                singleLine = true,
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Next,
-                ),
-            )
 
             if (state.openingHours.isNotEmpty()) {
                 WeeklyOpeningHourInput(
@@ -304,12 +327,8 @@ internal fun StoreEditDetailScreen(
                         )
                     },
                     onOpenStatusChange = {
-                        onAction(
-                            StoreEditDetailAction.ChangeOpeningHourOpenStatus(
-                                it
-                            )
-                        )
-                    }
+                        onAction(StoreEditDetailAction.ChangeOpeningHourOpenStatus(it))
+                    },
                 )
             }
             OutlinedTextField(
@@ -381,6 +400,14 @@ private class StoreEditDetailUiStateParameterProvider :
             StoreEditDetailScreenUiState(state = StoreEditDetailUiState()),
             StoreEditDetailScreenUiState(state = StoreEditDetailUiState(store = store)),
             StoreEditDetailScreenUiState(state = StoreEditDetailUiState(isLoading = true)),
+            StoreEditDetailScreenUiState(
+                state = StoreEditDetailUiState(
+                    nameError = NameError.entries.random(),
+                    locationError = LocationError.entries.random(),
+                    emailError = EmailError.entries.random(),
+                    phoneError = PhoneError.entries.random(),
+                ),
+            ),
         )
 }
 
