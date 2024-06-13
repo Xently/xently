@@ -44,4 +44,6 @@
     <string name="error_email_invalid_format">Invalid email address format</string>
     <string name="error_phone_invalid_format">Invalid phone number format</string>
     <string name="error_name_missing">Required field</string>
+    <string name="message_store_deleted">Store successfully delete.</string>
+    <string name="top_bar_title_select_store">Click To Select Store</string>
 </resources>

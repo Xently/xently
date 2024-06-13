@@ -21,6 +21,7 @@ import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
 import coil3.Extras
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
@@ -34,6 +35,7 @@ fun XentlyImage(
     modifier: Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
+    onError: ((AsyncImagePainter.State.Error) -> Unit)? = null,
 ) {
     AnimatedContent(data, label = "xently-image") {
         when (it) {
@@ -45,6 +47,7 @@ fun XentlyImage(
                     modifier = modifier,
                     contentScale = contentScale,
                     contentDescription = contentDescription,
+                    onError = onError,
                 )
             }
 
@@ -60,6 +63,7 @@ fun XentlyImage(
                     modifier = modifier,
                     contentScale = contentScale,
                     contentDescription = contentDescription,
+                    onError = onError,
                 )
             }
 
@@ -69,6 +73,7 @@ fun XentlyImage(
                     modifier = modifier,
                     contentScale = contentScale,
                     contentDescription = contentDescription,
+                    onError = onError,
                 )
             }
         }
@@ -79,8 +84,9 @@ fun XentlyImage(
 private fun XentlyAsyncImage(
     data: Any?,
     modifier: Modifier,
-    contentScale: ContentScale = ContentScale.Crop,
-    contentDescription: String? = null,
+    contentScale: ContentScale,
+    contentDescription: String?,
+    onError: ((AsyncImagePainter.State.Error) -> Unit)?,
 ) {
     // Keep track of the image's memory cache key so isEmpty can be used as a placeholder
     // for the detail screen.
@@ -103,7 +109,11 @@ private fun XentlyAsyncImage(
                     placeholder = it.result.memoryCacheKey
                 },
                 onError = {
-                    hasError = true
+                    if (onError == null) {
+                        hasError = true
+                    } else {
+                        onError(it)
+                    }
                     Timber.tag("XentlyAsyncImage")
                         .e(it.result.throwable, "Failed to load image")
                 },

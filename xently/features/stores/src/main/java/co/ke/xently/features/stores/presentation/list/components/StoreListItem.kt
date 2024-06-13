@@ -1,4 +1,4 @@
-package co.ke.xently.features.products.presentation.list.components
+package co.ke.xently.features.stores.presentation.list.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,7 +13,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
@@ -32,18 +31,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import co.ke.xently.features.products.R
-import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.stores.R
+import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-internal fun ProductListItem(
-    product: Product,
+internal fun StoreListItem(
+    store: Store,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onClickUpdate: () -> Unit,
@@ -53,7 +51,7 @@ internal fun ProductListItem(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            text = { Text(text = """Are you sure you want to delete the "$product"?""") },
+            text = { Text(text = """Are you sure you want to delete the "$store"?""") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -74,37 +72,36 @@ internal fun ProductListItem(
         modifier = modifier,
         leadingContent = {
             Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
-                var index by rememberSaveable(product.id) { mutableIntStateOf(0) }
+                var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
                 XentlyImage(
-                    data = product.images.getOrNull(index),
+                    data = store.images.getOrNull(index),
                     modifier = Modifier.fillMaxSize(),
                     onError = {
-                        if (index != product.images.lastIndex) index += 1
+                        if (index != store.images.lastIndex) index += 1
                     },
                 )
             }
         },
+        supportingContent = {
+            Text(
+                text = store.name,
+                modifier = if (isLoading) Modifier.shimmer() else Modifier,
+            )
+        },
         headlineContent = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = product.toString(),
+                    text = store.shop.name,
                     modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
                     fontWeight = FontWeight.Bold,
-                    maxLines = if (product.description.isNullOrBlank()) 3 else 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-                Text(
-                    text = product.unitPrice.formatPrice("KES", false),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
                 Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
                     Icon(
                         Icons.Default.MoreVert,
-                        contentDescription = """More options for product "$product".""",
+                        contentDescription = """More options for store "${store.name}, ${store.shop.name}".""",
                         modifier = Modifier.clickable(
                             role = Role.Checkbox,
                             indication = ripple(bounded = false),
@@ -124,73 +121,36 @@ internal fun ProductListItem(
                 }
             }
         },
-        supportingContent = if (product.description.isNullOrBlank()) null else {
-            {
-                var expand by rememberSaveable { mutableStateOf(false) }
-                Text(
-                    text = product.description!!,
-                    maxLines = if (expand) Int.MAX_VALUE else 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Light,
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).clickable(
-                        role = Role.Checkbox,
-                        indication = ripple(radius = 1_000.dp),
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) { expand = !expand },
-                )
-            }
-        },
     )
 }
 
-private data class ProductListItemParameter(
-    val product: Product,
+private data class StoreListItemParameter(
+    val store: Store,
     val isLoading: Boolean = false,
 )
 
-private class ProductListItemParameterProvider :
-    PreviewParameterProvider<ProductListItemParameter> {
-    override val values: Sequence<ProductListItemParameter>
+private class StoreListItemParameterProvider : PreviewParameterProvider<StoreListItemParameter> {
+    override val values: Sequence<StoreListItemParameter>
         get() = sequenceOf(
-            ProductListItemParameter(
-                Product(
-                    name = "Chips Kuku",
-                    unitPrice = 19234.0,
-                    description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
-                )
+            StoreListItemParameter(
+                Store.DEFAULT
             ),
-            ProductListItemParameter(
-                Product(
-                    name = "Chips Kuku",
-                    unitPrice = 19234.0,
-                    description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
-                ), isLoading = true
-            ),
-            ProductListItemParameter(
-                Product(
-                    name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
-                    unitPrice = 134.0,
-                )
-            ),
-            ProductListItemParameter(
-                Product(
-                    name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
-                    unitPrice = 134.0,
-                ), isLoading = true
+            StoreListItemParameter(
+                Store.DEFAULT,
+                isLoading = true,
             ),
         )
 }
 
 @XentlyThemePreview
 @Composable
-private fun ProductListItemPreview(
-    @PreviewParameter(ProductListItemParameterProvider::class)
-    parameter: ProductListItemParameter,
+private fun StoreListItemPreview(
+    @PreviewParameter(StoreListItemParameterProvider::class)
+    parameter: StoreListItemParameter,
 ) {
     XentlyTheme {
-        ProductListItem(
-            product = parameter.product,
+        StoreListItem(
+            store = parameter.store,
             isLoading = parameter.isLoading,
             onClickUpdate = {},
             onClickConfirmDelete = {},

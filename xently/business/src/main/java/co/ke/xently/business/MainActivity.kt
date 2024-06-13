@@ -11,10 +11,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import co.ke.xently.business.domain.ReviewCommentListScreen
+import co.ke.xently.business.domain.SelectStore
+import co.ke.xently.business.domain.SettingsScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.landing.domain.LandingScreen
-import co.ke.xently.business.landing.domain.ReviewCommentListScreen
-import co.ke.xently.business.landing.domain.SettingsScreen
 import co.ke.xently.business.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
@@ -29,6 +30,7 @@ import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.domain.EditStoreNavGraph
 import co.ke.xently.features.stores.presentation.editStoreNavigation
+import co.ke.xently.features.stores.presentation.list.StoreListScreen
 import co.ke.xently.features.ui.core.presentation.App
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
                                 /*TODO*/
                             },
                             onClickSelectBranch = {
-                                /*TODO*/
+                                navController.navigate(SelectStore)
                             },
                             onClickShop = {
                                 /*TODO*/
@@ -104,10 +106,24 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(ShopNavGraph.EditShop)
                             },
                             onShopSelected = {
-                                // TODO: Navigate to store selection screen...
+                                navController.navigate(SelectStore)
+                            },
+                        )
+                    }
+                    composable<SelectStore> {
+                        StoreListScreen(
+                            onClickBack = navController::navigateUp,
+                            onClickAddStore = {
+                                navController.navigate(EditStoreNavGraph)
+                            },
+                            onClickEditStore = {
+                                navController.navigate(EditStoreNavGraph)
+                            },
+                            onStoreSelected = {
+                                // TODO: Pop backstack up to non-select shop screen
                                 Toast.makeText(
                                     this@MainActivity,
-                                    "Navigate to store selection screen...",
+                                    "Pop backstack up to non-select shop screen...",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             },
