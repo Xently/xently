@@ -67,11 +67,10 @@ internal fun ProductListItem(
         )
     }
 
-    val imageSize = 60.dp
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = Modifier.size(size = imageSize)) {
+            Card(modifier = Modifier.size(size = 60.dp)) {
                 val image = product.images.firstOrNull()
                 if (image != null) {
                     XentlyImage(
