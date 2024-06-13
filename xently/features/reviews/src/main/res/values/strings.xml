@@ -31,7 +31,7 @@
     <string name="action_add_review_category">Add Category</string>
     <string name="section_title_review_category">Categories</string>
     <string name="section_title_shop_review_summary">Shop Performance Analysis</string>
-    <string name="section_title_store_review_summary">Store Performance Analysis</string>
+    <string name="section_title_store_review_summary">Branch Performance Analysis</string>
     <string name="message_no_review_categories">No categories. Click the + button above to begin surveying.</string>
     <string name="top_bar_title_review_comments">Comments</string>
     <string name="anonymous">Anonymous</string>

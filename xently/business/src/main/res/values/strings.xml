@@ -17,7 +17,7 @@
     <string name="action_logout">Logout</string>
     <string name="action_label_privacy_policy">Privacy Policy</string>
     <string name="action_label_terms_of_service">Terms of Service</string>
-    <string name="action_add_store">Add Store</string>
+    <string name="action_add_store">Add Branch</string>
     <string name="anonymous">Anonymous</string>
     <string name="anonymous_email">anonymous@example.org</string>
     <string name="content_desc_open_navigation_drawer">Open navigation drawer</string>

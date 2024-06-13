@@ -32,7 +32,7 @@
     <string name="text_field_placeholder_services">e.g. Swimming, Accommodation e.t.c</string>
     <string name="text_field_supporting_text_services">Comma-separate multiple</string>
     <string name="text_field_label_store_services">Added value for customer</string>
-    <string name="action_add_store">Add Store</string>
+    <string name="action_add_store">Add Branch</string>
     <string name="top_bar_title_edit_store_details">Edit details</string>
     <string name="appbar_title_pick_store_location">Pick Location</string>
     <string name="action_confirm_selection">Confirm Selection</string>
@@ -44,6 +44,6 @@
     <string name="error_email_invalid_format">Invalid email address format</string>
     <string name="error_phone_invalid_format">Invalid phone number format</string>
     <string name="error_name_missing">Required field</string>
-    <string name="message_store_deleted">Store successfully delete.</string>
-    <string name="top_bar_title_select_store">Click To Select Store</string>
+    <string name="message_store_deleted">Branch successfully delete.</string>
+    <string name="top_bar_title_select_store">Click To Select Branch</string>
 </resources>

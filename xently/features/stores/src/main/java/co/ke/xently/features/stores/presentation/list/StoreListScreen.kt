@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PostAdd
+import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -166,7 +166,7 @@ internal fun StoreListScreen(
                 text = { Text(text = stringResource(R.string.action_add_store)) },
                 icon = {
                     Icon(
-                        Icons.Default.PostAdd,
+                        Icons.Default.AddBusiness,
                         contentDescription = stringResource(R.string.action_add_store),
                     )
                 },
@@ -179,7 +179,7 @@ internal fun StoreListScreen(
                 .padding(paddingValues),
             items = stores,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            emptyContentMessage = "No stores found",
+            emptyContentMessage = "No branches found",
             prependErrorStateContent = {},
             appendErrorStateContent = {},
             errorStateContent = {},
