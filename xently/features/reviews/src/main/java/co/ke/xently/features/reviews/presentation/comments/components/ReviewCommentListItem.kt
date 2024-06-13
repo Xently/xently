@@ -43,6 +43,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
@@ -52,12 +53,13 @@ import kotlin.random.Random
 internal fun ReviewCommentListItem(
     review: Review,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
 ) {
     ElevatedCard(modifier = modifier) {
         ListItem(
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             leadingContent = {
-                Card(modifier = Modifier.size(60.dp)) {
+                Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(60.dp)) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
@@ -73,6 +75,7 @@ internal fun ReviewCommentListItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
                 )
             },
             supportingContent = {
@@ -88,12 +91,13 @@ internal fun ReviewCommentListItem(
                         ),
                         fontWeight = FontWeight.Light,
                         style = MaterialTheme.typography.labelLarge,
+                        modifier = if (isLoading) Modifier.shimmer() else Modifier,
                     )
 
                     Icon(
                         Icons.Default.Circle,
                         contentDescription = null,
-                        modifier = Modifier
+                        modifier = (if (isLoading) Modifier.shimmer() else Modifier)
                             .size(20.dp)
                             .padding(horizontal = 8.dp),
                     )
@@ -111,6 +115,7 @@ internal fun ReviewCommentListItem(
                                     "${it.date} - ${time.toString(timePickerState.is24hour)}"
                                 }
                         },
+                        modifier = if (isLoading) Modifier.shimmer() else Modifier,
                     )
                 }
             },
@@ -118,6 +123,7 @@ internal fun ReviewCommentListItem(
                 Icon(
                     Icons.Default.MoreVert,
                     contentDescription = null,
+                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
                 )
             },
         )
@@ -126,7 +132,7 @@ internal fun ReviewCommentListItem(
             text = review.message,
             maxLines = if (expand) Int.MAX_VALUE else 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
+            modifier = (if (isLoading) Modifier.shimmer() else Modifier)
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
                 .clickable(
@@ -138,24 +144,55 @@ internal fun ReviewCommentListItem(
     }
 }
 
-private class ReviewListItemParameterProvider : PreviewParameterProvider<Review> {
-    override val values: Sequence<Review>
+private data class ReviewListItemParameter(
+    val review: Review,
+    val isLoading: Boolean = false,
+)
+
+private class ReviewListItemParameterProvider : PreviewParameterProvider<ReviewListItemParameter> {
+    override val values: Sequence<ReviewListItemParameter>
         get() = sequenceOf(
-            Review(
-                starRating = Random.nextInt(1, 6),
-                message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
-                reviewerName = "John Doe",
-                links = mapOf(
-                    "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+            ReviewListItemParameter(
+                Review(
+                    starRating = Random.nextInt(1, 6),
+                    message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                    reviewerName = "John Doe",
+                    links = mapOf(
+                        "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+                    ),
                 ),
             ),
-            Review(
-                starRating = Random.nextInt(1, 6),
-                message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
-                reviewerName = null,
-                links = mapOf(
-                    "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+            ReviewListItemParameter(
+                Review(
+                    starRating = Random.nextInt(1, 6),
+                    message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                    reviewerName = "John Doe",
+                    links = mapOf(
+                        "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+                    ),
                 ),
+                isLoading = true,
+            ),
+            ReviewListItemParameter(
+                Review(
+                    starRating = Random.nextInt(1, 6),
+                    message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                    reviewerName = null,
+                    links = mapOf(
+                        "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+                    ),
+                )
+            ),
+            ReviewListItemParameter(
+                Review(
+                    starRating = Random.nextInt(1, 6),
+                    message = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                    reviewerName = null,
+                    links = mapOf(
+                        "self" to Link("https://jsonplaceholder.typicode.com/posts/1")
+                    ),
+                ),
+                isLoading = true,
             ),
         )
 }
@@ -164,11 +201,12 @@ private class ReviewListItemParameterProvider : PreviewParameterProvider<Review>
 @Composable
 private fun ReviewListItemPreview(
     @PreviewParameter(ReviewListItemParameterProvider::class)
-    review: Review,
+    parameter: ReviewListItemParameter,
 ) {
     XentlyTheme {
         ReviewCommentListItem(
-            review = review,
+            review = parameter.review,
+            isLoading = parameter.isLoading,
             modifier = Modifier.padding(8.dp),
         )
     }

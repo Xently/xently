@@ -188,19 +188,28 @@ internal fun ShopListScreen(
                 shops.itemCount,
                 key = {
                     shops[it]?.id
-                        ?: (shops.itemCount + it).toLong()
+                        ?: ">>>${(shops.itemCount + it)}<<<"
                 },
             ) {
-                val shop = shops[it]!!
+                val shop = shops[it]
 
-                ShopListItem(
-                    shop = shop,
-                    onClickUpdate = { onClickEditShop(shop) },
-                    onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(shop)) },
-                    modifier = Modifier.clickable {
-                        onAction(ShopListAction.SelectShop(shop))
-                    },
-                )
+                if (shop != null) {
+                    ShopListItem(
+                        shop = shop,
+                        onClickUpdate = { onClickEditShop(shop) },
+                        onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(shop)) },
+                        modifier = Modifier.clickable {
+                            onAction(ShopListAction.SelectShop(shop))
+                        },
+                    )
+                } else {
+                    ShopListItem(
+                        shop = Shop.DEFAULT,
+                        isLoading = true,
+                        onClickUpdate = {},
+                        onClickConfirmDelete = {},
+                    )
+                }
             }
         }
     }

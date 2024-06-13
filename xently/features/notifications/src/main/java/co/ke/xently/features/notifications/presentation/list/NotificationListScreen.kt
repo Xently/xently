@@ -136,14 +136,19 @@ internal fun NotificationListScreen(
                 notifications.itemCount,
                 key = {
                     notifications[it]?.id
-                        ?: (notifications.itemCount + it).toLong()
+                        ?: ">>>${(notifications.itemCount + it)}<<<"
                 },
             ) {
-                val notification = notifications[it]!!
+                val notification = notifications[it]
 
-                NotificationListItem(
-                    notification = notification,
-                )
+                if (notification != null) {
+                    NotificationListItem(notification = notification)
+                } else {
+                    NotificationListItem(
+                        isLoading = true,
+                        notification = Notification.DEFAULT,
+                    )
+                }
             }
         }
     }

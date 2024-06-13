@@ -32,4 +32,12 @@ data class Product(
     override fun toString(): String {
         return descriptiveName.ifBlank { name }
     }
+
+    companion object {
+        val DEFAULT = Product(
+            name = "Kuku Choma",
+            unitPrice = 1234.0,
+            description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+        )
+    }
 }

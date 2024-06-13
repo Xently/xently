@@ -38,11 +38,13 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun ProductListItem(
     product: Product,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     onClickUpdate: () -> Unit,
     onClickConfirmDelete: () -> Unit,
 ) {
@@ -70,7 +72,7 @@ internal fun ProductListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = Modifier.size(size = 60.dp)) {
+            Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
                 val image = product.images.firstOrNull()
                 if (image != null) {
                     XentlyImage(
@@ -84,7 +86,7 @@ internal fun ProductListItem(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = product.toString(),
-                    modifier = Modifier.weight(1f),
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
                     fontWeight = FontWeight.Bold,
                     maxLines = if (product.description.isNullOrBlank()) 3 else 2,
                     overflow = TextOverflow.Ellipsis,
@@ -93,10 +95,11 @@ internal fun ProductListItem(
                 Text(
                     text = product.unitPrice.formatPrice("KES", false),
                     style = MaterialTheme.typography.labelLarge,
+                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box {
+                Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for product "$product".""",
@@ -104,7 +107,7 @@ internal fun ProductListItem(
                             role = Role.Checkbox,
                             indication = ripple(bounded = false),
                             interactionSource = remember { MutableInteractionSource() },
-                        ) { expanded = true },
+                        ) { expanded = !isLoading },
                     )
 
                     DropdownMenuWithUpdateAndDelete(
@@ -128,7 +131,7 @@ internal fun ProductListItem(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Light,
-                    modifier = Modifier.clickable(
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
                         interactionSource = remember { MutableInteractionSource() },
@@ -139,17 +142,40 @@ internal fun ProductListItem(
     )
 }
 
-private class ProductListItemParameterProvider : PreviewParameterProvider<Product> {
-    override val values: Sequence<Product>
+private data class ProductListItemParameter(
+    val product: Product,
+    val isLoading: Boolean = false,
+)
+
+private class ProductListItemParameterProvider :
+    PreviewParameterProvider<ProductListItemParameter> {
+    override val values: Sequence<ProductListItemParameter>
         get() = sequenceOf(
-            Product(
-                name = "Chips Kuku",
-                unitPrice = 19234.0,
-                description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+            ProductListItemParameter(
+                Product(
+                    name = "Chips Kuku",
+                    unitPrice = 19234.0,
+                    description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                )
             ),
-            Product(
-                name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
-                unitPrice = 134.0,
+            ProductListItemParameter(
+                Product(
+                    name = "Chips Kuku",
+                    unitPrice = 19234.0,
+                    description = "A mix of pilau and roasted potatoes garnished with a side of paprika grilled tomatoes.",
+                ), isLoading = true
+            ),
+            ProductListItemParameter(
+                Product(
+                    name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
+                    unitPrice = 134.0,
+                )
+            ),
+            ProductListItemParameter(
+                Product(
+                    name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
+                    unitPrice = 134.0,
+                ), isLoading = true
             ),
         )
 }
@@ -158,11 +184,12 @@ private class ProductListItemParameterProvider : PreviewParameterProvider<Produc
 @Composable
 private fun ProductListItemPreview(
     @PreviewParameter(ProductListItemParameterProvider::class)
-    product: Product,
+    parameter: ProductListItemParameter,
 ) {
     XentlyTheme {
         ProductListItem(
-            product = product,
+            product = parameter.product,
+            isLoading = parameter.isLoading,
             onClickUpdate = {},
             onClickConfirmDelete = {},
         )

@@ -23,6 +23,7 @@ import co.ke.xently.features.notifications.data.domain.Notification
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -32,6 +33,7 @@ import kotlinx.datetime.toLocalDateTime
 internal fun NotificationListItem(
     notification: Notification,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     onClick: () -> Unit = {},
 ) {
     Card(
@@ -59,29 +61,48 @@ internal fun NotificationListItem(
             textAlign = TextAlign.Right,
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier
+            modifier = (if (isLoading) Modifier.shimmer() else Modifier)
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth(),
         )
         Text(
             text = notification.message.message,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = (if (isLoading) Modifier.shimmer() else Modifier).padding(horizontal = 8.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-private class NotificationListItemParameterProvider : PreviewParameterProvider<Notification> {
-    override val values: Sequence<Notification>
+private data class NotificationListItemParameter(
+    val notification: Notification,
+    val isLoading: Boolean = false,
+)
+
+private class NotificationListItemParameterProvider :
+    PreviewParameterProvider<NotificationListItemParameter> {
+    override val values: Sequence<NotificationListItemParameter>
         get() = sequenceOf(
-            Notification(
-                id = 1,
-                timeSent = Clock.System.now(),
-                message = Notification.Message(
-                    title = "Notification title",
-                    message = "New deal 50% off on all meals at the new Imara Daima Hotel",
+            NotificationListItemParameter(
+                Notification(
+                    id = 1,
+                    timeSent = Clock.System.now(),
+                    message = Notification.Message(
+                        title = "Notification title",
+                        message = "New deal 50% off on all meals at the new Imara Daima Hotel",
+                    ),
+                )
+            ),
+            NotificationListItemParameter(
+                Notification(
+                    id = 1,
+                    timeSent = Clock.System.now(),
+                    message = Notification.Message(
+                        title = "Notification title",
+                        message = "New deal 50% off on all meals at the new Imara Daima Hotel",
+                    ),
                 ),
+                isLoading = true,
             ),
         )
 }
@@ -90,11 +111,12 @@ private class NotificationListItemParameterProvider : PreviewParameterProvider<N
 @Composable
 private fun NotificationListItemPreview(
     @PreviewParameter(NotificationListItemParameterProvider::class)
-    notification: Notification,
+    parameter: NotificationListItemParameter,
 ) {
     XentlyTheme {
         NotificationListItem(
-            notification = notification,
+            notification = parameter.notification,
+            isLoading = parameter.isLoading,
             modifier = Modifier.padding(8.dp),
         )
     }

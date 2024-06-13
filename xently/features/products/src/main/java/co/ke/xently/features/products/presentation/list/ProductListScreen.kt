@@ -205,16 +205,25 @@ internal fun ProductListScreen(
                 products.itemCount,
                 key = {
                     products[it]?.id
-                        ?: (products.itemCount + it).toLong()
+                        ?: ">>>${(products.itemCount + it)}<<<"
                 },
             ) {
-                val product = products[it]!!
+                val product = products[it]
 
-                ProductListItem(
-                    product = product,
-                    onClickUpdate = { onClickEditProduct(product) },
-                    onClickConfirmDelete = { onAction(ProductListAction.DeleteProduct(product)) },
-                )
+                if (product != null) {
+                    ProductListItem(
+                        product = product,
+                        onClickUpdate = { onClickEditProduct(product) },
+                        onClickConfirmDelete = { onAction(ProductListAction.DeleteProduct(product)) },
+                    )
+                } else {
+                    ProductListItem(
+                        product = Product.DEFAULT,
+                        isLoading = true,
+                        onClickUpdate = {},
+                        onClickConfirmDelete = {},
+                    )
+                }
             }
         }
     }

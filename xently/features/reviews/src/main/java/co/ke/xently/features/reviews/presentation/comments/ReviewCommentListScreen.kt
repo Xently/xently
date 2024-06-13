@@ -93,7 +93,10 @@ internal fun ReviewCommentListScreen(
 
     LaunchedEffect(event) {
         when (event) {
-            null -> Unit
+            null, is ReviewCommentListEvent.Success -> {
+
+            }
+
             is ReviewCommentListEvent.Error -> {
                 val result = snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
@@ -114,10 +117,6 @@ internal fun ReviewCommentListScreen(
 
                     }
                 }
-            }
-
-            is ReviewCommentListEvent.Success -> {
-
             }
         }
     }
@@ -209,12 +208,15 @@ internal fun ReviewCommentListScreen(
                 key = {
                     reviews[it]?.links?.get("self")
                         ?.hrefWithoutQueryParamTemplates()
-                        ?: (reviews.itemCount + it).toString()
+                        ?: ">>>${(reviews.itemCount + it)}<<<"
                 },
             ) {
-                val review = reviews[it]!!
-
-                ReviewCommentListItem(review = review)
+                val review = reviews[it]
+                if (review != null) {
+                    ReviewCommentListItem(review = review)
+                } else {
+                    ReviewCommentListItem(review = Review.DEFAULT, isLoading = true)
+                }
             }
         }
     }

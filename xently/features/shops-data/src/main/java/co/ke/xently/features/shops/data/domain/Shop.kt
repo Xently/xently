@@ -16,4 +16,17 @@ data class Shop(
     override fun toString(): String {
         return name
     }
+
+    companion object {
+        val DEFAULT = Shop(
+            id = 1L,
+            name = "Shop name",
+            slug = "shop-name",
+            onlineShopUrl = "https://example.com",
+            links = mapOf(
+                "self" to Link(href = "https://example.com"),
+                "add-store" to Link(href = "https://example.com/edit"),
+            ),
+        )
+    }
 }

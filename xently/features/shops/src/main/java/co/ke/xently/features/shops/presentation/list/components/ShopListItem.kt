@@ -12,7 +12,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
@@ -36,11 +35,13 @@ import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpd
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun ShopListItem(
     shop: Shop,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     onClickUpdate: () -> Unit,
     onClickConfirmDelete: () -> Unit,
 ) {
@@ -68,7 +69,7 @@ internal fun ShopListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = Modifier.size(size = 60.dp)) {
+            Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
 
             }
         },
@@ -76,14 +77,13 @@ internal fun ShopListItem(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = shop.toString(),
-                    modifier = Modifier.weight(1f),
+                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelLarge,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box {
+                Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for shop "$shop".""",
@@ -91,7 +91,7 @@ internal fun ShopListItem(
                             role = Role.Checkbox,
                             indication = ripple(bounded = false),
                             interactionSource = remember { MutableInteractionSource() },
-                        ) { expanded = true },
+                        ) { expanded = !isLoading },
                     )
 
                     DropdownMenuWithUpdateAndDelete(
@@ -109,28 +109,38 @@ internal fun ShopListItem(
     )
 }
 
-private class ShopListItemParameterProvider : PreviewParameterProvider<Shop> {
-    override val values: Sequence<Shop>
+private data class ShopListItemParameter(
+    val shop: Shop,
+    val isLoading: Boolean = false,
+)
+
+private class ShopListItemParameterProvider : PreviewParameterProvider<ShopListItemParameter> {
+    override val values: Sequence<ShopListItemParameter>
         get() = sequenceOf(
-            Shop(
-                id = 1L,
-                name = "Shop name",
-                slug = "shop-name",
-                onlineShopUrl = "https://example.com",
-                links = mapOf(
-                    "self" to Link(href = "https://example.com"),
-                    "add-store" to Link(href = "https://example.com/edit"),
-                ),
+            ShopListItemParameter(
+                Shop(
+                    id = 1L,
+                    name = "Shop name",
+                    slug = "shop-name",
+                    onlineShopUrl = "https://example.com",
+                    links = mapOf(
+                        "self" to Link(href = "https://example.com"),
+                        "add-store" to Link(href = "https://example.com/edit"),
+                    ),
+                )
             ),
-            Shop(
-                id = 1L,
-                name = "Shop name",
-                slug = "shop-name",
-                onlineShopUrl = "https://example.com",
-                links = mapOf(
-                    "self" to Link(href = "https://example.com"),
-                    "add-store" to Link(href = "https://example.com/edit"),
+            ShopListItemParameter(
+                Shop(
+                    id = 1L,
+                    name = "Shop name",
+                    slug = "shop-name",
+                    onlineShopUrl = "https://example.com",
+                    links = mapOf(
+                        "self" to Link(href = "https://example.com"),
+                        "add-store" to Link(href = "https://example.com/edit"),
+                    ),
                 ),
+                isLoading = true,
             ),
         )
 }
@@ -139,11 +149,12 @@ private class ShopListItemParameterProvider : PreviewParameterProvider<Shop> {
 @Composable
 private fun ShopListItemPreview(
     @PreviewParameter(ShopListItemParameterProvider::class)
-    shop: Shop,
+    parameter: ShopListItemParameter,
 ) {
     XentlyTheme {
         ShopListItem(
-            shop = shop,
+            shop = parameter.shop,
+            isLoading = parameter.isLoading,
             onClickUpdate = {},
             onClickConfirmDelete = {},
         )

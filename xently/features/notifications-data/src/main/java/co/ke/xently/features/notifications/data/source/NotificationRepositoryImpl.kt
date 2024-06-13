@@ -1,13 +1,10 @@
 package co.ke.xently.features.notifications.data.source
 
 import co.ke.xently.features.notifications.data.domain.Notification
-import co.ke.xently.features.notifications.data.domain.error.DataError
-import co.ke.xently.features.notifications.data.domain.error.Result
 import co.ke.xently.features.notifications.data.source.local.NotificationDatabase
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
