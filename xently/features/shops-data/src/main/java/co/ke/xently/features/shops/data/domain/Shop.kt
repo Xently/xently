@@ -12,4 +12,8 @@ data class Shop(
     val onlineShopUrl: String? = null,
     val slug: String = name.lowercase().replace(' ', '-'),
     val id: Long = -1,
-)
+) {
+    override fun toString(): String {
+        return name
+    }
+}

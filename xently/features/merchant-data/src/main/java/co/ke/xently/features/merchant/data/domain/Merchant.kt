@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Merchant(
     val id: Long,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
+    val emailAddress: String,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
 )

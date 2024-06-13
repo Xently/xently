@@ -1,6 +1,7 @@
 package co.ke.xently.business
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +24,9 @@ import co.ke.xently.features.reviewcategory.presentation.edit.ReviewCategoryEdit
 import co.ke.xently.features.reviews.presentation.comments.ReviewCommentListScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
+import co.ke.xently.features.shops.domain.ShopNavGraph
+import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
+import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.domain.EditStoreNavGraph
 import co.ke.xently.features.stores.presentation.editStoreNavigation
 import co.ke.xently.features.ui.core.presentation.App
@@ -67,17 +71,17 @@ class MainActivity : ComponentActivity() {
                             onClickLogout = {
                                 /*TODO*/
                             },
-                            onClickSelectShop = {
-                                /*TODO*/
-                            },
                             onClickSelectBranch = {
                                 /*TODO*/
                             },
                             onClickShop = {
                                 /*TODO*/
                             },
+                            onClickSelectShop = {
+                                navController.navigate(ShopNavGraph.SelectShop)
+                            },
                             onClickAddShop = {
-                                /*TODO*/
+                                navController.navigate(ShopNavGraph.EditShop)
                             },
                             onClickQrCode = {
                                 /*TODO*/
@@ -90,6 +94,28 @@ class MainActivity : ComponentActivity() {
                     authenticationNavigation(navController = navController)
                     editStoreNavigation(navController = navController)
                     editProductNavigation(navController = navController)
+                    composable<ShopNavGraph.SelectShop> {
+                        ShopListScreen(
+                            onClickBack = navController::navigateUp,
+                            onClickAddShop = {
+                                navController.navigate(ShopNavGraph.EditShop)
+                            },
+                            onClickEditShop = {
+                                navController.navigate(ShopNavGraph.EditShop)
+                            },
+                            onShopSelected = {
+                                // TODO: Navigate to store selection screen...
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Navigate to store selection screen...",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                        )
+                    }
+                    composable<ShopNavGraph.EditShop> {
+                        ShopEditDetailScreen(onClickBack = navController::navigateUp)
+                    }
                     composable<EditStoreReviewCategoryScreen> {
                         ReviewCategoryEditDetailScreen(onClickBack = navController::navigateUp)
                     }
