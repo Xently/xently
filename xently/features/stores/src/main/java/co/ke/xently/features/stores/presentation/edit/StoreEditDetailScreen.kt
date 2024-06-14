@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,12 +17,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -35,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -43,8 +47,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -67,7 +69,6 @@ import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
-import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
@@ -122,7 +123,24 @@ internal fun StoreEditDetailScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
-            StoreEditDetailEvent.Success -> onClickBack()
+            is StoreEditDetailEvent.Success -> {
+                when (event.action) {
+                    StoreEditDetailAction.ClickSave -> onClickBack()
+                    StoreEditDetailAction.ClickSaveAndAddAnother -> {
+                        snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.message_store_saved),
+                            duration = SnackbarDuration.Short,
+                        )
+                        onAction(StoreEditDetailAction.ChangeName(""))
+                        onAction(StoreEditDetailAction.ChangeLocation(""))
+                        onAction(StoreEditDetailAction.ChangeEmailAddress(""))
+                        onAction(StoreEditDetailAction.ChangePhoneNumber(""))
+                        onAction(StoreEditDetailAction.ChangeDescription(""))
+                    }
+
+                    else -> throw NotImplementedError()
+                }
+            }
             is StoreEditDetailEvent.Error -> {
                 if (event.error !is FieldError) {
                     snackbarHostState.showSnackbar(
@@ -327,6 +345,25 @@ internal fun StoreEditDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
+            OutlinedTextField(
+                shape = CardDefaults.shape,
+                value = state.description,
+                enabled = !state.disableFields,
+                onValueChange = {
+                    onAction(StoreEditDetailAction.ChangeDescription(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_store_short_description))
+                },
+                minLines = 4,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Sentences,
+                ),
+            )
 
             if (state.openingHours.isNotEmpty()) {
                 WeeklyOpeningHourInput(
@@ -348,36 +385,26 @@ internal fun StoreEditDetailScreen(
                     },
                 )
             }
-            OutlinedTextField(
-                shape = CardDefaults.shape,
-                value = state.description,
-                enabled = !state.disableFields,
-                onValueChange = {
-                    onAction(StoreEditDetailAction.ChangeDescription(it))
-                },
-                label = {
-                    Text(text = stringResource(R.string.text_field_label_store_short_description))
-                },
-                minLines = 4,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                    capitalization = KeyboardCapitalization.Sentences,
-                ),
-            )
-
-            PrimaryButton(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                enabled = !state.disableFields,
-                label = stringResource(R.string.action_submit_store_details)
-                    .toUpperCase(Locale.current),
-                onClick = { onAction(StoreEditDetailAction.ClickSaveDetails) },
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(
+                    enabled = state.enableSaveButton,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onAction(StoreEditDetailAction.ClickSave) },
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                ) { Text(text = stringResource(R.string.action_save)) }
+                Button(
+                    enabled = state.enableSaveButton,
+                    onClick = { onAction(StoreEditDetailAction.ClickSaveAndAddAnother) },
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                ) { Text(text = stringResource(R.string.action_save_and_add_another)) }
+            }
         }
     }
 }

@@ -12,4 +12,6 @@ data class ProductEditDetailUiState(
     val description: String = product.description ?: "",
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
-)
+) {
+    val enableSaveButton: Boolean = !isLoading && !disableFields
+}

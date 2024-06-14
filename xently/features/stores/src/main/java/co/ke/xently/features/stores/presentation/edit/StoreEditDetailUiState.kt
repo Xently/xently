@@ -48,6 +48,7 @@ data class StoreEditDetailUiState(
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
 ) {
+    val enableSaveButton: Boolean = !isLoading && !disableFields
     val isFormValid: Boolean = nameError == null
             && emailError == null
             && phoneError == null

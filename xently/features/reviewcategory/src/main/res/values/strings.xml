@@ -12,5 +12,7 @@
     <string name="action_retry">Retry</string>
     <string name="top_bar_title_edit_review_category_details">Edit category details</string>
     <string name="text_field_label_review_category_name">Category name</string>
-    <string name="action_submit_review_category_details">Save Details</string>
+    <string name="action_save">Save</string>
+    <string name="action_save_and_add_another">Save &amp; Add Another</string>
+    <string name="message_review_category_saved">Category saved successfully</string>
 </resources>

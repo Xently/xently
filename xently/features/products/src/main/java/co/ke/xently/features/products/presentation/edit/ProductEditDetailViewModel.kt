@@ -103,7 +103,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
             }
 
-            ProductEditDetailAction.ClickSaveDetails -> {
+            ProductEditDetailAction.ClickSave, ProductEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
@@ -123,11 +123,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
                         }
 
                         is Result.Success -> {
-                            // Sign-in can be requested from any screen after an access token is
-                            // flagged as expired by the server. Therefore, instead of navigating
-                            // to a dedicated screen, we should simply retain the screen the
-                            // authentication was requested from, hence creating a good UX.
-                            _event.send(ProductEditDetailEvent.Success)
+                            _event.send(ProductEditDetailEvent.Success(action))
                         }
                     }
                 }.invokeOnCompletion {

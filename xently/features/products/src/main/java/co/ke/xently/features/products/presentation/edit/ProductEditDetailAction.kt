@@ -3,7 +3,8 @@ package co.ke.xently.features.products.presentation.edit
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 
 internal sealed interface ProductEditDetailAction {
-    data object ClickSaveDetails : ProductEditDetailAction
+    data object ClickSave : ProductEditDetailAction
+    data object ClickSaveAndAddAnother : ProductEditDetailAction
     class ChangeCategoryName(val name: String) : ProductEditDetailAction
     class SelectCategory(val category: ProductCategory) : ProductEditDetailAction
     class RemoveCategory(val category: ProductCategory) : ProductEditDetailAction

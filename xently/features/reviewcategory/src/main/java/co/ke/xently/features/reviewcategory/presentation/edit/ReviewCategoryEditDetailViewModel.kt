@@ -56,7 +56,7 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
                 }
             }
 
-            ReviewCategoryEditDetailAction.ClickSaveDetails -> {
+            ReviewCategoryEditDetailAction.ClickSave, ReviewCategoryEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
@@ -75,7 +75,7 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
                         }
 
                         is Result.Success -> {
-                            _event.send(ReviewCategoryEditDetailEvent.Success)
+                            _event.send(ReviewCategoryEditDetailEvent.Success(action))
                         }
                     }
                 }.invokeOnCompletion {

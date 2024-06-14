@@ -4,7 +4,8 @@ import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 
 internal sealed interface StoreEditDetailAction {
-    data object ClickSaveDetails : StoreEditDetailAction
+    data object ClickSave : StoreEditDetailAction
+    data object ClickSaveAndAddAnother : StoreEditDetailAction
     data object ClickAddCategory : StoreEditDetailAction
 
     class ChangeCategoryName(val name: String) : StoreEditDetailAction

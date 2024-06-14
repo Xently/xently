@@ -160,7 +160,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 //TODO
             }
 
-            StoreEditDetailAction.ClickSaveDetails -> {
+            StoreEditDetailAction.ClickSave, StoreEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
@@ -169,7 +169,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
                     if (_uiState.value.isFormValid) {
                         when (val result = repository.save(store = store)) {
-                            is Result.Success -> _event.send(StoreEditDetailEvent.Success)
+                            is Result.Success -> _event.send(StoreEditDetailEvent.Success(action))
                             is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
                         }
                     }

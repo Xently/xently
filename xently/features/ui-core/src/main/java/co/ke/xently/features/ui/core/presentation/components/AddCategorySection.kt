@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -70,7 +71,13 @@ fun AddCategorySection(
                 value = name,
                 enabled = !disableInteractions,
                 onValueChange = onNameValueChange,
-                placeholder = { Text(text = stringResource(R.string.text_field_placeholder_category_name)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.text_field_placeholder_category_name),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 singleLine = true,

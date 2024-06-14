@@ -28,7 +28,8 @@
     <string name="text_field_label_store_email_address">Email address</string>
     <string name="text_field_label_store_phone_number">Contact details</string>
     <string name="text_field_label_store_short_description">Short description</string>
-    <string name="action_submit_store_details">Save Details</string>
+    <string name="action_save">Save</string>
+    <string name="action_save_and_add_another">Save &amp; Add Another</string>
     <string name="text_field_placeholder_services">e.g. Swimming, Accommodation e.t.c</string>
     <string name="text_field_supporting_text_services">Comma-separate multiple</string>
     <string name="text_field_label_store_services">Added value for customer</string>
@@ -46,4 +47,5 @@
     <string name="error_name_missing">Required field</string>
     <string name="message_store_deleted">Branch successfully delete.</string>
     <string name="top_bar_title_select_store">Click To Select Branch</string>
+    <string name="message_store_saved">Store saved successfully.</string>
 </resources>

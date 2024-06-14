@@ -14,7 +14,8 @@
     <string name="top_bar_title_edit_product_details">Edit Details</string>
     <string name="text_field_label_product_name">Product name</string>
     <string name="text_field_label_product_unit_price">Unit price</string>
-    <string name="action_submit_product_details">Save Product</string>
+    <string name="action_save">Save</string>
+    <string name="action_save_and_add_another">Save &amp; Add Another</string>
     <string name="text_field_label_product_short_description">Short description</string>
     <string name="content_desc_upload_image">Upload image</string>
     <string name="headline_upload_product_images">Click to upload image</string>
@@ -22,4 +23,5 @@
     <string name="action_add_product">Add Product</string>
     <string name="message_product_deleted">Product successfully deleted.</string>
     <string name="action_delete">Delete</string>
+    <string name="message_product_saved_successfully">Product saved successfully.</string>
 </resources>

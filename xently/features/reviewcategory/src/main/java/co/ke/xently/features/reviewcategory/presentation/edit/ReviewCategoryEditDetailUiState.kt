@@ -9,4 +9,6 @@ data class ReviewCategoryEditDetailUiState(
     val name: String = reviewCategory.name,
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
-)
+) {
+    val enableSaveButton: Boolean = !isLoading && !disableFields
+}
