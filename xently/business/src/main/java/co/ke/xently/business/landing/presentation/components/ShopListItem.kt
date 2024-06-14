@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -32,6 +33,14 @@ internal fun ShopListItem(
         modifier = modifier,
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         headlineContent = { Text(text = shop.name) },
+        leadingContent = if (!shop.isActivated) null else {
+            {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = stringResource(R.string.content_desc_is_currently_selected),
+                )
+            }
+        },
         trailingContent = if (!shop.links.containsKey("add-store")) null else {
             {
                 Surface(

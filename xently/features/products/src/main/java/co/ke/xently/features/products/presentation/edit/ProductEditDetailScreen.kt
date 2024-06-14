@@ -117,6 +117,7 @@ internal fun ProductEditDetailScreen(
                     else -> throw NotImplementedError()
                 }
             }
+
             is ProductEditDetailEvent.Error -> {
                 snackbarHostState.showSnackbar(
                     event.error.asString(context = context),

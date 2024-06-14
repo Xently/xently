@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f0990fcbb253ef5660f6104bbf10156b",
+    "identityHash": "87077d2254abe6dc2d472cb0725a8670",
     "entities": [
       {
         "tableName": "User",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "shops",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shop` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shop` TEXT NOT NULL, `id` INTEGER NOT NULL, `isActivated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "shop",
@@ -61,6 +61,12 @@
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActivated",
+            "columnName": "isActivated",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -76,7 +82,7 @@
       },
       {
         "tableName": "stores",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`store` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`store` TEXT NOT NULL, `id` INTEGER NOT NULL, `isActivated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "store",
@@ -87,6 +93,12 @@
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActivated",
+            "columnName": "isActivated",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -364,7 +376,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f0990fcbb253ef5660f6104bbf10156b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '87077d2254abe6dc2d472cb0725a8670')"
     ]
   }
 }

@@ -19,10 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,17 +40,21 @@ internal fun NavigationDrawerHeaderSection(
     modifier: Modifier = Modifier,
     canAddShop: Boolean,
     currentUser: CurrentUser?,
+    switchAccount: Boolean,
+    shops: () -> List<Shop>,
     onClickAddShop: () -> Unit,
     onClickSelectShop: () -> Unit,
     onClickShop: (Shop) -> Unit,
     onClickAddStore: (Shop) -> Unit,
+    onClickSwitchAccount: () -> Unit,
 ) {
-    var switchAccount by rememberSaveable { mutableStateOf(false) }
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .defaultMinSize(minHeight = 176.dp)
-            .then(modifier),
+        modifier = modifier.run {
+            if (switchAccount) {
+                this
+            } else defaultMinSize(minHeight = 176.dp)
+        },
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             ListItem(
@@ -90,13 +90,13 @@ internal fun NavigationDrawerHeaderSection(
                 },
                 trailingContent = {
                     IconButton(
-                        onClick = { switchAccount = !switchAccount },
+                        onClick = onClickSwitchAccount,
                         content = {
                             Icon(
                                 if (switchAccount) {
                                     Icons.Default.KeyboardArrowUp
                                 } else Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Switch account",
+                                contentDescription = stringResource(R.string.action_content_desc_switch_account),
                             )
                         },
                     )
@@ -105,10 +105,7 @@ internal fun NavigationDrawerHeaderSection(
             if (switchAccount) {
                 HorizontalDivider()
                 ListItem(
-                    modifier = Modifier.clickable {
-                        switchAccount = false
-                        onClickSelectShop()
-                    },
+                    modifier = Modifier.clickable(onClick = onClickSelectShop),
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     headlineContent = {
                         Text(
@@ -132,29 +129,14 @@ internal fun NavigationDrawerHeaderSection(
                     },
                 )
 
-                /*storeResponse.also {
-                    when (it) {
-                        Response.Default -> Unit
-                        is Response.Failure -> {
-                            // TODO: Handle failure...
-                        }
-
-                        Response.Loading -> {
-                            HorizontalDivider()
-                            CircularProgressIndicator()
-                        }
-
-                        is Response.Success -> {
-                            HorizontalDivider()
-                            val shop: Shop = it.data.shop
-                            ShopListItem(
-                                shop = shop,
-                                onClickShop = {switchAccount = false; onClickShop(shop) },
-                                onClickAddStore = { onClickAddStore(shop) }
-                            )
-                        }
-                    }
-                }*/
+                shops().forEach { shop ->
+                    HorizontalDivider()
+                    ShopListItem(
+                        shop = shop,
+                        onClickAddStore = { onClickAddStore(shop) },
+                        modifier = Modifier.clickable(onClick = { onClickShop(shop) }),
+                    )
+                }
             }
         }
     }
@@ -163,6 +145,8 @@ internal fun NavigationDrawerHeaderSection(
 private data class NavigationDrawerHeaderSectionState(
     val canAddShop: Boolean,
     val currentUser: CurrentUser?,
+    val switchAccount: Boolean = false,
+    val shops: List<Shop> = emptyList(),
 )
 
 private class NavigationDrawerHeaderSectionStatePreviewProvider :
@@ -175,12 +159,48 @@ private class NavigationDrawerHeaderSectionStatePreviewProvider :
             ),
             NavigationDrawerHeaderSectionState(
                 canAddShop = true,
+                currentUser = null,
+                switchAccount = true,
+            ),
+            NavigationDrawerHeaderSectionState(
+                canAddShop = true,
+                currentUser = null,
+                switchAccount = true,
+                shops = List(5) {
+                    Shop.DEFAULT.copy(id = it + 1L, isActivated = it == 1)
+                },
+            ),
+            NavigationDrawerHeaderSectionState(
+                canAddShop = true,
                 currentUser = CurrentUser(
                     uid = 1,
                     firstName = "John",
                     lastName = "Doe",
                     email = "william.henry.harrison@example-pet-store.com",
                 ),
+            ),
+            NavigationDrawerHeaderSectionState(
+                canAddShop = true,
+                switchAccount = true,
+                currentUser = CurrentUser(
+                    uid = 1,
+                    firstName = "John",
+                    lastName = "Doe",
+                    email = "william.henry.harrison@example-pet-store.com",
+                ),
+            ),
+            NavigationDrawerHeaderSectionState(
+                canAddShop = true,
+                switchAccount = true,
+                currentUser = CurrentUser(
+                    uid = 1,
+                    firstName = "John",
+                    lastName = "Doe",
+                    email = "william.henry.harrison@example-pet-store.com",
+                ),
+                shops = List(5) {
+                    Shop.DEFAULT.copy(id = it + 1L, isActivated = it == 1)
+                },
             ),
         )
 }
@@ -195,10 +215,13 @@ private fun NavigationDrawerHeaderSectionPreview(
         NavigationDrawerHeaderSection(
             canAddShop = state.canAddShop,
             currentUser = state.currentUser,
+            switchAccount = state.switchAccount,
+            shops = { state.shops },
             onClickAddShop = {},
             onClickSelectShop = {},
             onClickShop = {},
             onClickAddStore = {},
+            onClickSwitchAccount = {},
         )
     }
 }

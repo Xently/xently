@@ -22,4 +22,6 @@
     <string name="anonymous_email">anonymous@example.org</string>
     <string name="content_desc_open_navigation_drawer">Open navigation drawer</string>
     <string name="content_desc_topbar_menu">Show extra menu options</string>
+    <string name="action_content_desc_switch_account">Switch account</string>
+    <string name="content_desc_is_currently_selected">Is currently selected/active</string>
 </resources>

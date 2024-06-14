@@ -40,6 +40,7 @@ fun Error.asUiText(): UiText {
         DataError.Local.DISK_FULL -> UiText.StringResource(
             R.string.error_disk_full
         )
+
         EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)
         NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
         WebsiteError.INVALID_FORMAT -> UiText.StringResource(R.string.error_website_invalid_format)

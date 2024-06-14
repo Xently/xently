@@ -1,7 +1,6 @@
 package co.ke.xently.business
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -57,7 +56,12 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
-                            canAddShop = false,
+                            onClickSelectShop = {
+                                navController.navigate(SelectShop)
+                            },
+                            onClickSelectBranch = {
+                                navController.navigate(SelectStore)
+                            },
                             onClickAddStore = {
                                 navController.navigate(EditStoreNavGraph)
                             },
@@ -76,23 +80,17 @@ class MainActivity : ComponentActivity() {
                             onClickViewComments = {
                                 navController.navigate(ReviewCommentListScreen)
                             },
-                            onClickLogin = {
-                                navController.navigate(AuthenticationNavGraph)
-                            },
                             onClickLogout = {
                                 /*TODO*/
                             },
-                            onClickSelectBranch = {
-                                navController.navigate(SelectStore)
-                            },
-                            onClickShop = {
-                                /*TODO*/
-                            },
-                            onClickSelectShop = {
-                                navController.navigate(SelectShop)
+                            onClickLogin = {
+                                navController.navigate(AuthenticationNavGraph)
                             },
                             onClickAddShop = {
                                 navController.navigate(ShopNavGraph.EditShop)
+                            },
+                            onClickShop = {
+                                navController.navigate(SelectStore)
                             },
                             onClickQrCode = {
                                 /*TODO*/
@@ -144,14 +142,7 @@ class MainActivity : ComponentActivity() {
                                         it,
                                         inclusive = true
                                     )
-                                } ?: (
-                                        // TODO: Pop backstack up to non-select shop screen
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Pop backstack up to non-select shop screen...",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        )
+                                }
                             },
                         )
                     }

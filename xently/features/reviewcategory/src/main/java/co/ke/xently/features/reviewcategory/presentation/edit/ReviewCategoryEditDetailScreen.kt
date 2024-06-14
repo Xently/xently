@@ -97,6 +97,7 @@ internal fun ReviewCategoryEditDetailScreen(
                     else -> throw NotImplementedError()
                 }
             }
+
             is ReviewCategoryEditDetailEvent.Error -> {
                 snackbarHostState.showSnackbar(
                     event.error.asString(context = context),

@@ -9,6 +9,7 @@ import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.location.tracker.domain.Location
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Store(
@@ -38,6 +39,8 @@ data class Store(
     val telephone: String? = null,
     val shop: Shop = Shop(name = ""),
     val openingHours: List<OpeningHour> = emptyList(),
+    @Transient
+    val isActivated: Boolean = false,
 ) {
     override fun toString(): String {
         return name

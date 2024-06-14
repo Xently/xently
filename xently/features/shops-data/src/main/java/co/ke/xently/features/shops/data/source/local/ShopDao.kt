@@ -18,4 +18,7 @@ interface ShopDao {
 
     @Query("SELECT * FROM shops LIMIT 1")
     suspend fun first(): ShopEntity?
+
+    @Query("SELECT * FROM shops ORDER BY isActivated, id DESC LIMIT 10")
+    fun findTop10ShopsOrderByIsActivated(): Flow<List<ShopEntity>>
 }

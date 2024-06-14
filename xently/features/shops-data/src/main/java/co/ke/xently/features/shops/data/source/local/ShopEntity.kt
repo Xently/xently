@@ -9,4 +9,5 @@ data class ShopEntity(
     val shop: Shop,
     @PrimaryKey
     val id: Long = shop.id,
+    val isActivated: Boolean = false,
 )

@@ -23,6 +23,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import co.ke.xently.business.R
 import co.ke.xently.business.landing.domain.AppDestination
@@ -39,7 +41,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun LandingScreen(
     modifier: Modifier = Modifier,
-    canAddShop: Boolean,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
     onClickAddStore: (Shop?) -> Unit,
@@ -55,6 +56,9 @@ fun LandingScreen(
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
 ) {
+    val viewModel = hiltViewModel<LandingViewModel>()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val authenticationState = LocalAuthenticationState.current
@@ -77,11 +81,12 @@ fun LandingScreen(
         drawerState = drawerState,
         drawerContent = {
             LandingModalDrawerSheet(
-                canAddShop = canAddShop,
+                canAddShop = state.canAddShop,
                 selectedMenu = selectedMenu,
                 authenticationState = authenticationState,
                 onClickLogout = onClickLogout,
                 onClickLogin = onClickLogin,
+                shops = { state.shops },
                 onClickAddShop = { closeDrawer(); onClickAddShop() },
                 onClickSelectShop = { closeDrawer(); onClickSelectShop() },
                 onClickShop = { closeDrawer(); onClickShop(it) },
@@ -161,7 +166,7 @@ fun LandingScreen(
             }
 
             LandingScreenContent(
-                canAddShop = canAddShop,
+                canAddShop = state.canAddShop,
                 currentDestination = currentDestination,
                 onClickSelectShop = onClickSelectShop,
                 onClickSelectBranch = onClickSelectBranch,

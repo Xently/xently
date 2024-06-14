@@ -20,6 +20,10 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +46,7 @@ internal fun LandingModalDrawerSheet(
     selectedMenu: Menu,
     authenticationState: AuthenticationState,
     modifier: Modifier = Modifier,
+    shops: () -> List<Shop>,
     onClickLogout: () -> Unit,
     onClickLogin: () -> Unit,
     onClickMenu: (Menu) -> Unit,
@@ -56,6 +61,7 @@ internal fun LandingModalDrawerSheet(
                 .verticalScroll(rememberScrollState())
                 .weight(1f),
         ) {
+            var switchAccount by rememberSaveable { mutableStateOf(false) }
             NavigationDrawerHeaderSection(
                 canAddShop = canAddShop,
                 currentUser = authenticationState.currentUser,
@@ -63,6 +69,9 @@ internal fun LandingModalDrawerSheet(
                 onClickAddStore = onClickAddStore,
                 onClickSelectShop = onClickSelectShop,
                 onClickShop = onClickShop,
+                shops = shops,
+                switchAccount = switchAccount,
+                onClickSwitchAccount = { switchAccount = !switchAccount },
             )
             AnimatedVisibility(authenticationState.isSignOutInProgress) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -174,6 +183,7 @@ private fun ModalDrawerSheetPreview(
             selectedMenu = Menu.entries.random(),
             canAddShop = state.canAddShop,
             authenticationState = state.authenticationState,
+            shops = { emptyList() },
             onClickLogout = {},
             onClickLogin = {},
             onClickMenu = {},

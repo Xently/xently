@@ -3,6 +3,7 @@ package co.ke.xently.features.shops.data.domain
 import co.ke.xently.libraries.data.core.Link
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Shop(
@@ -12,6 +13,8 @@ data class Shop(
     val onlineShopUrl: String? = null,
     val slug: String = name.lowercase().replace(' ', '-'),
     val id: Long = -1,
+    @Transient
+    val isActivated: Boolean = false,
 ) {
     override fun toString(): String {
         return name

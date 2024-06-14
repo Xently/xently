@@ -141,6 +141,7 @@ internal fun StoreEditDetailScreen(
                     else -> throw NotImplementedError()
                 }
             }
+
             is StoreEditDetailEvent.Error -> {
                 if (event.error !is FieldError) {
                     snackbarHostState.showSnackbar(

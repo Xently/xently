@@ -14,4 +14,5 @@ interface ShopRepository {
     suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop>
     suspend fun deleteShop(shop: Shop): Result<Unit, DataError>
     suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local>
+    fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>>
 }

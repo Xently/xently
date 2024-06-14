@@ -13,6 +13,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -82,5 +83,16 @@ internal class ShopRepositoryImpl @Inject constructor(
             Timber.e(ex)
             return Result.Failure(DataError.Local.entries.random())
         }
+    }
+
+    override fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>> {
+        return database.shopDao().findTop10ShopsOrderByIsActivated()
+            .map { entities ->
+                entities.map { it.shop.copy(isActivated = true) }.ifEmpty {
+                    List(10) {
+                        Shop.DEFAULT.copy(id = it + 1L, isActivated = it == 1)
+                    }
+                }
+            }
     }
 }
