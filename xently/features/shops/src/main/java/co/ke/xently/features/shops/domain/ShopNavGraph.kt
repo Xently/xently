@@ -5,8 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object ShopNavGraph {
     @Serializable
-    data object SelectShop
-
-    @Serializable
     data object EditShop
 }

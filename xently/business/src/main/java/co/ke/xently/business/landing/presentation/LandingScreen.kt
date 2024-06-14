@@ -59,8 +59,15 @@ fun LandingScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val authenticationState = LocalAuthenticationState.current
 
+    val closeDrawer: () -> Unit = {
+        scope.launch {
+            if (drawerState.isOpen && !drawerState.isAnimationRunning) {
+                drawerState.close()
+            }
+        }
+    }
     BackHandler(enabled = drawerState.isOpen) {
-        scope.launch { drawerState.close() }
+        closeDrawer()
     }
     var selectedMenu by rememberSaveable { mutableStateOf(Menu.DASHBOARD) }
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DASHBOARD) }
@@ -75,10 +82,10 @@ fun LandingScreen(
                 authenticationState = authenticationState,
                 onClickLogout = onClickLogout,
                 onClickLogin = onClickLogin,
-                onClickAddShop = onClickAddShop,
-                onClickSelectShop = onClickSelectShop,
-                onClickShop = onClickShop,
-                onClickAddStore = onClickAddStore,
+                onClickAddShop = { closeDrawer(); onClickAddShop() },
+                onClickSelectShop = { closeDrawer(); onClickSelectShop() },
+                onClickShop = { closeDrawer(); onClickShop(it) },
+                onClickAddStore = { closeDrawer(); onClickAddStore(it) },
                 onClickMenu = {
                     when (it) {
                         Menu.QR_CODE -> onClickQrCode()
@@ -90,7 +97,7 @@ fun LandingScreen(
                         Menu.NOTIFICATIONS -> currentDestination = AppDestination.NOTIFICATIONS
                     }
                     selectedMenu = Menu.valueOf(currentDestination.name)
-                    scope.launch { drawerState.close() }
+                    closeDrawer()
                 },
             )
         },

@@ -5,14 +5,20 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import co.ke.xently.business.domain.InitialStoreSelectionRoute
+import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectShop
+import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectStore
 import co.ke.xently.business.domain.ReviewCommentListScreen
-import co.ke.xently.business.domain.SelectStore
 import co.ke.xently.business.domain.SettingsScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.landing.domain.LandingScreen
@@ -45,6 +51,9 @@ class MainActivity : ComponentActivity() {
 
             App(setting = themeSetting) {
                 val navController = rememberNavController()
+                var initialStoreSelectionRoute: InitialStoreSelectionRoute? by remember {
+                    mutableStateOf(null)
+                }
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
@@ -80,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                 /*TODO*/
                             },
                             onClickSelectShop = {
-                                navController.navigate(ShopNavGraph.SelectShop)
+                                navController.navigate(SelectShop)
                             },
                             onClickAddShop = {
                                 navController.navigate(ShopNavGraph.EditShop)
@@ -96,7 +105,12 @@ class MainActivity : ComponentActivity() {
                     authenticationNavigation(navController = navController)
                     editStoreNavigation(navController = navController)
                     editProductNavigation(navController = navController)
-                    composable<ShopNavGraph.SelectShop> {
+                    composable<SelectShop> {
+                        LaunchedEffect(Unit) {
+                            if (initialStoreSelectionRoute == null) {
+                                initialStoreSelectionRoute = SelectShop
+                            }
+                        }
                         ShopListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddShop = {
@@ -111,6 +125,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable<SelectStore> {
+                        LaunchedEffect(Unit) {
+                            if (initialStoreSelectionRoute == null) {
+                                initialStoreSelectionRoute = SelectStore
+                            }
+                        }
                         StoreListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddStore = {
@@ -120,12 +139,19 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(EditStoreNavGraph)
                             },
                             onStoreSelected = {
-                                // TODO: Pop backstack up to non-select shop screen
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    "Pop backstack up to non-select shop screen...",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                initialStoreSelectionRoute?.let {
+                                    navController.popBackStack(
+                                        it,
+                                        inclusive = true
+                                    )
+                                } ?: (
+                                        // TODO: Pop backstack up to non-select shop screen
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Pop backstack up to non-select shop screen...",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        )
                             },
                         )
                     }
