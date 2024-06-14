@@ -2,9 +2,12 @@ package co.ke.xently.features.products.presentation.utils
 
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.error.DataError
-import co.ke.xently.features.products.data.domain.error.Result
+import co.ke.xently.features.products.data.domain.error.DescriptionError
+import co.ke.xently.features.products.data.domain.error.Error
+import co.ke.xently.features.products.data.domain.error.NameError
+import co.ke.xently.features.products.data.domain.error.PriceError
 
-fun DataError.asUiText(): UiText {
+fun Error.asUiText(): UiText {
     return when (this) {
         DataError.Network.REQUEST_TIMEOUT -> UiText.StringResource(
             R.string.the_request_timed_out
@@ -38,9 +41,12 @@ fun DataError.asUiText(): UiText {
             R.string.error_disk_full
         )
 
+        NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
+        PriceError.INVALID -> UiText.StringResource(R.string.error_price_invalid)
+        PriceError.ZERO_OR_LESS -> UiText.StringResource(R.string.error_price_zero_or_less)
+        is DescriptionError.TooLong -> UiText.StringResource(
+            R.string.error_description_too_long,
+            arrayOf(acceptableLength),
+        )
     }
-}
-
-fun Result.Failure<*, DataError>.asErrorUiText(): UiText {
-    return error.asUiText()
 }

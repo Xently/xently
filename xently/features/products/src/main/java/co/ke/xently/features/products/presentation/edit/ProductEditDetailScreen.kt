@@ -52,14 +52,19 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.products.data.domain.error.DescriptionError
+import co.ke.xently.features.products.data.domain.error.NameError
+import co.ke.xently.features.products.data.domain.error.PriceError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
+import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
 import kotlinx.coroutines.flow.flowOf
+import kotlin.random.Random
 
 @Composable
 internal fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
@@ -200,6 +205,10 @@ internal fun ProductEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
+                isError = state.nameError != null,
+                supportingText = state.nameError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -218,6 +227,10 @@ internal fun ProductEditDetailScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
+                isError = state.unitPriceError != null,
+                supportingText = state.unitPriceError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -237,6 +250,10 @@ internal fun ProductEditDetailScreen(
                     imeAction = ImeAction.Done,
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
+                isError = state.descriptionError != null,
+                supportingText = state.descriptionError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
 
             Text(
@@ -298,6 +315,13 @@ private class ProductEditDetailUiStateParameterProvider :
     override val values: Sequence<ProductEditDetailScreenUiState>
         get() = sequenceOf(
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState()),
+            ProductEditDetailScreenUiState(
+                state = ProductEditDetailUiState(
+                    nameError = NameError.entries.random(),
+                    unitPriceError = PriceError.entries.random(),
+                    descriptionError = DescriptionError.TooLong(Random.nextInt(100, 200)),
+                )
+            ),
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState(product = product)),
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState(isLoading = true)),
         )

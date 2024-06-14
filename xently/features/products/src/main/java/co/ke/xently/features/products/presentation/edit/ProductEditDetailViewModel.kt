@@ -10,6 +10,8 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
+import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.products.data.domain.ProductDataValidator
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
@@ -35,6 +37,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
+    private val dataValidator: ProductDataValidator,
 ) : ViewModel() {
     private companion object {
         private const val KEY =
@@ -108,22 +111,22 @@ internal class ProductEditDetailViewModel @Inject constructor(
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
                     }
-                    val product = state.product.copy(
-                        name = state.name,
-                        unitPrice = state.unitPrice.toDouble(),
-                    )
-                    when (val result = repository.save(product = product)) {
-                        is Result.Failure -> {
-                            _event.send(
-                                ProductEditDetailEvent.Error(
-                                    result.error.asUiText(),
-                                    result.error,
-                                )
-                            )
-                        }
+                    val product = validatedProduct(state)
 
-                        is Result.Success -> {
-                            _event.send(ProductEditDetailEvent.Success(action))
+                    if (_uiState.value.isFormValid) {
+                        when (val result = repository.save(product = product)) {
+                            is Result.Success -> {
+                                _event.send(ProductEditDetailEvent.Success(action))
+                            }
+
+                            is Result.Failure -> {
+                                _event.send(
+                                    ProductEditDetailEvent.Error(
+                                        result.error.asUiText(),
+                                        result.error,
+                                    )
+                                )
+                            }
                         }
                     }
                 }.invokeOnCompletion {
@@ -133,5 +136,35 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun validatedProduct(state: ProductEditDetailUiState): Product {
+        var product = state.product
+
+        when (val result = dataValidator.validatedPrice(state.unitPrice)) {
+            is Result.Failure -> _uiState.update { it.copy(unitPriceError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(unitPriceError = null) }
+                product = product.copy(unitPrice = result.data)
+            }
+        }
+
+        when (val result = dataValidator.validatedName(state.name)) {
+            is Result.Failure -> _uiState.update { it.copy(nameError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(nameError = null) }
+                product = product.copy(name = result.data)
+            }
+        }
+
+        when (val result = dataValidator.validatedDescription(state.description)) {
+            is Result.Failure -> _uiState.update { it.copy(descriptionError = result.error) }
+            is Result.Success -> {
+                _uiState.update { it.copy(descriptionError = null) }
+                product = product.copy(description = result.data)
+            }
+        }
+
+        return product
     }
 }

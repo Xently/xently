@@ -374,11 +374,7 @@ internal fun StoreEditDetailScreen(
                         .padding(horizontal = 16.dp),
                     onTimeChange = { onAction(StoreEditDetailAction.ChangeOpeningHourTime(it)) },
                     onSelectedOpeningHourChange = {
-                        onAction(
-                            StoreEditDetailAction.ChangeOpeningHour(
-                                it
-                            )
-                        )
+                        onAction(StoreEditDetailAction.ChangeOpeningHour(it))
                     },
                     onOpenStatusChange = {
                         onAction(StoreEditDetailAction.ChangeOpeningHourOpenStatus(it))

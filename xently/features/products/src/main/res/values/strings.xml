@@ -24,4 +24,8 @@
     <string name="message_product_deleted">Product successfully deleted.</string>
     <string name="action_delete">Delete</string>
     <string name="message_product_saved_successfully">Product saved successfully.</string>
+    <string name="error_name_missing">Required field</string>
+    <string name="error_price_invalid">Invalid price.</string>
+    <string name="error_price_zero_or_less">Price must be more than zero.</string>
+    <string name="error_description_too_long">Description cannot be longer than %d characters.</string>
 </resources>
