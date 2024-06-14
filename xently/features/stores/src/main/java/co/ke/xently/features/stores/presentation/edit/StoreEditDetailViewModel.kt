@@ -1,5 +1,6 @@
 package co.ke.xently.features.stores.presentation.edit
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import co.ke.xently.features.stores.data.domain.StoreDataValidator
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
+import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -83,6 +85,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
             is StoreEditDetailAction.SelectCategory -> {
@@ -148,16 +151,42 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }
 
-            is StoreEditDetailAction.ChangeOpeningHour -> {
-
-            }
-
             is StoreEditDetailAction.ChangeOpeningHourOpenStatus -> {
-
+                val (dayOfWeek, isOpen) = action.dayOfWeekIsOpen
+                _uiState.update {
+                    it.copy(
+                        openingHours = it.openingHours.map { hour ->
+                            if (hour.dayOfWeek == dayOfWeek) {
+                                hour.copy(open = isOpen)
+                            } else {
+                                hour
+                            }
+                        },
+                    )
+                }
             }
 
             is StoreEditDetailAction.ChangeOpeningHourTime -> {
-                //TODO
+                val (dayOfWeek, openingHourTime) = action.dayOfWeekChangeOpeningHour
+                _uiState.update {
+                    it.copy(
+                        openingHours = it.openingHours.map { hour ->
+                            if (hour.dayOfWeek == dayOfWeek) {
+                                val time = Time(
+                                    hour = openingHourTime.state.hour,
+                                    minute = openingHourTime.state.minute,
+                                )
+                                if (openingHourTime.isOpenTime) {
+                                    hour.copy(openTime = time)
+                                } else {
+                                    hour.copy(closeTime = time)
+                                }
+                            } else {
+                                hour
+                            }
+                        },
+                    )
+                }
             }
 
             StoreEditDetailAction.ClickSave, StoreEditDetailAction.ClickSaveAndAddAnother -> {

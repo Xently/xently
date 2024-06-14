@@ -1,7 +1,7 @@
 package co.ke.xently.features.stores.presentation.edit
 
-import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
+import kotlinx.datetime.DayOfWeek
 
 internal sealed interface StoreEditDetailAction {
     data object ClickSave : StoreEditDetailAction
@@ -16,9 +16,9 @@ internal sealed interface StoreEditDetailAction {
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction
-    class ChangeOpeningHour(val openingHour: OpeningHour) : StoreEditDetailAction
-    class ChangeOpeningHourOpenStatus(val isOpen: Boolean) : StoreEditDetailAction
+    class ChangeOpeningHourOpenStatus(val dayOfWeekIsOpen: Pair<DayOfWeek, Boolean>) :
+        StoreEditDetailAction
     class ChangeDescription(val description: String) : StoreEditDetailAction
-    class ChangeOpeningHourTime(val time: co.ke.xently.features.openinghours.domain.ChangeOpeningHourTime) :
+    class ChangeOpeningHourTime(val dayOfWeekChangeOpeningHour: Pair<DayOfWeek, co.ke.xently.features.openinghours.domain.ChangeOpeningHourTime>) :
         StoreEditDetailAction
 }

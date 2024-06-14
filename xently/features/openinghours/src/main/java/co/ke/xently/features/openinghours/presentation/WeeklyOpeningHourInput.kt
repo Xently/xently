@@ -59,15 +59,15 @@ fun WeeklyOpeningHourInput(
     modifier: Modifier,
     enableInteraction: Boolean,
     openingHours: List<OpeningHour>,
-    onTimeChange: (ChangeOpeningHourTime) -> Unit,
-    onSelectedOpeningHourChange: (OpeningHour) -> Unit,
-    onOpenStatusChange: (Boolean) -> Unit,
+    onTimeChange: (Pair<DayOfWeek, ChangeOpeningHourTime>) -> Unit,
+    onOpenStatusChange: (Pair<DayOfWeek, Boolean>) -> Unit,
 ) {
     var initialHour by rememberSaveable { mutableIntStateOf(0) }
     var initialMinute by rememberSaveable { mutableIntStateOf(0) }
     var showingPicker by rememberSaveable { mutableStateOf(true) }
     var showTimePicker by rememberSaveable { mutableStateOf(false) }
     var isOpenTime by rememberSaveable { mutableStateOf(true) }
+    var activeDayOfWeek by rememberSaveable { mutableIntStateOf(-1) }
 
     if (showTimePicker) {
         val state = rememberTimePickerState(
@@ -97,11 +97,6 @@ fun WeeklyOpeningHourInput(
                         colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
                         onClick = { showingPicker = !showingPicker },
                     ) {
-                        val icon = if (showingPicker) {
-                            Icons.Outlined.Keyboard
-                        } else {
-                            Icons.Outlined.Schedule
-                        }
                         val contentDescriptionResource by remember(showingPicker) {
                             derivedStateOf {
                                 if (showingPicker) {
@@ -112,18 +107,23 @@ fun WeeklyOpeningHourInput(
                             }
                         }
                         Icon(
-                            icon,
+                            if (showingPicker) {
+                                Icons.Outlined.Keyboard
+                            } else {
+                                Icons.Outlined.Schedule
+                            },
                             contentDescription = stringResource(contentDescriptionResource),
                         )
                     }
                     TextButton(
                         onClick = {
-                            onTimeChange(ChangeOpeningHourTime(isOpenTime, state))
+                            onTimeChange(
+                                DayOfWeek(activeDayOfWeek) to
+                                        ChangeOpeningHourTime(isOpenTime, state),
+                            )
                             showTimePicker = false
                         },
-                    ) {
-                        Text(text = stringResource(R.string.ok_shorthand))
-                    }
+                    ) { Text(text = stringResource(R.string.ok_shorthand)) }
                 }
             },
             text = {
@@ -147,20 +147,19 @@ fun WeeklyOpeningHourInput(
                 to = openingHour.closeTime.toString(is24hour),
                 isOpen = openingHour.open,
                 onOpenStatusChange = {
-                    onSelectedOpeningHourChange(openingHour)
-                    onOpenStatusChange(it)
+                    onOpenStatusChange(openingHour.dayOfWeek to it)
                 },
                 onFromClick = {
-                    onSelectedOpeningHourChange(openingHour)
                     initialHour = openingHour.openTime.hour
                     initialMinute = openingHour.openTime.minute
+                    activeDayOfWeek = openingHour.dayOfWeek.isoDayNumber
                     showTimePicker = true
                     isOpenTime = true
                 },
                 onToClick = {
-                    onSelectedOpeningHourChange(openingHour)
                     initialHour = openingHour.closeTime.hour
                     initialMinute = openingHour.closeTime.minute
+                    activeDayOfWeek = openingHour.dayOfWeek.isoDayNumber
                     showTimePicker = true
                     isOpenTime = false
                 },
@@ -258,7 +257,6 @@ private fun WeeklyOpeningHourInputPreview() {
                 }
             },
             onTimeChange = {},
-            onSelectedOpeningHourChange = {},
             onOpenStatusChange = {},
         )
     }

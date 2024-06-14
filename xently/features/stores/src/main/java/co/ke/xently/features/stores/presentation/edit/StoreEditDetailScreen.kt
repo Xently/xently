@@ -367,15 +367,12 @@ internal fun StoreEditDetailScreen(
 
             if (state.openingHours.isNotEmpty()) {
                 WeeklyOpeningHourInput(
-                    enableInteraction = !state.disableFields,
-                    openingHours = state.openingHours,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    enableInteraction = !state.disableFields,
+                    openingHours = state.openingHours,
                     onTimeChange = { onAction(StoreEditDetailAction.ChangeOpeningHourTime(it)) },
-                    onSelectedOpeningHourChange = {
-                        onAction(StoreEditDetailAction.ChangeOpeningHour(it))
-                    },
                     onOpenStatusChange = {
                         onAction(StoreEditDetailAction.ChangeOpeningHourOpenStatus(it))
                     },
