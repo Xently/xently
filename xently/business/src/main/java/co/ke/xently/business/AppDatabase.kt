@@ -4,6 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
+import co.ke.xently.features.access.control.data.local.AccessControlDatabase
+import co.ke.xently.features.access.control.data.local.AccessControlEntity
+import co.ke.xently.features.access.control.data.local.RoomTypeConverters.AccessControlConverter
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.auth.data.source.User
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
@@ -46,6 +49,7 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
 @Database(
     version = 1,
     entities = [
+        AccessControlEntity::class,
         User::class,
         ShopEntity::class,
         StoreEntity::class,
@@ -62,6 +66,7 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
     ],
 )
 @TypeConverters(
+    AccessControlConverter::class,
     ShopConverter::class,
     StoreConverter::class,
     StoreCategoryConverter::class,
@@ -76,6 +81,7 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
     NotificationTopicConverter::class,
 )
 abstract class AppDatabase : RoomDatabase(),
+    AccessControlDatabase,
     AuthenticationDatabase,
     ShopDatabase,
     StoreDatabase,

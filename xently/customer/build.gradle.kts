@@ -108,6 +108,7 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:auth"))
+    implementation(project(":xently:features:access-control"))
     implementation(project(":xently:features:customers"))
     implementation(project(":xently:features:notifications"))
     implementation(project(":xently:features:notification-topic"))

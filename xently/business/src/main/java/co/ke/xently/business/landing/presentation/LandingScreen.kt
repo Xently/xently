@@ -65,7 +65,7 @@ fun LandingScreen(
 
     val closeDrawer: () -> Unit = {
         scope.launch {
-            if (drawerState.isOpen && !drawerState.isAnimationRunning) {
+            if (drawerState.isOpen) {
                 drawerState.close()
             }
         }

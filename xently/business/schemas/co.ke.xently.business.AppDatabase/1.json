@@ -2,8 +2,34 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "87077d2254abe6dc2d472cb0725a8670",
+    "identityHash": "19eded27a067db5fbcdc34f6cd76e04d",
     "entities": [
+      {
+        "tableName": "access_controls",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessControl` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "accessControl",
+            "columnName": "accessControl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
       {
         "tableName": "User",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `firstName` TEXT, `lastName` TEXT, `email` TEXT, `accessToken` TEXT, PRIMARY KEY(`id`))",
@@ -376,7 +402,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '87077d2254abe6dc2d472cb0725a8670')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '19eded27a067db5fbcdc34f6cd76e04d')"
     ]
   }
 }

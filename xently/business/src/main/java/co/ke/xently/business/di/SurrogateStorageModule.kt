@@ -1,6 +1,7 @@
 package co.ke.xently.business.di
 
 import co.ke.xently.business.AppDatabase
+import co.ke.xently.features.access.control.data.local.AccessControlDatabase
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
 import co.ke.xently.features.merchant.data.source.local.MerchantDatabase
@@ -22,6 +23,11 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class SurrogateStorageModule {
+    @Binds
+    abstract fun bindAccessControlDatabase(
+        database: AppDatabase,
+    ): AccessControlDatabase
+
     @Binds
     abstract fun bindAuthenticationDatabase(
         database: AppDatabase,
