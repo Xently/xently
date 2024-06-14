@@ -1,5 +1,6 @@
 package co.ke.xently.features.shops.data.source
 
+import co.ke.xently.features.merchant.data.domain.Merchant
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.ShopFilters
 import co.ke.xently.features.shops.data.domain.error.DataError
@@ -24,7 +25,7 @@ internal class ShopRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ShopDatabase,
 ) : ShopRepository {
-    override suspend fun save(shop: Shop): Result<Unit, DataError> {
+    override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, DataError> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)

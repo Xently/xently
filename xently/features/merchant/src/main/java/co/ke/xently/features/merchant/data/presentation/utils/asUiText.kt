@@ -1,11 +1,10 @@
-package co.ke.xently.features.shops.presentation.utils
+package co.ke.xently.features.merchant.data.presentation.utils
 
-import co.ke.xently.features.shops.R
-import co.ke.xently.features.shops.data.domain.error.DataError
-import co.ke.xently.features.shops.data.domain.error.EmailError
-import co.ke.xently.features.shops.data.domain.error.Error
-import co.ke.xently.features.shops.data.domain.error.NameError
-import co.ke.xently.features.shops.data.domain.error.WebsiteError
+import co.ke.xently.features.merchant.R
+import co.ke.xently.features.merchant.data.domain.error.DataError
+import co.ke.xently.features.merchant.data.domain.error.EmailError
+import co.ke.xently.features.merchant.data.domain.error.Error
+import co.ke.xently.features.merchant.data.domain.error.NameError
 
 fun Error.asUiText(): UiText {
     return when (this) {
@@ -40,8 +39,8 @@ fun Error.asUiText(): UiText {
         DataError.Local.DISK_FULL -> UiText.StringResource(
             R.string.error_disk_full
         )
+
         EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)
         NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
-        WebsiteError.INVALID_FORMAT -> UiText.StringResource(R.string.error_website_invalid_format)
     }
 }

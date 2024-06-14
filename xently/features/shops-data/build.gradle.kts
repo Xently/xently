@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:libraries:data-core"))
+    implementation(project(":xently:features:merchant-data"))
     implementation(project(":xently:libraries:pagination-data"))
 
     testImplementation(libs.androidx.room.testing)

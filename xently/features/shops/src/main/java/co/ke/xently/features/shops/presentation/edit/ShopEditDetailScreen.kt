@@ -44,13 +44,19 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.ke.xently.features.merchant.data.presentation.utils.asUiText
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
+import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.features.merchant.data.domain.error.EmailError as MerchantEmailError
+import co.ke.xently.features.merchant.data.domain.error.NameError as MerchantNameError
+import co.ke.xently.features.shops.data.domain.error.NameError as ShopNameError
+import co.ke.xently.features.shops.data.domain.error.WebsiteError as ShopWebsiteError
 
 @Composable
 fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
@@ -145,6 +151,10 @@ internal fun ShopEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
+                isError = state.nameError != null,
+                supportingText = state.nameError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -163,6 +173,10 @@ internal fun ShopEditDetailScreen(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next,
                 ),
+                isError = state.websiteError != null,
+                supportingText = state.websiteError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             Text(
                 stringResource(R.string.headline_merchant_details),
@@ -190,6 +204,10 @@ internal fun ShopEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
+                isError = state.merchantFirstNameError != null,
+                supportingText = state.merchantFirstNameError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -210,6 +228,10 @@ internal fun ShopEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
+                isError = state.merchantLastNameError != null,
+                supportingText = state.merchantLastNameError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -229,6 +251,10 @@ internal fun ShopEditDetailScreen(
                     keyboardType = KeyboardType.Email,
                     capitalization = KeyboardCapitalization.None,
                 ),
+                isError = state.merchantEmailAddressError != null,
+                supportingText = state.merchantEmailAddressError?.let {
+                    { Text(text = it.asUiText().asString(context = context)) }
+                },
             )
 
             PrimaryButton(
@@ -264,6 +290,15 @@ private class ShopEditDetailUiStateParameterProvider :
     override val values: Sequence<ShopEditDetailScreenUiState>
         get() = sequenceOf(
             ShopEditDetailScreenUiState(state = ShopEditDetailUiState()),
+            ShopEditDetailScreenUiState(
+                state = ShopEditDetailUiState(
+                    nameError = ShopNameError.entries.random(),
+                    websiteError = ShopWebsiteError.entries.random(),
+                    merchantFirstNameError = MerchantNameError.entries.random(),
+                    merchantLastNameError = MerchantNameError.entries.random(),
+                    merchantEmailAddressError = MerchantEmailError.entries.random(),
+                ),
+            ),
             ShopEditDetailScreenUiState(state = ShopEditDetailUiState(shop = shop)),
             ShopEditDetailScreenUiState(state = ShopEditDetailUiState(isLoading = true)),
         )

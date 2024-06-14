@@ -28,4 +28,7 @@
     <string name="headline_shop_details">Shop details</string>
     <string name="headline_merchant_details">Merchant details</string>
     <string name="top_bar_title_select_shop">Click To Select Shop</string>
+    <string name="error_email_invalid_format">Invalid email address format</string>
+    <string name="error_website_invalid_format">Invalid website format</string>
+    <string name="error_name_missing">Required field</string>
 </resources>

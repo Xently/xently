@@ -57,7 +57,6 @@ dependencies {
     implementation(libs.bundles.ui.navigation)
 
     implementation(libs.hilt.android)
-    implementation(project(":xently:features:merchant-data"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
@@ -70,6 +69,7 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:libraries:ui-pagination"))
+    implementation(project(":xently:features:merchant"))
     api(project(":xently:features:shops-data"))
 
     debugImplementation(libs.bundles.ui.debug)
