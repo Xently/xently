@@ -118,7 +118,7 @@ internal class UserRepositoryImpl @Inject constructor(
             }.body<UserEntity>().let {
                 database.withTransactionFacade {
                     database.userDao().deleteAll()
-                    database.userDao().insertAll(it)
+                    database.userDao().save(it)
                 }
             }
         }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insertAll(vararg users: UserEntity)
+    suspend fun save(vararg users: UserEntity)
 
     @Query("DELETE FROM user")
     suspend fun deleteAll()

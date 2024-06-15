@@ -16,6 +16,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
@@ -139,8 +140,29 @@ class HttpClientFactory(
                 }
             }
 
-            execute(request)
+            val originalCall = execute(request)
+
+            if (originalCall.response.status.value == HttpStatusCode.Unauthorized.value) {
+                Timber.tag(TAG)
+                    .i("Unauthorized. Attempting to re-authenticate using refresh token...")
+                val accessToken = accessTokenProvider.getFreshAccessToken(this@withPlugins)
+                if (accessToken.isNullOrBlank()) {
+                    Timber.tag(TAG)
+                        .w("Failed to configure authentication credentials from refresh token")
+                    originalCall
+                } else {
+                    Timber.tag(TAG).i("Successfully configured authentication credentials...")
+                    request.headers[HttpHeaders.Authorization] = "Bearer $accessToken"
+                    execute(request)
+                }
+            } else {
+                originalCall
+            }
         }
         return this
+    }
+
+    companion object {
+        private const val TAG = "HttpClientFactory"
     }
 }
