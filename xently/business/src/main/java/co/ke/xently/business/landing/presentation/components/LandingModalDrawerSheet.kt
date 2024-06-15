@@ -39,6 +39,7 @@ import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.data.auth.CurrentUser
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.openUrl
+import java.util.UUID
 
 @Composable
 internal fun LandingModalDrawerSheet(
@@ -150,9 +151,8 @@ private class ModalDrawerSheetStatePreviewProvider :
                 authenticationState = AuthenticationState(
                     isSignOutInProgress = true,
                     currentUser = CurrentUser(
-                        uid = 1,
-                        firstName = "John",
-                        lastName = "Doe",
+                        id = UUID.randomUUID().toString(),
+                        name = "John Doe",
                         email = "william.henry.harrison@example-pet-store.com"
                     ),
                 ),
@@ -162,9 +162,8 @@ private class ModalDrawerSheetStatePreviewProvider :
                 authenticationState = AuthenticationState(
                     isSignOutInProgress = true,
                     currentUser = CurrentUser(
-                        uid = 1,
-                        firstName = "John",
-                        lastName = "Doe",
+                        id = UUID.randomUUID().toString(),
+                        name = "John Doe",
                         email = "william.henry.harrison@example-pet-store.com"
                     ),
                 ),

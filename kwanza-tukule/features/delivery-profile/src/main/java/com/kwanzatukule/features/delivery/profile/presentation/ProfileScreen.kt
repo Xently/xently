@@ -49,7 +49,7 @@ fun ProfileScreen(
             )
             AnimatedVisibility(authenticationState.currentUser != null) {
                 Text(
-                    text = "You are signed in as ${authenticationState.currentUser?.displayName ?: "-"}.",
+                    text = "You are signed in as ${authenticationState.currentUser?.name ?: "Anonymous"}.",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),

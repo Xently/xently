@@ -34,6 +34,7 @@ import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThu
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.auth.CurrentUser
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import java.util.UUID
 
 @Composable
 internal fun NavigationDrawerHeaderSection(
@@ -74,7 +75,7 @@ internal fun NavigationDrawerHeaderSection(
                 },
                 headlineContent = {
                     Text(
-                        text = currentUser?.displayName ?: stringResource(R.string.anonymous),
+                        text = currentUser?.name ?: stringResource(R.string.anonymous),
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -173,9 +174,8 @@ private class NavigationDrawerHeaderSectionStatePreviewProvider :
             NavigationDrawerHeaderSectionState(
                 canAddShop = true,
                 currentUser = CurrentUser(
-                    uid = 1,
-                    firstName = "John",
-                    lastName = "Doe",
+                    id = UUID.randomUUID().toString(),
+                    name = "John Doe",
                     email = "william.henry.harrison@example-pet-store.com",
                 ),
             ),
@@ -183,9 +183,8 @@ private class NavigationDrawerHeaderSectionStatePreviewProvider :
                 canAddShop = true,
                 switchAccount = true,
                 currentUser = CurrentUser(
-                    uid = 1,
-                    firstName = "John",
-                    lastName = "Doe",
+                    id = UUID.randomUUID().toString(),
+                    name = "John Doe",
                     email = "william.henry.harrison@example-pet-store.com",
                 ),
             ),
@@ -193,9 +192,8 @@ private class NavigationDrawerHeaderSectionStatePreviewProvider :
                 canAddShop = true,
                 switchAccount = true,
                 currentUser = CurrentUser(
-                    uid = 1,
-                    firstName = "John",
-                    lastName = "Doe",
+                    id = UUID.randomUUID().toString(),
+                    name = "John Doe",
                     email = "william.henry.harrison@example-pet-store.com",
                 ),
                 shops = List(5) {

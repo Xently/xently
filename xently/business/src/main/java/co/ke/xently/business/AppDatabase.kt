@@ -8,7 +8,7 @@ import co.ke.xently.features.access.control.data.local.AccessControlDatabase
 import co.ke.xently.features.access.control.data.local.AccessControlEntity
 import co.ke.xently.features.access.control.data.local.RoomTypeConverters.AccessControlConverter
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
-import co.ke.xently.features.auth.data.source.User
+import co.ke.xently.features.auth.data.source.UserEntity
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
 import co.ke.xently.features.customers.data.source.local.CustomerEntity
 import co.ke.xently.features.customers.data.source.local.RoomTypeConverters.CustomerConverter
@@ -50,7 +50,7 @@ import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
     version = 1,
     entities = [
         AccessControlEntity::class,
-        User::class,
+        UserEntity::class,
         ShopEntity::class,
         StoreEntity::class,
         StoreCategoryEntity::class,

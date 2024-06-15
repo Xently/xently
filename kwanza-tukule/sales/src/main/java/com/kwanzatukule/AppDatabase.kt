@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import com.kwanzatukule.features.authentication.data.AuthenticationDatabase
-import com.kwanzatukule.features.authentication.data.User
+import com.kwanzatukule.features.authentication.data.UserEntity
 import com.kwanzatukule.features.cart.data.ShoppingCartDatabase
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.catalogue.data.RoomTypeConverters.ProductConverter
@@ -26,7 +26,7 @@ import com.kwanzatukule.libraries.data.route.data.RouteSummaryEntity
 @Database(
     version = 1,
     entities = [
-        User::class,
+        UserEntity::class,
         ShoppingCart.Item::class,
         SalesDashboardItemEntity::class,
         RouteEntity::class,

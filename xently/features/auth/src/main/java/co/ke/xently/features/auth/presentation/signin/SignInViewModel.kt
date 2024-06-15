@@ -36,10 +36,11 @@ internal class SignInViewModel @Inject constructor(
             SignInAction.TogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             is SignInAction.FinaliseGoogleSignIn -> {
                 viewModelScope.launch {
-                    _uiState.update {
+                    val user = _uiState.updateAndGet {
                         it.copy(isLoading = true)
-                    }
-                    when (val result = repository.signInWithGoogle(user = action.user)) {
+                    }.currentGoogleUser!!.copy(accessToken = action.accessToken)
+
+                    when (val result = repository.signInWithGoogle(user = user)) {
                         is Result.Failure -> {
                             _event.send(
                                 SignInEvent.Error(
@@ -59,7 +60,7 @@ internal class SignInViewModel @Inject constructor(
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
-                        it.copy(isLoading = false)
+                        it.copy(isLoading = false, currentGoogleUser = null)
                     }
                 }
             }
@@ -68,6 +69,7 @@ internal class SignInViewModel @Inject constructor(
                 viewModelScope.launch {
                     when (val result = authenticationHandler.signIn(action.activityContext)) {
                         is Result.Success -> {
+                            _uiState.update { it.copy(currentGoogleUser = result.data) }
                             _event.send(SignInEvent.GetGoogleAccessToken(result.data))
                         }
 

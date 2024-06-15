@@ -36,10 +36,11 @@ internal class UserRepositoryImpl @Inject constructor(
         return database.userDao().findFirst().map { user ->
             if (user == null) null else {
                 CurrentUser(
-                    uid = user.id,
-                    firstName = user.firstName,
-                    lastName = user.lastName,
+                    id = user.id,
+                    name = user.name,
                     email = user.email,
+                    emailVerified = user.emailVerified,
+                    profilePicUrl = user.profilePicUrl,
                 )
             }
         }
@@ -114,7 +115,7 @@ internal class UserRepositoryImpl @Inject constructor(
                 }
                 contentType(ContentType.Application.Json)
                 setBody(body)
-            }.body<User>().let {
+            }.body<UserEntity>().let {
                 database.withTransactionFacade {
                     database.userDao().deleteAll()
                     database.userDao().insertAll(it)

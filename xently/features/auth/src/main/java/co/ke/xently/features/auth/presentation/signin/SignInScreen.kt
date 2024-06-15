@@ -1,7 +1,7 @@
 package co.ke.xently.features.auth.presentation.signin
 
 import android.app.Activity
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.compose.animation.AnimatedVisibility
@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -80,6 +81,24 @@ internal fun SignInScreen(
 
     val context = LocalContext.current
 
+    val scope = rememberCoroutineScope()
+
+    val resultLauncher =
+        rememberLauncherForActivityResult(StartIntentSenderForResult()) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                val result = Identity.getAuthorizationClient(context)
+                    .getAuthorizationResultFromIntent(activityResult.data)
+                onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
+            } else {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.error_google_sign_in_failed),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
@@ -94,33 +113,32 @@ internal fun SignInScreen(
             is SignInEvent.GetGoogleAccessToken -> {
                 val authorizationHandler = GoogleAuthorizationHandler.create(
                     context = context,
-                    user = event.user,
+                    accountId = event.user.id,
                 )
                 val result = authorizationHandler.handleAuthorization()
                 if (result.hasResolution()) {
-                    onAction(SignInAction.FinaliseGoogleSignIn(event.user.copy(accessToken = result.accessToken)))
+                    onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
                 } else {
-                    val resultLauncher = (context as ComponentActivity).registerForActivityResult(
-                        StartIntentSenderForResult()
-                    ) {
-                        if (it.resultCode == Activity.RESULT_OK) {
-                            val authorizationResult = Identity.getAuthorizationClient(context)
-                                .getAuthorizationResultFromIntent(it.data)
-                            onAction(SignInAction.FinaliseGoogleSignIn(event.user.copy(accessToken = authorizationResult.accessToken)))
-                        } else {
-                            launch {
-                                snackbarHostState.showSnackbar(
-                                    context.getString(R.string.error_google_sign_in_failed),
-                                    duration = SnackbarDuration.Long,
-                                )
-                            }
+                    val pendingIntent = result.pendingIntent
+                    when {
+                        pendingIntent == null && result.accessToken != null -> {
+                            onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
+                        }
+
+                        pendingIntent == null -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.error_google_sign_in_failed),
+                                duration = SnackbarDuration.Long,
+                            )
+                        }
+
+                        else -> {
+                            resultLauncher.launch(
+                                IntentSenderRequest.Builder(pendingIntent)
+                                    .build(),
+                            )
                         }
                     }
-
-                    resultLauncher.launch(
-                        IntentSenderRequest.Builder(result.pendingIntent!!)
-                            .build(),
-                    )
                 }
             }
         }

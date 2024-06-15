@@ -3,7 +3,6 @@ package co.ke.xently.features.auth.domain
 import android.accounts.Account
 import android.content.Context
 import android.os.CancellationSignal
-import co.ke.xently.features.auth.data.domain.GoogleUser
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
@@ -19,14 +18,14 @@ fun interface GoogleAuthorizationHandler {
     suspend fun handleAuthorization(): AuthorizationResult
 
     companion object {
-        fun create(context: Context, user: GoogleUser): GoogleAuthorizationHandler {
+        fun create(context: Context, accountId: String?): GoogleAuthorizationHandler {
             return GoogleAuthorizationHandler {
                 val requestedScopes = listOf(Scopes.EMAIL, Scopes.PROFILE, Scopes.OPEN_ID)
                     .map(::Scope)
 
                 val authorizationRequest = AuthorizationRequest.builder()
                     .setRequestedScopes(requestedScopes)
-                    .setAccount(Account(user.id, "com.google"))
+                    .setAccount(Account(accountId, "com.google"))
                     .build()
 
                 withContext(Dispatchers.IO) {
