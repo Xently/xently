@@ -96,7 +96,6 @@ dependencies {
     implementation(libs.adaptive.navigation)
 
     implementation(libs.hilt.android)
-    implementation(project(":xently:features:reviewcategory"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
@@ -110,6 +109,7 @@ dependencies {
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:auth"))
     implementation(project(":xently:features:access-control"))
+    implementation(project(":xently:features:reviewcategory"))
     implementation(project(":xently:features:customers"))
     implementation(project(":xently:features:merchant"))
     implementation(project(":xently:features:notifications"))
