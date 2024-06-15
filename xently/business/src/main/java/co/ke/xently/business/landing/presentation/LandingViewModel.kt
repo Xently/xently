@@ -6,6 +6,7 @@ import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
+import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
 import co.ke.xently.features.auth.presentation.utils.asUiText
 import co.ke.xently.features.shops.data.source.ShopRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ internal class LandingViewModel @Inject constructor(
     private val shopRepository: ShopRepository,
     private val userRepository: UserRepository,
     private val accessControlRepository: AccessControlRepository,
+    private val googleAuthenticationHandler: GoogleAuthenticationHandler,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LandingUiState())
     val uiState = _uiState.asStateFlow()
@@ -57,10 +59,18 @@ internal class LandingViewModel @Inject constructor(
                     }
                     when (val result = signOut()) {
                         is Result.Failure -> {
-                            _event.send(LandingEvent.Error(result.error.asUiText(), result.error))
+                            _event.send(
+                                LandingEvent.Error(
+                                    error = result.error.asUiText(),
+                                    type = result.error,
+                                )
+                            )
                         }
 
-                        is Result.Success -> _event.send(LandingEvent.Success)
+                        is Result.Success -> {
+                            googleAuthenticationHandler.signOut()
+                            _event.send(LandingEvent.Success)
+                        }
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
