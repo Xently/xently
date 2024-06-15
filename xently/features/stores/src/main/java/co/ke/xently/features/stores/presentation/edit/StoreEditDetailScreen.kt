@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -52,9 +54,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.openinghours.presentation.WeeklyOpeningHourInput
 import co.ke.xently.features.shops.data.domain.Shop
@@ -74,11 +73,9 @@ import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.m3.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
@@ -92,7 +89,7 @@ internal fun StoreEditDetailScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
-    val categories = viewModel.categories.collectAsLazyPagingItems()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     StoreEditDetailScreen(
         state = state,
@@ -110,7 +107,7 @@ internal fun StoreEditDetailScreen(
 internal fun StoreEditDetailScreen(
     state: StoreEditDetailUiState,
     event: StoreEditDetailEvent?,
-    categories: LazyPagingItems<StoreCategory>,
+    categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickPickLocation: (Location) -> Unit,
@@ -190,29 +187,22 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            if (categories.itemCount > 0) {
-                PaginatedContentLazyRow(
+            if (categories.isNotEmpty()) {
+                LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    items = categories,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
                 ) {
-                    items(
-                        categories.itemCount,
-                        key = { categories[it]?.name ?: ">>>$it<<<" },
-                    ) { index ->
-                        val item = categories[index]
-                        if (item != null) {
-                            StoreCategoryFilterChip(
-                                item = item,
-                                onClickSelectCategory = {
-                                    onAction(StoreEditDetailAction.SelectCategory(item))
-                                },
-                                onClickRemoveCategory = {
-                                    onAction(StoreEditDetailAction.RemoveCategory(item))
-                                },
-                            )
-                        }
+                    items(categories, key = { it.name }) { item ->
+                        StoreCategoryFilterChip(
+                            item = item,
+                            onClickSelectCategory = {
+                                onAction(StoreEditDetailAction.SelectCategory(item))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(StoreEditDetailAction.RemoveCategory(item))
+                            },
+                        )
                     }
                 }
             }
@@ -405,14 +395,12 @@ internal fun StoreEditDetailScreen(
 
 private class StoreEditDetailScreenUiState(
     val state: StoreEditDetailUiState,
-    val categories: PagingData<StoreCategory> = PagingData.from(
-        List(10) {
-            StoreCategory(
-                name = "Category $it",
-                selected = it < 2,
-            )
-        },
-    ),
+    val categories: List<StoreCategory> = List(10) {
+        StoreCategory(
+            name = "Category $it",
+            selected = it < 2,
+        )
+    },
 )
 
 private class StoreEditDetailUiStateParameterProvider :
@@ -455,12 +443,11 @@ private fun StoreEditDetailScreenPreview(
     @PreviewParameter(StoreEditDetailUiStateParameterProvider::class)
     state: StoreEditDetailScreenUiState,
 ) {
-    val categories = flowOf(state.categories).collectAsLazyPagingItems()
     XentlyTheme {
         StoreEditDetailScreen(
             state = state.state,
             event = null,
-            categories = categories,
+            categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},

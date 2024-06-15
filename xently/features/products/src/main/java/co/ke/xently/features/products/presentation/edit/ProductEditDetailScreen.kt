@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -46,9 +48,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
@@ -62,8 +61,6 @@ import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
-import kotlinx.coroutines.flow.flowOf
 import kotlin.random.Random
 
 @Composable
@@ -72,7 +69,7 @@ internal fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack:
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
-    val categories = viewModel.categories.collectAsLazyPagingItems()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     ProductEditDetailScreen(
         state = state,
@@ -89,7 +86,7 @@ internal fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack:
 internal fun ProductEditDetailScreen(
     state: ProductEditDetailUiState,
     event: ProductEditDetailEvent?,
-    categories: LazyPagingItems<ProductCategory>,
+    categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ProductEditDetailAction) -> Unit,
@@ -164,29 +161,22 @@ internal fun ProductEditDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            if (categories.itemCount > 0) {
-                PaginatedContentLazyRow(
+            if (categories.isNotEmpty()) {
+                LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    items = categories,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
                 ) {
-                    items(
-                        categories.itemCount,
-                        key = { categories[it]?.name ?: ">>>$it<<<" },
-                    ) { index ->
-                        val item = categories[index]
-                        if (item != null) {
-                            ProductCategoryFilterChip(
-                                item = item,
-                                onClickSelectCategory = {
-                                    onAction(ProductEditDetailAction.SelectCategory(item))
-                                },
-                                onClickRemoveCategory = {
-                                    onAction(ProductEditDetailAction.RemoveCategory(item))
-                                },
-                            )
-                        }
+                    items(categories, key = { it.name }) { item ->
+                        ProductCategoryFilterChip(
+                            item = item,
+                            onClickSelectCategory = {
+                                onAction(ProductEditDetailAction.SelectCategory(item))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(ProductEditDetailAction.RemoveCategory(item))
+                            },
+                        )
                     }
                 }
             }
@@ -296,14 +286,12 @@ internal fun ProductEditDetailScreen(
 
 private class ProductEditDetailScreenUiState(
     val state: ProductEditDetailUiState,
-    val categories: PagingData<ProductCategory> = PagingData.from(
-        List(10) {
-            ProductCategory(
-                name = "Category $it",
-                selected = it < 2,
-            )
-        },
-    ),
+    val categories: List<ProductCategory> = List(10) {
+        ProductCategory(
+            name = "Category $it",
+            selected = it < 2,
+        )
+    },
 )
 
 private class ProductEditDetailUiStateParameterProvider :
@@ -334,12 +322,11 @@ private fun ProductEditDetailScreenPreview(
     @PreviewParameter(ProductEditDetailUiStateParameterProvider::class)
     state: ProductEditDetailScreenUiState,
 ) {
-    val categories = flowOf(state.categories).collectAsLazyPagingItems()
     XentlyTheme {
         ProductEditDetailScreen(
             state = state.state,
             event = null,
-            categories = categories,
+            categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},

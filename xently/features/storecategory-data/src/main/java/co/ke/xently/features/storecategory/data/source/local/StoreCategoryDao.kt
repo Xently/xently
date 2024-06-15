@@ -10,12 +10,12 @@ interface StoreCategoryDao {
     @Insert
     suspend fun insertAll(vararg storeCategories: StoreCategoryEntity)
 
+    @Insert
+    suspend fun insertAll(storeCategories: List<StoreCategoryEntity>)
+
     @Query("DELETE FROM store_categories")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM store_categories LIMIT 1")
-    fun findFirst(): Flow<StoreCategoryEntity?>
-
-    @Query("SELECT * FROM store_categories LIMIT 1")
-    suspend fun first(): StoreCategoryEntity?
+    @Query("SELECT * FROM store_categories")
+    fun findAll(): Flow<List<StoreCategoryEntity>>
 }

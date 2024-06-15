@@ -4,11 +4,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import androidx.paging.map
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import co.ke.xently.features.stores.data.domain.Store
@@ -17,18 +12,19 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
@@ -53,22 +49,19 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val _event = Channel<StoreEditDetailEvent>()
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
 
-    val categories: Flow<PagingData<StoreCategory>> =
+    val categories: StateFlow<List<StoreCategory>> =
         savedStateHandle.getStateFlow(KEY, emptySet<StoreCategory>())
             .flatMapLatest { selectedCategories ->
-                Pager(
-                    PagingConfig(
-                        pageSize = 20,
-                        initialLoadSize = 20,
-                    )
-                ) {
-                    XentlyPagingSource { url ->
-                        storeCategoryRepository.getCategories(url)
+                storeCategoryRepository.getCategories(null).map {
+                    it.map { category ->
+                        category.copy(selected = category in selectedCategories)
                     }
-                }.flow.map { data ->
-                    data.map { it.copy(selected = it in selectedCategories) }
                 }
-            }.cachedIn(viewModelScope)
+            }.stateIn(
+                scope = viewModelScope,
+                initialValue = emptyList(),
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            )
 
     init {
         viewModelScope.launch {

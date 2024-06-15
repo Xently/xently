@@ -17,7 +17,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 
 @Singleton
 internal class AccessControlRepositoryImpl @Inject constructor(
@@ -35,7 +35,7 @@ internal class AccessControlRepositoryImpl @Inject constructor(
             .map { (it?.accessControl ?: save()).copyWithDefaultMissingKeys() }
             .onEmpty { emit(save().copyWithDefaultMissingKeys()) }
             .onStart {
-                val refreshInterval = 20.seconds
+                val refreshInterval = 1.minutes
                 while (true) {
                     try {
                         emit(save().copyWithDefaultMissingKeys())

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +47,6 @@ import co.ke.xently.features.products.presentation.list.components.ProductListIt
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
-import co.ke.xently.libraries.ui.pagination.components.PaginatedContentLazyRow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -60,7 +61,7 @@ fun ProductListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
     val products = viewModel.products.collectAsLazyPagingItems()
-    val categories = viewModel.categories.collectAsLazyPagingItems()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     ProductListScreen(
         state = state,
@@ -81,7 +82,7 @@ internal fun ProductListScreen(
     state: ProductListUiState,
     event: ProductListEvent?,
     products: LazyPagingItems<Product>,
-    categories: LazyPagingItems<ProductCategory>,
+    categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
@@ -149,29 +150,22 @@ internal fun ProductListScreen(
                     placeholder = stringResource(R.string.search_products_placeholder),
                 )*/
 
-                if (categories.itemCount > 0) {
-                    PaginatedContentLazyRow(
+                if (categories.isNotEmpty()) {
+                    LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        items = categories,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                     ) {
-                        items(
-                            categories.itemCount,
-                            key = { categories[it]?.name ?: ">>>$it<<<" },
-                        ) { index ->
-                            val item = categories[index]
-                            if (item != null) {
-                                ProductCategoryFilterChip(
-                                    item = item,
-                                    onClickSelectCategory = {
-                                        onAction(ProductListAction.SelectCategory(item))
-                                    },
-                                    onClickRemoveCategory = {
-                                        onAction(ProductListAction.RemoveCategory(item))
-                                    },
-                                )
-                            }
+                        items(categories, key = { it.name }) { item ->
+                            ProductCategoryFilterChip(
+                                item = item,
+                                onClickSelectCategory = {
+                                    onAction(ProductListAction.SelectCategory(item))
+                                },
+                                onClickRemoveCategory = {
+                                    onAction(ProductListAction.RemoveCategory(item))
+                                },
+                            )
                         }
                     }
                 }
@@ -240,14 +234,12 @@ private class ProductListScreenUiState(
             )
         },
     ),
-    val categories: PagingData<ProductCategory> = PagingData.from(
-        List(10) {
-            ProductCategory(
-                name = "Category $it",
-                selected = it < 2,
-            )
-        },
-    ),
+    val categories: List<ProductCategory> = List(10) {
+        ProductCategory(
+            name = "Category $it",
+            selected = it < 2,
+        )
+    },
 )
 
 private class ProductListUiStateParameterProvider :
@@ -266,13 +258,12 @@ private fun ProductListScreenPreview(
     state: ProductListScreenUiState,
 ) {
     val products = flowOf(state.products).collectAsLazyPagingItems()
-    val categories = flowOf(state.categories).collectAsLazyPagingItems()
     XentlyTheme {
         ProductListScreen(
             state = state.state,
             event = null,
             products = products,
-            categories = categories,
+            categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickAddProduct = {},
             onClickEditProduct = {},

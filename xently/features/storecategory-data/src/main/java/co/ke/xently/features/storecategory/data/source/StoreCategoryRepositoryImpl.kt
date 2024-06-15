@@ -1,39 +1,63 @@
 package co.ke.xently.features.storecategory.data.source
 
+import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
-import co.ke.xently.features.storecategory.data.domain.error.DataError
-import co.ke.xently.features.storecategory.data.domain.error.Result
 import co.ke.xently.features.storecategory.data.source.local.StoreCategoryDatabase
+import co.ke.xently.features.storecategory.data.source.local.StoreCategoryEntity
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.flow.onStart
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.random.Random
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.minutes
 
 @Singleton
 internal class StoreCategoryRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: StoreCategoryDatabase,
+    private val accessControlRepository: AccessControlRepository,
 ) : StoreCategoryRepository {
-    override suspend fun save(storeCategory: StoreCategory): Result<Unit, DataError> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun findById(id: Long): Flow<Result<StoreCategory, DataError>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getCategories(url: String?): PagedResponse<StoreCategory> {
-        val categories = List(Random.nextInt(10, 20)) {
-            StoreCategory(name = "Category ${it + 1}")
+    override suspend fun getCategories(url: String?): Flow<List<StoreCategory>> {
+        val urlString = url ?: accessControlRepository.getAccessControl().storeCategoriesUrl
+        suspend fun save(): List<StoreCategory> {
+            val categories = httpClient.get(urlString).body<PagedResponse<StoreCategory>>()
+                .getNullable(lookupKey = "storeCategoryApiResponses")
+                ?: emptyList()
+            database.withTransactionFacade {
+                database.storeCategoryDao().deleteAll()
+                database.storeCategoryDao().insertAll(categories.map { StoreCategoryEntity(it) })
+            }
+            return categories
         }
-        delay(Random.nextLong(2_000))
-        return PagedResponse(embedded = mapOf("views" to categories))
-        return httpClient.get(url ?: "https://localhost")
-            .body()
+        return database.storeCategoryDao().findAll()
+            .map { it.map { entity -> entity.storeCategory }.ifEmpty { save() } }
+            .onEmpty { emit(save()) }
+            .onStart {
+                val refreshInterval = 10.minutes
+                while (true) {
+                    try {
+                        emit(save())
+                    } catch (ex: Exception) {
+                        if (ex is CancellationException) throw ex
+                        emit(emptyList())
+                    }
+                    Timber.tag(TAG).i("Waiting %s before another check...", refreshInterval)
+                    delay(refreshInterval)
+                }
+            }
+            .catch { emit(emptyList()) }
+    }
+
+    companion object {
+        private val TAG = StoreCategoryRepository::class.java.simpleName
     }
 }

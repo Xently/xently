@@ -7,7 +7,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
@@ -21,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combineTransform
@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -54,21 +55,19 @@ internal class ProductListViewModel @Inject constructor(
     private val _selectedCategories =
         savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
 
-    val categories: Flow<PagingData<ProductCategory>> = _selectedCategories
-        .flatMapLatest { selectedCategories ->
-            Pager(
-                PagingConfig(
-                    pageSize = 20,
-                    initialLoadSize = 20,
-                )
-            ) {
-                XentlyPagingSource { url ->
-                    productCategoryRepository.getCategories(url)
+    val categories: StateFlow<List<ProductCategory>> =
+        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
+            .flatMapLatest { selectedCategories ->
+                productCategoryRepository.getCategories(null).map {
+                    it.map { category ->
+                        category.copy(selected = category in selectedCategories)
+                    }
                 }
-            }.flow.map { data ->
-                data.map { it.copy(selected = it in selectedCategories) }
-            }
-        }.cachedIn(viewModelScope)
+            }.stateIn(
+                scope = viewModelScope,
+                initialValue = emptyList(),
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            )
 
     private val _filters = MutableStateFlow(ProductFilters())
 

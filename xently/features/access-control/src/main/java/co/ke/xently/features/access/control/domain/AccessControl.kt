@@ -25,6 +25,18 @@ data class AccessControl(
         get() = links["email-password-sign-up"]!!.hrefWithoutQueryParamTemplates()
     val requestPasswordResetUrl: String
         get() = links["request-password-reset"]!!.hrefWithoutQueryParamTemplates()
+    val storeCategoriesUrl: String
+        get() = links["store-categories"]!!.hrefWithoutQueryParamTemplates()
+    val productCategoriesUrl: String
+        get() = links["product-categories"]!!.hrefWithoutQueryParamTemplates()
+    val myNotificationsUrl: String
+        get() = links["my-notifications"]!!.hrefWithoutQueryParamTemplates()
+    val upsertFcmDeviceIdUrl: String
+        get() = links["upsert-fcm-device-id"]!!.hrefWithoutQueryParamTemplates()
+    val removeFcmDeviceIdUrl: String
+        get() = links["remove-fcm-device-id"]!!.hrefWithoutQueryParamTemplates()
+    val shopsAssociatedWithMyAccountUrl: String
+        get() = links["shops-associated-with-my-account"]!!.hrefWithoutQueryParamTemplates()
 
     companion object {
         private val BASE_URLS = mapOf(

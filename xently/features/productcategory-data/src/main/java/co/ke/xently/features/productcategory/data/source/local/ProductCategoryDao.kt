@@ -10,12 +10,12 @@ interface ProductCategoryDao {
     @Insert
     suspend fun insertAll(vararg productCategories: ProductCategoryEntity)
 
+    @Insert
+    suspend fun insertAll(productCategories: List<ProductCategoryEntity>)
+
     @Query("DELETE FROM product_categories")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM product_categories LIMIT 1")
-    fun findFirst(): Flow<ProductCategoryEntity?>
-
-    @Query("SELECT * FROM product_categories LIMIT 1")
-    suspend fun first(): ProductCategoryEntity?
+    @Query("SELECT * FROM product_categories")
+    fun findAll(): Flow<List<ProductCategoryEntity>>
 }
