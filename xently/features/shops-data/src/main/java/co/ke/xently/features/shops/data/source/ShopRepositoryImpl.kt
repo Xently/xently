@@ -1,19 +1,22 @@
 package co.ke.xently.features.shops.data.source
 
+import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.merchant.data.domain.Merchant
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.ShopFilters
 import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
-import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.features.shops.data.source.local.ShopEntity
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +28,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class ShopRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ShopDatabase,
+    private val accessControlRepository: AccessControlRepository,
 ) : ShopRepository {
     override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, DataError> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
@@ -43,22 +47,18 @@ internal class ShopRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop> {
-        val shops = List(20) {
-            Shop(
-                id = it + 1L,
-                name = "Shop name ${it + 1}",
-                slug = "shop-name-${it + 1}",
-                onlineShopUrl = "https://example.com",
-                links = mapOf(
-                    "self" to Link(href = "https://example.com/${it + 1}"),
-                    "add-store" to Link(href = "https://example.com/edit"),
-                ),
-            )
-        }
-        delay(Random.nextLong(2_000))
-        return PagedResponse(embedded = mapOf("views" to shops))
-        return httpClient.get(url ?: "https://localhost")
-            .body()
+        val urlString =
+            url ?: accessControlRepository.getAccessControl().shopsAssociatedWithMyAccountUrl
+        return httpClient.get(urlString = urlString)
+            .body<PagedResponse<Shop>>().let { pagedResponse ->
+                val shops = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
+                coroutineScope {
+                    launch {
+                        database.shopDao().insertAll(shops.map { ShopEntity(it) })
+                    }
+                }
+                pagedResponse.copy(embedded = mapOf("views" to shops))
+            }
     }
 
     override suspend fun deleteShop(shop: Shop): Result<Unit, DataError> {
@@ -88,11 +88,7 @@ internal class ShopRepositoryImpl @Inject constructor(
     override fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>> {
         return database.shopDao().findTop10ShopsOrderByIsActivated()
             .map { entities ->
-                entities.map { it.shop.copy(isActivated = true) }.ifEmpty {
-                    List(10) {
-                        Shop.DEFAULT.copy(id = it + 1L, isActivated = it == 1)
-                    }
-                }
+                entities.map { it.shop.copy(isActivated = it.isActivated) }
             }
     }
 }
