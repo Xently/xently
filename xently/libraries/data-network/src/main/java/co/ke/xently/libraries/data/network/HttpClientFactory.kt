@@ -45,7 +45,7 @@ class HttpClientFactory(
 ) {
     operator fun invoke(): HttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = if (!BuildConfig.DEBUG) {
+            level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
                 redactHeader(HttpHeaders.Authorization)
