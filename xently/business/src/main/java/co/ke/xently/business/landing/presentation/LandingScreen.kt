@@ -59,9 +59,47 @@ fun LandingScreen(
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LandingScreen(
+        state = state,
+        modifier = modifier,
+        onClickSelectShop = onClickSelectShop,
+        onClickSelectBranch = onClickSelectBranch,
+        onClickAddStore = onClickAddStore,
+        onClickEditStore = onClickEditStore,
+        onClickAddProduct = onClickAddProduct,
+        onClickEditProduct = onClickEditProduct,
+        onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+        onClickViewComments = onClickViewComments,
+        onClickLogout = onClickLogout,
+        onClickLogin = onClickLogin,
+        onClickAddShop = onClickAddShop,
+        onClickShop = onClickShop,
+        onClickQrCode = onClickQrCode,
+        onClickSettings = onClickSettings,
+    )
+}
+
+@Composable
+internal fun LandingScreen(
+    modifier: Modifier = Modifier,
+    state: LandingUiState,
+    onClickSelectShop: () -> Unit,
+    onClickSelectBranch: () -> Unit,
+    onClickAddStore: (Shop?) -> Unit,
+    onClickEditStore: (Store) -> Unit,
+    onClickAddProduct: () -> Unit,
+    onClickEditProduct: (Product) -> Unit,
+    onClickAddNewReviewCategory: () -> Unit,
+    onClickViewComments: (ReviewCategory) -> Unit,
+    onClickLogout: () -> Unit,
+    onClickLogin: () -> Unit,
+    onClickAddShop: () -> Unit,
+    onClickShop: (Shop) -> Unit,
+    onClickQrCode: () -> Unit,
+    onClickSettings: () -> Unit,
+) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val authenticationState = LocalAuthenticationState.current
 
     val closeDrawer: () -> Unit = {
         scope.launch {
@@ -80,6 +118,8 @@ fun LandingScreen(
         modifier = modifier,
         drawerState = drawerState,
         drawerContent = {
+            val authenticationState = LocalAuthenticationState.current
+
             LandingModalDrawerSheet(
                 canAddShop = state.canAddShop,
                 selectedMenu = selectedMenu,
