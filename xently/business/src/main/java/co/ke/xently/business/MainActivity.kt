@@ -80,9 +80,6 @@ class MainActivity : ComponentActivity() {
                             onClickViewComments = {
                                 navController.navigate(ReviewCommentListScreen)
                             },
-                            onClickLogout = {
-                                /*TODO*/
-                            },
                             onClickLogin = {
                                 navController.navigate(AuthenticationNavGraph)
                             },

@@ -1,5 +1,6 @@
 package co.ke.xently.features.auth.presentation.signin
 
+import co.ke.xently.features.auth.data.domain.GoogleUser
 import co.ke.xently.features.auth.presentation.utils.UiText
 
 
@@ -9,5 +10,6 @@ sealed interface SignInEvent {
         val type: co.ke.xently.features.auth.data.domain.error.Error,
     ) : SignInEvent
 
+    data class GetGoogleAccessToken(val user: GoogleUser) : SignInEvent
     data object Success : SignInEvent
 }

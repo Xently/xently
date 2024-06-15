@@ -17,6 +17,15 @@ data class AccessControl(
         return copy(links = buildMap { putAll(BASE_URLS); putAll(links) })
     }
 
+    val googleSignInUrl: String
+        get() = links["google-sign-in"]!!.hrefWithoutQueryParamTemplates()
+    val emailPasswordSignInUrl: String
+        get() = links["email-password-sign-in"]!!.hrefWithoutQueryParamTemplates()
+    val emailPasswordSignUpUrl: String
+        get() = links["email-password-sign-up"]!!.hrefWithoutQueryParamTemplates()
+    val requestPasswordResetUrl: String
+        get() = links["request-password-reset"]!!.hrefWithoutQueryParamTemplates()
+
     companion object {
         private val BASE_URLS = mapOf(
             "product-categories" to Link(href = "$BASE_URL/categories/products"),

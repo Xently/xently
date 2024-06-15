@@ -22,4 +22,14 @@
     <string name="action_sign_up">Sign Up</string>
     <string name="field_label_name">Name</string>
     <string name="action_request_password_reset">Request Password Reset</string>
+    <string name="error_password_no_digit">User at least 1 number.</string>
+    <string name="error_password_no_uppercase">User at least 1 capital letter.</string>
+    <string name="error_google_sign_in_unexpected_error">Something unexepected went wrong. Please try again.</string>
+    <string name="error_google_sign_in_no_credentials_found">No credentials found.</string>
+    <string name="error_google_sign_in_unsupported_provider">Google Sign-In is not supported. Please use other alternatives.</string>
+    <string name="error_google_sign_in_interrupted">Authentication interrupted.</string>
+    <string name="error_google_sign_in_cancelled">Authentication cancelled.</string>
+    <string name="error_google_sign_in_unrecongised_credential_type">Unrecognised credential type.</string>
+    <string name="error_google_sign_in_invalid_google_id_response">Invalid Google ID.</string>
+    <string name="error_google_sign_in_failed">Google sign-in failed.</string>
 </resources>

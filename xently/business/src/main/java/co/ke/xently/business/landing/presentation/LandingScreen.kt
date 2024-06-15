@@ -1,5 +1,6 @@
 package co.ke.xently.business.landing.presentation
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +17,15 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,6 +39,7 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
 
@@ -49,7 +54,6 @@ fun LandingScreen(
     onClickEditProduct: (Product) -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
-    onClickLogout: () -> Unit,
     onClickLogin: () -> Unit,
     onClickAddShop: () -> Unit,
     onClickShop: (Shop) -> Unit,
@@ -58,31 +62,41 @@ fun LandingScreen(
 ) {
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val event by viewModel.event.collectAsStateWithLifecycle(null)
 
-    LandingScreen(
-        state = state,
-        modifier = modifier,
-        onClickSelectShop = onClickSelectShop,
-        onClickSelectBranch = onClickSelectBranch,
-        onClickAddStore = onClickAddStore,
-        onClickEditStore = onClickEditStore,
-        onClickAddProduct = onClickAddProduct,
-        onClickEditProduct = onClickEditProduct,
-        onClickAddNewReviewCategory = onClickAddNewReviewCategory,
-        onClickViewComments = onClickViewComments,
-        onClickLogout = onClickLogout,
-        onClickLogin = onClickLogin,
-        onClickAddShop = onClickAddShop,
-        onClickShop = onClickShop,
-        onClickQrCode = onClickQrCode,
-        onClickSettings = onClickSettings,
-    )
+    CompositionLocalProvider(
+        LocalAuthenticationState provides AuthenticationState(
+            isSignOutInProgress = state.isSignOutInProgress,
+            currentUser = state.user,
+        )
+    ) {
+        LandingScreen(
+            modifier = modifier,
+            state = state,
+            event = event,
+            onClickSelectShop = onClickSelectShop,
+            onClickSelectBranch = onClickSelectBranch,
+            onClickAddStore = onClickAddStore,
+            onClickEditStore = onClickEditStore,
+            onClickAddProduct = onClickAddProduct,
+            onClickEditProduct = onClickEditProduct,
+            onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+            onClickViewComments = onClickViewComments,
+            onClickLogout = { viewModel.onAction(LandingAction.ClickSignOut) },
+            onClickLogin = onClickLogin,
+            onClickAddShop = onClickAddShop,
+            onClickShop = onClickShop,
+            onClickQrCode = onClickQrCode,
+            onClickSettings = onClickSettings,
+        )
+    }
 }
 
 @Composable
 internal fun LandingScreen(
     modifier: Modifier = Modifier,
     state: LandingUiState,
+    event: LandingEvent?,
     onClickSelectShop: () -> Unit,
     onClickSelectBranch: () -> Unit,
     onClickAddStore: (Shop?) -> Unit,
@@ -100,6 +114,21 @@ internal fun LandingScreen(
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    val context = LocalContext.current
+
+    LaunchedEffect(event) {
+        when (event) {
+            null, LandingEvent.Success -> Unit
+            is LandingEvent.Error -> {
+                Toast.makeText(
+                    context,
+                    event.error.asString(context = context),
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+    }
 
     val closeDrawer: () -> Unit = {
         scope.launch {

@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class AccessControlRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: AccessControlDatabase,
-) : AccessControlRepository {
+) : AccessControlRepository() {
     override fun findAccessControl(): Flow<AccessControl> {
         suspend fun save(): AccessControl {
             Timber.tag(TAG).i("Saving access control response...")

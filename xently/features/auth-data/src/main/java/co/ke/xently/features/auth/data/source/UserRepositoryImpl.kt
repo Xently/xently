@@ -1,9 +1,19 @@
 package co.ke.xently.features.auth.data.source
 
+import co.ke.xently.features.access.control.data.AccessControlRepository
+import co.ke.xently.features.auth.data.domain.EmailAndPasswordAuthRequest
+import co.ke.xently.features.auth.data.domain.GoogleAuthRequest
+import co.ke.xently.features.auth.data.domain.GoogleUser
+import co.ke.xently.features.auth.data.domain.SignUpReset
 import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.libraries.data.auth.CurrentUser
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -15,39 +25,30 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 internal class UserRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: AuthenticationDatabase,
+    private val accessControlRepository: AccessControlRepository,
 ) : UserRepository {
     override fun getCurrentUser(): Flow<CurrentUser?> {
-        return database.userDao()
-            .findFirst()
-            .map { user ->
-                if (user == null) {
-                    null
-                } else {
-                    CurrentUser(
-                        uid = user.id,
-                        firstName = user.firstName,
-                        lastName = user.lastName,
-                        email = user.email,
-                    )
-                }
+        return database.userDao().findFirst().map { user ->
+            if (user == null) null else {
+                CurrentUser(
+                    uid = user.id,
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    email = user.email,
+                )
             }
+        }
     }
 
     override suspend fun requestPasswordReset(email: String): Result<Unit, DataError> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
-        try {
-            delay(duration)
-            return Result.Success(Unit)
-        } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
-            Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+        val urlString = accessControlRepository.getAccessControl().requestPasswordResetUrl
+        return getResult {
+            httpClient.post(urlString)
         }
     }
 
@@ -56,38 +57,41 @@ internal class UserRepositoryImpl @Inject constructor(
         email: String,
         password: String,
     ): Result<Unit, DataError> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
-        try {
-            delay(duration)
-            database.withTransactionFacade {
-                database.userDao().deleteAll()
-                database.userDao().insertAll(User(1, email, password, email, null))
-            }
-            return Result.Success(Unit)
-        } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
-            Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
-        }
+        val names = name.split("\\s+".toRegex(), limit = 1)
+        val body = SignUpReset(
+            emailAddress = email,
+            password = password,
+            firstName = names.firstOrNull()?.takeIf(String::isNotBlank),
+            lastName = if (names.size > 1) names.lastOrNull()?.takeIf(String::isNotBlank) else null,
+        )
+        val accessControl = accessControlRepository.getAccessControl()
+        return authenticate(urlString = accessControl.emailPasswordSignUpUrl, body = body)
     }
 
-    override suspend fun signIn(email: String, password: String): Result<Unit, DataError> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
-        try {
-            delay(duration)
-            database.withTransactionFacade {
-                database.userDao().deleteAll()
-                database.userDao().insertAll(User(1, email, password, email, null))
-            }
-            return Result.Success(Unit)
-        } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
-            Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
-        }
+    override suspend fun signInWithGoogle(user: GoogleUser): Result<Unit, DataError> {
+        val body = GoogleAuthRequest(
+            idToken = user.idToken,
+            accessToken = user.accessToken,
+            displayName = user.displayName,
+            profilePicUrl = user.profilePicUrl,
+        )
+        val accessControl = accessControlRepository.getAccessControl()
+        return authenticate(urlString = accessControl.googleSignInUrl, body = body)
     }
 
-    override suspend fun signOut(): Result<Unit, DataError.Local> {
+    override suspend fun signInWithEmailAndPassword(
+        email: String,
+        password: String,
+    ): Result<Unit, DataError> {
+        val body = EmailAndPasswordAuthRequest(
+            email = email,
+            password = password,
+        )
+        val accessControl = accessControlRepository.getAccessControl()
+        return authenticate(urlString = accessControl.emailPasswordSignInUrl, body = body)
+    }
+
+    override suspend fun signOut(): Result<Unit, DataError> {
         delay(Random.nextLong(1_000, 3_000))
         coroutineScope {
             launch(NonCancellable) {
@@ -95,5 +99,38 @@ internal class UserRepositoryImpl @Inject constructor(
             }
         }
         return Result.Success(Unit)
+    }
+
+    private suspend inline fun <reified T> authenticate(
+        urlString: String,
+        body: T,
+    ): Result<Unit, DataError> {
+        return getResult {
+            httpClient.post(urlString) {
+                url {
+                    parameters.run {
+                        set("noauth", "0")
+                    }
+                }
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body<User>().let {
+                database.withTransactionFacade {
+                    database.userDao().deleteAll()
+                    database.userDao().insertAll(it)
+                }
+            }
+        }
+    }
+
+    private inline fun getResult(execute: () -> Unit): Result<Unit, DataError> {
+        return try {
+            execute()
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(DataError.Network.entries.random())
+        }
     }
 }

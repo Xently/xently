@@ -1,5 +1,9 @@
 package co.ke.xently.features.auth.presentation.signin
 
+import android.app.Activity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,12 +57,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.auth.R
-import co.ke.xently.features.auth.data.domain.error.DataError
+import co.ke.xently.features.auth.domain.GoogleAuthorizationHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
+import com.google.android.gms.auth.api.identity.Identity
 import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun SignInScreen(
@@ -78,29 +83,46 @@ internal fun SignInScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
+            SignInEvent.Success -> onClickBack()
             is SignInEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
 
-            SignInEvent.Success -> onClickBack()
+            is SignInEvent.GetGoogleAccessToken -> {
+                val authorizationHandler = GoogleAuthorizationHandler.create(
+                    context = context,
+                    user = event.user,
+                )
+                val result = authorizationHandler.handleAuthorization()
+                if (result.hasResolution()) {
+                    onAction(SignInAction.FinaliseGoogleSignIn(event.user.copy(accessToken = result.accessToken)))
+                } else {
+                    val resultLauncher = (context as ComponentActivity).registerForActivityResult(
+                        StartIntentSenderForResult()
+                    ) {
+                        if (it.resultCode == Activity.RESULT_OK) {
+                            val authorizationResult = Identity.getAuthorizationClient(context)
+                                .getAuthorizationResultFromIntent(it.data)
+                            onAction(SignInAction.FinaliseGoogleSignIn(event.user.copy(accessToken = authorizationResult.accessToken)))
+                        } else {
+                            launch {
+                                snackbarHostState.showSnackbar(
+                                    context.getString(R.string.error_google_sign_in_failed),
+                                    duration = SnackbarDuration.Long,
+                                )
+                            }
+                        }
+                    }
+
+                    resultLauncher.launch(
+                        IntentSenderRequest.Builder(result.pendingIntent!!)
+                            .build(),
+                    )
+                }
+            }
         }
     }
 
@@ -128,6 +150,7 @@ private fun SignInScreen(
     onClickCreateAccount: () -> Unit,
     onClickForgotPassword: () -> Unit,
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
@@ -178,7 +201,12 @@ private fun SignInScreen(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email,
                     ),
-                    placeholder = { Text(text = "john.doe@example.com") },
+                    placeholder = {
+                        Text(
+                            text = "your.email@example.org",
+                            fontWeight = FontWeight.ExtraLight
+                        )
+                    },
                     shape = RoundedCornerShape(35),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,7 +225,12 @@ private fun SignInScreen(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password,
                     ),
-                    placeholder = { Text(text = "************") },
+                    placeholder = {
+                        Text(
+                            text = "************",
+                            fontWeight = FontWeight.ExtraLight
+                        )
+                    },
                     visualTransformation = remember(state.isPasswordVisible) {
                         derivedStateOf {
                             if (state.isPasswordVisible) {
@@ -274,7 +307,7 @@ private fun SignInScreen(
                     val isDark by LocalThemeIsDark.current
                     GoogleSignInButton(
                         text = stringResource(R.string.action_sign_in_with_google),
-                        onClick = { onAction(SignInAction.ClickSignInWithGoogle) },
+                        onClick = { onAction(SignInAction.ClickSignInWithGoogle(context)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),

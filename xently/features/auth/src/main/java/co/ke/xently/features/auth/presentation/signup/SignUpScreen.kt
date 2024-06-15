@@ -191,7 +191,12 @@ private fun SignUpScreen(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email,
                     ),
-                    placeholder = { Text(text = "john.doe@example.com") },
+                    placeholder = {
+                        Text(
+                            text = "your.email@example.org",
+                            fontWeight = FontWeight.ExtraLight
+                        )
+                    },
                     shape = RoundedCornerShape(35),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -210,7 +215,12 @@ private fun SignUpScreen(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password,
                     ),
-                    placeholder = { Text(text = "************") },
+                    placeholder = {
+                        Text(
+                            text = "************",
+                            fontWeight = FontWeight.ExtraLight
+                        )
+                    },
                     visualTransformation = remember(state.isPasswordVisible) {
                         derivedStateOf {
                             if (state.isPasswordVisible) {

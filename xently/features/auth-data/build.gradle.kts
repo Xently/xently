@@ -58,6 +58,7 @@ dependencies {
 
     implementation(project(":xently:libraries:data-auth"))
     implementation(project(":xently:libraries:data-core"))
+    implementation(project(":xently:features:access-control"))
 
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)

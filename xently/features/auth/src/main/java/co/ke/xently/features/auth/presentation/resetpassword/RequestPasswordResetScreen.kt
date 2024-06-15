@@ -162,7 +162,12 @@ private fun RequestPasswordResetScreen(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email,
                     ),
-                    placeholder = { Text(text = "john.doe@example.com") },
+                    placeholder = {
+                        Text(
+                            text = "your.email@example.org",
+                            fontWeight = FontWeight.ExtraLight,
+                        )
+                    },
                     shape = RoundedCornerShape(35),
                     modifier = Modifier
                         .fillMaxWidth()
