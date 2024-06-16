@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -25,14 +27,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -41,19 +44,24 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.error.DataError
-import co.ke.xently.features.reviews.presentation.comments.components.ReviewCommentListItem
+import co.ke.xently.features.reviews.data.domain.error.toReviewError
+import co.ke.xently.features.reviews.presentation.comments.components.ReviewListEmptyState
+import co.ke.xently.features.reviews.presentation.comments.components.ReviewListLazyColumn
+import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 @Composable
@@ -98,25 +106,10 @@ internal fun ReviewCommentListScreen(
             }
 
             is ReviewCommentListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
         }
     }
@@ -191,31 +184,55 @@ internal fun ReviewCommentListScreen(
             }
         },
     ) { paddingValues ->
-        PaginatedLazyColumn(
+        val refreshLoadState = reviews.loadState.refresh
+        val isRefreshing by remember(refreshLoadState, reviews.itemCount) {
+            derivedStateOf {
+                refreshLoadState == LoadState.Loading
+                        && reviews.itemCount > 0
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            items = reviews,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            emptyContentMessage = "No reviews found",
-            prependErrorStateContent = {},
-            appendErrorStateContent = {},
-            errorStateContent = {},
-            contentPadding = PaddingValues(16.dp),
+            isRefreshing = isRefreshing,
+            onRefresh = reviews::refresh,
         ) {
-            items(
-                reviews.itemCount,
-                key = {
-                    reviews[it]?.links?.get("self")
-                        ?.hrefWithoutQueryParamTemplates()
-                        ?: ">>>${(reviews.itemCount + it)}<<<"
-                },
-            ) {
-                val review = reviews[it]
-                if (review != null) {
-                    ReviewCommentListItem(review = review)
-                } else {
-                    ReviewCommentListItem(review = Review.DEFAULT, isLoading = true)
+            when {
+                reviews.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+                    ReviewListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = stringResource(R.string.message_no_reviews_found),
+                        onClickRetry = reviews::retry,
+                    )
+                }
+
+                reviews.itemCount == 0 && refreshLoadState is LoadState.Error -> {
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toReviewError() }
+                    }
+                    ReviewListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable,
+                        onClickRetry = reviews::retry,
+                    )
+                }
+
+                reviews.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                else -> {
+                    ReviewListLazyColumn(
+                        reviews = reviews,
+                        modifier = Modifier.matchParentSize(),
+                    )
                 }
             }
         }

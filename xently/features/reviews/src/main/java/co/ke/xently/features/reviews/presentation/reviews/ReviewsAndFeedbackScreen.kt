@@ -263,7 +263,7 @@ private class ReviewsUiStateProvider : PreviewParameterProvider<ReviewsAndFeedba
                     selectedCategory = selectedCategory,
                     statisticsResponse = StatisticsResponse.Failure(
                         error = UiText.DynamicString("Example error message"),
-                        type = DataError.Network.UNKNOWN,
+                        type = DataError.Network.Retryable.Unknown,
                     ),
                     selectedFilters = selectedFilters,
                 ),

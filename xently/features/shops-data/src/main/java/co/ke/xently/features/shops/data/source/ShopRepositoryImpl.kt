@@ -8,6 +8,7 @@ import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.Error
 import co.ke.xently.features.shops.data.domain.error.Result
+import co.ke.xently.features.shops.data.domain.error.toShopError
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
 import co.ke.xently.features.shops.data.source.local.ShopEntity
 import co.ke.xently.libraries.pagination.data.PagedResponse
@@ -32,7 +33,7 @@ internal class ShopRepositoryImpl @Inject constructor(
     private val database: ShopDatabase,
     private val accessControlRepository: AccessControlRepository,
 ) : ShopRepository {
-    override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, DataError> {
+    override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
@@ -40,13 +41,13 @@ internal class ShopRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+            return Result.Failure(ex.toShopError())
         }
     }
 
     override suspend fun findActivated(): Result<Shop, Error> {
         val shop = database.shopDao().findActivated()
-            ?: return Result.Failure(ConfigurationError.SHOP_NOT_SELECTED)
+            ?: return Result.Failure(ConfigurationError.ShopSelectionRequired)
         return Result.Success(shop.shop)
     }
 
@@ -65,7 +66,7 @@ internal class ShopRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun deleteShop(shop: Shop): Result<Unit, DataError> {
+    override suspend fun deleteShop(shop: Shop): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
@@ -73,7 +74,7 @@ internal class ShopRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+            return Result.Failure(ex.toShopError())
         }
     }
 

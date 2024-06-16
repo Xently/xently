@@ -3,8 +3,9 @@ package co.ke.xently.features.products.data.source
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
-import co.ke.xently.features.products.data.domain.error.DataError
+import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.Result
+import co.ke.xently.features.products.data.domain.error.toProductError
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.image.domain.ImageResponse
@@ -26,7 +27,7 @@ internal class ProductRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ProductDatabase,
 ) : ProductRepository {
-    override suspend fun save(product: Product): Result<Unit, DataError> {
+    override suspend fun save(product: Product): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
@@ -34,11 +35,11 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+            return Result.Failure(ex.toProductError())
         }
     }
 
-    override suspend fun findById(id: Long): Flow<Result<Product, DataError>> {
+    override suspend fun findById(id: Long): Flow<Result<Product, Error>> {
         TODO("Not yet implemented")
     }
 
@@ -224,7 +225,7 @@ internal class ProductRepositoryImpl @Inject constructor(
             .body()
     }
 
-    override suspend fun deleteProduct(product: Product): Result<Unit, DataError> {
+    override suspend fun deleteProduct(product: Product): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
@@ -232,7 +233,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+            return Result.Failure(ex.toProductError())
         }
     }
 }

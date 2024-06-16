@@ -1,43 +1,49 @@
 package co.ke.xently.features.notifications.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.notifications.R
 import co.ke.xently.features.notifications.data.domain.Notification
 import co.ke.xently.features.notifications.data.domain.error.DataError
-import co.ke.xently.features.notifications.presentation.list.components.NotificationListItem
+import co.ke.xently.features.notifications.data.domain.error.toNotificationError
+import co.ke.xently.features.notifications.presentation.list.components.NotificationListEmptyState
+import co.ke.xently.features.notifications.presentation.list.components.NotificationListLazyColumn
+import co.ke.xently.features.notifications.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 
 @Composable
@@ -78,25 +84,10 @@ internal fun NotificationListScreen(
             null, is NotificationListEvent.Success -> Unit
 
             is NotificationListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
         }
     }
@@ -120,33 +111,54 @@ internal fun NotificationListScreen(
             }
         },
     ) { paddingValues ->
-        PaginatedLazyColumn(
+        val refreshLoadState = notifications.loadState.refresh
+        val isRefreshing by remember(refreshLoadState, notifications.itemCount) {
+            derivedStateOf {
+                refreshLoadState == LoadState.Loading
+                        && notifications.itemCount > 0
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            items = notifications,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp),
-            emptyContentMessage = "No notifications found",
-            prependErrorStateContent = {},
-            appendErrorStateContent = {},
-            errorStateContent = {},
+            isRefreshing = isRefreshing,
+            onRefresh = notifications::refresh,
         ) {
-            items(
-                notifications.itemCount,
-                key = {
-                    notifications[it]?.id
-                        ?: ">>>${(notifications.itemCount + it)}<<<"
-                },
-            ) {
-                val notification = notifications[it]
+            when {
+                notifications.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+                    NotificationListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = stringResource(R.string.message_no_notifications_found),
+                        onClickRetry = notifications::retry,
+                    )
+                }
 
-                if (notification != null) {
-                    NotificationListItem(notification = notification)
-                } else {
-                    NotificationListItem(
-                        isLoading = true,
-                        notification = Notification.DEFAULT,
+                notifications.itemCount == 0 && refreshLoadState is LoadState.Error -> {
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toNotificationError() }
+                    }
+                    NotificationListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable,
+                        onClickRetry = notifications::retry,
+                    )
+                }
+
+                notifications.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                else -> {
+                    NotificationListLazyColumn(
+                        notifications = notifications,
+                        modifier = Modifier.matchParentSize(),
                     )
                 }
             }

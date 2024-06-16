@@ -176,7 +176,7 @@ private class ReviewSummaryResponsePreviewParameterProvider :
             ReviewSummaryResponse.Loading,
             ReviewSummaryResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
-                type = Network.UNKNOWN,
+                type = Network.Retryable.Unknown,
             ),
             ReviewSummaryResponse.Success(
                 Rating(

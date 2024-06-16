@@ -135,7 +135,7 @@ private class ReviewCategoryListSectionPreviewParameterProvider :
             ReviewCategoriesResponse.Loading,
             ReviewCategoriesResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
-                type = DataError.Network.UNKNOWN,
+                type = DataError.Network.Retryable.Unknown,
             ),
             ReviewCategoriesResponse.Success.Empty,
             ReviewCategoriesResponse.Success.NonEmpty(

@@ -2,45 +2,49 @@ package co.ke.xently.features.customers.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.customers.R
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.DataError
-import co.ke.xently.features.customers.presentation.list.components.CustomerListItem
+import co.ke.xently.features.customers.data.domain.error.toCustomerError
+import co.ke.xently.features.customers.presentation.list.components.CustomerListEmptyState
+import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
+import co.ke.xently.features.customers.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun CustomerListScreen(
@@ -80,25 +84,10 @@ internal fun CustomerListScreen(
             null, is CustomerListEvent.Success -> Unit
 
             is CustomerListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
         }
     }
@@ -122,42 +111,57 @@ internal fun CustomerListScreen(
             }
         },
     ) { paddingValues ->
-        PaginatedLazyColumn(
+        val refreshLoadState = customers.loadState.refresh
+        val isRefreshing by remember(refreshLoadState, customers.itemCount) {
+            derivedStateOf {
+                refreshLoadState == LoadState.Loading
+                        && customers.itemCount > 0
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            items = customers,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            emptyContentMessage = "No customers found",
-            prependErrorStateContent = {},
-            appendErrorStateContent = {},
-            errorStateContent = {},
+            isRefreshing = isRefreshing,
+            onRefresh = customers::refresh,
         ) {
-            state.currentUserRanking?.let { ranking ->
-                stickyHeader(key = "current-user-ranking") {
-                    Surface(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            fontWeight = FontWeight.Bold,
-                            text = "You are position ${ranking.position} with ${ranking.totalPoints} points",
-                            modifier = Modifier.padding(bottom = 16.dp),
-                        )
-                    }
+            when {
+                customers.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+                    CustomerListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = stringResource(R.string.message_no_customers_found),
+                        onClickRetry = customers::retry,
+                    )
                 }
-            }
 
-            items(
-                customers.itemCount,
-                key = {
-                    customers[it]?.id
-                        ?: (customers.itemCount + it).toLong()
-                },
-            ) {
-                val customer = customers[it]!!
+                customers.itemCount == 0 && refreshLoadState is LoadState.Error -> {
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toCustomerError() }
+                    }
+                    CustomerListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable,
+                        onClickRetry = customers::retry,
+                    )
+                }
 
-                CustomerListItem(
-                    customer = customer,
-                    position = it + 1,
-                )
+                customers.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                else -> {
+                    CustomerListLazyColumn(
+                        customers = customers,
+                        modifier = Modifier.matchParentSize(),
+                        currentUserRanking = state.currentUserRanking,
+                    )
+                }
             }
         }
     }

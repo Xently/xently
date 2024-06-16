@@ -40,12 +40,7 @@ internal class ShopListViewModel @Inject constructor(
     private val _filters = MutableStateFlow(ShopFilters())
 
     val shops: Flow<PagingData<Shop>> = _filters.flatMapLatest { filters ->
-        Pager(
-            PagingConfig(
-                pageSize = 20,
-                initialLoadSize = 20,
-            )
-        ) {
+        Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
             XentlyPagingSource { url ->
                 repository.getShops(
                     url = url,

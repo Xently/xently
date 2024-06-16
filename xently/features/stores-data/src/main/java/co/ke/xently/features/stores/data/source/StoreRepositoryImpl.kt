@@ -6,7 +6,9 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.DataError
+import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.Result
+import co.ke.xently.features.stores.data.domain.error.toStoreError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.features.storeservice.data.domain.StoreService
@@ -137,7 +139,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             .body()
     }
 
-    override suspend fun deleteStore(store: Store): Result<Unit, DataError> {
+    override suspend fun deleteStore(store: Store): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)
@@ -145,7 +147,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.entries.random())
+            return Result.Failure(ex.toStoreError())
         }
     }
 

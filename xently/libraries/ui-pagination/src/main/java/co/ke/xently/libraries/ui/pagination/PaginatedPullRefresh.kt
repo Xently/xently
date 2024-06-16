@@ -20,7 +20,6 @@ import androidx.paging.compose.LazyPagingItems
 typealias IsRefreshing = Boolean
 typealias RefreshLoadState = Pair<LoadState, IsRefreshing>
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun <T : Any> PaginatedPullRefresh(
     modifier: Modifier,
@@ -40,16 +39,34 @@ internal fun <T : Any> PaginatedPullRefresh(
         }
     }
 
+    PullRefreshBox(
+        modifier = modifier,
+        alignment = alignment,
+        isRefreshing = isRefreshing,
+        onRefresh = items::refresh,
+    ) { preIndicatorContent(refreshLoadState to isRefreshing) }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PullRefreshBox(
+    isRefreshing: Boolean,
+    modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.TopCenter,
+    onRefresh: () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
+) {
     val state = rememberPullToRefreshState()
 
     Box(
         modifier = modifier.pullToRefresh(
             state = state,
             isRefreshing = isRefreshing,
-            onRefresh = items::refresh,
+            onRefresh = onRefresh,
         ),
     ) {
-        preIndicatorContent(refreshLoadState to isRefreshing)
+        content()
         val scaleFraction = {
             if (isRefreshing) 1f else
                 LinearOutSlowInEasing.transform(state.distanceFraction).coerceIn(0f, 1f)

@@ -1,8 +1,9 @@
 package co.ke.xently.features.reviewcategory.data.source
 
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
-import co.ke.xently.features.reviewcategory.data.domain.error.DataError
+import co.ke.xently.features.reviewcategory.data.domain.error.Error
 import co.ke.xently.features.reviewcategory.data.domain.error.Result
+import co.ke.xently.features.reviewcategory.data.domain.error.toReviewCategoryError
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEntity
 import io.ktor.client.HttpClient
@@ -21,7 +22,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ReviewCategoryDatabase,
 ) : ReviewCategoryRepository {
-    override suspend fun save(reviewCategory: ReviewCategory): Result<Unit, DataError> {
+    override suspend fun save(reviewCategory: ReviewCategory): Result<Unit, Error> {
         val duration = Random.nextLong(5_000, 10_000).milliseconds
         return try {
             delay(duration)
@@ -33,14 +34,14 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(DataError.Network.entries.random())
+            Result.Failure(ex.toReviewCategoryError())
         }
     }
 
-    override suspend fun findAllReviewCategories(): Flow<Result<List<ReviewCategory>, DataError>> {
+    override suspend fun findAllReviewCategories(): Flow<Result<List<ReviewCategory>, Error>> {
         return flow {
             val duration = Random.nextLong(5_000, 10_000).milliseconds
-            val result: Result<List<ReviewCategory>, DataError> = try {
+            val result: Result<List<ReviewCategory>, Error> = try {
                 delay(duration)
                 val categories = listOf(
                     ReviewCategory(name = "Staff friendliness"),
@@ -51,7 +52,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
                 Timber.e(ex)
-                Result.Failure(DataError.Network.entries.random())
+                Result.Failure(ex.toReviewCategoryError())
             }
             emit(result)
         }

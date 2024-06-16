@@ -244,7 +244,6 @@ internal fun StatisticsSuccessContent(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.message_no_graph_data),
-                    modifier = modifier,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 )

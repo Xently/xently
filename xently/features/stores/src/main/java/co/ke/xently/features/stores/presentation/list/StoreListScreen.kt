@@ -1,8 +1,6 @@
 package co.ke.xently.features.stores.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -25,28 +25,35 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.presentation.list.components.StoreListItem
+import co.ke.xently.features.stores.data.domain.error.DataError
+import co.ke.xently.features.stores.data.domain.error.toStoreError
+import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
+import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
+import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun StoreListScreen(
@@ -167,41 +174,57 @@ internal fun StoreListScreen(
             )
         },
     ) { paddingValues ->
-        PaginatedLazyColumn(
+        val refreshLoadState = stores.loadState.refresh
+        val isRefreshing by remember(refreshLoadState, stores.itemCount) {
+            derivedStateOf {
+                refreshLoadState == LoadState.Loading
+                        && stores.itemCount > 0
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            items = stores,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            emptyContentMessage = "No branches found",
-            prependErrorStateContent = {},
-            appendErrorStateContent = {},
-            errorStateContent = {},
+            isRefreshing = isRefreshing,
+            onRefresh = stores::refresh,
         ) {
-            items(
-                stores.itemCount,
-                key = {
-                    stores[it]?.id
-                        ?: ">>>${(stores.itemCount + it)}<<<"
-                },
-            ) {
-                val store = stores[it]
-
-                if (store != null) {
-                    StoreListItem(
-                        store = store,
-                        onClickUpdate = { onClickEditStore(store) },
-                        onClickConfirmDelete = { onAction(StoreListAction.DeleteStore(store)) },
-                        modifier = Modifier.clickable {
-                            onAction(StoreListAction.SelectStore(store))
-                        },
+            when {
+                stores.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+                    StoreListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = stringResource(R.string.message_no_stores_found),
+                        onClickRetry = stores::retry,
                     )
-                } else {
-                    StoreListItem(
-                        store = Store.DEFAULT,
-                        isLoading = true,
-                        onClickUpdate = {},
-                        onClickConfirmDelete = {},
+                }
+
+                stores.itemCount == 0 && refreshLoadState is LoadState.Error -> {
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toStoreError() }
+                    }
+                    StoreListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable,
+                        onClickRetry = stores::retry,
+                    )
+                }
+
+                stores.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                else -> {
+                    StoreListLazyColumn(
+                        modifier = Modifier.matchParentSize(),
+                        stores = stores,
+                        onClickEditStore = onClickEditStore,
+                        onStoreSelected = { onAction(StoreListAction.SelectStore(it)) },
+                        onClickConfirmDelete = { onAction(StoreListAction.DeleteStore(it)) },
                     )
                 }
             }

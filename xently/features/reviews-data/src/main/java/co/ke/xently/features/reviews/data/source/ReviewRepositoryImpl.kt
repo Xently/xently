@@ -5,8 +5,9 @@ import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.ReviewFilters
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
-import co.ke.xently.features.reviews.data.domain.error.DataError
+import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.Result
+import co.ke.xently.features.reviews.data.domain.error.toReviewError
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.pagination.data.PagedResponse
@@ -26,18 +27,18 @@ internal class ReviewRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ReviewDatabase,
 ) : ReviewRepository {
-    override suspend fun save(review: Review): Result<Unit, DataError> {
+    override suspend fun save(review: Review): Result<Unit, Error> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun findById(id: Long): Flow<Result<Review, DataError>> {
+    override suspend fun findById(id: Long): Flow<Result<Review, Error>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, DataError>> {
+    override suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>> {
         return flow {
             val duration = Random.nextLong(1_000, 5_000).milliseconds
-            val result: Result<Rating, DataError> = try {
+            val result: Result<Rating, Error> = try {
                 delay(duration)
                 val rating = Rating(
                     average = 3.5f,
@@ -49,16 +50,16 @@ internal class ReviewRepositoryImpl @Inject constructor(
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
                 Timber.e(ex)
-                Result.Failure(DataError.Network.entries.random())
+                Result.Failure(ex.toReviewError())
             }
             emit(result)
         }
     }
 
-    override suspend fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, DataError>> {
+    override suspend fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, Error>> {
         return flow {
             val duration = Random.nextLong(1_000, 5_000).milliseconds
-            val result: Result<Rating, DataError> = try {
+            val result: Result<Rating, Error> = try {
                 delay(duration)
                 val rating = Rating(
                     average = 4.5f,
@@ -70,7 +71,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
                 Timber.e(ex)
-                Result.Failure(DataError.Network.entries.random())
+                Result.Failure(ex.toReviewError())
             }
             emit(result)
         }
@@ -79,10 +80,10 @@ internal class ReviewRepositoryImpl @Inject constructor(
     override suspend fun findStoreReviewStatistics(
         category: ReviewCategory,
         filters: ReviewStatisticsFilters,
-    ): Flow<Result<ReviewCategory.Statistics, DataError>> {
+    ): Flow<Result<ReviewCategory.Statistics, Error>> {
         return flow {
             val duration = Random.nextLong(1_000, 5_000).milliseconds
-            val result: Result<ReviewCategory.Statistics, DataError> = try {
+            val result: Result<ReviewCategory.Statistics, Error> = try {
                 delay(duration)
                 val statistics = ReviewCategory.Statistics(
                     totalReviews = 100,
@@ -101,7 +102,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
                 Timber.e(ex)
-                Result.Failure(DataError.Network.entries.random())
+                Result.Failure(ex.toReviewError())
             }
             emit(result)
         }

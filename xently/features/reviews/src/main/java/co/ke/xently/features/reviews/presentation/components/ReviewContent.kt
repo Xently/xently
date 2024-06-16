@@ -131,7 +131,7 @@ private class ReviewContentPreviewProvider : PreviewParameterProvider<ReviewCont
             ReviewContentState(
                 response = StatisticsResponse.Failure(
                     error = UiText.DynamicString("Example error message"),
-                    type = DataError.Network.UNKNOWN,
+                    type = DataError.Network.Retryable.Unknown,
                 ),
             ),
         )

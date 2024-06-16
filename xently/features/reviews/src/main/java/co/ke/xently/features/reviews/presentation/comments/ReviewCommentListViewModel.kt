@@ -46,7 +46,6 @@ internal class ReviewCommentListViewModel @Inject constructor(
         Pager(
             PagingConfig(
                 pageSize = 20,
-                initialLoadSize = 20,
             )
         ) {
             XentlyPagingSource { url ->

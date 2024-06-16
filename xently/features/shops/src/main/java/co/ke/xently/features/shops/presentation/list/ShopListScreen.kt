@@ -1,8 +1,6 @@
 package co.ke.xently.features.shops.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,34 +21,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.error.DataError
-import co.ke.xently.features.shops.presentation.list.components.ShopListItem
+import co.ke.xently.features.shops.data.domain.error.toShopError
+import co.ke.xently.features.shops.presentation.list.components.ShopListEmptyState
+import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
+import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ShopListScreen(
@@ -98,25 +103,10 @@ internal fun ShopListScreen(
         when (event) {
             null -> Unit
             is ShopListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
 
             is ShopListEvent.Success -> {
@@ -173,41 +163,57 @@ internal fun ShopListScreen(
             )
         },
     ) { paddingValues ->
-        PaginatedLazyColumn(
+        val refreshLoadState = shops.loadState.refresh
+        val isRefreshing by remember(refreshLoadState, shops.itemCount) {
+            derivedStateOf {
+                refreshLoadState == LoadState.Loading
+                        && shops.itemCount > 0
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            items = shops,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            emptyContentMessage = "No shops found",
-            prependErrorStateContent = {},
-            appendErrorStateContent = {},
-            errorStateContent = {},
+            isRefreshing = isRefreshing,
+            onRefresh = shops::refresh,
         ) {
-            items(
-                shops.itemCount,
-                key = {
-                    shops[it]?.id
-                        ?: ">>>${(shops.itemCount + it)}<<<"
-                },
-            ) {
-                val shop = shops[it]
-
-                if (shop != null) {
-                    ShopListItem(
-                        shop = shop,
-                        onClickUpdate = { onClickEditShop(shop) },
-                        onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(shop)) },
-                        modifier = Modifier.clickable {
-                            onAction(ShopListAction.SelectShop(shop))
-                        },
+            when {
+                shops.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+                    ShopListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = stringResource(R.string.message_no_shops_found),
+                        onClickRetry = shops::retry,
                     )
-                } else {
-                    ShopListItem(
-                        shop = Shop.DEFAULT,
-                        isLoading = true,
-                        onClickUpdate = {},
-                        onClickConfirmDelete = {},
+                }
+
+                shops.itemCount == 0 && refreshLoadState is LoadState.Error -> {
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toShopError() }
+                    }
+                    ShopListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable,
+                        onClickRetry = shops::retry,
+                    )
+                }
+
+                shops.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                else -> {
+                    ShopListLazyColumn(
+                        modifier = Modifier.matchParentSize(),
+                        shops = shops,
+                        onClickEditShop = onClickEditShop,
+                        onShopSelected = { onAction(ShopListAction.SelectShop(it)) },
+                        onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(it)) },
                     )
                 }
             }

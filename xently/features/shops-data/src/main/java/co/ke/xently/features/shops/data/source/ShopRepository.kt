@@ -10,10 +10,10 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ShopRepository {
-    suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, DataError>
+    suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, Error>
     suspend fun findActivated(): Result<Shop, Error>
     suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop>
-    suspend fun deleteShop(shop: Shop): Result<Unit, DataError>
+    suspend fun deleteShop(shop: Shop): Result<Unit, Error>
     suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local>
     fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>>
 }
