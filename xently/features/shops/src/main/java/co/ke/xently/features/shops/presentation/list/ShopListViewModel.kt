@@ -92,7 +92,6 @@ internal class ShopListViewModel @Inject constructor(
             }
 
             is ShopListAction.SelectShop -> {
-
                 viewModelScope.launch {
                     _uiState.update {
                         it.copy(isLoading = true)

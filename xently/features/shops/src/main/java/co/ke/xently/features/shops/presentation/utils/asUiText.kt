@@ -1,6 +1,7 @@
 package co.ke.xently.features.shops.presentation.utils
 
 import co.ke.xently.features.shops.R
+import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.EmailError
 import co.ke.xently.features.shops.data.domain.error.Error
@@ -44,5 +45,6 @@ fun Error.asUiText(): UiText {
         EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)
         NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
         WebsiteError.INVALID_FORMAT -> UiText.StringResource(R.string.error_website_invalid_format)
+        ConfigurationError.SHOP_NOT_SELECTED -> UiText.StringResource(R.string.error_shop_not_selected)
     }
 }

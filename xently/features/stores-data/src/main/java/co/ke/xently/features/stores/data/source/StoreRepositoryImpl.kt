@@ -8,6 +8,7 @@ import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
+import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
@@ -149,14 +150,10 @@ internal class StoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun selectStore(store: Store): Result<Unit, DataError.Local> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
-        try {
-            delay(duration)
-            return Result.Success(Unit)
-        } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
-            Timber.e(ex)
-            return Result.Failure(DataError.Local.entries.random())
+        database.withTransactionFacade {
+            database.storeDao().deactivateAll()
+            database.storeDao().save(StoreEntity(store = store, isActivated = true))
         }
+        return Result.Success(Unit)
     }
 }

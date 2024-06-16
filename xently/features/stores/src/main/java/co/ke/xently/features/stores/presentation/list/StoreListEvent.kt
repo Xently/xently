@@ -9,5 +9,10 @@ internal sealed interface StoreListEvent {
         val type: co.ke.xently.features.stores.data.domain.error.Error,
     ) : StoreListEvent
 
+    data class ShopError(
+        val error: co.ke.xently.features.shops.presentation.utils.UiText,
+        val type: co.ke.xently.features.shops.data.domain.error.Error,
+    ) : StoreListEvent
+
     data class Success(val action: StoreListAction) : StoreListEvent
 }

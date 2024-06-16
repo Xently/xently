@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
+    implementation(project(":xently:features:shops"))
     implementation(project(":xently:features:storecategory"))
     implementation(project(":xently:features:storeservice"))
     implementation(project(":xently:features:openinghours"))

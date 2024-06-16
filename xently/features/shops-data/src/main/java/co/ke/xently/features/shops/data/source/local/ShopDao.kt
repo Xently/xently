@@ -9,19 +9,19 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ShopDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg shops: ShopEntity)
+    suspend fun save(vararg shops: ShopEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(shops: List<ShopEntity>)
+    suspend fun save(shops: List<ShopEntity>)
 
     @Query("DELETE FROM shops")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM shops LIMIT 1")
-    fun findFirst(): Flow<ShopEntity?>
-
-    @Query("SELECT * FROM shops LIMIT 1")
-    suspend fun first(): ShopEntity?
-    @Query("SELECT * FROM shops ORDER BY isActivated, id DESC LIMIT 10")
+    @Query("SELECT * FROM shops WHERE isActivated = 1 LIMIT 1")
+    suspend fun findActivated(): ShopEntity?
+    @Query("SELECT * FROM shops ORDER BY isActivated DESC, id DESC LIMIT 10")
     fun findTop10ShopsOrderByIsActivated(): Flow<List<ShopEntity>>
+
+    @Query("UPDATE shops SET isActivated = 0")
+    suspend fun deactivateAll()
 }

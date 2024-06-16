@@ -4,7 +4,9 @@ import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.merchant.data.domain.Merchant
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.ShopFilters
+import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.domain.error.DataError
+import co.ke.xently.features.shops.data.domain.error.Error
 import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
 import co.ke.xently.features.shops.data.source.local.ShopEntity
@@ -42,8 +44,10 @@ internal class ShopRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun findById(id: Long): Flow<Result<Shop, DataError>> {
-        TODO("Not yet implemented")
+    override suspend fun findActivated(): Result<Shop, Error> {
+        val shop = database.shopDao().findActivated()
+            ?: return Result.Failure(ConfigurationError.SHOP_NOT_SELECTED)
+        return Result.Success(shop.shop)
     }
 
     override suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop> {
@@ -54,7 +58,7 @@ internal class ShopRepositoryImpl @Inject constructor(
                 val shops = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
                 coroutineScope {
                     launch {
-                        database.shopDao().insertAll(shops.map { ShopEntity(it) })
+                        database.shopDao().save(shops.map { ShopEntity(it) })
                     }
                 }
                 pagedResponse.copy(embedded = mapOf("views" to shops))
@@ -74,15 +78,11 @@ internal class ShopRepositoryImpl @Inject constructor(
     }
 
     override suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
-        try {
-            delay(duration)
-            return Result.Success(Unit)
-        } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
-            Timber.e(ex)
-            return Result.Failure(DataError.Local.entries.random())
+        database.withTransactionFacade {
+            database.shopDao().deactivateAll()
+            database.shopDao().save(ShopEntity(shop = shop, isActivated = true))
         }
+        return Result.Success(Unit)
     }
 
     override fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>> {

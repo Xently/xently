@@ -21,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,7 +40,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.presentation.list.components.StoreListItem
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
@@ -63,6 +61,10 @@ fun StoreListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
     val stores = viewModel.stores.collectAsLazyPagingItems()
+
+    LaunchedEffect(Unit) {
+        viewModel.onAction(StoreListAction.FetchStoresFromActivatedShop)
+    }
 
     StoreListScreen(
         state = state,
@@ -97,26 +99,18 @@ internal fun StoreListScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
-            is StoreListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+            is StoreListEvent.ShopError -> {
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
+            }
 
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
+            is StoreListEvent.Error -> {
+                snackbarHostState.showSnackbar(
+                    event.error.asString(context = context),
+                    duration = SnackbarDuration.Long,
+                )
             }
 
             is StoreListEvent.Success -> {
