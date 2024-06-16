@@ -17,11 +17,9 @@
     <string name="error_message_missing_resource_moved">We couldn\'t find what you\'re looking for. Please try again or check back later.</string>
     <string name="error_message_bad_request">Looks like something got lost in translation. Please double-check your input and try again.</string>
     <string name="error_message_not_acceptable">We weren\'t expecting that. Mind checking your input and trying again?</string>
-    <string name="error_message_request_timeout">We are working on fixing a temporary glitch. Please try again soon.</string>
     <string name="error_message_conflict">This action would cause some information to clash. Can you double-check and adjust your request?</string>
     <string name="error_message_length_required">Length required</string>
     <string name="error_message_precondition_failed">Hmm, something in your information isn\'t quite right. Please check it again and try.</string>
-    <string name="error_message_payload_too_large">Payload too large</string>
     <string name="error_message_unsupported_media_type">Unsupported media type</string>
     <string name="error_message_range_not_satisfiable">Requested range not satisfiable</string>
     <string name="error_message_expectation_failed">Expectation failed</string>
@@ -30,10 +28,8 @@
     <string name="error_message_failed_dependency">Failed dependency</string>
     <string name="error_message_too_early">Too early</string>
     <string name="error_message_upgrade_required">Upgrade required</string>
-    <string name="error_message_too_many_requests">Too many requests</string>
     <string name="error_message_request_header_too_large">Request header fields too large</string>
     <string name="error_message_fcm_device_registration_required">Device registration required.</string>
-    <string name="action_refresh">Refresh</string>
     <string name="message_no_shops_found">No shops found.</string>
     <string name="error_password_too_short">The password is too short</string>
     <string name="action_retry">Retry</string>
@@ -44,9 +40,7 @@
     <string name="text_field_label_merchant_last_name">Last name</string>
     <string name="text_field_label_merchant_email">Email address</string>
     <string name="action_submit_shop_details">Save Details</string>
-    <string name="text_field_label_shop_short_description">Short description</string>
     <string name="content_desc_upload_image">Upload image</string>
-    <string name="headline_upload_shop_images">Click to upload image</string>
     <string name="action_remove">Remove</string>
     <string name="action_add_shop">Add Shop</string>
     <string name="message_shop_deleted">Shop successfully deleted.</string>
