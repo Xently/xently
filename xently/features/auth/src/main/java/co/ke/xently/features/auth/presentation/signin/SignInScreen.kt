@@ -116,12 +116,14 @@ internal fun SignInScreen(
                     accountId = event.user.id,
                 )
                 val result = authorizationHandler.handleAuthorization()
-                if (result.hasResolution()) {
+                if (!result.hasResolution()) {
                     onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
                 } else {
                     val pendingIntent = result.pendingIntent
                     when {
                         pendingIntent == null && result.accessToken != null -> {
+                            // This may not be necessary (https://developers.google.com/identity/authorization/android),
+                            // but it is here as a defensive fallback
                             onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
                         }
 
