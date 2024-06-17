@@ -50,4 +50,8 @@
     <string name="error_price_invalid">Invalid price.</string>
     <string name="error_price_zero_or_less">Price must be more than zero.</string>
     <string name="error_description_too_long">Description cannot be longer than %d characters.</string>
+    <string name="error_store_not_selected">Branch not selected.</string>
+    <string name="error_shop_not_selected">Shop not selected.</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="action_select_store">Select Branch</string>
 </resources>

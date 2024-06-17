@@ -6,7 +6,6 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -64,10 +63,6 @@ internal class ActiveStoreViewModel @Inject constructor(
         return when (error) {
             ConfigurationError.ShopSelectionRequired -> ActiveStoreEvent.SelectShop
             ConfigurationError.StoreSelectionRequired -> ActiveStoreEvent.SelectShop
-            ConfigurationError.FCMDeviceRegistrationRequired -> ActiveStoreEvent.Error(
-                error = error.asUiText(),
-                type = error,
-            )
         }
     }
 

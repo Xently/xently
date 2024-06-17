@@ -3,6 +3,7 @@ package co.ke.xently.features.products.presentation.list.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ internal fun ProductListEmptyState(
     modifier: Modifier = Modifier,
     canRetry: Boolean = true,
     onClickRetry: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -46,6 +48,7 @@ internal fun ProductListEmptyState(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
+        content()
         if (canRetry) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onClickRetry) {

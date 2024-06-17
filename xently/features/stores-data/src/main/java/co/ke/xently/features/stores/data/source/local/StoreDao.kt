@@ -18,6 +18,9 @@ interface StoreDao {
     fun findFirst(): Flow<StoreEntity?>
 
     @Query("SELECT * FROM stores WHERE isActivated = 1 LIMIT 1")
+    suspend fun getActivated(): StoreEntity?
+
+    @Query("SELECT * FROM stores WHERE isActivated = 1 LIMIT 1")
     fun findActivated(): Flow<StoreEntity?>
 
     @Query("SELECT * FROM stores LIMIT 1")

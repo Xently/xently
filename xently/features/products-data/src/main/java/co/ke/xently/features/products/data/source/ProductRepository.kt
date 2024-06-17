@@ -10,6 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface ProductRepository {
     suspend fun save(product: Product): Result<Unit, Error>
     suspend fun findById(id: Long): Flow<Result<Product, Error>>
-    suspend fun getProducts(url: String?, filters: ProductFilters): PagedResponse<Product>
+    suspend fun getProducts(url: String, filters: ProductFilters): PagedResponse<Product>
     suspend fun deleteProduct(product: Product): Result<Unit, Error>
 }

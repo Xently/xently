@@ -117,6 +117,8 @@ internal fun LandingScreenContent(
         AppDestination.PRODUCTS -> ProductListScreen(
             onClickEditProduct = onClickEditProduct,
             onClickAddProduct = onClickAddProduct,
+            onClickSelectShop = onClickSelectShop,
+            onClickSelectBranch = onClickSelectBranch,
         ) {
             CenterAlignedTopAppBar(
                 navigationIcon = navigationIcon,

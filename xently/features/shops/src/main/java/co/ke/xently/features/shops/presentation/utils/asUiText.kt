@@ -5,6 +5,7 @@ import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.EmailError
 import co.ke.xently.features.shops.data.domain.error.Error
+import co.ke.xently.features.shops.data.domain.error.FCMDeviceRegistrationRequired
 import co.ke.xently.features.shops.data.domain.error.NameError
 import co.ke.xently.features.shops.data.domain.error.UnknownError
 import co.ke.xently.features.shops.data.domain.error.WebsiteError
@@ -63,7 +64,7 @@ fun Error.asUiText(): UiText {
         DataError.Network.RequestHeaderFieldTooLarge -> UiText.StringResource(R.string.error_message_request_header_too_large)
         DataError.Network.FailedDependency -> UiText.StringResource(R.string.error_message_failed_dependency)
         UnknownError -> UiText.StringResource(R.string.error_message_default)
-        ConfigurationError.FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
+        FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
         DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
 
         EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)

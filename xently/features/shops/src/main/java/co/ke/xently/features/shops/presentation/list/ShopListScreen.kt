@@ -182,7 +182,7 @@ internal fun ShopListScreen(
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_shops_found),
-                        onClickRetry = shops::retry,
+                        onClickRetry = shops::refresh,
                     )
                 }
 

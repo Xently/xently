@@ -1,7 +1,6 @@
 package co.ke.xently.features.customers.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,7 +65,7 @@ fun CustomerListScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CustomerListScreen(
     state: CustomerListUiState,
@@ -130,7 +129,7 @@ internal fun CustomerListScreen(
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_customers_found),
-                        onClickRetry = customers::retry,
+                        onClickRetry = customers::refresh,
                     )
                 }
 

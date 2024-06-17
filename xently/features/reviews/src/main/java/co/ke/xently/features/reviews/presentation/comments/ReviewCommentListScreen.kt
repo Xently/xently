@@ -101,10 +101,7 @@ internal fun ReviewCommentListScreen(
 
     LaunchedEffect(event) {
         when (event) {
-            null, is ReviewCommentListEvent.Success -> {
-
-            }
-
+            null, is ReviewCommentListEvent.Success -> Unit
             is ReviewCommentListEvent.Error -> {
                 snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
@@ -146,9 +143,7 @@ internal fun ReviewCommentListScreen(
                     ) { star ->
                         FilterChip(
                             selected = star.selected,
-                            onClick = {
-                                onAction(ReviewCommentListAction.SelectStarRating(star))
-                            },
+                            onClick = { onAction(ReviewCommentListAction.SelectStarRating(star)) },
                             label = {
                                 Text(
                                     text = stringResource(
@@ -203,7 +198,7 @@ internal fun ReviewCommentListScreen(
                     ReviewListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_reviews_found),
-                        onClickRetry = reviews::retry,
+                        onClickRetry = reviews::refresh,
                     )
                 }
 

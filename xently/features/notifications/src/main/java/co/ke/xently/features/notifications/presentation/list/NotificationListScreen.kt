@@ -130,7 +130,7 @@ internal fun NotificationListScreen(
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_notifications_found),
-                        onClickRetry = notifications::retry,
+                        onClickRetry = notifications::refresh,
                     )
                 }
 

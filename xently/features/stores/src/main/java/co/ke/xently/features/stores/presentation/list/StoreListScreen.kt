@@ -179,7 +179,7 @@ internal fun StoreListScreen(
                     StoreListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_stores_found),
-                        onClickRetry = stores::retry,
+                        onClickRetry = stores::refresh,
                     )
                 }
 

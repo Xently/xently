@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -22,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -46,6 +48,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
+import co.ke.xently.features.products.data.domain.error.ConfigurationError
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.toProductError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
@@ -61,6 +64,8 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
+    onClickSelectShop: () -> Unit,
+    onClickSelectBranch: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     topBar: @Composable () -> Unit = {},
@@ -78,6 +83,8 @@ fun ProductListScreen(
         products = products,
         categories = categories,
         modifier = modifier,
+        onClickSelectShop = onClickSelectShop,
+        onClickSelectBranch = onClickSelectBranch,
         onClickAddProduct = onClickAddProduct,
         onClickEditProduct = onClickEditProduct,
         onAction = viewModel::onAction,
@@ -93,6 +100,8 @@ internal fun ProductListScreen(
     products: LazyPagingItems<Product>,
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
+    onClickSelectShop: () -> Unit,
+    onClickSelectBranch: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
@@ -106,25 +115,10 @@ internal fun ProductListScreen(
         when (event) {
             null -> Unit
             is ProductListEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
 
             is ProductListEvent.Success -> {
@@ -212,7 +206,7 @@ internal fun ProductListScreen(
                     ProductListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_products_found),
-                        onClickRetry = products::retry,
+                        onClickRetry = products::refresh,
                     )
                 }
 
@@ -225,7 +219,24 @@ internal fun ProductListScreen(
                         message = error.asUiText().asString(),
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = products::retry,
-                    )
+                    ) {
+                        when (error as? ConfigurationError) {
+                            null -> Unit
+                            ConfigurationError.ShopSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = onClickSelectShop) {
+                                    Text(text = stringResource(R.string.action_select_shop))
+                                }
+                            }
+
+                            ConfigurationError.StoreSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = onClickSelectBranch) {
+                                    Text(text = stringResource(R.string.action_select_store))
+                                }
+                            }
+                        }
+                    }
                 }
 
                 products.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
@@ -294,6 +305,8 @@ private fun ProductListScreenPreview(
             modifier = Modifier.fillMaxSize(),
             onClickAddProduct = {},
             onClickEditProduct = {},
+            onClickSelectShop = {},
+            onClickSelectBranch = {},
             onAction = {},
         )
     }

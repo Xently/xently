@@ -30,7 +30,6 @@ import kotlin.String
 import kotlin.TODO
 import kotlin.Unit
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.let
 import kotlin.random.Random
 import kotlin.run
 import kotlin.time.Duration.Companion.milliseconds
@@ -60,6 +59,12 @@ internal class StoreRepositoryImpl @Inject constructor(
                 |Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.""".trimMargin(),
         )
         return flowOf(Result.Success(store))
+    }
+
+    override suspend fun getActiveStore(): Result<Store, ConfigurationError> {
+        val shop = storeDao.getActivated()
+            ?: return Result.Failure(ConfigurationError.StoreSelectionRequired)
+        return Result.Success(data = shop.store.copy(isActivated = true))
     }
 
     override fun findActiveStore(): Flow<Result<Store, ConfigurationError>> {
@@ -122,11 +127,9 @@ internal class StoreRepositoryImpl @Inject constructor(
                     }
                 }
             }
-        }.body<PagedResponse<Store>>()
-            .let { pagedResponse ->
-                val stores = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
-                pagedResponse.copy(embedded = mapOf("views" to stores))
-            }
+        }.body<PagedResponse<Store>>().run {
+            copy(embedded = mapOf("views" to (embedded.values.firstOrNull() ?: emptyList())))
+        }
     }
 
     override suspend fun deleteStore(store: Store): Result<Unit, Error> {

@@ -4,6 +4,7 @@ import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.EmailError
 import co.ke.xently.features.stores.data.domain.error.Error
+import co.ke.xently.features.stores.data.domain.error.FCMDeviceRegistrationRequired
 import co.ke.xently.features.stores.data.domain.error.LocationError
 import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
@@ -42,7 +43,7 @@ fun Error.asUiText(): UiText {
         is UnknownError -> UiText.StringResource(R.string.error_message_default)
         ConfigurationError.StoreSelectionRequired -> UiText.StringResource(R.string.error_store_not_selected)
         ConfigurationError.ShopSelectionRequired -> UiText.StringResource(R.string.error_shop_not_selected)
-        ConfigurationError.FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
+        FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
         DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
 
         LocationError.INVALID_FORMAT -> UiText.StringResource(R.string.error_location_invalid_format)

@@ -12,8 +12,13 @@ import co.ke.xently.features.productcategory.data.source.ProductCategoryReposito
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
 import co.ke.xently.features.products.data.domain.error.Result
+import co.ke.xently.features.products.data.domain.error.ShopSelectionRequiredException
+import co.ke.xently.features.products.data.domain.error.StoreSelectionRequiredException
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
+import co.ke.xently.features.stores.data.domain.error.ConfigurationError
+import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,8 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,6 +36,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +45,7 @@ internal class ProductListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
+    private val storeRepository: StoreRepository,
 ) : ViewModel() {
     private companion object {
         private const val KEY =
@@ -72,23 +78,37 @@ internal class ProductListViewModel @Inject constructor(
     private val _filters = MutableStateFlow(ProductFilters())
 
     val products: Flow<PagingData<Product>> =
-        _selectedCategories.combineTransform(_filters) { selectedCategories, filters ->
-            emitAll(
-                Pager(
-                    PagingConfig(
-                        pageSize = 20,
-                        initialLoadSize = 20,
-                    )
-                ) {
-                    XentlyPagingSource { url ->
-                        repository.getProducts(
-                            url = url,
-                            filters = filters.copy(categories = selectedCategories),
-                        )
+        storeRepository.findActiveStore().flatMapLatest { result ->
+            when (result) {
+                is StoreResult.Failure -> {
+                    productPager {
+                        when (result.error) {
+                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
+                            ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
+                        }
+                    }.flow
+                }
+
+                is StoreResult.Success -> {
+                    _selectedCategories.combine(_filters) { categories, filters ->
+                        filters.copy(categories = categories)
+                    }.flatMapLatest { filters ->
+                        productPager { url ->
+                            repository.getProducts(
+                                filters = filters,
+                                url = url
+                                    ?: result.data.links["products"]!!.hrefWithoutQueryParamTemplates(),
+                            )
+                        }.flow
                     }
-                }.flow
-            )
+                }
+            }
         }.cachedIn(viewModelScope)
+
+    private fun productPager(products: suspend (String?) -> PagedResponse<Product>) =
+        Pager(PagingConfig(pageSize = 20)) {
+            XentlyPagingSource(apiCall = products)
+        }
 
     fun onAction(action: ProductListAction) {
         when (action) {

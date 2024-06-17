@@ -28,6 +28,8 @@ suspend fun Throwable.toProductError(): Error {
     return when (this) {
         is ResponseException -> toProductError()
         is JsonConvertException -> DataError.Network.Serialization
+        is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
+        is StoreSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         else -> {
             Timber.e(this)
             UnknownError
@@ -42,7 +44,7 @@ private suspend fun ResponseException.toProductError(): Error {
                 DataError.Network.InvalidCredentials
             }
 
-            "empty_fcm_device_ids" -> ConfigurationError.FCMDeviceRegistrationRequired
+            "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
             else -> null
         }
     }

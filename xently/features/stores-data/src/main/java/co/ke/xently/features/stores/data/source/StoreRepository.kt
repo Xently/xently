@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface StoreRepository {
     suspend fun save(store: Store): Result<Unit, DataError>
     fun findById(id: Long): Flow<Result<Store, DataError>>
+    suspend fun getActiveStore(): Result<Store, ConfigurationError>
     fun findActiveStore(): Flow<Result<Store, ConfigurationError>>
     suspend fun getStores(url: String?, filters: StoreFilters): PagedResponse<Store>
     suspend fun deleteStore(store: Store): Result<Unit, Error>
