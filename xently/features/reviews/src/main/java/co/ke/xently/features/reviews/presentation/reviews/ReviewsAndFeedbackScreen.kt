@@ -2,6 +2,7 @@ package co.ke.xently.features.reviews.presentation.reviews
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +12,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import com.aay.compose.barChart.model.BarParameters
 import kotlinx.datetime.Month
 import kotlin.random.Random
@@ -98,65 +101,79 @@ internal fun ReviewsAndFeedbackScreen(
         topBar = topBar,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { paddingValues ->
-        Column(
+        val isRefreshing by remember(state) {
+            derivedStateOf {
+                state.statisticsResponse is StatisticsResponse.Loading
+                        && state.categoriesResponse is ReviewCategoriesResponse.Loading
+                        && state.shopReviewSummaryResponse is ReviewSummaryResponse.Loading
+                        && state.storeReviewSummaryResponse is ReviewSummaryResponse.Loading
+            }
+        }
+        PullRefreshBox(
             modifier = Modifier
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .fillMaxSize()
+                .padding(paddingValues),
+            isRefreshing = isRefreshing,
+            onRefresh = { onAction(ReviewsAndFeedbackAction.Refresh(context)) },
         ) {
-            GeneralReviewSummary(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                headline = stringResource(R.string.section_title_shop_review_summary),
-                response = state.shopReviewSummaryResponse,
-                onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchShopReviewSummary) },
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+            ) {
+                GeneralReviewSummary(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    headline = stringResource(R.string.section_title_shop_review_summary),
+                    response = state.shopReviewSummaryResponse,
+                    onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchShopReviewSummary) },
+                )
 
-            GeneralReviewSummary(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                headline = stringResource(R.string.section_title_store_review_summary),
-                response = state.storeReviewSummaryResponse,
-                onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchStoreReviewSummary) },
-            )
+                GeneralReviewSummary(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    headline = stringResource(R.string.section_title_store_review_summary),
+                    response = state.storeReviewSummaryResponse,
+                    onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchStoreReviewSummary) },
+                )
 
-            ReviewCategoryListSection(
-                response = state.categoriesResponse,
-                selectedCategory = state.selectedCategory,
-                onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchReviewCategories) },
-                onClickSelectCategory = { category ->
-                    onAction(
-                        ReviewsAndFeedbackAction.SelectReviewCategory(
-                            context = context,
-                            category = category,
+                ReviewCategoryListSection(
+                    response = state.categoriesResponse,
+                    selectedCategory = state.selectedCategory,
+                    onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchReviewCategories) },
+                    onClickSelectCategory = { category ->
+                        onAction(
+                            ReviewsAndFeedbackAction.SelectReviewCategory(
+                                context = context,
+                                category = category,
+                            )
                         )
-                    )
-                },
-                onClickMoreCategoryOptions = { /*TODO*/ },
-                onClickAddNewReviewCategory = onClickAddNewReviewCategory,
-            )
+                    },
+                    onClickMoreCategoryOptions = { /*TODO*/ },
+                    onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+                )
 
-            state.statisticsResponse?.let { response ->
-                state.selectedCategory?.let { selectedCategory ->
-                    ReviewContent(
-                        modifier = Modifier,
-                        category = selectedCategory,
-                        filters = state.selectedFilters,
-                        response = response,
-                        onClickRetry = {
-                            onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
-                        },
-                        onClickViewComments = { onClickViewComments(selectedCategory) },
-                        onClickApplyFilters = {
-                            onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
-                        },
-                        onClickSelectYear = { onAction(ReviewsAndFeedbackAction.SelectYear(it)) },
-                        onClickSelectMonth = { onAction(ReviewsAndFeedbackAction.SelectMonth(it)) },
-                        onClickRemoveMonth = {
-                            onAction(ReviewsAndFeedbackAction.RemoveSelectedMonth)
-                        },
-                        onClickRemoveYear = {
-                            onAction(ReviewsAndFeedbackAction.RemoveSelectedYear)
-                        },
-                    )
+                state.statisticsResponse?.let { response ->
+                    state.selectedCategory?.let { selectedCategory ->
+                        ReviewContent(
+                            modifier = Modifier,
+                            category = selectedCategory,
+                            filters = state.selectedFilters,
+                            response = response,
+                            onClickRetry = {
+                                onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
+                            },
+                            onClickViewComments = { onClickViewComments(selectedCategory) },
+                            onClickApplyFilters = {
+                                onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
+                            },
+                            onClickSelectYear = { onAction(ReviewsAndFeedbackAction.SelectYear(it)) },
+                            onClickSelectMonth = { onAction(ReviewsAndFeedbackAction.SelectMonth(it)) },
+                            onClickRemoveMonth = {
+                                onAction(ReviewsAndFeedbackAction.RemoveSelectedMonth)
+                            },
+                            onClickRemoveYear = {
+                                onAction(ReviewsAndFeedbackAction.RemoveSelectedYear)
+                            },
+                        )
+                    }
                 }
             }
         }

@@ -215,7 +215,8 @@ internal fun StatisticsSuccessContent(
                 modifier = (if (isLoading) Modifier.shimmer() else Modifier)
                     .fillMaxWidth()
                     .height(400.dp)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
             ) {
                 BarChart(
 //                    yAxisRange = 15,

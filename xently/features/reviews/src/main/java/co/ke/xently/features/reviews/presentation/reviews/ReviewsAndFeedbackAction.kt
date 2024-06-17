@@ -17,4 +17,5 @@ internal sealed interface ReviewsAndFeedbackAction {
     class SelectMonth(val month: Month) : ReviewsAndFeedbackAction
     data object RemoveSelectedMonth : ReviewsAndFeedbackAction
     data object RemoveSelectedYear : ReviewsAndFeedbackAction
+    class Refresh(val context: Context) : ReviewsAndFeedbackAction
 }
