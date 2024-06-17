@@ -47,13 +47,7 @@ internal class ShopRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getActivated(): Result<Shop, ConfigurationError> {
-        val shop = shopDao.getActivated()
-            ?: return Result.Failure(ConfigurationError.ShopSelectionRequired)
-        return Result.Success(data = shop.shop.copy(isActivated = true))
-    }
-
-    override fun findActivated(): Flow<Result<Shop, ConfigurationError>> {
+    override fun findActivatedShop(): Flow<Result<Shop, ConfigurationError>> {
         return shopDao.findActivated().map {
             when (it) {
                 null -> Result.Failure(ConfigurationError.ShopSelectionRequired)

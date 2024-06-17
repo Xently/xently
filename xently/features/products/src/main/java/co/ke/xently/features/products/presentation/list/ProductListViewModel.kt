@@ -45,7 +45,7 @@ internal class ProductListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    private val storeRepository: StoreRepository,
+    storeRepository: StoreRepository,
 ) : ViewModel() {
     private companion object {
         private const val KEY =
@@ -81,7 +81,7 @@ internal class ProductListViewModel @Inject constructor(
         storeRepository.findActiveStore().flatMapLatest { result ->
             when (result) {
                 is StoreResult.Failure -> {
-                    productPager {
+                    pager {
                         when (result.error) {
                             ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
                             ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
@@ -93,7 +93,7 @@ internal class ProductListViewModel @Inject constructor(
                     _selectedCategories.combine(_filters) { categories, filters ->
                         filters.copy(categories = categories)
                     }.flatMapLatest { filters ->
-                        productPager { url ->
+                        pager { url ->
                             repository.getProducts(
                                 filters = filters,
                                 url = url
@@ -105,9 +105,9 @@ internal class ProductListViewModel @Inject constructor(
             }
         }.cachedIn(viewModelScope)
 
-    private fun productPager(products: suspend (String?) -> PagedResponse<Product>) =
+    private fun pager(call: suspend (String?) -> PagedResponse<Product>) =
         Pager(PagingConfig(pageSize = 20)) {
-            XentlyPagingSource(apiCall = products)
+            XentlyPagingSource(apiCall = call)
         }
 
     fun onAction(action: ProductListAction) {

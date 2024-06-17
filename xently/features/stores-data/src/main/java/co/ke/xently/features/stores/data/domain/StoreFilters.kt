@@ -8,17 +8,11 @@ import co.ke.xently.libraries.location.tracker.domain.Location
 data class StoreFilters(
     val query: String? = null,
     val location: Location? = null,
-    val storeServices: List<StoreService> = emptyList(),
-    val storeCategories: List<StoreCategory> = emptyList(),
-    val productCategories: List<ProductCategory> = emptyList(),
+    val storeServices: Set<StoreService> = emptySet(),
+    val storeCategories: Set<StoreCategory> = emptySet(),
+    val productCategories: Set<ProductCategory> = emptySet(),
     val sortBy: List<String> = emptyList(),
     val minimumPrice: String? = null,
     val maximumPrice: String? = null,
     val radiusMeters: Int? = null,
-    val loadType: LoadType = LoadType.All,
-) {
-    enum class LoadType {
-        All,
-        ActiveStore,
-    }
-}
+)

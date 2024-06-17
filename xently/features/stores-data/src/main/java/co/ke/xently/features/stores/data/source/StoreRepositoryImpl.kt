@@ -9,7 +9,6 @@ import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.Result
-import co.ke.xently.features.stores.data.domain.error.ShopSelectionRequiredException
 import co.ke.xently.features.stores.data.domain.error.toStoreError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
@@ -69,7 +68,7 @@ internal class StoreRepositoryImpl @Inject constructor(
 
     override fun findActiveStore(): Flow<Result<Store, ConfigurationError>> {
         return storeDao.findActivated()
-            .combine(shopRepository.findActivated()) { store, shopResult ->
+            .combine(shopRepository.findActivatedShop()) { store, shopResult ->
                 when (store) {
                     null -> {
                         val error = when (shopResult) {
@@ -85,16 +84,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getStores(url: String?, filters: StoreFilters): PagedResponse<Store> {
-        val urlString = url ?: when (filters.loadType) {
-            StoreFilters.LoadType.All -> accessControlRepository.getAccessControl().storesUrl
-
-            StoreFilters.LoadType.ActiveStore -> {
-                when (val result = shopRepository.getActivated()) {
-                    is ShopResult.Failure -> throw ShopSelectionRequiredException()
-                    is ShopResult.Success -> result.data.links["stores"]!!.hrefWithoutQueryParamTemplates()
-                }
-            }
-        }
+        val urlString = url ?: accessControlRepository.getAccessControl().storesUrl
         return httpClient.get(urlString = urlString) {
             url {
                 parameters.run {

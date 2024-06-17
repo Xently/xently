@@ -1,16 +1,22 @@
 package co.ke.xently.features.stores.presentation.list
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import co.ke.xently.features.shops.data.domain.error.ConfigurationError
+import co.ke.xently.features.shops.data.source.ShopRepository
+import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.Result
+import co.ke.xently.features.stores.data.domain.error.ShopSelectionRequiredException
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.stores.presentation.utils.asUiText
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,32 +25,68 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class StoreListViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val repository: StoreRepository,
+    shopRepository: ShopRepository,
 ) : ViewModel() {
+    private companion object {
+        private const val KEY =
+            "co.ke.xently.features.stores.presentation.edit.SELECTED_STORE_CATEGORIES"
+    }
     private val _uiState = MutableStateFlow(StoreListUiState())
     val uiState: StateFlow<StoreListUiState> = _uiState.asStateFlow()
 
     private val _event = Channel<StoreListEvent>()
     val event: Flow<StoreListEvent> = _event.receiveAsFlow()
 
-    private val _filters =
-        MutableStateFlow(StoreFilters(loadType = StoreFilters.LoadType.ActiveStore))
+    private val _selectedCategories =
+        savedStateHandle.getStateFlow(KEY, emptySet<StoreCategory>())
 
-    val stores: Flow<PagingData<Store>> = _filters.flatMapLatest { filters ->
-        Pager(PagingConfig(pageSize = 20, initialLoadSize = 20)) {
-            XentlyPagingSource { url -> repository.getStores(url = url, filters = filters) }
-        }.flow
+    private val _filters = MutableStateFlow(StoreFilters())
+
+    val stores: Flow<PagingData<Store>> =
+        shopRepository.findActivatedShop().flatMapLatest { result ->
+            when (result) {
+                is ShopResult.Failure -> {
+                    pager {
+                        when (result.error) {
+                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
+                        }
+                    }.flow
+                }
+
+                is ShopResult.Success -> {
+                    _selectedCategories.combine(_filters) { categories, filters ->
+                        filters.copy(storeCategories = categories)
+                    }.flatMapLatest { filters ->
+                        pager { url ->
+                            repository.getStores(
+                                filters = filters,
+                                url = url
+                                    ?: result.data.links["stores"]!!.hrefWithoutQueryParamTemplates(),
+                            )
+                        }.flow
+                    }
+                }
+            }
     }.cachedIn(viewModelScope)
+
+    private fun pager(call: suspend (String?) -> PagedResponse<Store>) =
+        Pager(PagingConfig(pageSize = 20)) {
+            XentlyPagingSource(apiCall = call)
+        }
 
     fun onAction(action: StoreListAction) {
         when (action) {

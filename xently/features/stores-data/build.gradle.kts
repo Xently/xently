@@ -46,7 +46,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
-    implementation(project(":xently:features:productcategory-data"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
@@ -60,6 +59,7 @@ dependencies {
     implementation(project(":xently:libraries:data-core"))
     implementation(project(":xently:libraries:data-image"))
     implementation(project(":xently:libraries:pagination-data"))
+    implementation(project(":xently:features:productcategory-data"))
     api(project(":xently:libraries:location-tracker"))
     implementation(project(":xently:features:access-control"))
     api(project(":xently:features:shops-data"))

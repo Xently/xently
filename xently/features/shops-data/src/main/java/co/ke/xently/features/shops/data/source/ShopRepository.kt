@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ShopRepository {
     suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, Error>
-    suspend fun getActivated(): Result<Shop, ConfigurationError>
-    fun findActivated(): Flow<Result<Shop, ConfigurationError>>
+    fun findActivatedShop(): Flow<Result<Shop, ConfigurationError>>
     suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop>
     suspend fun deleteShop(shop: Shop): Result<Unit, Error>
     suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local>
