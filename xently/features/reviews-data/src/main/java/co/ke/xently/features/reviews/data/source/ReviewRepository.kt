@@ -20,5 +20,5 @@ interface ReviewRepository {
         filters: ReviewStatisticsFilters,
     ): Flow<Result<ReviewCategory.Statistics, Error>>
 
-    suspend fun getReviews(url: String?, filters: ReviewFilters): PagedResponse<Review>
+    suspend fun getReviews(url: String, filters: ReviewFilters): PagedResponse<Review>
 }

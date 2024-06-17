@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(EditStoreReviewCategoryScreen)
                             },
                             onClickViewComments = {
-                                navController.navigate(ReviewCommentListScreen)
+                                navController.navigate(ReviewCommentListScreen(it.name))
                             },
                             onClickLogin = {
                                 navController.navigate(AuthenticationNavGraph)

@@ -5,9 +5,10 @@ import co.ke.xently.features.reviews.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviews.data.domain.error.DataError
 import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.FCMDeviceRegistrationRequired
+import co.ke.xently.features.reviews.data.domain.error.ReviewCategoryNotFound
 import co.ke.xently.features.reviews.data.domain.error.UnknownError
 
-fun Error.asUiText(): UiText {
+private fun DataError.asUiText(): UiText {
     return when (this) {
         DataError.Network.Retryable.RequestTimeout -> UiText.StringResource(R.string.the_request_timed_out)
         DataError.Network.TooManyRequests -> UiText.StringResource(R.string.youve_hit_your_rate_limit)
@@ -37,10 +38,23 @@ fun Error.asUiText(): UiText {
         DataError.Network.UpgradeRequired -> UiText.StringResource(R.string.error_message_upgrade_required)
         DataError.Network.RequestHeaderFieldTooLarge -> UiText.StringResource(R.string.error_message_request_header_too_large)
         DataError.Network.FailedDependency -> UiText.StringResource(R.string.error_message_failed_dependency)
-        UnknownError -> UiText.StringResource(R.string.error_message_default)
+        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
+    }
+}
+
+private fun ConfigurationError.asUiText(): UiText {
+    return when (this) {
         ConfigurationError.StoreSelectionRequired -> UiText.StringResource(R.string.error_store_not_selected)
         ConfigurationError.ShopSelectionRequired -> UiText.StringResource(R.string.error_shop_not_selected)
+    }
+}
+
+fun Error.asUiText(): UiText {
+    return when (this) {
+        is DataError -> asUiText()
+        is ConfigurationError -> asUiText()
+        UnknownError -> UiText.StringResource(R.string.error_message_default)
         FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
-        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
+        ReviewCategoryNotFound -> UiText.StringResource(R.string.error_message_review_category_not_found)
     }
 }

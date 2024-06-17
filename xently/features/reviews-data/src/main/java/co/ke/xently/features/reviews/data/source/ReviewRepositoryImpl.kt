@@ -12,12 +12,10 @@ import co.ke.xently.features.reviews.data.domain.error.toReviewError
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -29,7 +27,6 @@ import kotlin.String
 import kotlin.TODO
 import kotlin.Unit
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.random.Random
 import kotlin.run
 import kotlin.to
 import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
@@ -122,18 +119,18 @@ internal class ReviewRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getReviews(url: String?, filters: ReviewFilters): PagedResponse<Review> {
-        val reviews = List(20) {
-            Review(
-                starRating = Random.nextInt(1, 5),
-                message = """Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.""",
-                links = mapOf(
-                    "self" to Link(href = "https://jsonplaceholder.typicode.com/posts/${it + 1}")
-                ),
-            )
+    override suspend fun getReviews(url: String, filters: ReviewFilters): PagedResponse<Review> {
+        return httpClient.get(urlString = url) {
+            url {
+                parameters.run {
+                    set("hasComments", filters.hasComments.toString())
+                    if (filters.starRating != null) {
+                        set("starRating", filters.starRating.toString())
+                    }
+                }
+            }
+        }.body<PagedResponse<Review>>().run {
+            copy(embedded = mapOf("views" to (embedded.values.firstOrNull() ?: emptyList())))
         }
-        delay(Random.nextLong(1_000, 5_000))
-        return PagedResponse(embedded = mapOf("views" to reviews))
     }
 }

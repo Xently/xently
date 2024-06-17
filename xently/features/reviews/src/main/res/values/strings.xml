@@ -62,6 +62,7 @@
     <string name="error_shop_not_selected">Shop not selected.</string>
     <string name="error_store_not_selected">Branch not selected.</string>
     <string name="chart_legend_star">%1$d Star (%2$s)</string>
+    <string name="error_message_review_category_not_found">Review category not found.</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>
