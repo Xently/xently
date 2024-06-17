@@ -86,9 +86,6 @@ class MainActivity : ComponentActivity() {
                             onClickAddShop = {
                                 navController.navigate(ShopNavGraph.EditShop)
                             },
-                            onClickShop = {
-                                navController.navigate(SelectStore)
-                            },
                             onClickQrCode = {
                                 /*TODO*/
                             },

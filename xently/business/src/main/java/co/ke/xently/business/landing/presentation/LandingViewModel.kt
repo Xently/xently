@@ -9,6 +9,7 @@ import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
 import co.ke.xently.features.auth.presentation.utils.asUiText
 import co.ke.xently.features.shops.data.source.ShopRepository
+import co.ke.xently.features.shops.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
 @HiltViewModel
 internal class LandingViewModel @Inject constructor(
@@ -55,7 +57,7 @@ internal class LandingViewModel @Inject constructor(
             LandingAction.ClickSignOut -> {
                 viewModelScope.launch {
                     _uiState.update {
-                        it.copy(isSignOutInProgress = true)
+                        it.copy(isLoading = true)
                     }
                     when (val result = signOut()) {
                         is Result.Failure -> {
@@ -74,7 +76,33 @@ internal class LandingViewModel @Inject constructor(
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
-                        it.copy(isSignOutInProgress = false)
+                        it.copy(isLoading = false)
+                    }
+                }
+            }
+
+            is LandingAction.SelectShop -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        it.copy(isLoading = true)
+                    }
+                    when (val result = shopRepository.selectShop(shop = action.shop)) {
+                        is ShopResult.Failure -> {
+                            _event.send(
+                                LandingEvent.ShopError(
+                                    result.error.asUiText(),
+                                    result.error,
+                                )
+                            )
+                        }
+
+                        is ShopResult.Success -> {
+                            _event.send(LandingEvent.SelectStore)
+                        }
+                    }
+                }.invokeOnCompletion {
+                    _uiState.update {
+                        it.copy(isLoading = false)
                     }
                 }
             }

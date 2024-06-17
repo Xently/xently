@@ -56,7 +56,6 @@ fun LandingScreen(
     onClickViewComments: (ReviewCategory) -> Unit,
     onClickLogin: () -> Unit,
     onClickAddShop: () -> Unit,
-    onClickShop: (Shop) -> Unit,
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
 ) {
@@ -66,7 +65,7 @@ fun LandingScreen(
 
     CompositionLocalProvider(
         LocalAuthenticationState provides AuthenticationState(
-            isSignOutInProgress = state.isSignOutInProgress,
+            isSignOutInProgress = state.isLoading,
             currentUser = state.user,
         )
     ) {
@@ -82,12 +81,11 @@ fun LandingScreen(
             onClickEditProduct = onClickEditProduct,
             onClickAddNewReviewCategory = onClickAddNewReviewCategory,
             onClickViewComments = onClickViewComments,
-            onClickLogout = { viewModel.onAction(LandingAction.ClickSignOut) },
             onClickLogin = onClickLogin,
             onClickAddShop = onClickAddShop,
-            onClickShop = onClickShop,
             onClickQrCode = onClickQrCode,
             onClickSettings = onClickSettings,
+            onAction = viewModel::onAction,
         )
     }
 }
@@ -105,12 +103,11 @@ internal fun LandingScreen(
     onClickEditProduct: (Product) -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
-    onClickLogout: () -> Unit,
     onClickLogin: () -> Unit,
     onClickAddShop: () -> Unit,
-    onClickShop: (Shop) -> Unit,
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
+    onAction: (LandingAction) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -120,7 +117,16 @@ internal fun LandingScreen(
     LaunchedEffect(event) {
         when (event) {
             null, LandingEvent.Success -> Unit
+            is LandingEvent.SelectStore -> onClickSelectBranch()
             is LandingEvent.Error -> {
+                Toast.makeText(
+                    context,
+                    event.error.asString(context = context),
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+
+            is LandingEvent.ShopError -> {
                 Toast.makeText(
                     context,
                     event.error.asString(context = context),
@@ -153,12 +159,12 @@ internal fun LandingScreen(
                 canAddShop = state.canAddShop,
                 selectedMenu = selectedMenu,
                 authenticationState = authenticationState,
-                onClickLogout = onClickLogout,
+                onClickLogout = { onAction(LandingAction.ClickSignOut) },
                 onClickLogin = onClickLogin,
                 shops = { state.shops },
                 onClickAddShop = { closeDrawer(); onClickAddShop() },
                 onClickSelectShop = { closeDrawer(); onClickSelectShop() },
-                onClickShop = { closeDrawer(); onClickShop(it) },
+                onClickShop = { closeDrawer(); onAction(LandingAction.SelectShop(it)) },
                 onClickAddStore = { closeDrawer(); onClickAddStore(it) },
                 onClickMenu = {
                     when (it) {
