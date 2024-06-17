@@ -47,12 +47,14 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun NonNullStoreContent(
     store: Store,
     isImageUploading: Boolean,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     onClickEdit: () -> Unit,
     onClickMoreDetails: () -> Unit,
     onClickUploadImage: () -> Unit,
@@ -64,17 +66,18 @@ internal fun NonNullStoreContent(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        item(key = "store_summary") {
+        item(key = "store_summary", contentType = "store_summary") {
             StoreDetailContent(
                 store = store,
                 isImageUploading = isImageUploading,
                 onClickEdit = onClickEdit,
                 onClickMoreDetails = onClickMoreDetails,
                 onClickUploadImage = onClickUploadImage,
+                modifier = if (isLoading) Modifier.shimmer() else Modifier,
             )
         }
         if (store.images.isEmpty()) {
-            item(key = "empty_store_images") {
+            item(key = "empty_store_images", contentType = "empty_store_images") {
                 Spacer(modifier = Modifier.height(24.dp))
                 EmptyStoreImageListContent(modifier = Modifier.fillMaxWidth())
             }
@@ -83,7 +86,9 @@ internal fun NonNullStoreContent(
                 StoreImageListItem(
                     image = image,
                     isLoading = false,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .run { if (isLoading) shimmer() else this },
                     onClickUpdate = { onClickUpdateImage(image) },
                     onClickConfirmDelete = { onClickDeleteImage(image) },
                 )

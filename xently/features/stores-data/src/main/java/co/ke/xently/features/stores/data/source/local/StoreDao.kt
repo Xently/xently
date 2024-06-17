@@ -2,12 +2,13 @@ package co.ke.xently.features.stores.data.source.local
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StoreDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(vararg stores: StoreEntity)
 
     @Query("DELETE FROM stores")

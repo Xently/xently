@@ -2,13 +2,18 @@ package co.ke.xently.features.stores.presentation.active
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.error.ConfigurationError
+import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.features.stores.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,14 +31,43 @@ internal class ActiveStoreViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.findActiveStore().collect { store ->
-                _uiState.update {
-                    it.copy(
-                        store = store,
-                        canAddStore = store?.shop?.links?.containsKey("add-store") ?: false,
-                    )
+            repository.findActiveStore()
+                .onStart { _uiState.update { it.copy(isLoading = true) } }
+                .collect { result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            val event = result.getActiveStoreEvent()
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isShopSelected = event !is ActiveStoreEvent.SelectShop,
+                                )
+                            }
+                            _event.send(event)
+                        }
+
+                        is Result.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    store = result.data,
+                                    canAddStore = result.data.shop.links.containsKey("add-store"),
+                                )
+                            }
+                        }
+                    }
                 }
-            }
+        }
+    }
+
+    private fun Result.Failure<Store, ConfigurationError>.getActiveStoreEvent(): ActiveStoreEvent {
+        return when (error) {
+            ConfigurationError.ShopSelectionRequired -> ActiveStoreEvent.SelectShop
+            ConfigurationError.StoreSelectionRequired -> ActiveStoreEvent.SelectShop
+            ConfigurationError.FCMDeviceRegistrationRequired -> ActiveStoreEvent.Error(
+                error = error.asUiText(),
+                type = error,
+            )
         }
     }
 

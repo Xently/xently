@@ -3,8 +3,10 @@ package co.ke.xently.features.reviews.data.domain.error
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.JsonConvertException
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import timber.log.Timber
 
 
 @Serializable
@@ -25,7 +27,11 @@ data object UnknownError : Error
 suspend fun Throwable.toReviewError(): Error {
     return when (this) {
         is ResponseException -> toReviewError()
-        else -> return UnknownError
+        is JsonConvertException -> DataError.Network.Serialization
+        else -> {
+            Timber.e(this)
+            UnknownError
+        }
     }
 }
 

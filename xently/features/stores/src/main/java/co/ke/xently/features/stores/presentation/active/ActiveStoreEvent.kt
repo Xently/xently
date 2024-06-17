@@ -10,4 +10,6 @@ sealed interface ActiveStoreEvent {
     ) : ActiveStoreEvent
 
     data object Success : ActiveStoreEvent
+    data object SelectShop : ActiveStoreEvent
+    data object SelectStore : ActiveStoreEvent
 }

@@ -4,4 +4,5 @@ import co.ke.xently.libraries.data.local.TransactionFacadeDatabase
 
 interface ShopDatabase : TransactionFacadeDatabase {
     fun shopDao(): ShopDao
+    suspend fun postActivateShop() {}
 }

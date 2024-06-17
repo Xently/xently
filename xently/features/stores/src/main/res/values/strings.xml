@@ -30,6 +30,8 @@
     <string name="error_message_upgrade_required">Upgrade required</string>
     <string name="error_message_request_header_too_large">Request header fields too large</string>
     <string name="error_message_fcm_device_registration_required">Device registration required.</string>
+    <string name="error_store_not_selected">Branch not selected.</string>
+    <string name="error_shop_not_selected">Shop not selected.</string>
     <string name="message_no_stores_found">No branches found.</string>
     <string name="error_password_too_short">The password is too short</string>
     <string name="action_retry">Retry</string>

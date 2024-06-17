@@ -33,6 +33,8 @@ internal class ShopRepositoryImpl @Inject constructor(
     private val database: ShopDatabase,
     private val accessControlRepository: AccessControlRepository,
 ) : ShopRepository {
+    private val shopDao = database.shopDao()
+
     override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
@@ -45,10 +47,19 @@ internal class ShopRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun findActivated(): Result<Shop, Error> {
-        val shop = database.shopDao().findActivated()
+    override suspend fun getActivated(): Result<Shop, ConfigurationError> {
+        val shop = shopDao.getActivated()
             ?: return Result.Failure(ConfigurationError.ShopSelectionRequired)
-        return Result.Success(shop.shop)
+        return Result.Success(data = shop.shop.copy(isActivated = true))
+    }
+
+    override fun findActivated(): Flow<Result<Shop, ConfigurationError>> {
+        return shopDao.findActivated().map {
+            when (it) {
+                null -> Result.Failure(ConfigurationError.ShopSelectionRequired)
+                else -> Result.Success(data = it.shop.copy(isActivated = true))
+            }
+        }
     }
 
     override suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop> {
@@ -59,7 +70,12 @@ internal class ShopRepositoryImpl @Inject constructor(
                 val shops = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
                 coroutineScope {
                     launch {
-                        database.shopDao().save(shops.map { ShopEntity(it) })
+                        val activatedShop = shopDao.getActivated()
+                        shopDao.save(
+                            shops.map {
+                                ShopEntity(it, isActivated = it.id == activatedShop?.id)
+                            }
+                        )
                     }
                 }
                 pagedResponse.copy(embedded = mapOf("views" to shops))
@@ -80,16 +96,16 @@ internal class ShopRepositoryImpl @Inject constructor(
 
     override suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local> {
         database.withTransactionFacade {
-            database.shopDao().deactivateAll()
-            database.shopDao().save(ShopEntity(shop = shop, isActivated = true))
+            shopDao.deactivateAll()
+            shopDao.save(ShopEntity(shop = shop, isActivated = true))
+            database.postActivateShop()
         }
         return Result.Success(Unit)
     }
 
     override fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>> {
-        return database.shopDao().findTop10ShopsOrderByIsActivated()
-            .map { entities ->
-                entities.map { it.shop.copy(isActivated = it.isActivated) }
-            }
+        return shopDao.findTop10ShopsOrderByIsActivated().map { entities ->
+            entities.map { it.shop.copy(isActivated = it.isActivated) }
+        }
     }
 }

@@ -1,24 +1,20 @@
 package co.ke.xently.features.stores.presentation.active
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -29,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.presentation.active.components.NonNullStoreContent
 import co.ke.xently.features.stores.presentation.active.components.NullStoreContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
@@ -82,26 +77,13 @@ internal fun ActiveStoreScreen(
     LaunchedEffect(event) {
         when (event) {
             null, ActiveStoreEvent.Success -> Unit
+            ActiveStoreEvent.SelectShop -> Unit //onClickSelectShop()
+            ActiveStoreEvent.SelectStore -> Unit //onClickSelectBranch()
             is ActiveStoreEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
         }
     }
@@ -127,12 +109,19 @@ internal fun ActiveStoreScreen(
     ) { paddingValues ->
         when {
             state.isLoading -> {
-                Box(
+                NonNullStoreContent(
+                    store = remember { Store.DEFAULT },
+                    isLoading = true,
+                    isImageUploading = false,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
-                    contentAlignment = Alignment.Center,
-                ) { CircularProgressIndicator() }
+                    onClickEdit = { },
+                    onClickMoreDetails = { },
+                    onClickUploadImage = { },
+                    onClickUpdateImage = { },
+                    onClickDeleteImage = { },
+                )
             }
 
             state.store == null -> {

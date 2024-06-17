@@ -6,8 +6,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.features.shops.data.source.ShopRepository
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.Result
@@ -26,14 +24,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class StoreListViewModel @Inject constructor(
     private val repository: StoreRepository,
-    private val shopRepository: ShopRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(StoreListUiState())
     val uiState: StateFlow<StoreListUiState> = _uiState.asStateFlow()
@@ -41,7 +37,8 @@ internal class StoreListViewModel @Inject constructor(
     private val _event = Channel<StoreListEvent>()
     val event: Flow<StoreListEvent> = _event.receiveAsFlow()
 
-    private val _filters = MutableStateFlow(StoreFilters())
+    private val _filters =
+        MutableStateFlow(StoreFilters(loadType = StoreFilters.LoadType.ActiveStore))
 
     val stores: Flow<PagingData<Store>> = _filters.flatMapLatest { filters ->
         Pager(PagingConfig(pageSize = 20, initialLoadSize = 20)) {
@@ -51,27 +48,6 @@ internal class StoreListViewModel @Inject constructor(
 
     fun onAction(action: StoreListAction) {
         when (action) {
-            StoreListAction.FetchStoresFromActivatedShop -> {
-                viewModelScope.launch {
-                    when (val result = shopRepository.findActivated()) {
-                        is ShopResult.Failure -> {
-                            _event.send(
-                                StoreListEvent.ShopError(
-                                    error = result.error.asUiText(),
-                                    type = result.error,
-                                )
-                            )
-                        }
-
-                        is ShopResult.Success -> {
-                            val url = result.data.links["stores"]!!.hrefWithoutQueryParamTemplates()
-                            _filters.update {
-                                it.copy(fallbackUrl = url)
-                            }
-                        }
-                    }
-                }
-            }
             is StoreListAction.ChangeQuery -> {
                 _uiState.update { it.copy(query = action.query) }
             }

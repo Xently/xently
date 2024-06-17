@@ -18,7 +18,11 @@ interface ShopDao {
     suspend fun deleteAll()
 
     @Query("SELECT * FROM shops WHERE isActivated = 1 LIMIT 1")
-    suspend fun findActivated(): ShopEntity?
+    suspend fun getActivated(): ShopEntity?
+
+    @Query("SELECT * FROM shops WHERE isActivated = 1 LIMIT 1")
+    fun findActivated(): Flow<ShopEntity?>
+
     @Query("SELECT * FROM shops ORDER BY isActivated DESC, id DESC LIMIT 10")
     fun findTop10ShopsOrderByIsActivated(): Flow<List<ShopEntity>>
 

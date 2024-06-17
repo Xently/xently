@@ -3,8 +3,10 @@ package co.ke.xently.features.stores.data.domain.error
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.JsonConvertException
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import timber.log.Timber
 
 
 @Serializable
@@ -25,7 +27,12 @@ data object UnknownError : Error
 suspend fun Throwable.toStoreError(): Error {
     return when (this) {
         is ResponseException -> toStoreError()
-        else -> return UnknownError
+        is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
+        is JsonConvertException -> DataError.Network.Serialization
+        else -> {
+            Timber.e(this)
+            UnknownError
+        }
     }
 }
 

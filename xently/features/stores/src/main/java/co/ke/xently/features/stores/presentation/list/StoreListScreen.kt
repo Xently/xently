@@ -69,10 +69,6 @@ fun StoreListScreen(
     val event by viewModel.event.collectAsStateWithLifecycle(null)
     val stores = viewModel.stores.collectAsLazyPagingItems()
 
-    LaunchedEffect(Unit) {
-        viewModel.onAction(StoreListAction.FetchStoresFromActivatedShop)
-    }
-
     StoreListScreen(
         state = state,
         event = event,
@@ -106,13 +102,6 @@ internal fun StoreListScreen(
     LaunchedEffect(event) {
         when (event) {
             null -> Unit
-            is StoreListEvent.ShopError -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
             is StoreListEvent.Error -> {
                 snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
@@ -176,10 +165,7 @@ internal fun StoreListScreen(
     ) { paddingValues ->
         val refreshLoadState = stores.loadState.refresh
         val isRefreshing by remember(refreshLoadState, stores.itemCount) {
-            derivedStateOf {
-                refreshLoadState == LoadState.Loading
-                        && stores.itemCount > 0
-            }
+            derivedStateOf { refreshLoadState == LoadState.Loading && stores.itemCount > 0 }
         }
         PullRefreshBox(
             modifier = Modifier

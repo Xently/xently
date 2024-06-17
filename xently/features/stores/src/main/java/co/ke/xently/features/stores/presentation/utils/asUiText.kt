@@ -39,7 +39,9 @@ fun Error.asUiText(): UiText {
         DataError.Network.UpgradeRequired -> UiText.StringResource(R.string.error_message_upgrade_required)
         DataError.Network.RequestHeaderFieldTooLarge -> UiText.StringResource(R.string.error_message_request_header_too_large)
         DataError.Network.FailedDependency -> UiText.StringResource(R.string.error_message_failed_dependency)
-        UnknownError -> UiText.StringResource(R.string.error_message_default)
+        is UnknownError -> UiText.StringResource(R.string.error_message_default)
+        ConfigurationError.StoreSelectionRequired -> UiText.StringResource(R.string.error_store_not_selected)
+        ConfigurationError.ShopSelectionRequired -> UiText.StringResource(R.string.error_shop_not_selected)
         ConfigurationError.FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
         DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
 

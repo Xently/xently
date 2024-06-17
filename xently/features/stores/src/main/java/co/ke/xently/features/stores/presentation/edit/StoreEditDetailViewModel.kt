@@ -65,13 +65,16 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.findActiveStore().collect { store ->
-                if (store != null) {
-                    _uiState.update {
-                        it.copy(store = store)
-                    }
-                    if (savedStateHandle.get<Set<StoreCategory>>(KEY) == null) {
-                        savedStateHandle[KEY] = store.categories
+            repository.findActiveStore().collect { result ->
+                when (result) {
+                    is Result.Failure -> Unit
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(store = result.data)
+                        }
+                        if (savedStateHandle.get<Set<StoreCategory>>(KEY) == null) {
+                            savedStateHandle[KEY] = result.data.categories
+                        }
                     }
                 }
             }

@@ -96,7 +96,7 @@ data class Time(
             val (hour, minute) = time.split(':').map {
                 it.toInt()
             }
-            val utcOffset = UtcOffset.parse(offset)
+            val utcOffset = UtcOffset.parse(offset, UtcOffset.Formats.FOUR_DIGITS)
             return Time(hour = hour, minute = minute, utcOffset = utcOffset)
                 .toLocalTime()
         }

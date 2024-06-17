@@ -98,4 +98,8 @@ abstract class AppDatabase : RoomDatabase(),
     override suspend fun <R> withTransactionFacade(block: suspend () -> R): R {
         return withTransaction(block)
     }
+
+    override suspend fun postActivateShop() {
+        storeDao().deactivateAll()
+    }
 }

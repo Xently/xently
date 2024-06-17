@@ -13,7 +13,7 @@ data class AccessControl(
     val canAddShop: Boolean
         get() = links.containsKey("add-shop")
 
-    fun copyWithDefaultMissingKeys(): AccessControl {
+    internal fun copyWithDefaultMissingKeys(): AccessControl {
         return copy(links = buildMap { putAll(BASE_URLS); putAll(links) })
     }
 
@@ -37,6 +37,8 @@ data class AccessControl(
         get() = links["remove-fcm-device-id"]!!.hrefWithoutQueryParamTemplates()
     val shopsAssociatedWithMyAccountUrl: String
         get() = links["shops-associated-with-my-account"]!!.hrefWithoutQueryParamTemplates()
+    val storesUrl: String
+        get() = links["stores"]!!.hrefWithoutQueryParamTemplates()
 
     companion object {
         private val BASE_URLS = mapOf(
@@ -50,6 +52,7 @@ data class AccessControl(
             "email-password-sign-in" to Link(href = "$BASE_URL/auth/sign-in"),
             "email-password-sign-up" to Link(href = "$BASE_URL/auth/sign-up"),
             "request-password-reset" to Link(href = "$BASE_URL/auth/request-password-reset"),
+            "stores" to Link(href = "${BASE_URL}/stores")
         )
     }
 }
