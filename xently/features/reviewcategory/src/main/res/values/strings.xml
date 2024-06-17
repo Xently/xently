@@ -36,4 +36,6 @@
     <string name="action_save">Save</string>
     <string name="action_save_and_add_another">Save &amp; Add Another</string>
     <string name="message_review_category_saved">Category saved successfully</string>
+    <string name="error_store_not_selected">Branch not selected.</string>
+    <string name="error_shop_not_selected">Shop not selected.</string>
 </resources>

@@ -43,7 +43,7 @@ private suspend fun ResponseException.toReviewCategoryError(): Error {
                 DataError.Network.InvalidCredentials
             }
 
-            "empty_fcm_device_ids" -> ConfigurationError.FCMDeviceRegistrationRequired
+            "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
             else -> null
         }
     }

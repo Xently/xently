@@ -5,27 +5,42 @@ import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.ReviewFilters
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
+import co.ke.xently.features.reviews.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.domain.error.toReviewError
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
+import co.ke.xently.features.shops.data.source.ShopRepository
+import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import timber.log.Timber
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.Exception
+import kotlin.Long
+import kotlin.String
+import kotlin.TODO
+import kotlin.Unit
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.run
+import kotlin.to
+import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
+import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
 @Singleton
 internal class ReviewRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ReviewDatabase,
+    private val shopRepository: ShopRepository,
+    private val storeRepository: StoreRepository,
 ) : ReviewRepository {
     override suspend fun save(review: Review): Result<Unit, Error> {
         TODO("Not yet implemented")
@@ -36,44 +51,46 @@ internal class ReviewRepositoryImpl @Inject constructor(
     }
 
     override suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>> {
-        return flow {
-            val duration = Random.nextLong(1_000, 5_000).milliseconds
-            val result: Result<Rating, Error> = try {
-                delay(duration)
-                val rating = Rating(
-                    average = 3.5f,
-                    totalPerStar = List(5) {
-                        Rating.Star(it + 1, Random.nextLong(10_000, 1_000_000))
-                    }.sortedByDescending { it.star },
-                )
-                Result.Success(rating)
-            } catch (ex: Exception) {
-                if (ex is CancellationException) throw ex
-                Timber.e(ex)
-                Result.Failure(ex.toReviewError())
+        return shopRepository.findActivatedShop().map { result ->
+            when (result) {
+                is ShopResult.Failure -> Result.Failure(ConfigurationError.ShopSelectionRequired)
+                is ShopResult.Success -> {
+                    val urlString =
+                        result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
+                    val response =
+                        httpClient.get(urlString = urlString)
+                            .body<Rating>()
+                            .run {
+                                copy(
+                                    average = average,
+                                    totalPerStar = totalPerStar.sortedByDescending { it.star },
+                                )
+                            }
+                    Result.Success(response)
+                }
             }
-            emit(result)
         }
     }
 
     override suspend fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, Error>> {
-        return flow {
-            val duration = Random.nextLong(1_000, 5_000).milliseconds
-            val result: Result<Rating, Error> = try {
-                delay(duration)
-                val rating = Rating(
-                    average = 4.5f,
-                    totalPerStar = List(5) {
-                        Rating.Star(it + 1, Random.nextLong(10_000, 100_000))
-                    }.sortedByDescending { it.star },
-                )
-                Result.Success(rating)
-            } catch (ex: Exception) {
-                if (ex is CancellationException) throw ex
-                Timber.e(ex)
-                Result.Failure(ex.toReviewError())
+        return storeRepository.findActiveStore().map { result ->
+            when (result) {
+                is StoreResult.Failure -> Result.Failure(ConfigurationError.StoreSelectionRequired)
+                is StoreResult.Success -> {
+                    val urlString =
+                        result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
+                    val response =
+                        httpClient.get(urlString = urlString)
+                            .body<Rating>()
+                            .run {
+                                copy(
+                                    average = average,
+                                    totalPerStar = totalPerStar.sortedByDescending { it.star },
+                                )
+                            }
+                    Result.Success(response)
+                }
             }
-            emit(result)
         }
     }
 
@@ -82,42 +99,30 @@ internal class ReviewRepositoryImpl @Inject constructor(
         filters: ReviewStatisticsFilters,
     ): Flow<Result<ReviewCategory.Statistics, Error>> {
         return flow {
-            val duration = Random.nextLong(1_000, 5_000).milliseconds
             val result: Result<ReviewCategory.Statistics, Error> = try {
-                delay(duration)
-                val statistics = ReviewCategory.Statistics(
-                    totalReviews = 100,
-                    generalSentiment = ReviewCategory.Statistics.GeneralSentiment.entries.random(),
-                    averageRating = 3.7f,
-                    percentageSatisfaction = Random.nextInt(0, 100),
-                    groupedStatistics = List(10) {
-                        ReviewCategory.Statistics.GroupedStatistic(
-                            group = "Group $it",
-                            starRating = Random.nextInt(1, 5),
-                            count = 100,
-                        )
-                    },
-                )
+                val statistics =
+                    httpClient.get(category.links["statistics"]!!.hrefWithoutQueryParamTemplates()) {
+                        url {
+                            parameters.run {
+                                if (filters.year != null) {
+                                    set("year", filters.year.toString())
+                                }
+                                if (filters.month != null) {
+                                    set("month", filters.month.toString())
+                                }
+                            }
+                        }
+                    }.body<ReviewCategory.Statistics>()
                 Result.Success(statistics)
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
-                Timber.e(ex)
                 Result.Failure(ex.toReviewError())
             }
             emit(result)
         }
     }
 
-    data class Placeholder(
-        val body: String,
-        val id: Int,
-        val title: String,
-        val userId: Int,
-    )
-
     override suspend fun getReviews(url: String?, filters: ReviewFilters): PagedResponse<Review> {
-//        val body = httpClient.get("https://jsonplaceholder.typicode.com/posts")
-
         val reviews = List(20) {
             Review(
                 starRating = Random.nextInt(1, 5),

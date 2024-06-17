@@ -1,9 +1,9 @@
 package co.ke.xently.features.notifications.presentation.utils
 
 import co.ke.xently.features.notifications.R
-import co.ke.xently.features.notifications.data.domain.error.ConfigurationError
 import co.ke.xently.features.notifications.data.domain.error.DataError
 import co.ke.xently.features.notifications.data.domain.error.Error
+import co.ke.xently.features.notifications.data.domain.error.FCMDeviceRegistrationRequired
 import co.ke.xently.features.notifications.data.domain.error.UnknownError
 
 fun Error.asUiText(): UiText {
@@ -37,7 +37,7 @@ fun Error.asUiText(): UiText {
         DataError.Network.RequestHeaderFieldTooLarge -> UiText.StringResource(R.string.error_message_request_header_too_large)
         DataError.Network.FailedDependency -> UiText.StringResource(R.string.error_message_failed_dependency)
         UnknownError -> UiText.StringResource(R.string.error_message_default)
-        ConfigurationError.FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
+        FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
         DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
     }
 }

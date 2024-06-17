@@ -34,4 +34,6 @@
     <string name="action_retry">Retry</string>
     <string name="anonymous">Anonymous</string>
     <string name="you_are_position_with_points">You are position %1$s with %2$s points</string>
+    <string name="error_store_not_selected">Branch not selected.</string>
+    <string name="error_shop_not_selected">Shop not selected.</string>
 </resources>
