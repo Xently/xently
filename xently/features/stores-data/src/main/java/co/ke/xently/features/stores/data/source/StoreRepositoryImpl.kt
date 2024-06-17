@@ -19,7 +19,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import timber.log.Timber
 import javax.inject.Inject
@@ -64,8 +64,8 @@ internal class StoreRepositoryImpl @Inject constructor(
 
     override fun findActiveStore(): Flow<Result<Store, ConfigurationError>> {
         return storeDao.findActivated()
-            .combineTransform(shopRepository.findActivated()) { store, shopResult ->
-                val result: Result<Store, ConfigurationError> = when (store) {
+            .combine(shopRepository.findActivated()) { store, shopResult ->
+                when (store) {
                     null -> {
                         val error = when (shopResult) {
                             is ShopResult.Failure -> ConfigurationError.ShopSelectionRequired
@@ -76,7 +76,6 @@ internal class StoreRepositoryImpl @Inject constructor(
 
                     else -> Result.Success(store.store)
                 }
-                emit(result)
             }
     }
 
