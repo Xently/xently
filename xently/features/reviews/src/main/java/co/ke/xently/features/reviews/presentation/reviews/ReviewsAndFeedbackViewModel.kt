@@ -7,6 +7,15 @@ import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.FetchReviewCategories
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.FetchShopReviewSummary
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.FetchStoreReviewSummary
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.FetchStoreStatistics
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.RemoveSelectedMonth
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.RemoveSelectedYear
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.SelectMonth
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.SelectReviewCategory
+import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.SelectYear
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.libraries.ui.core.domain.coolFormat
@@ -36,23 +45,23 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
     val event: Flow<ReviewsAndFeedbackEvent> = _event.receiveAsFlow()
 
     init {
-        onAction(ReviewsAndFeedbackAction.FetchReviewCategories)
-        onAction(ReviewsAndFeedbackAction.FetchShopReviewSummary)
-        onAction(ReviewsAndFeedbackAction.FetchStoreReviewSummary)
+        onAction(FetchReviewCategories)
+        onAction(FetchShopReviewSummary)
+        onAction(FetchStoreReviewSummary)
     }
 
     fun onAction(action: ReviewsAndFeedbackAction) {
         when (action) {
-            is ReviewsAndFeedbackAction.SelectReviewCategory -> {
+            is SelectReviewCategory -> {
                 if (action.category != _uiState.value.selectedCategory) {
                     _uiState.update {
                         it.copy(selectedCategory = action.category)
                     }
-                    onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(action.context))
+                    onAction(FetchStoreStatistics(action.context))
                 }
             }
 
-            is ReviewsAndFeedbackAction.SelectYear -> {
+            is SelectYear -> {
                 _uiState.update { state ->
                     val selectedFilters = state.selectedFilters.copy(
                         year = action.year,
@@ -61,7 +70,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            is ReviewsAndFeedbackAction.RemoveSelectedYear -> {
+            is RemoveSelectedYear -> {
                 _uiState.update { state ->
                     val selectedFilters = state.selectedFilters.copy(
                         year = null,
@@ -71,7 +80,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            is ReviewsAndFeedbackAction.SelectMonth -> {
+            is SelectMonth -> {
                 _uiState.update { state ->
                     val selectedFilters = state.selectedFilters.copy(
                         month = action.month,
@@ -80,7 +89,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            is ReviewsAndFeedbackAction.RemoveSelectedMonth -> {
+            is RemoveSelectedMonth -> {
                 _uiState.update { state ->
                     val selectedFilters = state.selectedFilters.copy(
                         month = null,
@@ -89,7 +98,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            is ReviewsAndFeedbackAction.FetchStoreStatistics -> {
+            is FetchStoreStatistics -> {
                 val category = _uiState.value.selectedCategory ?: return
                 val filters = _uiState.value.selectedFilters
 
@@ -105,6 +114,21 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
 
                                 is Result.Success -> {
                                     val statistics = result.data
+
+                                    /*while (statistics.groupedStatistics.isEmpty()) {
+                                        // Avoid showing the user empty state, instead fallback
+                                        // to previous the most recent month, or remove the month
+                                        // selection completely.
+                                        val month = _uiState.value.selectedFilters.month ?: break
+                                        if (month.ordinal == 0) {
+                                            onAction(RemoveSelectedMonth)
+                                        } else {
+                                            onAction(SelectMonth(Month(month.ordinal)))
+                                        }
+                                        delay(200)
+                                        onAction(FetchStoreStatistics(action.context))
+                                    }*/
+
                                     val groups = statistics.groupedStatistics.map {
                                         it.group
                                     }.distinct()
@@ -145,7 +169,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            ReviewsAndFeedbackAction.FetchStoreReviewSummary -> {
+            FetchStoreReviewSummary -> {
                 viewModelScope.launch {
                     repository.findSummaryReviewForCurrentlyActiveStore()
                         .onStart { _uiState.update { it.copy(storeReviewSummaryResponse = ReviewSummaryResponse.Loading) } }
@@ -166,7 +190,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            ReviewsAndFeedbackAction.FetchShopReviewSummary -> {
+            FetchShopReviewSummary -> {
                 viewModelScope.launch {
                     repository.findSummaryReviewForCurrentlyActiveShop()
                         .onStart { _uiState.update { it.copy(shopReviewSummaryResponse = ReviewSummaryResponse.Loading) } }
@@ -187,7 +211,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            ReviewsAndFeedbackAction.FetchReviewCategories -> {
+            FetchReviewCategories -> {
                 viewModelScope.launch {
                     reviewCategoryRepository.findAllReviewCategories()
                         .onStart { _uiState.update { it.copy(categoriesResponse = ReviewCategoriesResponse.Loading) } }
