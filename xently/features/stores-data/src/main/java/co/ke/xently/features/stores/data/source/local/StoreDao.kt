@@ -28,4 +28,7 @@ interface StoreDao {
 
     @Query("UPDATE stores SET isActivated = 0")
     suspend fun deactivateAll()
+
+    @Query("SELECT * FROM stores WHERE id = :id")
+    fun findById(id: Long): Flow<StoreEntity?>
 }

@@ -14,9 +14,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import co.ke.xently.business.domain.EditProductScreen
+import co.ke.xently.business.domain.EditStoreScreen
 import co.ke.xently.business.domain.InitialStoreSelectionRoute
 import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectShop
 import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectStore
+import co.ke.xently.business.domain.PickLocation
 import co.ke.xently.business.domain.ReviewCommentListScreen
 import co.ke.xently.business.domain.SettingsScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
@@ -24,8 +28,7 @@ import co.ke.xently.business.landing.domain.LandingScreen
 import co.ke.xently.business.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
-import co.ke.xently.features.products.domain.EditProductNavGraph
-import co.ke.xently.features.products.presentation.editProductNavigation
+import co.ke.xently.features.products.presentation.edit.ProductEditDetailScreen
 import co.ke.xently.features.reviewcategory.presentation.edit.ReviewCategoryEditDetailScreen
 import co.ke.xently.features.reviews.presentation.comments.ReviewCommentListScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
@@ -33,9 +36,9 @@ import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.shops.domain.ShopNavGraph
 import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
-import co.ke.xently.features.stores.domain.EditStoreNavGraph
-import co.ke.xently.features.stores.presentation.editStoreNavigation
+import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
+import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -63,16 +66,16 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(SelectStore)
                             },
                             onClickAddStore = {
-                                navController.navigate(EditStoreNavGraph)
+                                navController.navigate(EditStoreScreen(shopId = it?.id ?: -1))
                             },
                             onClickEditStore = {
-                                navController.navigate(EditStoreNavGraph)
+                                navController.navigate(EditStoreScreen(storeId = it.id))
                             },
                             onClickAddProduct = {
-                                navController.navigate(EditProductNavGraph)
+                                navController.navigate(EditProductScreen())
                             },
                             onClickEditProduct = {
-                                navController.navigate(EditProductNavGraph)
+                                navController.navigate(EditProductScreen(productId = it.id))
                             },
                             onClickAddNewReviewCategory = {
                                 navController.navigate(EditStoreReviewCategoryScreen)
@@ -95,8 +98,28 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     authenticationNavigation(navController = navController)
-                    editStoreNavigation(navController = navController)
-                    editProductNavigation(navController = navController)
+                    composable<EditProductScreen> {
+                        ProductEditDetailScreen(onClickBack = navController::navigateUp)
+                    }
+                    composable<EditStoreScreen> {
+                        val editStoreScreen = it.toRoute<EditStoreScreen>()
+                        StoreEditDetailScreen(
+                            onClickBack = navController::navigateUp,
+                            onClickPickLocation = {
+                                navController.navigate(
+                                    PickLocation(
+                                        shopId = editStoreScreen.shopId,
+                                        storeId = editStoreScreen.storeId,
+                                    )
+                                )
+                            },
+                        )
+                    }
+                    composable<PickLocation> {
+                        PickStoreLocationScreen(
+                            onClickBack = navController::navigateUp,
+                        )
+                    }
                     composable<SelectShop> {
                         LaunchedEffect(Unit) {
                             if (initialStoreSelectionRoute == null) {
@@ -125,10 +148,10 @@ class MainActivity : ComponentActivity() {
                         StoreListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddStore = {
-                                navController.navigate(EditStoreNavGraph)
+                                navController.navigate(EditStoreScreen())
                             },
                             onClickEditStore = {
-                                navController.navigate(EditStoreNavGraph)
+                                navController.navigate(EditStoreScreen(storeId = it.id))
                             },
                             onStoreSelected = {
                                 initialStoreSelectionRoute?.let {

@@ -14,6 +14,9 @@ interface ShopDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(shops: List<ShopEntity>)
 
+    @Query("SELECT * FROM shops WHERE id = :id")
+    fun findById(id: Long): Flow<ShopEntity?>
+
     @Query("DELETE FROM shops")
     suspend fun deleteAll()
 

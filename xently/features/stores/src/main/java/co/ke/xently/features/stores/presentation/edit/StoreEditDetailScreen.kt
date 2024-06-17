@@ -80,7 +80,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
 @Composable
-internal fun StoreEditDetailScreen(
+fun StoreEditDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickPickLocation: (Location) -> Unit,

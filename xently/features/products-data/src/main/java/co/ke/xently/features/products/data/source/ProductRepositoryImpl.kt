@@ -2,16 +2,21 @@ package co.ke.xently.features.products.data.source
 
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
+import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.domain.error.toProductError
 import co.ke.xently.features.products.data.source.local.ProductDatabase
+import co.ke.xently.features.products.data.source.local.ProductEntity
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,6 +29,8 @@ internal class ProductRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: ProductDatabase,
 ) : ProductRepository {
+    private val productDao = database.productDao()
+
     override suspend fun save(product: Product): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
@@ -37,7 +44,13 @@ internal class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun findById(id: Long): Flow<Result<Product, Error>> {
-        TODO("Not yet implemented")
+        return productDao.findById(id = id).map { entity ->
+            if (entity == null) {
+                Result.Failure(DataError.Network.ResourceNotFound)
+            } else {
+                Result.Success(entity.product)
+            }
+        }
     }
 
     override suspend fun getProducts(
@@ -56,7 +69,12 @@ internal class ProductRepositoryImpl @Inject constructor(
                 }
             }
         }.body<PagedResponse<Product>>().run {
-            copy(embedded = mapOf("views" to (embedded.values.firstOrNull() ?: emptyList())))
+            (embedded.values.firstOrNull() ?: emptyList()).let { products ->
+                coroutineScope {
+                    launch { productDao.insertAll(products.map { ProductEntity(product = it) }) }
+                }
+                copy(embedded = mapOf("views" to products))
+            }
         }
     }
 

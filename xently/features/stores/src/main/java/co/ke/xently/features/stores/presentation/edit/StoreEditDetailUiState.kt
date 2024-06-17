@@ -44,7 +44,7 @@ data class StoreEditDetailUiState(
                 ),
             )
         }
-    }.values.toList(),
+    }.values.sortedBy { it.dayOfWeek.isoDayNumber },
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
 ) {

@@ -37,7 +37,7 @@ import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun PickStoreLocationScreen(
+fun PickStoreLocationScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
 ) {

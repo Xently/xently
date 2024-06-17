@@ -1,7 +1,6 @@
 package co.ke.xently.features.stores.data.source
 
 import co.ke.xently.features.access.control.data.AccessControlRepository
-import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreFilters
@@ -19,7 +18,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,15 +48,13 @@ internal class StoreRepositoryImpl @Inject constructor(
     }
 
     override fun findById(id: Long): Flow<Result<Store, DataError>> {
-        val store = Store(
-            name = "Westlands",
-            shop = Shop(name = "Ranalo K'Osewe"),
-            description = """Short description about the business/hotel will go here.
-                |Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                |
-                |Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.""".trimMargin(),
-        )
-        return flowOf(Result.Success(store))
+        return storeDao.findById(id = id).map { entity ->
+            if (entity == null) {
+                Result.Failure(DataError.Network.ResourceNotFound)
+            } else {
+                Result.Success(entity.store)
+            }
+        }
     }
 
     override suspend fun getActiveStore(): Result<Store, ConfigurationError> {

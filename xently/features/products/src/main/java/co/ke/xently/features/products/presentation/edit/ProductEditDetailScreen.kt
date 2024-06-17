@@ -64,7 +64,7 @@ import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import kotlin.random.Random
 
 @Composable
-internal fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
+fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
     val viewModel = hiltViewModel<ProductEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
