@@ -1,6 +1,5 @@
 package co.ke.xently.features.reviews.presentation.components
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -28,8 +25,6 @@ import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.error.DataError.Network
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
-import co.ke.xently.features.reviews.presentation.theme.xentlyLinearProgressLight
-import co.ke.xently.features.reviews.presentation.theme.xentlyLinearProgressLightTrack
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
@@ -62,7 +57,7 @@ internal fun GeneralReviewSummary(
                         text = response.error.asString(),
                         modifier = Modifier.weight(1f),
                     )
-                    if (response.type is Network) {
+                    if (response.type is Network.Retryable) {
                         Button(onClick = onClickRetry) {
                             Text(text = stringResource(R.string.action_retry))
                         }
@@ -116,7 +111,10 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 modifier = if (isLoading) Modifier.shimmer() else Modifier,
             )
             Text(
-                text = "Total - ${rating.totalReviews.coolFormat()}",
+                text = stringResource(
+                    R.string.summary_review_total,
+                    rating.totalReviews.coolFormat(),
+                ),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Light,
                 modifier = if (isLoading) Modifier.shimmer() else Modifier,
@@ -140,29 +138,11 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                     val progress = rememberSaveable(star.count, rating.totalReviews) {
                         (star.count / rating.totalReviews.toDouble()).toFloat()
                     }
-                    val animatedProgress by animateFloatAsState(
-                        progress,
-                        label = "progress-animation",
+                    StarRatingLinearProgress(
+                        progress = progress,
+                        isDark = isDark,
+                        modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
                     )
-                    if (isDark) {
-                        LinearProgressIndicator(
-                            progress = { animatedProgress },
-                            modifier = (if (isLoading) Modifier.shimmer() else Modifier)
-                                .weight(1f)
-                                .height(12.dp),
-                            strokeCap = StrokeCap.Round,
-                        )
-                    } else {
-                        LinearProgressIndicator(
-                            progress = { animatedProgress },
-                            modifier = (if (isLoading) Modifier.shimmer() else Modifier)
-                                .weight(1f)
-                                .height(12.dp),
-                            color = xentlyLinearProgressLight,
-                            trackColor = xentlyLinearProgressLightTrack,
-                            strokeCap = StrokeCap.Round,
-                        )
-                    }
                 }
             }
         }
@@ -183,6 +163,14 @@ private class ReviewSummaryResponsePreviewParameterProvider :
                     average = 4.5f,
                     totalPerStar = List(5) {
                         Rating.Star(it + 1, Random.nextLong(100))
+                    }.sortedByDescending { it.star },
+                )
+            ),
+            ReviewSummaryResponse.Success(
+                Rating(
+                    average = 0f,
+                    totalPerStar = List(5) {
+                        Rating.Star(it + 1, 0)
                     }.sortedByDescending { it.star },
                 )
             ),
