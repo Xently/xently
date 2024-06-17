@@ -39,8 +39,8 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val dataValidator: StoreDataValidator,
 ) : ViewModel() {
     private companion object {
-        private const val KEY =
-            "co.ke.xently.features.stores.presentation.edit.SELECTED_STORE_CATEGORIES"
+        private val KEY =
+            StoreEditDetailViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
     }
 
     private val _uiState = MutableStateFlow(StoreEditDetailUiState())

@@ -42,8 +42,7 @@ internal class StoreListViewModel @Inject constructor(
     shopRepository: ShopRepository,
 ) : ViewModel() {
     private companion object {
-        private const val KEY =
-            "co.ke.xently.features.stores.presentation.edit.SELECTED_STORE_CATEGORIES"
+        private val KEY = StoreListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
     }
     private val _uiState = MutableStateFlow(StoreListUiState())
     val uiState: StateFlow<StoreListUiState> = _uiState.asStateFlow()

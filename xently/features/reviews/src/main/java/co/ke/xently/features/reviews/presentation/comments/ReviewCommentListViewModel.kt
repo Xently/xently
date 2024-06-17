@@ -31,7 +31,7 @@ internal class ReviewCommentListViewModel @Inject constructor(
     private val repository: ReviewRepository,
 ) : ViewModel() {
     private companion object {
-        private const val KEY = "co.ke.xently.features.reviews.presentation.edit.SELECTED_STARS"
+        private val KEY = ReviewCommentListViewModel::class.java.name.plus("SELECTED_STARS")
     }
 
     private val _uiState = MutableStateFlow(ReviewCommentListUiState())
