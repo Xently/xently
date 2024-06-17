@@ -92,7 +92,7 @@ internal fun StatisticsSuccessContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
-            item("total-reviews") {
+            item(key = "total-reviews", contentType = "total-reviews") {
                 StatisticSummaryCard(
                     modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
                     stat = success.data.totalReviews.coolFormat(),
@@ -100,7 +100,7 @@ internal fun StatisticsSuccessContent(
                     statColor = MaterialTheme.colorScheme.primary,
                 )
             }
-            item("general-sentiment") {
+            item(key = "general-sentiment", contentType = "general-sentiment") {
                 StatisticSummaryCard(
                     modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
                     stat = success.data.generalSentiment.text,
@@ -111,7 +111,7 @@ internal fun StatisticsSuccessContent(
                     },
                 )
             }
-            item("percentage-satisfaction") {
+            item(key = "percentage-satisfaction", contentType = "percentage-satisfaction") {
                 StatisticSummaryCard(
                     modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
                     stat = "${success.data.percentageSatisfaction}%",
@@ -119,7 +119,7 @@ internal fun StatisticsSuccessContent(
                     statColor = MaterialTheme.colorScheme.primary,
                 )
             }
-            item("average-rating") {
+            item(key = "average-rating", contentType = "average-rating") {
                 StatisticSummaryCard(
                     modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
                     stat = success.data.averageRating.toString(),

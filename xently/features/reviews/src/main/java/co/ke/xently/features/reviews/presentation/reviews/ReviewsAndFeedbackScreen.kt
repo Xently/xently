@@ -9,7 +9,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +36,6 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import com.aay.compose.barChart.model.BarParameters
 import kotlinx.datetime.Month
 import kotlin.random.Random
-import co.ke.xently.features.reviewcategory.data.domain.error.DataError as ReviewCategoryDataError
 
 @Composable
 fun ReviewsAndFeedbackScreen(
@@ -80,47 +78,17 @@ internal fun ReviewsAndFeedbackScreen(
         when (event) {
             null, ReviewsAndFeedbackEvent.Success -> Unit
             is ReviewsAndFeedbackEvent.Error.ReviewCategories -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is ReviewCategoryDataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
 
             is ReviewsAndFeedbackEvent.Error.ReviewsAndFeedback -> {
-                val result = snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
                 )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
-                }
             }
         }
     }
@@ -154,7 +122,14 @@ internal fun ReviewsAndFeedbackScreen(
                 response = state.categoriesResponse,
                 selectedCategory = state.selectedCategory,
                 onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchReviewCategories) },
-                onClickSelectCategory = { onAction(ReviewsAndFeedbackAction.SelectReviewCategory(it)) },
+                onClickSelectCategory = { category ->
+                    onAction(
+                        ReviewsAndFeedbackAction.SelectReviewCategory(
+                            context = context,
+                            category = category,
+                        )
+                    )
+                },
                 onClickMoreCategoryOptions = { /*TODO*/ },
                 onClickAddNewReviewCategory = onClickAddNewReviewCategory,
             )
@@ -166,16 +141,20 @@ internal fun ReviewsAndFeedbackScreen(
                         category = selectedCategory,
                         filters = state.selectedFilters,
                         response = response,
-                        onClickRetry = { onAction(ReviewsAndFeedbackAction.FetchStoreStatistics) },
+                        onClickRetry = {
+                            onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
+                        },
                         onClickViewComments = { onClickViewComments(selectedCategory) },
-                        onClickApplyFilters = { onAction(ReviewsAndFeedbackAction.FetchStoreStatistics) },
+                        onClickApplyFilters = {
+                            onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(context))
+                        },
                         onClickSelectYear = { onAction(ReviewsAndFeedbackAction.SelectYear(it)) },
                         onClickSelectMonth = { onAction(ReviewsAndFeedbackAction.SelectMonth(it)) },
                         onClickRemoveMonth = {
-                            onAction(ReviewsAndFeedbackAction.RemoveSelectedMonth(it))
+                            onAction(ReviewsAndFeedbackAction.RemoveSelectedMonth)
                         },
                         onClickRemoveYear = {
-                            onAction(ReviewsAndFeedbackAction.RemoveSelectedYear(it))
+                            onAction(ReviewsAndFeedbackAction.RemoveSelectedYear)
                         },
                     )
                 }

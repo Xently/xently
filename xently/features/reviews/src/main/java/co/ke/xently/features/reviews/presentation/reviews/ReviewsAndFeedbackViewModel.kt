@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
 import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
+import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
@@ -47,7 +48,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(selectedCategory = action.category)
                     }
-                    onAction(ReviewsAndFeedbackAction.FetchStoreStatistics)
+                    onAction(ReviewsAndFeedbackAction.FetchStoreStatistics(action.context))
                 }
             }
 
@@ -88,7 +89,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 }
             }
 
-            ReviewsAndFeedbackAction.FetchStoreStatistics -> {
+            is ReviewsAndFeedbackAction.FetchStoreStatistics -> {
                 val category = _uiState.value.selectedCategory ?: return
                 val filters = _uiState.value.selectedFilters
 
@@ -118,7 +119,11 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                                         }
                                     }.map { (star, counts) ->
                                         BarParameters(
-                                            dataName = "$star Star (${counts.sum().coolFormat()})",
+                                            dataName = action.context.getString(
+                                                R.string.chart_legend_star,
+                                                star,
+                                                counts.sum().coolFormat(),
+                                            ),
                                             data = counts,
                                             barColor = STAR_RATING_COLOURS[star]!!,
                                         )

@@ -100,19 +100,19 @@ internal class ReviewRepositoryImpl @Inject constructor(
     ): Flow<Result<ReviewCategory.Statistics, Error>> {
         return flow {
             val result: Result<ReviewCategory.Statistics, Error> = try {
-                val statistics =
-                    httpClient.get(category.links["statistics"]!!.hrefWithoutQueryParamTemplates()) {
-                        url {
-                            parameters.run {
-                                if (filters.year != null) {
-                                    set("year", filters.year.toString())
-                                }
-                                if (filters.month != null) {
-                                    set("month", filters.month.toString())
-                                }
+                val urlString = category.links["statistics"]!!.hrefWithoutQueryParamTemplates()
+                val statistics = httpClient.get(urlString = urlString) {
+                    url {
+                        parameters.run {
+                            if (filters.year != null) {
+                                set("year", filters.year.toString())
+                            }
+                            if (filters.month != null) {
+                                set("month", filters.month.toString())
                             }
                         }
-                    }.body<ReviewCategory.Statistics>()
+                    }
+                }.body<ReviewCategory.Statistics>()
                 Result.Success(statistics)
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex

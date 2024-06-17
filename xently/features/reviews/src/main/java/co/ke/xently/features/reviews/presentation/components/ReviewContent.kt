@@ -53,7 +53,7 @@ internal fun ReviewContent(
                         text = it.error.asString(),
                         modifier = Modifier.weight(1f),
                     )
-                    if (it.type is DataError.Network) {
+                    if (it.type is DataError.Network.Retryable) {
                         Button(onClick = onClickRetry) {
                             Text(text = stringResource(R.string.action_retry))
                         }
