@@ -1,5 +1,6 @@
 package co.ke.xently.features.stores.presentation.locationpickup
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -9,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickStoreLocationScreen(
     modifier: Modifier = Modifier,
@@ -45,6 +48,7 @@ fun PickStoreLocationScreen(
     val viewModel = hiltViewModel<PickStoreLocationViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
+    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(event) {
         when (event) {
@@ -54,28 +58,50 @@ fun PickStoreLocationScreen(
     }
 
     PickStoreLocationScreen(
-        location = state.location,
         modifier = modifier,
-        onClickBack = onClickBack,
-        onClickConfirmSelection = { viewModel.onAction(PickStoreLocationAction.ConfirmSelection) },
+        location = state.location,
+        positionMarkerAtTheCentre = positionMarkerAtTheCentre,
         onLocationChange = { viewModel.onAction(PickStoreLocationAction.UpdateLocation(it)) },
-    )
+        onClickConfirmSelection = { viewModel.onAction(PickStoreLocationAction.ConfirmSelection) },
+    ) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    fontWeight = FontWeight.Bold,
+                    text = stringResource(R.string.appbar_title_pick_store_location),
+                )
+            },
+            navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
+            actions = {
+                IconButton(
+                    onClick = {
+                        positionMarkerAtTheCentre = !positionMarkerAtTheCentre
+                    },
+                    content = {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = null,
+                        )
+                    },
+                )
+            },
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PickStoreLocationScreen(
     location: Location?,
     modifier: Modifier = Modifier,
-    onClickBack: () -> Unit,
+    positionMarkerAtTheCentre: Boolean = true,
+    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     onClickConfirmSelection: () -> Unit,
     onLocationChange: (Location) -> Unit,
+    topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
-
-    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(false) }
 
     var locationPermissionGranted by remember {
         mutableStateOf(false)
@@ -94,30 +120,8 @@ internal fun PickStoreLocationScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        fontWeight = FontWeight.Bold,
-                        text = stringResource(R.string.appbar_title_pick_store_location),
-                    )
-                },
-                navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            positionMarkerAtTheCentre = !positionMarkerAtTheCentre
-                        },
-                        content = {
-                            Icon(
-                                Icons.Default.LocationOn,
-                                contentDescription = null,
-                            )
-                        },
-                    )
-                },
-            )
-        },
+        topBar = topBar,
+        contentWindowInsets = contentWindowInsets,
         bottomBar = {
             PickLocationBottomBarCard(
                 snackbarHostState = snackbarHostState,
@@ -139,7 +143,7 @@ internal fun PickStoreLocationScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             location = location,
-            positionMarkerAtTheCentre = true,
+            positionMarkerAtTheCentre = positionMarkerAtTheCentre,
             enableMyLocation = locationPermissionGranted,
             onMarkerPositionChange = onLocationChange,
         )
@@ -166,7 +170,6 @@ private fun PickStoreLocationScreenPreview(
         PickStoreLocationScreen(
             location = state.location,
             modifier = Modifier.fillMaxSize(),
-            onClickBack = {},
             onClickConfirmSelection = {},
             onLocationChange = {},
         )

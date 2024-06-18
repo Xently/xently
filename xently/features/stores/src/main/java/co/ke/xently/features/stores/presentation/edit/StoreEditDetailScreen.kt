@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -33,12 +34,15 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +56,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
@@ -66,6 +72,7 @@ import co.ke.xently.features.stores.data.domain.error.LocationError
 import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
+import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
@@ -83,7 +90,6 @@ import kotlinx.datetime.isoDayNumber
 fun StoreEditDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
-    onClickPickLocation: (Location) -> Unit,
 ) {
     val viewModel = hiltViewModel<StoreEditDetailViewModel>()
 
@@ -94,11 +100,10 @@ fun StoreEditDetailScreen(
     StoreEditDetailScreen(
         state = state,
         event = event,
+        categories = categories,
         modifier = modifier,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
-        categories = categories,
-        onClickPickLocation = onClickPickLocation,
     )
 }
 
@@ -110,7 +115,6 @@ internal fun StoreEditDetailScreen(
     categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
-    onClickPickLocation: (Location) -> Unit,
     onAction: (StoreEditDetailAction) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -129,7 +133,7 @@ internal fun StoreEditDetailScreen(
                             duration = SnackbarDuration.Short,
                         )
                         onAction(StoreEditDetailAction.ChangeName(""))
-                        onAction(StoreEditDetailAction.ChangeLocation(""))
+                        onAction(StoreEditDetailAction.ChangeLocation(Location()))
                         onAction(StoreEditDetailAction.ChangeEmailAddress(""))
                         onAction(StoreEditDetailAction.ChangePhoneNumber(""))
                         onAction(StoreEditDetailAction.ChangeDescription(""))
@@ -146,6 +150,50 @@ internal fun StoreEditDetailScreen(
                         duration = SnackbarDuration.Long,
                     )
                 }
+            }
+        }
+    }
+
+    var showLocationPicker by rememberSaveable { mutableStateOf(false) }
+    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
+
+    if (showLocationPicker) {
+        Dialog(
+            onDismissRequest = { showLocationPicker = false },
+            properties = DialogProperties(
+                decorFitsSystemWindows = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
+            PickStoreLocationScreen(
+                location = state.location,
+                modifier = Modifier.fillMaxSize(),
+                positionMarkerAtTheCentre = positionMarkerAtTheCentre,
+                onClickConfirmSelection = { showLocationPicker = false },
+                onLocationChange = { onAction(StoreEditDetailAction.ChangeLocation(it)) },
+            ) {
+                TopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.appbar_title_pick_store_location))
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { showLocationPicker = false },
+                            content = {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.action_close),
+                                )
+                            },
+                        )
+                    },
+                    actions = {
+                        TextButton(
+                            content = { Text(text = stringResource(R.string.action_center_marker)) },
+                            onClick = { positionMarkerAtTheCentre = !positionMarkerAtTheCentre },
+                        )
+                    },
+                )
             }
         }
     }
@@ -230,10 +278,10 @@ internal fun StoreEditDetailScreen(
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.locationString,
-                onValueChange = { onAction(StoreEditDetailAction.ChangeLocation(it)) },
+                onValueChange = { onAction(StoreEditDetailAction.ChangeLocationString(it)) },
                 placeholder = { Text(text = stringResource(R.string.text_field_label_store_location)) },
                 trailingIcon = {
-                    IconButton(onClick = { onClickPickLocation(state.location) }) {
+                    IconButton(onClick = { showLocationPicker = true }) {
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = stringResource(R.string.content_desc_store_pick_location),
@@ -451,7 +499,6 @@ private fun StoreEditDetailScreenPreview(
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},
-            onClickPickLocation = {},
         )
     }
 }

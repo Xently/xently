@@ -1,6 +1,7 @@
 package co.ke.xently.features.stores.presentation.edit
 
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
+import co.ke.xently.libraries.location.tracker.domain.Location
 import kotlinx.datetime.DayOfWeek
 
 internal sealed interface StoreEditDetailAction {
@@ -12,7 +13,8 @@ internal sealed interface StoreEditDetailAction {
     class SelectCategory(val category: StoreCategory) : StoreEditDetailAction
     class RemoveCategory(val category: StoreCategory) : StoreEditDetailAction
     class ChangeName(val name: String) : StoreEditDetailAction
-    class ChangeLocation(val location: String) : StoreEditDetailAction
+    class ChangeLocationString(val location: String) : StoreEditDetailAction
+    class ChangeLocation(val location: Location) : StoreEditDetailAction
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction

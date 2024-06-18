@@ -101,22 +101,10 @@ class MainActivity : ComponentActivity() {
                         ProductEditDetailScreen(onClickBack = navController::navigateUp)
                     }
                     composable<EditStoreScreen> {
-                        StoreEditDetailScreen(
-                            onClickBack = navController::navigateUp,
-                            onClickPickLocation = {
-                                navController.navigate(
-                                    PickLocation(
-                                        latitude = it.latitude.toString(),
-                                        longitude = it.longitude.toString(),
-                                    )
-                                )
-                            },
-                        )
+                        StoreEditDetailScreen(onClickBack = navController::navigateUp)
                     }
                     composable<PickLocation> {
-                        PickStoreLocationScreen(
-                            onClickBack = navController::navigateUp,
-                        )
+                        PickStoreLocationScreen(onClickBack = navController::navigateUp)
                     }
                     composable<SelectShop> {
                         LaunchedEffect(Unit) {

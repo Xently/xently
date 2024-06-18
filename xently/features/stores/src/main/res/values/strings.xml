@@ -71,4 +71,6 @@
     <string name="message_store_deleted">Branch successfully delete.</string>
     <string name="top_bar_title_select_store">Click To Select Branch</string>
     <string name="message_store_saved">Store saved successfully.</string>
+    <string name="action_center_marker">Center marker</string>
+    <string name="action_close">Close</string>
 </resources>
