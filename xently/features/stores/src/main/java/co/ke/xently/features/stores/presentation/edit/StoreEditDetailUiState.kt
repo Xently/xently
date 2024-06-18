@@ -28,7 +28,6 @@ data class StoreEditDetailUiState(
     val locationError: LocationError? = null,
     val locationString: String = location.takeIf(Location::isUsable)
         ?.coordinatesString() ?: "",
-    @Stable
     val services: List<Chip> = store.services.map { Chip(it.name) },
     @Stable
     val openingHours: List<OpeningHour> = buildMap {

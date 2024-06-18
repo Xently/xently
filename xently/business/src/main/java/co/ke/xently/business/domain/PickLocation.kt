@@ -3,4 +3,4 @@ package co.ke.xently.business.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PickLocation(val shopId: Long = -1, val storeId: Long = -1)
+data class PickLocation(val latitude: String? = null, val longitude: String? = null)

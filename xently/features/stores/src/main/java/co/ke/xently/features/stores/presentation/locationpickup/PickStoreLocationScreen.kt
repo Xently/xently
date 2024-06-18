@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,21 +44,32 @@ fun PickStoreLocationScreen(
 ) {
     val viewModel = hiltViewModel<PickStoreLocationViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val event by viewModel.event.collectAsStateWithLifecycle(null)
+
+    LaunchedEffect(event) {
+        when (event) {
+            null -> Unit
+            PickStoreLocationEvent.SelectionConfirmed -> onClickBack()
+        }
+    }
+
     PickStoreLocationScreen(
-        state = state,
+        location = state.location,
         modifier = modifier,
-        onAction = viewModel::onAction,
         onClickBack = onClickBack,
+        onClickConfirmSelection = { viewModel.onAction(PickStoreLocationAction.ConfirmSelection) },
+        onLocationChange = { viewModel.onAction(PickStoreLocationAction.UpdateLocation(it)) },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PickStoreLocationScreen(
-    state: PickStoreLocationUiState,
+    location: Location?,
     modifier: Modifier = Modifier,
-    onAction: (PickStoreLocationAction) -> Unit,
     onClickBack: () -> Unit,
+    onClickConfirmSelection: () -> Unit,
+    onLocationChange: (Location) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -74,13 +86,10 @@ internal fun PickStoreLocationScreen(
     }
     val locationPermissionLauncher = rememberLocationPermissionLauncher {
         locationPermissionGranted = it
-        shouldTrackLocation = it
     }
 
     if (shouldTrackLocation && locationPermissionGranted) {
-        ForegroundLocationTracker {
-            onAction(PickStoreLocationAction.UpdateLocation(it))
-        }
+        ForegroundLocationTracker(onLocationUpdates = onLocationChange)
     }
 
     Scaffold(
@@ -112,17 +121,16 @@ internal fun PickStoreLocationScreen(
         bottomBar = {
             PickLocationBottomBarCard(
                 snackbarHostState = snackbarHostState,
-                enableConfirmSelection = state.location != null,
+                enableConfirmSelection = location != null,
+                onClickConfirmSelection = onClickConfirmSelection,
                 onClickUseMyLocation = {
-                    if (locationPermissionGranted) {
-                        shouldTrackLocation = true
-                    } else {
+                    if (!locationPermissionGranted) {
                         scope.launch {
                             locationPermissionLauncher.launch()
                         }
                     }
+                    shouldTrackLocation = true
                 },
-                onClickConfirmSelection = { onAction(PickStoreLocationAction.ConfirmSelection) },
             )
         },
     ) { paddingValues ->
@@ -130,10 +138,10 @@ internal fun PickStoreLocationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            location = state.location,
+            location = location,
             positionMarkerAtTheCentre = true,
             enableMyLocation = locationPermissionGranted,
-            onMarkerPositionChange = { onAction(PickStoreLocationAction.UpdateLocation(it)) },
+            onMarkerPositionChange = onLocationChange,
         )
     }
 }
@@ -156,10 +164,11 @@ private fun PickStoreLocationScreenPreview(
 ) {
     XentlyTheme {
         PickStoreLocationScreen(
-            state = state,
+            location = state.location,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
-            onAction = {},
+            onClickConfirmSelection = {},
+            onLocationChange = {},
         )
     }
 }

@@ -78,10 +78,16 @@ inline fun LocationPickerMap(
     }
 
     Box(modifier = modifier) {
+        val properties = remember(enableMyLocation) {
+            MapProperties(isMyLocationEnabled = enableMyLocation)
+        }
+        val uiSettings = remember(enableMyLocation) {
+            MapUiSettings(myLocationButtonEnabled = enableMyLocation)
+        }
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            properties = remember { MapProperties(isMyLocationEnabled = enableMyLocation) },
-            uiSettings = remember { MapUiSettings(myLocationButtonEnabled = enableMyLocation) },
+            properties = properties,
+            uiSettings = uiSettings,
             cameraPositionState = cameraPositionState,
             contentDescription = contentDescription,
             onMapClick = {

@@ -14,7 +14,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import co.ke.xently.business.domain.EditProductScreen
 import co.ke.xently.business.domain.EditStoreScreen
 import co.ke.xently.business.domain.InitialStoreSelectionRoute
@@ -102,14 +101,13 @@ class MainActivity : ComponentActivity() {
                         ProductEditDetailScreen(onClickBack = navController::navigateUp)
                     }
                     composable<EditStoreScreen> {
-                        val editStoreScreen = it.toRoute<EditStoreScreen>()
                         StoreEditDetailScreen(
                             onClickBack = navController::navigateUp,
                             onClickPickLocation = {
                                 navController.navigate(
                                     PickLocation(
-                                        shopId = editStoreScreen.shopId,
-                                        storeId = editStoreScreen.storeId,
+                                        latitude = it.latitude.toString(),
+                                        longitude = it.longitude.toString(),
                                     )
                                 )
                             },
