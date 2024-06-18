@@ -156,7 +156,7 @@ internal fun ProductEditDetailScreen(
             AddCategorySection(
                 name = state.categoryName,
                 onNameValueChange = { onAction(ProductEditDetailAction.ChangeCategoryName(it)) },
-                onAddClick = { /*TODO*/ },
+                onAddClick = { onAction(ProductEditDetailAction.ClickAddCategory) },
                 shape = RectangleShape,
                 modifier = Modifier.fillMaxWidth(),
             )

@@ -1,7 +1,9 @@
 package co.ke.xently.features.stores.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -34,16 +38,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.toStoreError
+import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
 import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
 import co.ke.xently.features.stores.presentation.utils.asUiText
@@ -68,11 +75,13 @@ fun StoreListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle(null)
     val stores = viewModel.stores.collectAsLazyPagingItems()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     StoreListScreen(
         state = state,
         event = event,
         stores = stores,
+        categories = categories,
         modifier = modifier,
         onClickAddStore = onClickAddStore,
         onClickEditStore = onClickEditStore,
@@ -88,6 +97,7 @@ internal fun StoreListScreen(
     state: StoreListUiState,
     event: StoreListEvent?,
     stores: LazyPagingItems<Store>,
+    categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickAddStore: () -> Unit,
     onClickEditStore: (Store) -> Unit,
@@ -148,6 +158,25 @@ internal fun StoreListScreen(
                     onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
                 )*/
+                if (categories.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                    ) {
+                        items(categories, key = { it.name }) { item ->
+                            StoreCategoryFilterChip(
+                                item = item,
+                                onClickSelectCategory = {
+                                    onAction(StoreListAction.SelectCategory(item))
+                                },
+                                onClickRemoveCategory = {
+                                    onAction(StoreListAction.RemoveCategory(item))
+                                },
+                            )
+                        }
+                    }
+                }
             }
         },
         floatingActionButton = {
@@ -255,6 +284,7 @@ private fun StoreListScreenPreview(
             state = state.state,
             event = null,
             stores = stores,
+            categories = emptyList(),
             modifier = Modifier.fillMaxSize(),
             onClickAddStore = {},
             onClickEditStore = {},

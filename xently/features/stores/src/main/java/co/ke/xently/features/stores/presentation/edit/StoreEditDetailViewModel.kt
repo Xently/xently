@@ -48,33 +48,16 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(StoreEditDetailUiState())
     val uiState: StateFlow<StoreEditDetailUiState> = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Long>("storeId", -1)
-                .flatMapLatest(repository::findById)
-                .onStart { _uiState.update { it.copy(isLoading = true, disableFields = true) } }
-                .onCompletion { _uiState.update { it.copy(isLoading = false, disableFields = false) } }
-                .collect { result ->
-                    _uiState.update {
-                        when (result) {
-                            is Result.Failure -> StoreEditDetailUiState()
-                            is Result.Success -> StoreEditDetailUiState(store = result.data)
-                        }
-                    }
-                }
-        }
-    }
-
     private val _event = Channel<StoreEditDetailEvent>()
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
 
     val categories: StateFlow<List<StoreCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptySet<StoreCategory>())
+        savedStateHandle.getStateFlow(KEY, emptySet<String>())
             .flatMapLatest { selectedCategories ->
-                storeCategoryRepository.getCategories(null).map {
-                    it.map { category ->
-                        category.copy(selected = category in selectedCategories)
-                    }
+                storeCategoryRepository.getCategories(null).map { categories ->
+                    (selectedCategories.map {
+                        StoreCategory(name = it, selected = true)
+                    }.sortedBy { it.name } + categories).distinctBy { it.name }
                 }
             }.stateIn(
                 scope = viewModelScope,
@@ -84,19 +67,24 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.findActiveStore().collect { result ->
-                when (result) {
-                    is Result.Failure -> Unit
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(store = result.data)
-                        }
-                        if (savedStateHandle.get<Set<StoreCategory>>(KEY) == null) {
-                            savedStateHandle[KEY] = result.data.categories
+            savedStateHandle.getStateFlow<Long>("storeId", -1)
+                .flatMapLatest(repository::findById)
+                .onStart { _uiState.update { it.copy(isLoading = true, disableFields = true) } }
+                .onCompletion {
+                    _uiState.update { it.copy(isLoading = false, disableFields = false) }
+                }
+                .collect { result ->
+                    _uiState.update {
+                        when (result) {
+                            is Result.Failure -> StoreEditDetailUiState()
+                            is Result.Success -> {
+                                savedStateHandle[KEY] =
+                                    result.data.categories.map { it.name }.toSet()
+                                StoreEditDetailUiState(store = result.data)
+                            }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -104,16 +92,13 @@ internal class StoreEditDetailViewModel @Inject constructor(
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
             is StoreEditDetailAction.SelectCategory -> {
-                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
-                    ?: emptySet())
-
-                savedStateHandle[KEY] = storeCategories + action.category
+                val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = storeCategories + action.category.name
             }
 
             is StoreEditDetailAction.RemoveCategory -> {
-                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
-                    ?: emptySet())
-                savedStateHandle[KEY] = storeCategories - action.category
+                val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = storeCategories - action.category.name
             }
 
             is StoreEditDetailAction.ChangeCategoryName -> {
@@ -123,11 +108,9 @@ internal class StoreEditDetailViewModel @Inject constructor(
             }
 
             is StoreEditDetailAction.ClickAddCategory -> {
-                val storeCategories = (savedStateHandle.get<Set<StoreCategory>>(KEY)
-                    ?: emptySet())
-
-                savedStateHandle[KEY] =
-                    storeCategories + StoreCategory(name = _uiState.value.categoryName)
+                val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = storeCategories + _uiState.value.categoryName.trim()
+                _uiState.update { it.copy(categoryName = "") }
             }
 
             is StoreEditDetailAction.AddService -> {
@@ -229,9 +212,12 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private fun validatedStore(state: StoreEditDetailUiState): Store {
         var store = state.store.copy(
             name = state.name,
-            description = state.description.takeIf { it.isNotBlank() },
+            description = state.description.trim().takeIf { it.isNotBlank() },
             openingHours = state.openingHours,
             services = state.services.map { StoreService(name = it.text) },
+            categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
+                StoreCategory(name = it)
+            },
         )
 
         when (val result = dataValidator.validatedLocation(state.locationString)) {

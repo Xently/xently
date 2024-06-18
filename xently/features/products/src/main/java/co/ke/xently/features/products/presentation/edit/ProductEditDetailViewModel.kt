@@ -44,33 +44,16 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProductEditDetailUiState())
     val uiState: StateFlow<ProductEditDetailUiState> = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Long>("productId", -1)
-                .flatMapLatest(repository::findById)
-                .onStart { _uiState.update { it.copy(isLoading = true, disableFields = true) } }
-                .onCompletion { _uiState.update { it.copy(isLoading = false, disableFields = false) } }
-                .collect { result ->
-                    _uiState.update {
-                        when (result) {
-                            is Result.Failure -> ProductEditDetailUiState()
-                            is Result.Success -> ProductEditDetailUiState(product = result.data)
-                        }
-                    }
-                }
-        }
-    }
-
     private val _event = Channel<ProductEditDetailEvent>()
     val event: Flow<ProductEditDetailEvent> = _event.receiveAsFlow()
 
     val categories: StateFlow<List<ProductCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
+        savedStateHandle.getStateFlow(KEY, emptySet<String>())
             .flatMapLatest { selectedCategories ->
-                productCategoryRepository.getCategories(null).map {
-                    it.map { category ->
-                        category.copy(selected = category in selectedCategories)
-                    }
+                productCategoryRepository.getCategories(null).map { categories ->
+                    (selectedCategories.map {
+                        ProductCategory(name = it, selected = true)
+                    }.sortedBy { it.name } + categories).distinctBy { it.name }
                 }
             }.stateIn(
                 scope = viewModelScope,
@@ -78,25 +61,56 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             )
 
+    init {
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow<Long>("productId", -1)
+                .flatMapLatest(repository::findById)
+                .onStart { _uiState.update { it.copy(isLoading = true, disableFields = true) } }
+                .onCompletion {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            disableFields = false
+                        )
+                    }
+                }
+                .collect { result ->
+                    _uiState.update {
+                        when (result) {
+                            is Result.Failure -> ProductEditDetailUiState()
+                            is Result.Success -> {
+                                savedStateHandle[KEY] =
+                                    result.data.categories.map { it.name }.toSet()
+                                ProductEditDetailUiState(product = result.data)
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
     fun onAction(action: ProductEditDetailAction) {
         when (action) {
             is ProductEditDetailAction.SelectCategory -> {
-                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(KEY)
-                    ?: emptySet())
-
-                savedStateHandle[KEY] = productCategories + action.category
+                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = productCategories + action.category.name
             }
 
             is ProductEditDetailAction.RemoveCategory -> {
-                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(KEY)
-                    ?: emptySet())
-                savedStateHandle[KEY] = productCategories - action.category
+                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = productCategories - action.category.name
             }
 
             is ProductEditDetailAction.ChangeCategoryName -> {
                 _uiState.update {
                     it.copy(categoryName = action.name)
                 }
+            }
+
+            is ProductEditDetailAction.ClickAddCategory -> {
+                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = productCategories + _uiState.value.categoryName.trim()
+                _uiState.update { it.copy(categoryName = "") }
             }
 
             is ProductEditDetailAction.ChangeDescription -> {
@@ -133,8 +147,8 @@ internal class ProductEditDetailViewModel @Inject constructor(
                             is Result.Failure -> {
                                 _event.send(
                                     ProductEditDetailEvent.Error(
-                                        result.error.asUiText(),
-                                        result.error,
+                                        error = result.error.asUiText(),
+                                        type = result.error,
                                     )
                                 )
                             }
@@ -150,7 +164,11 @@ internal class ProductEditDetailViewModel @Inject constructor(
     }
 
     private fun validatedProduct(state: ProductEditDetailUiState): Product {
-        var product = state.product
+        var product = state.product.copy(
+            categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
+                ProductCategory(name = it)
+            },
+        )
 
         when (val result = dataValidator.validatedPrice(state.unitPrice)) {
             is Result.Failure -> _uiState.update { it.copy(unitPriceError = result.error) }

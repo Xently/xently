@@ -5,6 +5,7 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 internal sealed interface ProductEditDetailAction {
     data object ClickSave : ProductEditDetailAction
     data object ClickSaveAndAddAnother : ProductEditDetailAction
+    data object ClickAddCategory : ProductEditDetailAction
     class ChangeCategoryName(val name: String) : ProductEditDetailAction
     class SelectCategory(val category: ProductCategory) : ProductEditDetailAction
     class RemoveCategory(val category: ProductCategory) : ProductEditDetailAction

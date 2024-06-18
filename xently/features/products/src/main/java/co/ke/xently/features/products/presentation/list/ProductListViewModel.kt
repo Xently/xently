@@ -57,21 +57,20 @@ internal class ProductListViewModel @Inject constructor(
     private val _event = Channel<ProductListEvent>()
     val event: Flow<ProductListEvent> = _event.receiveAsFlow()
 
-    private val _selectedCategories =
-        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
+    private val _selectedCategories = savedStateHandle.getStateFlow(KEY, emptySet<String>())
 
     val categories: StateFlow<List<ProductCategory>> =
         _selectedCategories.flatMapLatest { selectedCategories ->
-                productCategoryRepository.getCategories(null).map {
-                    it.map { category ->
-                        category.copy(selected = category in selectedCategories)
-                    }
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                initialValue = emptyList(),
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            )
+            productCategoryRepository.getCategories(null).map { categories ->
+                (selectedCategories.map {
+                    ProductCategory(name = it, selected = true)
+                }.sortedBy { it.name } + categories).distinctBy { it.name }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            initialValue = emptyList(),
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        )
 
     private val _filters = MutableStateFlow(ProductFilters())
 
@@ -89,7 +88,11 @@ internal class ProductListViewModel @Inject constructor(
 
                 is StoreResult.Success -> {
                     _selectedCategories.combine(_filters) { categories, filters ->
-                        filters.copy(categories = categories)
+                        filters.copy(
+                            categories = categories.map {
+                                ProductCategory(name = it)
+                            }.toSet(),
+                        )
                     }.flatMapLatest { filters ->
                         pager { url ->
                             repository.getProducts(
@@ -115,18 +118,13 @@ internal class ProductListViewModel @Inject constructor(
             }
 
             is ProductListAction.SelectCategory -> {
-                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(
-                    KEY
-                ) ?: emptySet())
-
-                savedStateHandle[KEY] = productCategories + action.category
+                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = productCategories + action.category.name
             }
 
             is ProductListAction.RemoveCategory -> {
-                val productCategories = (savedStateHandle.get<Set<ProductCategory>>(
-                    KEY
-                ) ?: emptySet())
-                savedStateHandle[KEY] = productCategories - action.category
+                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
+                savedStateHandle[KEY] = productCategories - action.category.name
             }
 
             is ProductListAction.Search -> {
