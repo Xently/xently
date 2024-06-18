@@ -9,14 +9,17 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -103,17 +106,37 @@ internal fun CustomerListLazyColumn(
                 }
             }
         }
-        currentUserRanking?.let { ranking ->
+        if (currentUserRanking != null) {
             stickyHeader(key = "current-user-ranking", contentType = "current-user-ranking") {
                 Surface(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Light,
                         text = stringResource(
                             R.string.you_are_position_with_points,
-                            ranking.position,
-                            ranking.totalPoints,
+                            currentUserRanking.position,
+                            currentUserRanking.totalPoints,
                         ),
-                        modifier = Modifier.padding(bottom = 16.dp),
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .padding(horizontal = 16.dp),
+                    )
+                }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+        } else {
+            stickyHeader(key = "total-customers", contentType = "total-customers") {
+                Surface(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        text = pluralStringResource(
+                            R.plurals.customers_total_title,
+                            customers.itemCount,
+                            customers.itemCount,
+                        ),
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .padding(horizontal = 16.dp),
                     )
                 }
             }

@@ -36,4 +36,6 @@
     <string name="you_are_position_with_points">You are position %1$s with %2$s points</string>
     <string name="error_store_not_selected">Branch not selected.</string>
     <string name="error_shop_not_selected">Shop not selected.</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="action_select_store">Select Branch</string>
 </resources>

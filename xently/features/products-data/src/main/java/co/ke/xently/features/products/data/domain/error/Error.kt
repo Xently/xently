@@ -27,7 +27,10 @@ data object UnknownError : Error
 suspend fun Throwable.toProductError(): Error {
     return when (this) {
         is ResponseException -> toProductError()
-        is JsonConvertException -> DataError.Network.Serialization
+        is JsonConvertException -> {
+            Timber.e(this)
+            DataError.Network.Serialization
+        }
         is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         is StoreSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         else -> {

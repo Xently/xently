@@ -27,7 +27,10 @@ data object UnknownError : Error
 suspend fun Throwable.toNotificationError(): Error {
     return when (this) {
         is ResponseException -> toNotificationError()
-        is JsonConvertException -> DataError.Network.Serialization
+        is JsonConvertException -> {
+            Timber.e(this)
+            DataError.Network.Serialization
+        }
         else -> {
             Timber.e(this)
             UnknownError

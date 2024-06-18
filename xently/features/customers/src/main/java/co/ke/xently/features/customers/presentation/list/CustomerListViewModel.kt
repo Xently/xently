@@ -8,7 +8,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.CustomerFilters
+import co.ke.xently.features.customers.data.domain.error.ShopSelectionRequiredException
+import co.ke.xently.features.customers.data.domain.error.StoreSelectionRequiredException
 import co.ke.xently.features.customers.data.source.CustomerRepository
+import co.ke.xently.features.stores.data.domain.error.ConfigurationError
+import co.ke.xently.features.stores.data.domain.error.Result
+import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,8 +33,8 @@ import javax.inject.Inject
 @HiltViewModel
 internal class CustomerListViewModel @Inject constructor(
     private val repository: CustomerRepository,
+    storeRepository: StoreRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(CustomerListUiState())
     val uiState: StateFlow<CustomerListUiState> = _uiState.asStateFlow()
 
@@ -37,20 +43,36 @@ internal class CustomerListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(CustomerFilters())
 
-    val customers: Flow<PagingData<Customer>> = _filters.flatMapLatest { filters ->
-        Pager(
-            PagingConfig(
-                pageSize = 20,
-            )
-        ) {
-            XentlyPagingSource { url ->
-                repository.getCustomers(
-                    url = url,
-                    filters = filters,
-                )
+    val customers: Flow<PagingData<Customer>> =
+        storeRepository.findActiveStore().flatMapLatest { result ->
+            when (result) {
+                is Result.Failure -> {
+                    pager {
+                        when (result.error) {
+                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
+                            ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
+                        }
+                    }.flow
+                }
+
+                is Result.Success -> {
+                    _filters.flatMapLatest { filters ->
+                        pager { url ->
+                            repository.getCustomers(
+                                filters = filters,
+                                url = url
+                                    ?: result.data.links["rankings"]!!.hrefWithoutQueryParamTemplates(),
+                            )
+                        }.flow
+                    }
+                }
             }
-        }.flow
-    }.cachedIn(viewModelScope)
+        }.cachedIn(viewModelScope)
+
+    private fun pager(call: suspend (String?) -> PagedResponse<Customer>) =
+        Pager(PagingConfig(pageSize = 20)) {
+            XentlyPagingSource(apiCall = call)
+        }
 
     fun onAction(action: CustomerListAction) {
         when (action) {

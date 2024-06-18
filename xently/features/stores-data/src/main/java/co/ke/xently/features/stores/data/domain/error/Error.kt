@@ -28,7 +28,10 @@ suspend fun Throwable.toStoreError(): Error {
     return when (this) {
         is ResponseException -> toStoreError()
         is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
-        is JsonConvertException -> DataError.Network.Serialization
+        is JsonConvertException -> {
+            Timber.e(this)
+            DataError.Network.Serialization
+        }
         else -> {
             Timber.e(this)
             UnknownError

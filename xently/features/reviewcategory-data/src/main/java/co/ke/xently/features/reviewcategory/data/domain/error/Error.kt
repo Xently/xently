@@ -28,7 +28,10 @@ data object UnknownError : Error
 suspend fun Throwable.toReviewCategoryError(): Error {
     return when (this) {
         is ResponseException -> toReviewCategoryError()
-        is JsonConvertException -> DataError.Network.Serialization
+        is JsonConvertException -> {
+            Timber.e(this)
+            DataError.Network.Serialization
+        }
         else -> {
             Timber.e(this)
             UnknownError

@@ -28,8 +28,8 @@ data class Notification(
         ) {
             @Serializable
             data class Group(
-                val id: String,
-                val name: String,
+                val id: String = "",
+                val name: String = "",
             )
         }
     }

@@ -61,8 +61,7 @@ internal class ProductListViewModel @Inject constructor(
         savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
 
     val categories: StateFlow<List<ProductCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptySet<ProductCategory>())
-            .flatMapLatest { selectedCategories ->
+        _selectedCategories.flatMapLatest { selectedCategories ->
                 productCategoryRepository.getCategories(null).map {
                     it.map { category ->
                         category.copy(selected = category in selectedCategories)

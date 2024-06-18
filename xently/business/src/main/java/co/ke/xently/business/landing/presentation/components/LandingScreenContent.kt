@@ -127,7 +127,10 @@ internal fun LandingScreenContent(
             )
         }
 
-        AppDestination.CUSTOMERS -> CustomerListScreen {
+        AppDestination.CUSTOMERS -> CustomerListScreen(
+            onClickSelectShop = onClickSelectShop,
+            onClickSelectBranch = onClickSelectBranch,
+        ) {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets.waterfall,
                 navigationIcon = navigationIcon,
