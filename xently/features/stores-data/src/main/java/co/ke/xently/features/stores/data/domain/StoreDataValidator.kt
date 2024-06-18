@@ -49,16 +49,18 @@ class StoreDataValidator @Inject constructor() {
             return Result.Failure(LocationError.MISSING)
         }
 
-        val coordinates = location.split("\\s*[,;|]\\s*".toRegex())
+        val coordinates = location.replace("x=", "")
+            .replace("y=", "")
+            .split("\\s*[,;|]\\s*".toRegex())
         if (coordinates.size < 2) {
             return Result.Failure(LocationError.INVALID_FORMAT)
         }
 
-        val latitude = coordinates[0].toDoubleOrNull()
-            ?: return Result.Failure(LocationError.INVALID_LATITUDE)
-
-        val longitude = coordinates[1].toDoubleOrNull()
+        val longitude = coordinates[0].toDoubleOrNull()
             ?: return Result.Failure(LocationError.INVALID_LONGITUDE)
+
+        val latitude = coordinates[1].toDoubleOrNull()
+            ?: return Result.Failure(LocationError.INVALID_LATITUDE)
 
         return Result.Success(Location(latitude = latitude, longitude = longitude))
     }
