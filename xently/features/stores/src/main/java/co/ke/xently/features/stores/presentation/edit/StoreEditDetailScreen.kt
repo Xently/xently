@@ -77,7 +77,6 @@ import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
-import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import com.dokar.chiptextfield.Chip
@@ -132,11 +131,7 @@ internal fun StoreEditDetailScreen(
                             message = context.getString(R.string.message_store_saved),
                             duration = SnackbarDuration.Short,
                         )
-                        onAction(StoreEditDetailAction.ChangeName(""))
-                        onAction(StoreEditDetailAction.ChangeLocation(Location()))
-                        onAction(StoreEditDetailAction.ChangeEmailAddress(""))
-                        onAction(StoreEditDetailAction.ChangePhoneNumber(""))
-                        onAction(StoreEditDetailAction.ChangeDescription(""))
+                        onAction(StoreEditDetailAction.ClearFieldsForNewStore)
                     }
 
                     else -> throw NotImplementedError()

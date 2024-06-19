@@ -10,7 +10,7 @@ import co.ke.xently.features.products.data.domain.ProductDataValidator
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
-import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.Upload
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -93,6 +93,17 @@ internal class ProductEditDetailViewModel @Inject constructor(
 
     fun onAction(action: ProductEditDetailAction) {
         when (action) {
+            is ProductEditDetailAction.ClearFieldsForNewProduct -> {
+                _uiState.update {
+                    it.copy(
+                        name = "",
+                        unitPrice = "",
+                        description = "",
+                        product = Product(),
+                    )
+                }
+            }
+
             is ProductEditDetailAction.SelectCategory -> {
                 val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
                 savedStateHandle[KEY] = productCategories + action.category.name
@@ -162,7 +173,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
                     val product = validatedProduct(state)
 
                     if (_uiState.value.isFormValid) {
-                        val images = state.images.filterIsInstance<UploadRequest>()
+                        val images = state.images.filterIsInstance<Upload>()
                         when (val result = repository.save(product = product, images = images)) {
                             is Result.Success -> {
                                 _event.send(ProductEditDetailEvent.Success(action))

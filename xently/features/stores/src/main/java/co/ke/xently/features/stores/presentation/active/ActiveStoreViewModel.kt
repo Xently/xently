@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,8 +71,6 @@ internal class ActiveStoreViewModel @Inject constructor(
     fun onAction(action: ActiveStoreAction) {
         when (action) {
             is ActiveStoreAction.ProcessImageData -> {
-                Timber.tag("ImageUploadResult")
-                    .i("Image upload with data %s", action.image) // TODO: Delete...
                 _uiState.update {
                     val images = if (it.images.firstOrNull() !is Upload) {
                         it.images.mapIndexed { index, image ->
@@ -86,8 +83,6 @@ internal class ActiveStoreViewModel @Inject constructor(
 
             is ActiveStoreAction.ProcessImageUpdateData -> {
                 val (position, imageData) = action.data
-                Timber.tag("ImageUploadResult")
-                    .i("Image upload at %d with data %s", position, imageData) // TODO: Delete...
                 _uiState.update {
                     it.copy(
                         images = it.images.mapIndexed { index, image ->

@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:features:stores-data"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)

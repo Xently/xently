@@ -106,9 +106,7 @@ internal fun ProductEditDetailScreen(
                             context.getString(R.string.message_product_saved_successfully),
                             duration = SnackbarDuration.Short,
                         )
-                        onAction(ProductEditDetailAction.ChangeName(""))
-                        onAction(ProductEditDetailAction.ChangeUnitPrice(""))
-                        onAction(ProductEditDetailAction.ChangeDescription(""))
+                        onAction(ProductEditDetailAction.ClearFieldsForNewProduct)
                     }
 
                     else -> throw NotImplementedError()

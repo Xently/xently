@@ -8,6 +8,7 @@ internal sealed interface StoreEditDetailAction {
     data object ClickSave : StoreEditDetailAction
     data object ClickSaveAndAddAnother : StoreEditDetailAction
     data object ClickAddCategory : StoreEditDetailAction
+    data object ClearFieldsForNewStore : StoreEditDetailAction
 
     class ChangeCategoryName(val name: String) : StoreEditDetailAction
     class SelectCategory(val category: StoreCategory) : StoreEditDetailAction

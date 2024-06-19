@@ -12,6 +12,7 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
+import co.ke.xently.libraries.location.tracker.domain.Location
 import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -91,6 +92,15 @@ internal class StoreEditDetailViewModel @Inject constructor(
     @OptIn(ExperimentalMaterial3Api::class)
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
+            is StoreEditDetailAction.ClearFieldsForNewStore -> {
+                onAction(StoreEditDetailAction.ChangeName(""))
+                onAction(StoreEditDetailAction.ChangeLocation(Location()))
+                onAction(StoreEditDetailAction.ChangeEmailAddress(""))
+                onAction(StoreEditDetailAction.ChangePhoneNumber(""))
+                onAction(StoreEditDetailAction.ChangeDescription(""))
+                _uiState.update { it.copy(store = Store()) }
+            }
+
             is StoreEditDetailAction.SelectCategory -> {
                 val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
                 savedStateHandle[KEY] = storeCategories + action.category.name
