@@ -24,19 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.File
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.presentation.imageState
 
 typealias Index = Int
-typealias IndexAndImagePair = Pair<Int, Image?>
+typealias IndexAndImagePair = Pair<Int, File?>
 
 @Composable
 internal fun EditProductImagesCard(
-    images: List<Image?>,
+    images: List<File?>,
     modifier: Modifier = Modifier,
     shape: Shape = CardDefaults.shape,
     withResult: (IndexAndImagePair) -> Unit,
@@ -62,8 +62,8 @@ internal fun EditProductImagesCard(
                 LaunchedEffect(index, image) {
                     withResult(index to image)
                     when (image) {
-                        is UploadResponse, is LoadingProgress, null -> Unit
-                        is Image.Error, is UploadRequest -> imageUri = null
+                        is UploadResponse, is Progress, null -> Unit
+                        is File.Error, is UploadRequest -> imageUri = null
                     }
                 }
 

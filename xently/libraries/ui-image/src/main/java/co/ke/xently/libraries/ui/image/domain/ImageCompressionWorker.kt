@@ -6,8 +6,8 @@ import android.net.Uri
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.File
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
@@ -78,13 +78,13 @@ class ImageCompressionWorker(
         )
 
         return when (upload) {
-            is Image.Error.InvalidFileError -> Result.failure(
+            is File.Error.InvalidFile -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.InvalidFile.name,
                 )
             )
 
-            is LoadingProgress -> Result.failure(
+            is Progress -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.UnknownResponse.name,
                 )
@@ -96,7 +96,7 @@ class ImageCompressionWorker(
                 )
             )
 
-            is Image.Error.FileTooLargeError -> Result.failure(
+            is File.Error.FileTooLarge -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.FileTooLarge.name,
                     EXTRA_OUTPUT_FAILURE_FILE_SIZE to upload.fileSize,

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
@@ -39,7 +39,7 @@ fun XentlyImage(
 ) {
     AnimatedContent(data, label = "xently-image") {
         when (it) {
-            null, is LoadingProgress -> Unit
+            null, is Progress -> Unit
 
             is UploadRequest -> {
                 XentlyAsyncImage(

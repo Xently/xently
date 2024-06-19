@@ -34,8 +34,8 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.active.components.NonNullStoreContent
 import co.ke.xently.features.stores.presentation.active.components.NullStoreContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.File
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -161,8 +161,8 @@ internal fun ActiveStoreScreen(
                     image?.also {
                         onAction(ActiveStoreAction.ProcessImageData(it))
                         when (image!!) {
-                            is UploadResponse, is LoadingProgress -> Unit
-                            is Image.Error, is UploadRequest -> imageUri = null
+                            is UploadResponse, is Progress -> Unit
+                            is File.Error, is UploadRequest -> imageUri = null
                         }
                     }
                 }

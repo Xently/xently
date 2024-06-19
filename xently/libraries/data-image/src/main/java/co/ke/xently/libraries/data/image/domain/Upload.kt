@@ -1,3 +1,3 @@
 package co.ke.xently.libraries.data.image.domain
 
-sealed interface Upload : Image
+sealed interface Upload : File

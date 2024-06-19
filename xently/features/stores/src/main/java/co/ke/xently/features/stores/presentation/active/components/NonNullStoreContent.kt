@@ -50,8 +50,8 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.File
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -62,14 +62,14 @@ import com.valentinilk.shimmer.shimmer
 internal fun NonNullStoreContent(
     store: Store,
     isImageUploading: Boolean,
-    images: List<Image>,
+    images: List<File>,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onClickEdit: () -> Unit,
     onClickMoreDetails: () -> Unit,
     onClickUploadImage: () -> Unit,
     onClickDeleteImage: (Int) -> Unit,
-    withImageUpdateResult: (Pair<Int, Image>) -> Unit,
+    withImageUpdateResult: (Pair<Int, File>) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -106,8 +106,8 @@ internal fun NonNullStoreContent(
                 LaunchedEffect(index, image) {
                     withImageUpdateResult(index to image!!)
                     when (image!!) {
-                        is UploadResponse, is LoadingProgress -> Unit
-                        is Image.Error, is UploadRequest -> imageUri = null
+                        is UploadResponse, is Progress -> Unit
+                        is File.Error, is UploadRequest -> imageUri = null
                     }
                 }
 

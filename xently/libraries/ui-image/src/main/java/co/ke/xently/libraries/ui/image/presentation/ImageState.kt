@@ -13,8 +13,8 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.File
+import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.ui.image.domain.ImageCompressionWorker
 import co.ke.xently.libraries.ui.image.domain.ImageCompressionWorker.Companion.EXTRA_INPUT_IMAGE_COMPRESSION_THRESHOLD_BYTES
@@ -37,13 +37,13 @@ typealias ImageId = String
 
 
 @Composable
-fun Uri?.imageState(initialValue: Image? = null): State<Image?> {
+fun Uri?.imageState(initialValue: File? = null): State<File?> {
     return this?.imageState { UploadRequest(toCoilUri()) }
         ?: remember(initialValue) { derivedStateOf { initialValue } }
 }
 
 @Composable
-private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image> {
+private inline fun Uri.imageState(initialValue: (ImageId) -> File): State<File> {
     val context = LocalContext.current.applicationContext
 
     val imageId = rememberSaveable(context) { UUID.randomUUID().toString() }
@@ -59,7 +59,7 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
             .setInputData(inputData)
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
-        value = LoadingProgress()
+        value = Progress()
 
         val workManager = WorkManager.getInstance(context)
         workManager.enqueue(workRequest)
@@ -88,11 +88,11 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
                         FailureType.UnknownResponse -> Unit
 
                         FailureType.InvalidFile -> {
-                            value = Image.Error.InvalidFileError
+                            value = File.Error.InvalidFile
                         }
 
                         FailureType.FileTooLarge -> {
-                            value = Image.Error.FileTooLargeError(
+                            value = File.Error.FileTooLarge(
                                 fileSize = it.outputData.getLong(
                                     EXTRA_OUTPUT_FAILURE_FILE_SIZE,
                                     0L
@@ -106,7 +106,7 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
                     }
                 }
 
-                WorkInfo.State.RUNNING -> value = LoadingProgress()
+                WorkInfo.State.RUNNING -> value = Progress()
                 WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED, WorkInfo.State.CANCELLED -> Unit
             }
         }

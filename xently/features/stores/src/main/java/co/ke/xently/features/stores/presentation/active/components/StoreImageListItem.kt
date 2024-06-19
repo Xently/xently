@@ -31,7 +31,7 @@ import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.File
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.image.XentlyImage
@@ -39,7 +39,7 @@ import co.ke.xently.libraries.ui.image.XentlyImage
 
 @Composable
 internal fun StoreImageListItem(
-    image: Image,
+    image: File,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onClickUpdate: () -> Unit,

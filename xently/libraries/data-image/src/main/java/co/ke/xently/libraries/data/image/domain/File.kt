@@ -1,11 +1,11 @@
 package co.ke.xently.libraries.data.image.domain
 
 
-sealed interface Image {
-    sealed interface Error : Image {
-        data object InvalidFileError : Error
+sealed interface File {
+    sealed interface Error : File {
+        data object InvalidFile : Error
 
-        data class FileTooLargeError(
+        data class FileTooLarge(
             val fileSize: Long,
             val expectedFileSize: Long,
         ) : Error
