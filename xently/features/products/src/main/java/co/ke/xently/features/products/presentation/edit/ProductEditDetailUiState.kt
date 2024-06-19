@@ -5,6 +5,7 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.DescriptionError
 import co.ke.xently.features.products.data.domain.error.NameError
 import co.ke.xently.features.products.data.domain.error.PriceError
+import co.ke.xently.libraries.data.image.domain.Image
 
 @Stable
 data class ProductEditDetailUiState(
@@ -21,6 +22,7 @@ data class ProductEditDetailUiState(
     val descriptionError: DescriptionError? = null,
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
+    val images: List<Image?> = (product.images + List(5) { null }).take(5),
 ) {
     val enableSaveButton: Boolean = !isLoading && !disableFields
     val isFormValid: Boolean = nameError == null

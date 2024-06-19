@@ -8,6 +8,7 @@ import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.domain.error.toProductError
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.features.products.data.source.local.ProductEntity
+import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -31,7 +32,7 @@ internal class ProductRepositoryImpl @Inject constructor(
 ) : ProductRepository {
     private val productDao = database.productDao()
 
-    override suspend fun save(product: Product): Result<Unit, Error> {
+    override suspend fun save(product: Product, images: List<UploadRequest>): Result<Unit, Error> {
         val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
             delay(duration)

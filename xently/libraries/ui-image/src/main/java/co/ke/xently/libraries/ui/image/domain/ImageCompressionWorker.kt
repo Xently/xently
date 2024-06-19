@@ -3,16 +3,7 @@ package co.ke.xently.libraries.ui.image.domain
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import co.ke.xently.libraries.data.image.domain.Image
@@ -21,8 +12,6 @@ import co.ke.xently.libraries.data.image.domain.LoadingProgress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
 import coil3.toAndroidUri
-import coil3.toCoilUri
-import java.util.UUID
 
 class ImageCompressionWorker(
     appContext: Context,
@@ -151,85 +140,5 @@ class ImageCompressionWorker(
         const val EXTRA_OUTPUT_FAILURE_FILE_SIZE = "EXTRA_OUTPUT_FAILURE_FILE_SIZE"
         const val EXTRA_OUTPUT_FAILURE_EXPECTED_FILE_SIZE =
             "EXTRA_OUTPUT_FAILURE_EXPECTED_FILE_SIZE"
-
-        @Composable
-        fun uploadState(uri: Uri): State<Image> {
-            val context = LocalContext.current.applicationContext
-
-            val imageId = remember(uri, context) {
-                UUID.randomUUID().toString()
-            }
-
-            return produceState<Image>(
-                UploadRequest(uri.toCoilUri(), id = imageId),
-                imageId,
-                uri,
-                context,
-            ) {
-                val inputData = workDataOf(
-                    EXTRA_INPUT_IMAGE_ID to imageId,
-                    EXTRA_INPUT_IMAGE_URI to uri.toString(),
-                    EXTRA_INPUT_IMAGE_COMPRESSION_THRESHOLD_BYTES to (500L * 1_024),
-                    EXTRA_INPUT_IMAGE_ENSURE_COMPRESSED_NOT_LARGER_THAN_BYTES to 5L * 1_024 * 1_024,
-                )
-                val workRequest = OneTimeWorkRequestBuilder<ImageCompressionWorker>()
-                    .setInputData(inputData)
-                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .build()
-                value = LoadingProgress(id = imageId)
-
-                val workManager = WorkManager.getInstance(context)
-                workManager.enqueue(workRequest)
-
-                workManager.getWorkInfoByIdFlow(workRequest.id).collect {
-                    when (it.state) {
-                        WorkInfo.State.SUCCEEDED -> {
-                            val outputUriString =
-                                it.outputData.getString(EXTRA_OUTPUT_COMPRESSED_IMAGE_URI)
-                            val fileName = it.outputData.getString(EXTRA_OUTPUT_IMAGE_NAME)
-                            val mimeType = it.outputData.getString(EXTRA_OUTPUT_IMAGE_MIME_TYPE)
-                            val fileSize = it.outputData.getLong(EXTRA_OUTPUT_IMAGE_SIZE, 0)
-                            val outputUri = Uri.parse(outputUriString)
-                            value = UploadRequest(
-                                id = imageId,
-                                mimeType = mimeType ?: "image/jpeg",
-                                fileName = fileName,
-                                fileSize = fileSize,
-                                uri = outputUri.toCoilUri(),
-                            )
-                        }
-
-                        WorkInfo.State.FAILED -> {
-                            val failureTypeString =
-                                it.outputData.getString(EXTRA_OUTPUT_FAILURE_TYPE)
-                                    ?: return@collect
-                            when (FailureType.valueOf(failureTypeString)) {
-                                FailureType.UnknownResponse -> Unit
-
-                                FailureType.InvalidFile -> {
-                                    value = Image.Error.InvalidFileError(id = imageId)
-                                }
-
-                                FailureType.FileTooLarge -> {
-                                    value = Image.Error.FileTooLargeError(
-                                        id = imageId,
-                                        fileSize = it.outputData.getLong(
-                                            EXTRA_OUTPUT_FAILURE_FILE_SIZE,
-                                            0L
-                                        ),
-                                        expectedFileSize = it.outputData.getLong(
-                                            EXTRA_OUTPUT_FAILURE_EXPECTED_FILE_SIZE,
-                                            0L
-                                        ),
-                                    )
-                                }
-                            }
-                        }
-
-                        else -> Unit
-                    }
-                }
-            }
-        }
     }
 }

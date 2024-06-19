@@ -1,6 +1,7 @@
 package co.ke.xently.features.products.presentation.edit
 
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
+import co.ke.xently.libraries.data.image.domain.Image
 
 internal sealed interface ProductEditDetailAction {
     data object ClickSave : ProductEditDetailAction
@@ -12,4 +13,6 @@ internal sealed interface ProductEditDetailAction {
     class ChangeName(val name: String) : ProductEditDetailAction
     class ChangeUnitPrice(val unitPrice: String) : ProductEditDetailAction
     class ChangeDescription(val description: String) : ProductEditDetailAction
+    class ProcessImageData(val data: Pair<Int, Image?>) : ProductEditDetailAction
+    class RemoveImageAtPosition(val position: Int) : ProductEditDetailAction
 }

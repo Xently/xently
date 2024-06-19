@@ -254,10 +254,10 @@ internal fun ProductEditDetailScreen(
             )
 
             EditProductImagesCard(
-                images = remember { List(10) { null } },
-                onClickImage = { /*TODO*/ },
-                onClickRemoveImage = { /*TODO*/ },
+                images = state.images,
                 modifier = Modifier.padding(horizontal = 16.dp),
+                withResult = { onAction(ProductEditDetailAction.ProcessImageData(it)) },
+                onClickRemoveImage = { onAction(ProductEditDetailAction.RemoveImageAtPosition(it)) },
             )
 
             Row(

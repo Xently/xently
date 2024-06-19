@@ -18,8 +18,6 @@ data class UploadRequest(
     val fileName: String? = null,
     override val id: String? = null,
 ) : Image {
-    val canUpload = fileSize > 0
-
     override fun hashCode(): Int {
         return uri.hashCode()
     }

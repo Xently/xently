@@ -10,6 +10,7 @@ import co.ke.xently.features.products.data.domain.ProductDataValidator
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
+import co.ke.xently.libraries.data.image.domain.UploadRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -131,6 +133,29 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is ProductEditDetailAction.RemoveImageAtPosition -> {
+                _uiState.update {
+                    it.copy(
+                        images = it.images.mapIndexed { index, image ->
+                            if (index == action.position) null else image
+                        },
+                    )
+                }
+            }
+
+            is ProductEditDetailAction.ProcessImageData -> {
+                val (position, imageData) = action.data
+                Timber.tag("ImageUploadResult")
+                    .i("Image upload at %d with data %s", position, imageData) // TODO: Delete...
+                _uiState.update {
+                    it.copy(
+                        images = it.images.mapIndexed { index, image ->
+                            if (index == position) imageData else image
+                        },
+                    )
+                }
+            }
+
             ProductEditDetailAction.ClickSave, ProductEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
@@ -139,7 +164,8 @@ internal class ProductEditDetailViewModel @Inject constructor(
                     val product = validatedProduct(state)
 
                     if (_uiState.value.isFormValid) {
-                        when (val result = repository.save(product = product)) {
+                        val images = state.images.filterIsInstance<UploadRequest>()
+                        when (val result = repository.save(product = product, images = images)) {
                             is Result.Success -> {
                                 _event.send(ProductEditDetailEvent.Success(action))
                             }
