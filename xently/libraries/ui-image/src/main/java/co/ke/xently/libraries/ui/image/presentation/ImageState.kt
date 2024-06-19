@@ -37,18 +37,18 @@ typealias ImageId = String
 
 
 @Composable
-fun Uri?.imageState(initialValue: File? = null): State<File?> {
-    return this?.imageState { UploadRequest(toCoilUri()) }
+fun Uri?.imageState(vararg keys: Any?, initialValue: File? = null): State<File?> {
+    return this?.imageState(*keys) { UploadRequest(toCoilUri()) }
         ?: remember(initialValue) { derivedStateOf { initialValue } }
 }
 
 @Composable
-private inline fun Uri.imageState(initialValue: (ImageId) -> File): State<File> {
+private inline fun Uri.imageState(vararg keys: Any?, initialValue: (ImageId) -> File): State<File> {
     val context = LocalContext.current.applicationContext
 
     val imageId = rememberSaveable(context) { UUID.randomUUID().toString() }
 
-    return produceState(initialValue(imageId), imageId, context) {
+    return produceState(initialValue(imageId), imageId, context, *keys) {
         val inputData = workDataOf(
             EXTRA_INPUT_IMAGE_ID to imageId,
             EXTRA_INPUT_IMAGE_URI to this@imageState.toString(),

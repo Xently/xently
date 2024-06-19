@@ -11,14 +11,21 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toStoreError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
+import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
+import co.ke.xently.libraries.data.image.domain.UriToByteArrayConverter
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.statement.discardRemaining
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,6 +47,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private val database: StoreDatabase,
     private val accessControlRepository: AccessControlRepository,
     private val shopRepository: ShopRepository,
+    private val converter: UriToByteArrayConverter,
 ) : StoreRepository {
     private val storeDao = database.storeDao()
 
@@ -137,5 +145,72 @@ internal class StoreRepositoryImpl @Inject constructor(
             storeDao.save(StoreEntity(store = store, isActivated = true))
         }
         return Result.Success(Unit)
+    }
+
+    override suspend fun uploadNewImage(
+        uploadUrl: String,
+        newImage: UploadRequest,
+    ): Result<Unit, Error> {
+        return try {
+            newImage.post(
+                client = httpClient,
+                converter = converter,
+                urlString = uploadUrl,
+            )
+            updateActiveStoreWithUpdatedImages()
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(ex.toStoreError())
+        }
+    }
+
+    override suspend fun updateImage(
+        oldImage: UploadResponse,
+        newImage: UploadRequest,
+    ): Result<Unit, Error> {
+        return try {
+            newImage.put(
+                client = httpClient,
+                converter = converter,
+                urlString = oldImage.links["self"]!!.href,
+            )
+            updateActiveStoreWithUpdatedImages()
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(ex.toStoreError())
+        }
+    }
+
+    override suspend fun removeImage(image: UploadResponse): Result<Unit, Error> {
+        return try {
+            httpClient.delete(urlString = image.links["self"]!!.href)
+                .discardRemaining()
+            updateActiveStoreWithUpdatedImages()
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(ex.toStoreError())
+        }
+    }
+
+    private suspend fun updateActiveStoreWithUpdatedImages() {
+        when (val result = getActiveStore()) {
+            is Result.Failure -> Unit
+            is Result.Success -> {
+                val store = result.data
+                withContext(NonCancellable) {
+                    httpClient.get(urlString = store.links["images"]!!.href)
+                        .body<PagedResponse<UploadResponse>>().run {
+                            val newImages = (embedded.values.firstOrNull() ?: emptyList())
+                            selectStore(store.copy(images = newImages))
+                        }
+                }
+            }
+        }
     }
 }

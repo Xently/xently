@@ -89,14 +89,31 @@ internal fun ActiveStoreScreen(
 
     LaunchedEffect(event) {
         when (event) {
-            null, ActiveStoreEvent.Success -> Unit
-            ActiveStoreEvent.SelectShop -> Unit //onClickSelectShop()
-            ActiveStoreEvent.SelectStore -> Unit //onClickSelectBranch()
+            null, ActiveStoreEvent.SelectShop, ActiveStoreEvent.SelectStore -> Unit
             is ActiveStoreEvent.Error -> {
                 snackbarHostState.showSnackbar(
                     event.error.asString(context = context),
                     duration = SnackbarDuration.Long,
                 )
+            }
+
+            is ActiveStoreEvent.Success -> {
+                when (event.action) {
+                    is ActiveStoreAction.ProcessImageData -> Unit
+                    is ActiveStoreAction.ProcessImageUpdateData -> {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.message_image_updated),
+                            duration = SnackbarDuration.Short,
+                        )
+                    }
+
+                    is ActiveStoreAction.RemoveImageAtPosition -> {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.message_image_removed),
+                            duration = SnackbarDuration.Short,
+                        )
+                    }
+                }
             }
         }
     }
@@ -160,7 +177,7 @@ internal fun ActiveStoreScreen(
                 LaunchedEffect(image) {
                     image?.also {
                         onAction(ActiveStoreAction.ProcessImageData(it))
-                        when (image!!) {
+                        when (it) {
                             is UploadResponse, is Progress -> Unit
                             is File.Error, is UploadRequest -> imageUri = null
                         }

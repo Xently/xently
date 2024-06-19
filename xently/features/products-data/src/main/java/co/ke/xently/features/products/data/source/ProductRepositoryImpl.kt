@@ -113,7 +113,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         coroutineScope {
             images.filterIsInstance<UploadRequest>().map { request ->
                 async {
-                    request.upload(
+                    request.post(
                         client = httpClient,
                         converter = converter,
                         urlString = urlString,
@@ -127,8 +127,6 @@ internal class ProductRepositoryImpl @Inject constructor(
         images: List<Upload>,
         existingImages: List<UploadResponse>,
     ) {
-        // TODO: Remove images before uploading new once. Images to remove can be
-        //  identified by an instance of `UploadResponse`
         coroutineScope {
             val retainedImageUrls = images.filterIsInstance<UploadResponse>().map { it.url() }
             val imagesToDelete = existingImages.filter { it.url() !in retainedImageUrls }

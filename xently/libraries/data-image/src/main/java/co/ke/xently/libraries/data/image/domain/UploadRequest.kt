@@ -4,9 +4,11 @@ import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
 import coil3.Uri
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -30,14 +32,28 @@ data class UploadRequest(
         return uri == other.uri
     }
 
-    suspend fun upload(
+    suspend fun post(
         client: HttpClient,
         urlString: String,
         converter: UriToByteArrayConverter,
     ): UploadResponse {
+        val requestBuilder: HttpRequestBuilder.() -> Unit = getRequestBuilder(converter)
+        return client.post(urlString = urlString, block = requestBuilder).body()
+    }
+
+    suspend fun put(
+        client: HttpClient,
+        urlString: String,
+        converter: UriToByteArrayConverter,
+    ): UploadResponse {
+        val requestBuilder: HttpRequestBuilder.() -> Unit = getRequestBuilder(converter)
+        return client.put(urlString = urlString, block = requestBuilder).body()
+    }
+
+    private suspend fun getRequestBuilder(converter: UriToByteArrayConverter): HttpRequestBuilder.() -> Unit {
         val bytes = converter.convert(uri) ?: throw InvalidFileException()
 
-        return client.post(urlString) {
+        return {
             val dataContent = MultiPartFormDataContent(
                 formData {
                     this.append(
@@ -60,6 +76,6 @@ data class UploadRequest(
             /*this.onUpload { bytesSentTotal, contentLength ->
                 onUploadProgress(UploadProgress(bytesSentTotal, contentLength))
             }*/
-        }.body()
+        }
     }
 }

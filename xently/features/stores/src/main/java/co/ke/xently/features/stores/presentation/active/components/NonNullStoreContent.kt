@@ -101,18 +101,21 @@ internal fun NonNullStoreContent(
                 val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) {
                     imageUri = it
                 }
-                val image by imageUri.imageState(img)
+                val image by imageUri.imageState(imageUri, img)
 
                 LaunchedEffect(index, image) {
-                    withImageUpdateResult(index to image!!)
-                    when (image!!) {
-                        is UploadResponse, is Progress -> Unit
-                        is File.Error, is UploadRequest -> imageUri = null
+                    when (image) {
+                        null, is UploadResponse, is Progress -> Unit
+                        is File.Error -> imageUri = null
+                        is UploadRequest -> {
+                            withImageUpdateResult(index to image!!)
+                            imageUri = null
+                        }
                     }
                 }
 
                 StoreImageListItem(
-                    image = image!!,
+                    image = image ?: img,
                     isLoading = false,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
