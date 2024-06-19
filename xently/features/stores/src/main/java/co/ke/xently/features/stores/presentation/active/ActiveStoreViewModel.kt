@@ -6,6 +6,7 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.libraries.data.image.domain.Upload
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,6 +52,7 @@ internal class ActiveStoreViewModel @Inject constructor(
                                 it.copy(
                                     isLoading = false,
                                     store = result.data,
+                                    images = result.data.images,
                                     canAddStore = result.data.shop.links.containsKey("add-store"),
                                 )
                             }
@@ -67,5 +70,42 @@ internal class ActiveStoreViewModel @Inject constructor(
     }
 
     fun onAction(action: ActiveStoreAction) {
+        when (action) {
+            is ActiveStoreAction.ProcessImageData -> {
+                Timber.tag("ImageUploadResult")
+                    .i("Image upload with data %s", action.image) // TODO: Delete...
+                _uiState.update {
+                    val images = if (it.images.firstOrNull() !is Upload) {
+                        it.images.mapIndexed { index, image ->
+                            if (index == 0) action.image else image
+                        }
+                    } else listOf(action.image) + it.images
+                    it.copy(images = images)
+                }
+            }
+
+            is ActiveStoreAction.ProcessImageUpdateData -> {
+                val (position, imageData) = action.data
+                Timber.tag("ImageUploadResult")
+                    .i("Image upload at %d with data %s", position, imageData) // TODO: Delete...
+                _uiState.update {
+                    it.copy(
+                        images = it.images.mapIndexed { index, image ->
+                            if (index == position) imageData else image
+                        },
+                    )
+                }
+            }
+
+            is ActiveStoreAction.RemoveImageAtPosition -> {
+                _uiState.update {
+                    it.copy(
+                        images = it.images.mapIndexed { index, image ->
+                            if (index == action.position) null else image
+                        }.filterNotNull(),
+                    )
+                }
+            }
+        }
     }
 }

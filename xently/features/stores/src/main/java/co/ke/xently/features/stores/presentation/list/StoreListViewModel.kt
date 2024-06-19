@@ -49,6 +49,7 @@ internal class StoreListViewModel @Inject constructor(
     private companion object {
         private val KEY = StoreListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
     }
+
     private val _uiState = MutableStateFlow(StoreListUiState())
     val uiState: StateFlow<StoreListUiState> = _uiState.asStateFlow()
 
@@ -101,7 +102,7 @@ internal class StoreListViewModel @Inject constructor(
                     }
                 }
             }
-    }.cachedIn(viewModelScope)
+        }.cachedIn(viewModelScope)
 
     private fun pager(call: suspend (String?) -> PagedResponse<Store>) =
         Pager(PagingConfig(pageSize = 20)) {

@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.data.image.domain.LoadingProgress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
 import coil3.Extras
 import coil3.compose.AsyncImage
@@ -51,7 +51,7 @@ fun XentlyImage(
                 )
             }
 
-            is ImageResponse -> {
+            is UploadResponse -> {
                 val url by remember {
                     derivedStateOf {
                         URLBuilder(it.url()).urlWithSchemaMatchingBaseURL()

@@ -5,21 +5,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ImageResponse(
+data class UploadResponse(
     val name: String? = null,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
-    override val id: String? = null,
-) : Image {
+) : Upload {
     fun url(): String {
         return links["media"]!!.hrefWithoutQueryParamTemplates()
-    }
-
-    override fun key(vararg args: Any): Any {
-        return buildString {
-            append(id)
-            append(url())
-            append(*args)
-        }
     }
 }

@@ -25,7 +25,8 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
     private val repository: ReviewCategoryRepository,
 ) : ViewModel() {
     private companion object {
-        private val KEY = ReviewCategoryEditDetailViewModel::class.java.name.plus("SELECTED_REVIEW_CATEGORIES")
+        private val KEY =
+            ReviewCategoryEditDetailViewModel::class.java.name.plus("SELECTED_REVIEW_CATEGORIES")
     }
 
     private val _uiState = MutableStateFlow(ReviewCategoryEditDetailUiState())

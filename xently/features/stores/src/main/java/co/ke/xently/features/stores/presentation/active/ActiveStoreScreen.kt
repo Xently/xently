@@ -1,5 +1,9 @@
 package co.ke.xently.features.stores.presentation.active
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -28,7 +34,12 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.active.components.NonNullStoreContent
 import co.ke.xently.features.stores.presentation.active.components.NullStoreContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.image.presentation.imageState
 
 @Composable
 fun ActiveStoreScreen(
@@ -55,6 +66,7 @@ fun ActiveStoreScreen(
         onClickMoreDetails = onClickMoreDetails,
         onClickAddStore = onClickAddStore,
         topBar = topBar,
+        onAction = viewModel::onAction,
     )
 }
 
@@ -68,6 +80,7 @@ internal fun ActiveStoreScreen(
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
+    onAction: (ActiveStoreAction) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -109,17 +122,19 @@ internal fun ActiveStoreScreen(
     ) { paddingValues ->
         when {
             state.isLoading -> {
+                val store = remember { Store.DEFAULT }
                 NonNullStoreContent(
-                    store = remember { Store.DEFAULT },
+                    store = store,
                     isLoading = true,
                     isImageUploading = false,
+                    images = store.images,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                     onClickEdit = { },
                     onClickMoreDetails = { },
                     onClickUploadImage = { },
-                    onClickUpdateImage = { },
+                    withImageUpdateResult = { },
                     onClickDeleteImage = { },
                 )
             }
@@ -136,17 +151,33 @@ internal fun ActiveStoreScreen(
             }
 
             else -> {
+                var imageUri by remember { mutableStateOf<Uri?>(null) }
+                val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) {
+                    imageUri = it
+                }
+                val image by imageUri.imageState()
+
+                LaunchedEffect(image) {
+                    image?.also {
+                        onAction(ActiveStoreAction.ProcessImageData(it))
+                        when (image!!) {
+                            is UploadResponse, is LoadingProgress -> Unit
+                            is Image.Error, is UploadRequest -> imageUri = null
+                        }
+                    }
+                }
                 NonNullStoreContent(
                     store = state.store,
+                    images = state.images,
                     isImageUploading = state.isImageUploading,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                     onClickEdit = { onClickEdit(state.store) },
                     onClickMoreDetails = { onClickMoreDetails(state.store) },
-                    onClickUploadImage = { /*TODO*/ },
-                    onClickUpdateImage = { /*TODO*/ },
-                    onClickDeleteImage = { /*TODO*/ },
+                    onClickDeleteImage = { onAction(ActiveStoreAction.RemoveImageAtPosition(it)) },
+                    withImageUpdateResult = { onAction(ActiveStoreAction.ProcessImageUpdateData(it)) },
+                    onClickUploadImage = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
                 )
             }
         }
@@ -187,6 +218,8 @@ private fun ActiveStoreScreenPreview(
             onClickEdit = {},
             onClickMoreDetails = {},
             onClickAddStore = {},
+            topBar = {},
+            onAction = {},
         )
     }
 }

@@ -1,5 +1,9 @@
 package co.ke.xently.features.stores.presentation.active.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -27,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,21 +50,26 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.LoadingProgress
+import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.image.presentation.imageState
 import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun NonNullStoreContent(
     store: Store,
     isImageUploading: Boolean,
+    images: List<Image>,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onClickEdit: () -> Unit,
     onClickMoreDetails: () -> Unit,
     onClickUploadImage: () -> Unit,
-    onClickDeleteImage: (ImageResponse) -> Unit,
-    onClickUpdateImage: (ImageResponse) -> Unit,
+    onClickDeleteImage: (Int) -> Unit,
+    withImageUpdateResult: (Pair<Int, Image>) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -76,21 +86,39 @@ internal fun NonNullStoreContent(
                 modifier = if (isLoading) Modifier.shimmer() else Modifier,
             )
         }
-        if (store.images.isEmpty()) {
+        if (images.isEmpty()) {
             item(key = "empty_store_images", contentType = "empty_store_images") {
                 Spacer(modifier = Modifier.height(24.dp))
                 EmptyStoreImageListContent(modifier = Modifier.fillMaxWidth())
             }
         } else {
-            items(store.images, key = { image -> image.key() }) { image ->
+            itemsIndexed(
+                images,
+                key = { index, _ -> index },
+                contentType = { _, _ -> "store-images" },
+            ) { index, img ->
+                var imageUri by remember(index) { mutableStateOf<Uri?>(null) }
+                val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) {
+                    imageUri = it
+                }
+                val image by imageUri.imageState(img)
+
+                LaunchedEffect(index, image) {
+                    withImageUpdateResult(index to image!!)
+                    when (image!!) {
+                        is UploadResponse, is LoadingProgress -> Unit
+                        is Image.Error, is UploadRequest -> imageUri = null
+                    }
+                }
+
                 StoreImageListItem(
-                    image = image,
+                    image = image!!,
                     isLoading = false,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .run { if (isLoading) shimmer() else this },
-                    onClickUpdate = { onClickUpdateImage(image) },
-                    onClickConfirmDelete = { onClickDeleteImage(image) },
+                    onClickConfirmDelete = { onClickDeleteImage(index) },
+                    onClickUpdate = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
                 )
             }
         }
@@ -173,7 +201,7 @@ private class NonNullStoreContentUiStateParameterProvider :
                 |
                 |Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.""".trimMargin(),
         images = List(10) {
-            ImageResponse(links = mapOf("media" to Link(href = "https://picsum.photos/id/${it + 1}/200/300")))
+            UploadResponse(links = mapOf("media" to Link(href = "https://picsum.photos/id/${it + 1}/200/300")))
         },
     )
     override val values: Sequence<NonNullStoreContentUiState>
@@ -198,12 +226,13 @@ private fun NonNullStoreContentPreview(
         NonNullStoreContent(
             modifier = Modifier.fillMaxSize(),
             store = state.store,
+            images = state.store.images,
             isImageUploading = state.isImageUploading,
             onClickEdit = {},
             onClickMoreDetails = {},
             onClickUploadImage = {},
             onClickDeleteImage = {},
-            onClickUpdateImage = {},
+            withImageUpdateResult = {},
         )
     }
 }

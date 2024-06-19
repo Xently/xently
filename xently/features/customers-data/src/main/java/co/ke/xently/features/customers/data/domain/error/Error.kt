@@ -31,6 +31,7 @@ suspend fun Throwable.toCustomerError(): Error {
             Timber.e(this)
             DataError.Network.Serialization
         }
+
         else -> {
             Timber.e(this)
             UnknownError

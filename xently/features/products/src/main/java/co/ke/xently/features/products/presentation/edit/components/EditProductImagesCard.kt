@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.data.image.domain.LoadingProgress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.presentation.imageState
 
@@ -62,7 +62,7 @@ internal fun EditProductImagesCard(
                 LaunchedEffect(index, image) {
                     withResult(index to image)
                     when (image) {
-                        is ImageResponse, is LoadingProgress, null -> Unit
+                        is UploadResponse, is LoadingProgress, null -> Unit
                         is Image.Error, is UploadRequest -> imageUri = null
                     }
                 }

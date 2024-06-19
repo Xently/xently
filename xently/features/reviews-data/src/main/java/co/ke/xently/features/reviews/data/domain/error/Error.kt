@@ -31,6 +31,7 @@ suspend fun Throwable.toReviewError(): Error {
             Timber.e(this)
             DataError.Network.Serialization
         }
+
         is ReviewCategoryNotFoundException -> DataError.Network.ResourceNotFound
         else -> {
             Timber.e(this)

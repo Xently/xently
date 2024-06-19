@@ -73,4 +73,6 @@
     <string name="message_store_saved">Store saved successfully.</string>
     <string name="action_center_marker">Center marker</string>
     <string name="action_close">Close</string>
+    <string name="content_desc_action_more_store_image_options">More options for image</string>
+    <string name="message_confirm_store_image_deletion">Are you sure you want to delete the image?</string>
 </resources>

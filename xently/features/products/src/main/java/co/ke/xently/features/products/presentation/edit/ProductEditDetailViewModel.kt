@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,7 +39,8 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val dataValidator: ProductDataValidator,
 ) : ViewModel() {
     private companion object {
-        private val KEY = ProductEditDetailViewModel::class.java.name.plus("SELECTED_PRODUCT_CATEGORIES")
+        private val KEY =
+            ProductEditDetailViewModel::class.java.name.plus("SELECTED_PRODUCT_CATEGORIES")
     }
 
     private val _uiState = MutableStateFlow(ProductEditDetailUiState())
@@ -145,8 +145,6 @@ internal class ProductEditDetailViewModel @Inject constructor(
 
             is ProductEditDetailAction.ProcessImageData -> {
                 val (position, imageData) = action.data
-                Timber.tag("ImageUploadResult")
-                    .i("Image upload at %d with data %s", position, imageData) // TODO: Delete...
                 _uiState.update {
                     it.copy(
                         images = it.images.mapIndexed { index, image ->

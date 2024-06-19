@@ -43,6 +43,7 @@ fun Error.asUiText(): UiText {
         DataError.Local.DISK_FULL -> UiText.StringResource(
             R.string.error_disk_full
         )
+
         DataError.Network.ResourceNotFound -> UiText.StringResource(R.string.error_message_missing_resource)
         DataError.Network.Unauthorized -> UiText.StringResource(R.string.error_message_authentication_required)
         DataError.Network.Retryable.Permission -> UiText.StringResource(R.string.error_message_authorisation_required)

@@ -1,4 +1,5 @@
 package co.ke.xently.features.stores.presentation.utils
+
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError

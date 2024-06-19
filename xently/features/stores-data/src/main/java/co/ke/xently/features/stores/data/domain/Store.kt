@@ -6,7 +6,7 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
-import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.location.tracker.domain.Location
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
@@ -33,7 +33,7 @@ data class Store(
     @SerialName("services")
     val services: List<StoreService> = emptyList(),
     @SerialName("images")
-    val images: List<ImageResponse> = emptyList(),
+    val images: List<UploadResponse> = emptyList(),
     @SerialName("description")
     val description: String? = null,
     @SerialName("slug")
@@ -69,7 +69,7 @@ data class Store(
                 StoreCategory(name = "Category ${it + 1}")
             },
             images = List(1) {
-                ImageResponse(
+                UploadResponse(
                     links = mapOf(
                         "media" to Link(
                             href = "https://picsum.photos/id/237/${100 * (it + 1)}/${100 * (it + 1)}",

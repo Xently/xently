@@ -58,6 +58,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                 onAction(FetchStoreReviewSummary)
                 onAction(FetchStoreStatistics(action.context))
             }
+
             is SelectReviewCategory -> {
                 if (action.category != _uiState.value.selectedCategory) {
                     _uiState.update {

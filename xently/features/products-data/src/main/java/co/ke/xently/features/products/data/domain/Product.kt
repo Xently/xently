@@ -2,14 +2,14 @@ package co.ke.xently.features.products.data.domain
 
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Product(
     @SerialName("images")
-    val images: List<ImageResponse> = emptyList(),
+    val images: List<UploadResponse> = emptyList(),
     @SerialName("name")
     val name: String = "",
     @SerialName("descriptiveName")

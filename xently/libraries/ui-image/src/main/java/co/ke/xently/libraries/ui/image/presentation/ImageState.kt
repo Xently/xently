@@ -38,7 +38,7 @@ typealias ImageId = String
 
 @Composable
 fun Uri?.imageState(initialValue: Image? = null): State<Image?> {
-    return this?.imageState { imageId -> UploadRequest(toCoilUri(), id = imageId) }
+    return this?.imageState { UploadRequest(toCoilUri()) }
         ?: remember(initialValue) { derivedStateOf { initialValue } }
 }
 
@@ -59,7 +59,7 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
             .setInputData(inputData)
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
-        value = LoadingProgress(id = imageId)
+        value = LoadingProgress()
 
         val workManager = WorkManager.getInstance(context)
         workManager.enqueue(workRequest)
@@ -74,7 +74,6 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
                     val fileSize = it.outputData.getLong(EXTRA_OUTPUT_IMAGE_SIZE, 0)
                     val outputUri = Uri.parse(outputUriString)
                     value = UploadRequest(
-                        id = imageId,
                         mimeType = mimeType ?: "image/jpeg",
                         fileName = fileName,
                         fileSize = fileSize,
@@ -89,12 +88,11 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
                         FailureType.UnknownResponse -> Unit
 
                         FailureType.InvalidFile -> {
-                            value = Image.Error.InvalidFileError(id = imageId)
+                            value = Image.Error.InvalidFileError
                         }
 
                         FailureType.FileTooLarge -> {
                             value = Image.Error.FileTooLargeError(
-                                id = imageId,
                                 fileSize = it.outputData.getLong(
                                     EXTRA_OUTPUT_FAILURE_FILE_SIZE,
                                     0L
@@ -108,7 +106,7 @@ private inline fun Uri.imageState(initialValue: (ImageId) -> Image): State<Image
                     }
                 }
 
-                WorkInfo.State.RUNNING -> value = LoadingProgress(id = imageId)
+                WorkInfo.State.RUNNING -> value = LoadingProgress()
                 WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED, WorkInfo.State.CANCELLED -> Unit
             }
         }

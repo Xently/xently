@@ -13,6 +13,7 @@ internal sealed interface ReviewsAndFeedbackAction {
         val context: Context,
         val category: ReviewCategory,
     ) : ReviewsAndFeedbackAction
+
     class SelectYear(val year: Int) : ReviewsAndFeedbackAction
     class SelectMonth(val month: Month) : ReviewsAndFeedbackAction
     data object RemoveSelectedMonth : ReviewsAndFeedbackAction

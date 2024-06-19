@@ -31,14 +31,15 @@ import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.image.domain.ImageResponse
+import co.ke.xently.libraries.data.image.domain.Image
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.image.XentlyImage
 
 
 @Composable
 internal fun StoreImageListItem(
-    image: ImageResponse,
+    image: Image,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onClickUpdate: () -> Unit,
@@ -48,7 +49,7 @@ internal fun StoreImageListItem(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            text = { Text(text = "Are you sure you want to delete the image?") },
+            text = { Text(text = stringResource(R.string.message_confirm_store_image_deletion)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -77,12 +78,10 @@ internal fun StoreImageListItem(
                 modifier = Modifier.matchParentSize(),
             ) {
                 XentlyImage(
-                    data = image.url(),
+                    data = image,
                     modifier = Modifier.matchParentSize(),
                 )
-                if (isLoading) {
-                    CircularProgressIndicator()
-                }
+                if (isLoading) CircularProgressIndicator()
             }
 
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -97,7 +96,7 @@ internal fun StoreImageListItem(
                     content = {
                         Icon(
                             Icons.Default.MoreVert,
-                            contentDescription = "More options for image",
+                            contentDescription = stringResource(R.string.content_desc_action_more_store_image_options),
                         )
                     },
                 )
@@ -130,7 +129,7 @@ private fun StoreImageListItemPreview(
     XentlyTheme {
         val image = remember {
             val link = Link(href = "https://picsum.photos/id/1/300/300")
-            ImageResponse(links = mapOf("media" to link))
+            UploadResponse(links = mapOf("media" to link))
         }
         StoreImageListItem(
             image = image,

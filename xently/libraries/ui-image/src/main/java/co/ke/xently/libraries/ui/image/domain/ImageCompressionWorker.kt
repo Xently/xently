@@ -7,9 +7,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.data.image.domain.LoadingProgress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
 import coil3.toAndroidUri
 
@@ -90,7 +90,7 @@ class ImageCompressionWorker(
                 )
             )
 
-            is ImageResponse -> Result.failure(
+            is UploadResponse -> Result.failure(
                 workDataOf(
                     EXTRA_OUTPUT_FAILURE_TYPE to FailureType.UnknownResponse.name,
                 )

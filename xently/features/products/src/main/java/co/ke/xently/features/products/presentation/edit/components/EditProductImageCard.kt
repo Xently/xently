@@ -25,9 +25,9 @@ import co.ke.xently.features.products.R
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.image.domain.Image
-import co.ke.xently.libraries.data.image.domain.ImageResponse
 import co.ke.xently.libraries.data.image.domain.LoadingProgress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
+import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.XentlyImage
 import coil3.toUri
@@ -82,7 +82,7 @@ private class ImageParameterProvider : PreviewParameterProvider<Image?> {
         get() = sequenceOf(
             Image.Error.FileTooLargeError(2_000, 4_000),
             null,
-            ImageResponse(
+            UploadResponse(
                 links = mapOf("media" to Link(href = "https://example.com/image.jpg")),
             ),
             LoadingProgress(45, 100),

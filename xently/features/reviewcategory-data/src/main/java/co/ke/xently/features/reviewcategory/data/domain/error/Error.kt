@@ -32,6 +32,7 @@ suspend fun Throwable.toReviewCategoryError(): Error {
             Timber.e(this)
             DataError.Network.Serialization
         }
+
         else -> {
             Timber.e(this)
             UnknownError

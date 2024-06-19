@@ -16,8 +16,7 @@ data class UploadRequest(
     val fileSize: Long = -1,
     val mimeType: String? = null,
     val fileName: String? = null,
-    override val id: String? = null,
-) : Image {
+) : Upload {
     override fun hashCode(): Int {
         return uri.hashCode()
     }
@@ -31,17 +30,11 @@ data class UploadRequest(
         return uri == other.uri
     }
 
-    override fun key(vararg args: Any): Any {
-        return buildString {
-            append(uri.toString(), *args)
-        }
-    }
-
     suspend fun upload(
         client: HttpClient,
         urlString: String,
         converter: UriToByteArrayConverter,
-    ): ImageResponse {
+    ): UploadResponse {
         val bytes = converter.convert(uri) ?: throw InvalidFileException()
 
         return client.post(urlString) {

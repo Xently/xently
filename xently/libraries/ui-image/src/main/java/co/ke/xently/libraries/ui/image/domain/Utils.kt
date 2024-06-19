@@ -33,7 +33,7 @@ suspend fun Uri.toCompressedUpload(
         ioDispatcher = ioDispatcher,
     )
     var bytes = reader.readUri(this)
-        ?: return Image.Error.InvalidFileError(id = fileName)
+        ?: return Image.Error.InvalidFileError
 
     val compressor = ImageCompressor(
         compressionThresholdInBytes = compressionThresholdInBytes,
@@ -46,7 +46,6 @@ suspend fun Uri.toCompressedUpload(
         return Image.Error.FileTooLargeError(
             fileSize = bytes.size.toLong(),
             expectedFileSize = ensureCompressedNotLargerThanInBytes,
-            id = fileName,
         )
     }
 
@@ -62,7 +61,6 @@ suspend fun Uri.toCompressedUpload(
         fileName = fileName,
         fileSize = bytes.size.toLong(),
         uri = uri.toCoilUri(),
-        id = fileName,
     )
 }
 

@@ -31,6 +31,7 @@ suspend fun Throwable.toProductError(): Error {
             Timber.e(this)
             DataError.Network.Serialization
         }
+
         is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         is StoreSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         else -> {

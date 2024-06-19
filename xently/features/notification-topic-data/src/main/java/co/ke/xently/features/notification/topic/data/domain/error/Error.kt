@@ -31,6 +31,7 @@ suspend fun Throwable.toNotificationTopicError(): Error {
             Timber.e(this)
             DataError.Network.Serialization
         }
+
         else -> {
             Timber.e(this)
             UnknownError
