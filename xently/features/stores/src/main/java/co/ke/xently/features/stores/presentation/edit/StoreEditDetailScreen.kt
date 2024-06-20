@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -344,7 +346,11 @@ internal fun StoreEditDetailScreen(
                 },
             )
 
-            val chipState = rememberChipTextFieldState(chips = state.services)
+            val chipState = rememberChipTextFieldState<Chip>()
+
+            LaunchedEffect(chipState, state.services) {
+                chipState.chips = state.services.map { Chip(it.name) }
+            }
 
             var serviceValue by remember { mutableStateOf(TextFieldValue()) }
             OutlinedChipTextField(
@@ -379,6 +385,7 @@ internal fun StoreEditDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
+            val focusManager = LocalFocusManager.current
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.description,
@@ -397,6 +404,7 @@ internal fun StoreEditDetailScreen(
                     imeAction = ImeAction.Done,
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
+                keyboardActions = KeyboardActions { focusManager.clearFocus() },
             )
 
             if (state.openingHours.isNotEmpty()) {

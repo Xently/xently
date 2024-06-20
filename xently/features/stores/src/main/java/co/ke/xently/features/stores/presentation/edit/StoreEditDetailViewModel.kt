@@ -13,7 +13,6 @@ import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
-import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -125,7 +124,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
             is StoreEditDetailAction.AddService -> {
                 _uiState.update {
-                    it.copy(services = it.services + Chip(action.service))
+                    it.copy(services = it.services + StoreService(action.service))
                 }
             }
 
@@ -197,7 +196,9 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         openingHours = it.openingHours.map { hour ->
-                            if (hour.dayOfWeek == dayOfWeek) {
+                            if (hour.dayOfWeek != dayOfWeek) {
+                                hour
+                            } else {
                                 val time = Time(
                                     hour = openingHourTime.state.hour,
                                     minute = openingHourTime.state.minute,
@@ -207,8 +208,6 @@ internal class StoreEditDetailViewModel @Inject constructor(
                                 } else {
                                     hour.copy(closeTime = time)
                                 }
-                            } else {
-                                hour
                             }
                         },
                     )
@@ -240,9 +239,9 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private fun validatedStore(state: StoreEditDetailUiState): Store {
         var store = state.store.copy(
             name = state.name,
-            description = state.description.trim().takeIf { it.isNotBlank() },
+            services = state.services,
             openingHours = state.openingHours,
-            services = state.services.map { StoreService(name = it.text) },
+            description = state.description.trim().takeIf { it.isNotBlank() },
             categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
                 StoreCategory(name = it)
             },

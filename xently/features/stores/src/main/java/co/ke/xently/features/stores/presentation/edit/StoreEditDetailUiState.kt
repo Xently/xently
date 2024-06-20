@@ -7,9 +7,9 @@ import co.ke.xently.features.stores.data.domain.error.EmailError
 import co.ke.xently.features.stores.data.domain.error.LocationError
 import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
+import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
-import com.dokar.chiptextfield.Chip
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
@@ -26,9 +26,9 @@ data class StoreEditDetailUiState(
     val description: String = store.description ?: "",
     val location: Location = store.location,
     val locationError: LocationError? = null,
+    val services: List<StoreService> = store.services,
     val locationString: String = location.takeIf(Location::isUsable)
         ?.coordinatesString() ?: "",
-    val services: List<Chip> = store.services.map { Chip(it.name) },
     @Stable
     val openingHours: List<OpeningHour> = buildMap {
         putAll(store.openingHours.associateBy { it.dayOfWeek })
