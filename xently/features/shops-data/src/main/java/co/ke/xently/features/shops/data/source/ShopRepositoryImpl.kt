@@ -15,6 +15,10 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -36,9 +40,24 @@ internal class ShopRepositoryImpl @Inject constructor(
     private val shopDao = database.shopDao()
 
     override suspend fun save(shop: Shop, merchant: Merchant): Result<Unit, Error> {
-        val duration = Random.nextLong(1_000, 5_000).milliseconds
         try {
-            delay(duration)
+            val urlString = accessControlRepository.getAccessControl().addShopUrl
+            httpClient.post(urlString) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    ShopAndMerchantSaveRequest(
+                        shop = ShopAndMerchantSaveRequest.Shop(
+                            name = shop.name,
+                            onlineShopUrl = shop.onlineShopUrl,
+                        ),
+                        merchant = ShopAndMerchantSaveRequest.Merchant(
+                            firstName = merchant.firstName,
+                            lastName = merchant.lastName,
+                            emailAddress = merchant.emailAddress,
+                        ),
+                    )
+                )
+            }.body<Shop>()
             return Result.Success(Unit)
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex

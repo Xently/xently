@@ -17,6 +17,8 @@ data class AccessControl(
         return copy(links = buildMap { putAll(BASE_URLS); putAll(links) })
     }
 
+    val addShopUrl: String
+        get() = links["add-shop"]!!.hrefWithoutQueryParamTemplates()
     val googleSignInUrl: String
         get() = links["google-sign-in"]!!.hrefWithoutQueryParamTemplates()
     val emailPasswordSignInUrl: String
