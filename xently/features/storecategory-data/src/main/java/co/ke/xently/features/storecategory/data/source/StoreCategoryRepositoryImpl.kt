@@ -26,19 +26,22 @@ internal class StoreCategoryRepositoryImpl @Inject constructor(
     private val database: StoreCategoryDatabase,
     private val accessControlRepository: AccessControlRepository,
 ) : StoreCategoryRepository {
+    private val storeCategoryDao = database.storeCategoryDao()
+
     override suspend fun getCategories(url: String?): Flow<List<StoreCategory>> {
         val urlString = url ?: accessControlRepository.getAccessControl().storeCategoriesUrl
         suspend fun save(): List<StoreCategory> {
+            Timber.tag(TAG).i("Saving store categories response...")
             val categories = httpClient.get(urlString).body<PagedResponse<StoreCategory>>()
                 .getNullable(lookupKey = "storeCategoryApiResponses")
                 ?: emptyList()
             database.withTransactionFacade {
-                database.storeCategoryDao().deleteAll()
-                database.storeCategoryDao().insertAll(categories.map { StoreCategoryEntity(it) })
+                storeCategoryDao.deleteAll()
+                storeCategoryDao.insertAll(categories.map { StoreCategoryEntity(it) })
             }
             return categories
         }
-        return database.storeCategoryDao().findAll()
+        return storeCategoryDao.findAll()
             .map { it.map { entity -> entity.storeCategory }.ifEmpty { save() } }
             .onEmpty { emit(save()) }
             .onStart {
@@ -48,6 +51,7 @@ internal class StoreCategoryRepositoryImpl @Inject constructor(
                         emit(save())
                     } catch (ex: Exception) {
                         if (ex is CancellationException) throw ex
+                        Timber.tag(TAG).e(ex, "Failed to refresh store categories")
                         emit(emptyList())
                     }
                     Timber.tag(TAG).i("Waiting %s before another check...", refreshInterval)

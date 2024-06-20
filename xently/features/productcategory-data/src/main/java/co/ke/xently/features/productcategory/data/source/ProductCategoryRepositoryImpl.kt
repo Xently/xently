@@ -26,20 +26,22 @@ internal class ProductCategoryRepositoryImpl @Inject constructor(
     private val database: ProductCategoryDatabase,
     private val accessControlRepository: AccessControlRepository,
 ) : ProductCategoryRepository {
+    private val productCategoryDao = database.productCategoryDao()
+
     override suspend fun getCategories(url: String?): Flow<List<ProductCategory>> {
         val urlString = url ?: accessControlRepository.getAccessControl().productCategoriesUrl
         suspend fun save(): List<ProductCategory> {
+            Timber.tag(TAG).i("Saving product categories response...")
             val categories = httpClient.get(urlString).body<PagedResponse<ProductCategory>>()
                 .getNullable(lookupKey = "productCategoryApiResponses")
                 ?: emptyList()
             database.withTransactionFacade {
-                database.productCategoryDao().deleteAll()
-                database.productCategoryDao()
-                    .insertAll(categories.map { ProductCategoryEntity(it) })
+                productCategoryDao.deleteAll()
+                productCategoryDao.insertAll(categories.map { ProductCategoryEntity(it) })
             }
             return categories
         }
-        return database.productCategoryDao().findAll()
+        return productCategoryDao.findAll()
             .map { it.map { entity -> entity.productCategory }.ifEmpty { save() } }
             .onEmpty { emit(save()) }
             .onStart {
@@ -49,6 +51,7 @@ internal class ProductCategoryRepositoryImpl @Inject constructor(
                         emit(save())
                     } catch (ex: Exception) {
                         if (ex is CancellationException) throw ex
+                        Timber.tag(TAG).e(ex, "Failed to refresh product categories")
                         emit(emptyList())
                     }
                     Timber.tag(TAG).i("Waiting %s before another check...", refreshInterval)

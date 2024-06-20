@@ -22,25 +22,29 @@ import kotlin.time.Duration.Companion.minutes
 @Singleton
 internal class AccessControlRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
-    private val database: AccessControlDatabase,
+    database: AccessControlDatabase,
 ) : AccessControlRepository() {
+    private val accessControlDao = database.accessControlDao()
+
     override fun findAccessControl(): Flow<AccessControl> {
         suspend fun save(): AccessControl {
             Timber.tag(TAG).i("Saving access control response...")
             return httpClient.get(BASE_URL).body<AccessControl>().also {
-                database.accessControlDao().save(AccessControlEntity(it))
+                accessControlDao
+                    .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
             }
         }
-        return database.accessControlDao().findFirst()
-            .map { (it?.accessControl ?: save()).copyWithDefaultMissingKeys() }
-            .onEmpty { emit(save().copyWithDefaultMissingKeys()) }
+        return accessControlDao.findFirst()
+            .map { it?.accessControl ?: save() }
+            .onEmpty { emit(save()) }
             .onStart {
                 val refreshInterval = 1.minutes
                 while (true) {
                     try {
-                        emit(save().copyWithDefaultMissingKeys())
+                        emit(save())
                     } catch (ex: Exception) {
                         if (ex is CancellationException) throw ex
+                        Timber.tag(TAG).e(ex, "Failed to refresh access control")
                         emit(AccessControl())
                     }
                     Timber.tag(TAG).i("Waiting %s before another check...", refreshInterval)
