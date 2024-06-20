@@ -65,7 +65,12 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(SelectStore)
                             },
                             onClickAddStore = {
-                                navController.navigate(EditStoreScreen(shopId = it?.id ?: -1))
+                                navController.navigate(
+                                    EditStoreScreen(
+                                        addStoreUrl = it?.links?.get("add-store")
+                                            ?.hrefWithoutQueryParamTemplates(),
+                                    )
+                                )
                             },
                             onClickEditStore = {
                                 navController.navigate(EditStoreScreen(storeId = it.id))

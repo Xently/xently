@@ -12,7 +12,7 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import kotlinx.coroutines.flow.Flow
 
 interface StoreRepository {
-    suspend fun save(store: Store): Result<Unit, DataError>
+    suspend fun save(store: Store, addStoreUrl: String?): Result<Unit, Error>
     fun findById(id: Long): Flow<Result<Store, DataError>>
     suspend fun getActiveStore(): Result<Store, ConfigurationError>
     fun findActiveStore(): Flow<Result<Store, ConfigurationError>>

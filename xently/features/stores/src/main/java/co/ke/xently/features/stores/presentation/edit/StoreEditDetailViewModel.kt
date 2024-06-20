@@ -150,7 +150,8 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         location = action.location,
-                        locationString = action.location.coordinatesString(),
+                        locationString = action.location.takeIf(Location::isUsable)
+                            ?.coordinatesString() ?: "",
                     )
                 }
             }
@@ -222,7 +223,9 @@ internal class StoreEditDetailViewModel @Inject constructor(
                     val store = validatedStore(state)
 
                     if (_uiState.value.isFormValid) {
-                        when (val result = repository.save(store = store)) {
+                        val addStoreUrl = savedStateHandle.get<String?>("addStoreUrl")
+                        when (val result =
+                            repository.save(store = store, addStoreUrl = addStoreUrl)) {
                             is Result.Success -> _event.send(StoreEditDetailEvent.Success(action))
                             is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
                         }

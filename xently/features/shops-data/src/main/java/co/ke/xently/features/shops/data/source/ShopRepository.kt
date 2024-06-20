@@ -17,4 +17,5 @@ interface ShopRepository {
     suspend fun deleteShop(shop: Shop): Result<Unit, Error>
     suspend fun selectShop(shop: Shop): Result<Unit, DataError.Local>
     fun findTop10ShopsOrderByIsActivated(): Flow<List<Shop>>
+    suspend fun getActiveShop(): Result<Shop, ConfigurationError>
 }

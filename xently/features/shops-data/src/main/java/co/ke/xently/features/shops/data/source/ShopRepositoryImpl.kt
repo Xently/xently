@@ -102,4 +102,10 @@ internal class ShopRepositoryImpl @Inject constructor(
             entities.map { it.shop.copy(isActivated = it.isActivated) }
         }
     }
+
+    override suspend fun getActiveShop(): Result<Shop, ConfigurationError> {
+        val shop = shopDao.getActivated()
+            ?: return Result.Failure(ConfigurationError.ShopSelectionRequired)
+        return Result.Success(data = shop.shop.copy(isActivated = true))
+    }
 }

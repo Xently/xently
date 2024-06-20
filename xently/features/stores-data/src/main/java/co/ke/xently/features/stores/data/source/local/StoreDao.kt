@@ -31,4 +31,7 @@ interface StoreDao {
 
     @Query("SELECT * FROM stores WHERE id = :id")
     fun findById(id: Long): Flow<StoreEntity?>
+
+    @Query("SELECT isActivated FROM stores WHERE id = :id")
+    suspend fun isActivatedByStoreId(id: Long): Boolean
 }

@@ -353,24 +353,29 @@ internal fun StoreEditDetailScreen(
             }
 
             var serviceValue by remember { mutableStateOf(TextFieldValue()) }
+
+            val focusManager = LocalFocusManager.current
             OutlinedChipTextField(
                 shape = CardDefaults.shape,
                 state = chipState,
                 enabled = !state.disableFields,
                 value = serviceValue,
                 onValueChange = {
-                    serviceValue = if (!it.text.trimEnd().endsWith(",")) it else {
-                        val service = it.text.replace(",\\s*$".toRegex(), "").trimStart()
+                    val text = it.text.trimEnd()
+                    serviceValue = if (!text.endsWith(",")) it else {
+                        val service = text.replace("\\s*,\\s*$".toRegex(), "").trimStart()
                         if (service.isNotBlank()) {
                             onAction(StoreEditDetailAction.AddService(service))
+                            chipState.addChip(Chip(service))
                         }
-                        chipState.addChip(Chip(service))
                         TextFieldValue()
                     }
                 },
                 onSubmit = {
                     val service = it.text.trim()
-                    if (service.isNotBlank()) {
+                    if (service.isBlank()) {
+                        focusManager.clearFocus()
+                    } else {
                         onAction(StoreEditDetailAction.AddService(service))
                     }
                     Chip(service)
@@ -385,7 +390,6 @@ internal fun StoreEditDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             )
-            val focusManager = LocalFocusManager.current
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.description,
