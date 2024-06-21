@@ -14,17 +14,12 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.random.Random
 
 @Singleton
 internal class UserRepositoryImpl @Inject constructor(
@@ -32,8 +27,10 @@ internal class UserRepositoryImpl @Inject constructor(
     private val database: AuthenticationDatabase,
     private val accessControlRepository: AccessControlRepository,
 ) : UserRepository {
+    private val userDao = database.userDao()
+
     override fun getCurrentUser(): Flow<CurrentUser?> {
-        return database.userDao().findFirst().map { user ->
+        return userDao.findFirst().map { user ->
             if (user == null) null else {
                 CurrentUser(
                     id = user.id,
@@ -93,12 +90,7 @@ internal class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signOut(): Result<Unit, DataError> {
-        delay(Random.nextLong(1_000, 3_000))
-        coroutineScope {
-            launch(NonCancellable) {
-                database.userDao().deleteAll()
-            }
-        }
+        database.postSignout()
         return Result.Success(Unit)
     }
 
@@ -117,8 +109,8 @@ internal class UserRepositoryImpl @Inject constructor(
                 setBody(body)
             }.body<UserEntity>().let {
                 database.withTransactionFacade {
-                    database.userDao().deleteAll()
-                    database.userDao().save(it)
+                    userDao.deleteAll()
+                    userDao.save(it)
                 }
             }
         }

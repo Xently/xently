@@ -42,6 +42,9 @@ import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.features.storeservice.data.source.local.RoomTypeConverters.StoreServiceConverter
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceDatabase
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 @Database(
     version = 1,
@@ -91,5 +94,11 @@ abstract class AppDatabase : RoomDatabase(),
     NotificationTopicDatabase {
     override suspend fun <R> withTransactionFacade(block: suspend () -> R): R {
         return withTransaction(block)
+    }
+
+    override suspend fun postSignout() {
+        withContext(Dispatchers.IO + NonCancellable) {
+            clearAllTables()
+        }
     }
 }

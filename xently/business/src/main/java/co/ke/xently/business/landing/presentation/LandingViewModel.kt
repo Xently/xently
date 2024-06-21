@@ -3,7 +3,6 @@ package co.ke.xently.business.landing.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.access.control.data.AccessControlRepository
-import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
@@ -59,7 +58,7 @@ internal class LandingViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isLoading = true)
                     }
-                    when (val result = signOut()) {
+                    when (val result = userRepository.signOut()) {
                         is Result.Failure -> {
                             _event.send(
                                 LandingEvent.Error(
@@ -107,9 +106,5 @@ internal class LandingViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private suspend fun signOut(): Result<Unit, DataError> {
-        return userRepository.signOut()
     }
 }
