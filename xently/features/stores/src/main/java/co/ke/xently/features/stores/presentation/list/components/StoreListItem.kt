@@ -35,9 +35,9 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.XentlyImage
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun StoreListItem(
@@ -71,7 +71,11 @@ internal fun StoreListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
+            Card(
+                modifier = Modifier
+                    .size(size = 60.dp)
+                    .shimmer(isLoading),
+            ) {
                 var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
                 XentlyImage(
                     data = store.images.getOrNull(index),
@@ -85,20 +89,22 @@ internal fun StoreListItem(
         supportingContent = {
             Text(
                 text = store.name,
-                modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                modifier = Modifier.shimmer(isLoading),
             )
         },
         headlineContent = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = store.shop.name,
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .shimmer(isLoading),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
+                Box(modifier = Modifier.shimmer(isLoading)) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for store "${store.name}, ${store.shop.name}".""",

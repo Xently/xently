@@ -8,8 +8,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
@@ -17,22 +20,35 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThumbnail
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
+import co.ke.xently.libraries.ui.core.XentlyThemePreview
 
 
 @Composable
-internal fun StoreSummaryListItem(store: Store, onClickEdit: () -> Unit) {
+internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit: () -> Unit) {
     ListItem(
-        headlineContent = { Text(store.shop.name, fontWeight = FontWeight.Bold) },
-        supportingContent = { Text(store.name) },
+        headlineContent = {
+            Text(
+                text = store.shop.name,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.shimmer(isLoading),
+            )
+        },
+        supportingContent = {
+            Text(
+                text = store.name,
+                modifier = Modifier.shimmer(isLoading),
+            )
+        },
         leadingContent = {
-            PlaceHolderImageThumbnail(size = 60.dp) {
+            PlaceHolderImageThumbnail(size = 60.dp, modifier = Modifier.shimmer(isLoading)) {
                 Icon(Icons.Default.Person, contentDescription = null)
             }
         },
         trailingContent = {
             CircularButton(
                 onClick = onClickEdit,
+                modifier = Modifier.shimmer(isLoading),
                 content = {
                     Icon(
                         Icons.Outlined.Edit,
@@ -44,9 +60,17 @@ internal fun StoreSummaryListItem(store: Store, onClickEdit: () -> Unit) {
     )
 }
 
-@XentlyPreview
+private class StoreSummaryListItemPreviewProvider : PreviewParameterProvider<Boolean> {
+    override val values: Sequence<Boolean>
+        get() = sequenceOf(false, true)
+}
+
+@XentlyThemePreview
 @Composable
-private fun StoreSummaryListItemPreview() {
+private fun StoreSummaryListItemPreview(
+    @PreviewParameter(StoreSummaryListItemPreviewProvider::class)
+    isLoading: Boolean,
+) {
     XentlyTheme {
         val store = remember {
             Store(
@@ -60,6 +84,7 @@ private fun StoreSummaryListItemPreview() {
         }
         StoreSummaryListItem(
             store = store,
+            isLoading = isLoading,
             onClickEdit = {},
         )
     }

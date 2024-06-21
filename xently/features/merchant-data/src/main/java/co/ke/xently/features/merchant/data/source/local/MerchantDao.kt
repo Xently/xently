@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MerchantDao {
     @Insert
-    suspend fun insertAll(vararg merchants: MerchantEntity)
+    suspend fun save(vararg merchants: MerchantEntity)
 
     @Query("DELETE FROM merchants")
     suspend fun deleteAll()

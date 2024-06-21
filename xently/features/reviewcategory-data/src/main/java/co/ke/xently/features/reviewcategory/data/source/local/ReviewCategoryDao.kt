@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ReviewCategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg reviewCategories: ReviewCategoryEntity)
+    suspend fun save(vararg reviewCategories: ReviewCategoryEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(reviewCategories: List<ReviewCategoryEntity>)
+    suspend fun save(reviewCategories: List<ReviewCategoryEntity>)
 
     @Query("DELETE FROM review_categories")
     suspend fun deleteAll()

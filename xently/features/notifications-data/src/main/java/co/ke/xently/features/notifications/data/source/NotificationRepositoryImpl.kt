@@ -27,7 +27,7 @@ internal class NotificationRepositoryImpl @Inject constructor(
                 coroutineScope {
                     launch {
                         database.withTransactionFacade {
-                            notificationDao.insertAll(notifications.map {
+                            notificationDao.save(notifications.map {
                                 NotificationEntity(
                                     notification = it
                                 )

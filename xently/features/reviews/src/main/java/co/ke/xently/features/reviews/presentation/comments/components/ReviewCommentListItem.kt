@@ -40,10 +40,10 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
@@ -59,7 +59,11 @@ internal fun ReviewCommentListItem(
         ListItem(
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             leadingContent = {
-                Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(60.dp)) {
+                Card(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .shimmer(isLoading)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
@@ -75,7 +79,7 @@ internal fun ReviewCommentListItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                    modifier = Modifier.shimmer(isLoading),
                 )
             },
             supportingContent = {
@@ -91,15 +95,16 @@ internal fun ReviewCommentListItem(
                         ),
                         fontWeight = FontWeight.Light,
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                        modifier = Modifier.shimmer(isLoading),
                     )
 
                     Icon(
                         Icons.Default.Circle,
                         contentDescription = null,
-                        modifier = (if (isLoading) Modifier.shimmer() else Modifier)
+                        modifier = Modifier
                             .size(20.dp)
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 8.dp)
+                            .shimmer(isLoading),
                     )
 
                     val timePickerState = rememberTimePickerState()
@@ -115,7 +120,7 @@ internal fun ReviewCommentListItem(
                                     "${it.date} - ${time.toString(timePickerState.is24hour)}"
                                 }
                         },
-                        modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                        modifier = Modifier.shimmer(isLoading),
                     )
                 }
             },
@@ -123,7 +128,7 @@ internal fun ReviewCommentListItem(
                 Icon(
                     Icons.Default.MoreVert,
                     contentDescription = null,
-                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                    modifier = Modifier.shimmer(isLoading),
                 )
             },
         )
@@ -132,9 +137,10 @@ internal fun ReviewCommentListItem(
             text = review.message,
             maxLines = if (expand) Int.MAX_VALUE else 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = (if (isLoading) Modifier.shimmer() else Modifier)
+            modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
+                .shimmer(isLoading)
                 .clickable(
                     role = Role.Checkbox,
                     indication = ripple(radius = 1_000.dp),

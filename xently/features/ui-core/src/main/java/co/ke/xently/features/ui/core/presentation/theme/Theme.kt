@@ -1,13 +1,22 @@
 package co.ke.xently.features.ui.core.presentation.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -15,6 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.ke.xently.libraries.ui.core.components.ThemeSetting
 import co.ke.xently.libraries.ui.core.theme.AppTheme
+import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
+import com.valentinilk.shimmer.LocalShimmerTheme
+import com.valentinilk.shimmer.defaultShimmerTheme
+import com.valentinilk.shimmer.shimmer
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -96,6 +109,16 @@ private val AppTypography = Typography(
     )
 )
 
+
+fun Modifier.shimmer(shimmer: Boolean, color: Color? = null): Modifier {
+    return composed {
+        if (shimmer) {
+            background(color ?: MaterialTheme.colorScheme.onSurface)
+                .shimmer()
+        } else Modifier
+    }
+}
+
 @Composable
 fun XentlyTheme(
     // Dynamic color is available on Android 12+
@@ -106,9 +129,29 @@ fun XentlyTheme(
     AppTheme(
         dynamicColor = dynamicColor,
         setting = setting,
-        content = { Surface(content = content) },
         shapes = AppShapes,
         typography = AppTypography,
         colorScheme = { if (it) DarkColorScheme else LightColorScheme },
-    )
+    ) {
+        val isDark by LocalThemeIsDark.current
+        val shadeColor by remember(isDark) { derivedStateOf { if (isDark) Color.White else Color.Black } }
+        CompositionLocalProvider(
+            LocalShimmerTheme provides defaultShimmerTheme.copy(
+                shaderColors = listOf(
+                    shadeColor.copy(alpha = 0.3f),
+                    shadeColor.copy(alpha = 0.5f),
+                    shadeColor.copy(alpha = 1.0f),
+                    shadeColor.copy(alpha = 0.5f),
+                    shadeColor.copy(alpha = 0.3f),
+                ),
+                shaderColorStops = listOf(
+                    0.0f,
+                    0.3f,
+                    0.5f,
+                    0.8f,
+                    1.0f,
+                ),
+            ),
+        ) { Surface(content = content) }
+    }
 }

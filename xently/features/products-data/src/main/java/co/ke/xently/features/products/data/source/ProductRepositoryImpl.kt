@@ -103,7 +103,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 httpClient.get(urlString = product.links["images"]!!.href)
                     .body<PagedResponse<UploadResponse>>().run {
                         val newImages = (embedded.values.firstOrNull() ?: emptyList())
-                        productDao.insertAll(ProductEntity(product = product.copy(images = newImages)))
+                        productDao.save(ProductEntity(product = product.copy(images = newImages)))
                     }
             }
         }
@@ -167,7 +167,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         }.body<PagedResponse<Product>>().run {
             (embedded.values.firstOrNull() ?: emptyList()).let { products ->
                 coroutineScope {
-                    launch { productDao.insertAll(products.map { ProductEntity(product = it) }) }
+                    launch { productDao.save(products.map { ProductEntity(product = it) }) }
                 }
                 copy(embedded = mapOf("views" to products))
             }

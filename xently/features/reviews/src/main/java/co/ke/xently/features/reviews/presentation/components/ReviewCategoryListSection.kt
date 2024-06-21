@@ -29,8 +29,8 @@ import co.ke.xently.features.reviewcategory.presentation.utils.UiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviews.ReviewCategoriesResponse
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun ReviewCategoryListSection(
@@ -98,10 +98,9 @@ internal fun ReviewCategoryListSection(
                     }
                     for (category in categories) {
                         ReviewCategoryItem(
-                            modifier = Modifier.shimmer(),
+                            modifier = Modifier.shimmer(true),
                             category = category,
-                            selected = selectedCategory?.name == category.name
-                                    || category.name == "Staff friendliness",
+                            selected = selectedCategory?.name == category.name,
                             onClick = { },
                             onClickMoreOptions = { },
                         )

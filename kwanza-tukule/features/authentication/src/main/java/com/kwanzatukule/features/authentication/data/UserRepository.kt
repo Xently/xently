@@ -47,7 +47,7 @@ class UserRepository @Inject constructor(
             delay(duration)
             database.withTransactionFacade {
                 database.userDao().deleteAll()
-                database.userDao().insertAll(
+                database.userDao().save(
                     UserEntity(
                         id = UUID.randomUUID().toString(),
                         firstName = email,

@@ -36,9 +36,9 @@ import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun ShopListItem(
@@ -72,7 +72,9 @@ internal fun ShopListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
+            Card(modifier = Modifier
+                .size(size = 60.dp)
+                .shimmer(isLoading)) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Icon(
                         Icons.Default.Business,
@@ -85,13 +87,15 @@ internal fun ShopListItem(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = shop.toString(),
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .shimmer(isLoading),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
+                Box(modifier = Modifier.shimmer(isLoading)) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for shop "$shop".""",

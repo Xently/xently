@@ -49,6 +49,7 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.image.domain.File
 import co.ke.xently.libraries.data.image.domain.Progress
@@ -56,7 +57,6 @@ import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.image.presentation.imageState
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun NonNullStoreContent(
@@ -79,11 +79,11 @@ internal fun NonNullStoreContent(
         item(key = "store_summary", contentType = "store_summary") {
             StoreDetailContent(
                 store = store,
+                isLoading = isLoading,
                 isImageUploading = isImageUploading,
                 onClickEdit = onClickEdit,
                 onClickMoreDetails = onClickMoreDetails,
                 onClickUploadImage = onClickUploadImage,
-                modifier = if (isLoading) Modifier.shimmer() else Modifier,
             )
         }
         if (images.isEmpty()) {
@@ -119,7 +119,7 @@ internal fun NonNullStoreContent(
                     isLoading = false,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .run { if (isLoading) shimmer() else this },
+                        .shimmer(isLoading),
                     onClickConfirmDelete = { onClickDeleteImage(index) },
                     onClickUpdate = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
                 )
@@ -131,6 +131,7 @@ internal fun NonNullStoreContent(
 @Composable
 private fun StoreDetailContent(
     store: Store,
+    isLoading: Boolean,
     isImageUploading: Boolean,
     modifier: Modifier = Modifier,
     onClickEdit: () -> Unit,
@@ -138,7 +139,11 @@ private fun StoreDetailContent(
     onClickUploadImage: () -> Unit,
 ) {
     Column(modifier = modifier) {
-        StoreSummaryListItem(store = store, onClickEdit = onClickEdit)
+        StoreSummaryListItem(
+            store = store,
+            isLoading = isLoading,
+            onClickEdit = onClickEdit,
+        )
 
         if (!store.description.isNullOrBlank()) {
             var expand by rememberSaveable { mutableStateOf(false) }
@@ -147,32 +152,44 @@ private fun StoreDetailContent(
                 maxLines = if (expand) Int.MAX_VALUE else 4,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .shimmer(isLoading)
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
                         interactionSource = remember { MutableInteractionSource() },
                     ) { expand = !expand },
             )
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            TextButton(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .shimmer(isLoading),
+                onClick = onClickMoreDetails,
+                contentPadding = PaddingValues(vertical = 12.dp),
+                content = {
+                    Text(
+                        text = stringResource(R.string.action_more_details),
+                        textDecoration = TextDecoration.Underline,
+                    )
+                },
+                shape = RoundedCornerShape(20),
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
+            )
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
-        TextButton(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            onClick = onClickMoreDetails,
-            contentPadding = PaddingValues(vertical = 12.dp),
-            content = {
-                Text(
-                    text = stringResource(R.string.action_more_details),
-                    textDecoration = TextDecoration.Underline,
-                )
-            },
-            shape = RoundedCornerShape(20),
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
-        )
 
         OutlinedButton(
             enabled = !isImageUploading,
             onClick = onClickUploadImage,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .shimmer(isLoading),
             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
         ) {
             AnimatedVisibility(isImageUploading) {
@@ -214,6 +231,10 @@ private class NonNullStoreContentUiStateParameterProvider :
             NonNullStoreContentUiState(store = store.copy(images = emptyList())),
             NonNullStoreContentUiState(
                 store = store.copy(images = emptyList()),
+                isImageUploading = true,
+            ),
+            NonNullStoreContentUiState(
+                store = store.copy(images = emptyList(), description = null),
                 isImageUploading = true,
             ),
         )

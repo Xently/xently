@@ -26,7 +26,7 @@ internal class CustomerRepositoryImpl @Inject constructor(
         return httpClient.get(urlString = url).body<PagedResponse<Customer>>().run {
             (embedded.values.firstOrNull() ?: emptyList()).let { customers ->
                 coroutineScope {
-                    launch { customerDao.insertAll(customers.map { CustomerEntity(customer = it) }) }
+                    launch { customerDao.save(customers.map { CustomerEntity(customer = it) }) }
                 }
                 copy(embedded = mapOf("views" to customers))
             }

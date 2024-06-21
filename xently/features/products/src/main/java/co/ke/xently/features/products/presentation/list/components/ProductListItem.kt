@@ -36,10 +36,10 @@ import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun ProductListItem(
@@ -73,7 +73,11 @@ internal fun ProductListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = (if (isLoading) Modifier.shimmer() else Modifier).size(size = 60.dp)) {
+            Card(
+                modifier = Modifier
+                    .size(size = 60.dp)
+                    .shimmer(isLoading)
+            ) {
                 var index by rememberSaveable(product.id) { mutableIntStateOf(0) }
                 XentlyImage(
                     data = product.images.getOrNull(index),
@@ -88,7 +92,9 @@ internal fun ProductListItem(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = product.toString(),
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .shimmer(isLoading),
                     fontWeight = FontWeight.Bold,
                     maxLines = if (product.description.isNullOrBlank()) 3 else 2,
                     overflow = TextOverflow.Ellipsis,
@@ -97,11 +103,11 @@ internal fun ProductListItem(
                 Text(
                     text = product.unitPrice.formatPrice("KES", false),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                    modifier = Modifier.shimmer(isLoading),
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box(modifier = if (isLoading) Modifier.shimmer() else Modifier) {
+                Box(modifier = Modifier.shimmer(isLoading)) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for product "$product".""",
@@ -133,11 +139,13 @@ internal fun ProductListItem(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Light,
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).clickable(
-                        role = Role.Checkbox,
-                        indication = ripple(radius = 1_000.dp),
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) { expand = !expand },
+                    modifier = Modifier
+                        .shimmer(isLoading)
+                        .clickable(
+                            role = Role.Checkbox,
+                            indication = ripple(radius = 1_000.dp),
+                            interactionSource = remember { MutableInteractionSource() },
+                        ) { expand = !expand },
                 )
             }
         },

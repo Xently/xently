@@ -44,7 +44,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
             delay(duration)
             database.withTransactionFacade {
                 reviewCategoryDao
-                    .insertAll(ReviewCategoryEntity(reviewCategory = reviewCategory))
+                    .save(ReviewCategoryEntity(reviewCategory = reviewCategory))
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
@@ -78,7 +78,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
                                     launch {
                                         database.withTransactionFacade {
                                             reviewCategoryDao.deleteAll()
-                                            reviewCategoryDao.insertAll(
+                                            reviewCategoryDao.save(
                                                 categories.map {
                                                     ReviewCategoryEntity(reviewCategory = it)
                                                 }

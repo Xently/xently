@@ -37,7 +37,7 @@ internal class ProductCategoryRepositoryImpl @Inject constructor(
                 ?: emptyList()
             database.withTransactionFacade {
                 productCategoryDao.deleteAll()
-                productCategoryDao.insertAll(categories.map { ProductCategoryEntity(it) })
+                productCategoryDao.save(categories.map { ProductCategoryEntity(it) })
             }
             return categories
         }

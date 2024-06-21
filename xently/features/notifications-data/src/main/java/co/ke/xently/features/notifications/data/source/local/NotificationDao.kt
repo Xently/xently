@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg notifications: NotificationEntity)
+    suspend fun save(vararg notifications: NotificationEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(notifications: List<NotificationEntity>)
+    suspend fun save(notifications: List<NotificationEntity>)
 
     @Query("DELETE FROM notifications")
     suspend fun deleteAll()

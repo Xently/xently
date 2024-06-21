@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ReviewDao {
     @Insert
-    suspend fun insertAll(vararg reviews: ReviewEntity)
+    suspend fun save(vararg reviews: ReviewEntity)
 
     @Query("DELETE FROM reviews")
     suspend fun deleteAll()

@@ -44,9 +44,9 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.BarChart
-import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.Month
 
 @Composable
@@ -73,7 +73,7 @@ internal fun StatisticsSuccessContent(
             headline = stringResource(R.string.reviews_statistics_title),
             trailingContent = {
                 TextButton(
-                    modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                    modifier = Modifier.shimmer(isLoading),
                     enabled = !isLoading,
                     onClick = { onClickViewComments() },
                     content = {
@@ -94,7 +94,9 @@ internal fun StatisticsSuccessContent(
         ) {
             item(key = "total-reviews", contentType = "total-reviews") {
                 StatisticSummaryCard(
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .shimmer(isLoading),
                     stat = success.data.totalReviews.coolFormat(),
                     title = stringResource(R.string.reviews_statistics_total_reviews_title),
                     statColor = MaterialTheme.colorScheme.primary,
@@ -102,7 +104,9 @@ internal fun StatisticsSuccessContent(
             }
             item(key = "general-sentiment", contentType = "general-sentiment") {
                 StatisticSummaryCard(
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .shimmer(isLoading),
                     stat = success.data.generalSentiment.text,
                     title = stringResource(R.string.reviews_statistics_general_sentiments_title),
                     statColor = when (success.data.generalSentiment) {
@@ -113,7 +117,9 @@ internal fun StatisticsSuccessContent(
             }
             item(key = "percentage-satisfaction", contentType = "percentage-satisfaction") {
                 StatisticSummaryCard(
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .shimmer(isLoading),
                     stat = "${success.data.percentageSatisfaction}%",
                     title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
                     statColor = MaterialTheme.colorScheme.primary,
@@ -121,7 +127,9 @@ internal fun StatisticsSuccessContent(
             }
             item(key = "average-rating", contentType = "average-rating") {
                 StatisticSummaryCard(
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier).width(120.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .shimmer(isLoading),
                     stat = success.data.averageRating.toString(),
                     title = stringResource(R.string.reviews_statistics_average_rating_title),
                     statColor = MaterialTheme.colorScheme.primary,
@@ -144,7 +152,7 @@ internal fun StatisticsSuccessContent(
                     text = category.name,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = (if (isLoading) Modifier.shimmer() else Modifier),
+                    modifier = Modifier.shimmer(isLoading),
                 )
                 val text = remember(filters) {
                     buildString {
@@ -163,13 +171,13 @@ internal fun StatisticsSuccessContent(
                     Text(
                         text = text,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = (if (isLoading) Modifier.shimmer() else Modifier),
+                        modifier = Modifier.shimmer(isLoading),
                     )
                 }
             }
             TextButton(
                 enabled = !isLoading,
-                modifier = (if (isLoading) Modifier.shimmer() else Modifier),
+                modifier = Modifier.shimmer(isLoading),
                 onClick = {
                     showFilters = !showFilters
                 },
@@ -212,11 +220,12 @@ internal fun StatisticsSuccessContent(
 
         if (success.data.groupedStatistics.isNotEmpty()) {
             Box(
-                modifier = (if (isLoading) Modifier.shimmer() else Modifier)
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(400.dp)
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 16.dp)
+                    .shimmer(isLoading),
             ) {
                 BarChart(
 //                    yAxisRange = 15,

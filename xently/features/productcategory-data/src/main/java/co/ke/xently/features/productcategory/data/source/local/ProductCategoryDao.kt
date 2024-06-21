@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProductCategoryDao {
     @Insert
-    suspend fun insertAll(vararg productCategories: ProductCategoryEntity)
+    suspend fun save(vararg productCategories: ProductCategoryEntity)
 
     @Insert
-    suspend fun insertAll(productCategories: List<ProductCategoryEntity>)
+    suspend fun save(productCategories: List<ProductCategoryEntity>)
 
     @Query("DELETE FROM product_categories")
     suspend fun deleteAll()

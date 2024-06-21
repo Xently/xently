@@ -144,7 +144,7 @@ internal fun ActiveStoreScreen(
                     store = store,
                     isLoading = true,
                     isImageUploading = false,
-                    images = store.images,
+                    images = emptyList(),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NotificationTopicDao {
     @Insert
-    suspend fun insertAll(vararg notificationTopics: NotificationTopicEntity)
+    suspend fun save(vararg notificationTopics: NotificationTopicEntity)
 
     @Query("DELETE FROM notification_topics")
     suspend fun deleteAll()

@@ -27,10 +27,10 @@ import co.ke.xently.features.reviews.data.domain.error.DataError.Network
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
-import com.valentinilk.shimmer.shimmer
 import kotlin.random.Random
 
 @Composable
@@ -102,13 +102,13 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 text = rating.average.toString(),
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                modifier = Modifier.shimmer(isLoading),
             )
             StarRatingRow(
                 isDark = isDark,
                 average = rating.average,
                 maximumStarRating = rating.maxStarRating,
-                modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                modifier = Modifier.shimmer(isLoading),
             )
             Text(
                 text = stringResource(
@@ -117,7 +117,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 ),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Light,
-                modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                modifier = Modifier.shimmer(isLoading),
             )
         }
         Column(
@@ -133,7 +133,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 ) {
                     Text(
                         text = star.star.toString(),
-                        modifier = if (isLoading) Modifier.shimmer() else Modifier,
+                        modifier = Modifier.shimmer(isLoading),
                     )
                     val progress = rememberSaveable(star.count, rating.totalReviews) {
                         (star.count / rating.totalReviews.toDouble()).toFloat()
@@ -141,7 +141,9 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                     StarRatingLinearProgress(
                         progress = progress,
                         isDark = isDark,
-                        modifier = (if (isLoading) Modifier.shimmer() else Modifier).weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .shimmer(isLoading),
                     )
                 }
             }
