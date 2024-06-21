@@ -50,7 +50,7 @@ import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.ConfigurationError
 import co.ke.xently.features.products.data.domain.error.DataError
-import co.ke.xently.features.products.data.domain.error.toProductError
+import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.list.components.ProductListEmptyState
 import co.ke.xently.features.products.presentation.list.components.ProductListLazyColumn
@@ -212,7 +212,7 @@ internal fun ProductListScreen(
 
                 products.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toProductError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     ProductListEmptyState(
                         modifier = Modifier.matchParentSize(),

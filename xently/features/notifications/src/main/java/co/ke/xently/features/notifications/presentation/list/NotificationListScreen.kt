@@ -35,7 +35,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.notifications.R
 import co.ke.xently.features.notifications.data.domain.Notification
 import co.ke.xently.features.notifications.data.domain.error.DataError
-import co.ke.xently.features.notifications.data.domain.error.toNotificationError
+import co.ke.xently.features.notifications.data.domain.error.toError
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListEmptyState
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListLazyColumn
 import co.ke.xently.features.notifications.presentation.utils.asUiText
@@ -136,7 +136,7 @@ internal fun NotificationListScreen(
 
                 notifications.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toNotificationError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),

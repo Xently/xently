@@ -7,6 +7,7 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductDataValidator
+import co.ke.xently.features.products.data.domain.error.RemoteFieldError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
@@ -180,12 +181,26 @@ internal class ProductEditDetailViewModel @Inject constructor(
                             }
 
                             is Result.Failure -> {
-                                _event.send(
-                                    ProductEditDetailEvent.Error(
-                                        error = result.error.asUiText(),
-                                        type = result.error,
+                                when (val error = result.error) {
+                                    is RemoteFieldError -> {
+                                        _uiState.update {
+                                            it.copy(
+                                                nameError = error.errors["name"] ?: emptyList(),
+                                                unitPriceError = error.errors["unitPrice"]
+                                                    ?: emptyList(),
+                                                descriptionError = error.errors["description"]
+                                                    ?: emptyList(),
+                                            )
+                                        }
+                                    }
+
+                                    else -> _event.send(
+                                        ProductEditDetailEvent.Error(
+                                            error = error.asUiText(),
+                                            type = error,
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }
@@ -206,7 +221,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
         )
 
         when (val result = dataValidator.validatedPrice(state.unitPrice)) {
-            is Result.Failure -> _uiState.update { it.copy(unitPriceError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(unitPriceError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(unitPriceError = null) }
                 product = product.copy(unitPrice = result.data)
@@ -214,7 +229,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
         }
 
         when (val result = dataValidator.validatedName(state.name)) {
-            is Result.Failure -> _uiState.update { it.copy(nameError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(nameError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(nameError = null) }
                 product = product.copy(name = result.data)
@@ -222,7 +237,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
         }
 
         when (val result = dataValidator.validatedDescription(state.description)) {
-            is Result.Failure -> _uiState.update { it.copy(descriptionError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(descriptionError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(descriptionError = null) }
                 product = product.copy(description = result.data)

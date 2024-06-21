@@ -3,7 +3,7 @@ package co.ke.xently.features.openinghours.data.source
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.openinghours.data.domain.error.Error
 import co.ke.xently.features.openinghours.data.domain.error.Result
-import co.ke.xently.features.openinghours.data.domain.error.toOpeningHourError
+import co.ke.xently.features.openinghours.data.domain.error.toError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -30,7 +30,7 @@ internal class OpeningHourRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(ex.toOpeningHourError())
+            Result.Failure(ex.toError())
         }
     }
 }

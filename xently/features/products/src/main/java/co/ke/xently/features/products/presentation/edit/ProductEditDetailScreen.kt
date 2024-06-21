@@ -54,9 +54,10 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.DescriptionError
 import co.ke.xently.features.products.data.domain.error.NameError
 import co.ke.xently.features.products.data.domain.error.PriceError
+import co.ke.xently.features.products.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
-import co.ke.xently.features.products.presentation.utils.asUiText
+import co.ke.xently.features.products.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -194,9 +195,9 @@ internal fun ProductEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
-                isError = state.nameError != null,
+                isError = !state.nameError.isNullOrEmpty(),
                 supportingText = state.nameError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
             OutlinedTextField(
@@ -216,9 +217,9 @@ internal fun ProductEditDetailScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                 ),
-                isError = state.unitPriceError != null,
+                isError = !state.unitPriceError.isNullOrEmpty(),
                 supportingText = state.unitPriceError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
             OutlinedTextField(
@@ -239,9 +240,9 @@ internal fun ProductEditDetailScreen(
                     imeAction = ImeAction.Done,
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
-                isError = state.descriptionError != null,
+                isError = !state.descriptionError.isNullOrEmpty(),
                 supportingText = state.descriptionError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
 
@@ -304,10 +305,16 @@ private class ProductEditDetailUiStateParameterProvider :
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState()),
             ProductEditDetailScreenUiState(
                 state = ProductEditDetailUiState(
-                    nameError = NameError.entries.random(),
-                    unitPriceError = PriceError.entries.random(),
-                    descriptionError = DescriptionError.TooLong(Random.nextInt(100, 200)),
-                )
+                    nameError = listOf(NameError.entries.random()),
+                    unitPriceError = listOf(PriceError.entries.random()),
+                    descriptionError = listOf(
+                        DescriptionError.TooLong(
+                            Random.nextInt(100, 200)
+                        ),
+                        UnclassifiedFieldError("length must be between 0 and 500"),
+                        UnclassifiedFieldError("must be a future date"),
+                    ),
+                ),
             ),
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState(product = product)),
             ProductEditDetailScreenUiState(state = ProductEditDetailUiState(isLoading = true)),

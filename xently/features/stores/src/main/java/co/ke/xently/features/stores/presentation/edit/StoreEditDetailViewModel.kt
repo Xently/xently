@@ -8,6 +8,7 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreDataValidator
+import co.ke.xently.features.stores.data.domain.error.RemoteFieldError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
@@ -158,7 +159,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
             is StoreEditDetailAction.ChangeLocationString -> {
                 when (val result = dataValidator.validatedLocation(action.location)) {
-                    is Result.Failure -> _uiState.update { it.copy(locationError = result.error) }
+                    is Result.Failure -> _uiState.update { it.copy(locationError = listOf(result.error)) }
                     is Result.Success -> {
                         _uiState.update {
                             it.copy(
@@ -227,7 +228,24 @@ internal class StoreEditDetailViewModel @Inject constructor(
                         when (val result =
                             repository.save(store = store, addStoreUrl = addStoreUrl)) {
                             is Result.Success -> _event.send(StoreEditDetailEvent.Success(action))
-                            is Result.Failure -> _event.send(StoreEditDetailEvent.Error(result.error))
+                            is Result.Failure -> {
+                                when (val error = result.error) {
+                                    is RemoteFieldError -> {
+                                        _uiState.update {
+                                            it.copy(
+                                                locationError = error.errors["location"]
+                                                    ?: emptyList(),
+                                                emailError = error.errors["email"] ?: emptyList(),
+                                                phoneError = error.errors["telephone"]
+                                                    ?: emptyList(),
+                                                nameError = error.errors["name"] ?: emptyList(),
+                                            )
+                                        }
+                                    }
+
+                                    else -> _event.send(StoreEditDetailEvent.Error(error))
+                                }
+                            }
                         }
                     }
                 }.invokeOnCompletion {
@@ -251,7 +269,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
         )
 
         when (val result = dataValidator.validatedLocation(state.locationString)) {
-            is Result.Failure -> _uiState.update { it.copy(locationError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(locationError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(locationError = null) }
                 store = store.copy(location = result.data)
@@ -259,7 +277,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
 
         when (val result = dataValidator.validatedEmail(state.email)) {
-            is Result.Failure -> _uiState.update { it.copy(emailError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(emailError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(emailError = null) }
                 store = store.copy(email = result.data)
@@ -267,7 +285,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
 
         when (val result = dataValidator.validatedPhone(state.phone)) {
-            is Result.Failure -> _uiState.update { it.copy(phoneError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(phoneError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(phoneError = null) }
                 store = store.copy(telephone = result.data)
@@ -275,7 +293,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
 
         when (val result = dataValidator.validatedName(state.name)) {
-            is Result.Failure -> _uiState.update { it.copy(nameError = result.error) }
+            is Result.Failure -> _uiState.update { it.copy(nameError = listOf(result.error)) }
             is Result.Success -> {
                 _uiState.update { it.copy(nameError = null) }
                 store = store.copy(name = result.data)

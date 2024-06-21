@@ -6,7 +6,7 @@ import co.ke.xently.features.products.data.domain.error.ConfigurationError
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.Result
-import co.ke.xently.features.products.data.domain.error.toProductError
+import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.features.products.data.source.local.ProductEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
@@ -93,7 +93,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toProductError())
+            return Result.Failure(ex.toError())
         }
     }
 
@@ -182,7 +182,7 @@ internal class ProductRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toProductError())
+            return Result.Failure(ex.toError())
         }
     }
 }

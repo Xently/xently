@@ -51,7 +51,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.error.DataError
-import co.ke.xently.features.reviews.data.domain.error.toReviewError
+import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.comments.components.ReviewListEmptyState
 import co.ke.xently.features.reviews.presentation.comments.components.ReviewListLazyColumn
 import co.ke.xently.features.reviews.presentation.utils.asUiText
@@ -204,7 +204,7 @@ internal fun ReviewCommentListScreen(
 
                 reviews.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toReviewError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     ReviewListEmptyState(
                         modifier = Modifier.matchParentSize(),

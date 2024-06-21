@@ -43,7 +43,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.error.DataError
-import co.ke.xently.features.shops.data.domain.error.toShopError
+import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.presentation.list.components.ShopListEmptyState
 import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
 import co.ke.xently.features.shops.presentation.utils.asUiText
@@ -188,7 +188,7 @@ internal fun ShopListScreen(
 
                 shops.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toShopError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),

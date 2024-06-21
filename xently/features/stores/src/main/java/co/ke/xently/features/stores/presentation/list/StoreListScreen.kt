@@ -49,7 +49,7 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.DataError
-import co.ke.xently.features.stores.data.domain.error.toStoreError
+import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
 import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
@@ -214,7 +214,7 @@ internal fun StoreListScreen(
 
                 stores.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toStoreError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     StoreListEmptyState(
                         modifier = Modifier.matchParentSize(),

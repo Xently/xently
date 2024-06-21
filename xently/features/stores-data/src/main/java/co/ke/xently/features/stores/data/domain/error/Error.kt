@@ -1,32 +1,17 @@
 package co.ke.xently.features.stores.data.domain.error
 
+import co.ke.xently.libraries.data.network.ApiErrorResponse
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
-import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
 import timber.log.Timber
-
-
-@Serializable
-data class ApiErrorResponse(
-    val code: String? = null,
-    val error: String? = null,
-    val detail: String? = null,
-    val instance: String? = null,
-    val message: String? = null,
-    val status: Int = -1,
-    val timestamp: Instant? = null,
-)
 
 sealed interface Error
 
-data object UnknownError : Error
-
-suspend fun Throwable.toStoreError(): Error {
+suspend fun Throwable.toError(): Error {
     return when (this) {
-        is ResponseException -> toStoreError()
+        is ResponseException -> toError()
         is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
         is JsonConvertException -> {
             Timber.e(this)
@@ -40,17 +25,34 @@ suspend fun Throwable.toStoreError(): Error {
     }
 }
 
-private suspend fun ResponseException.toStoreError(): Error {
-    val error = response.body<ApiErrorResponse>().run {
-        when (code) {
-            in setOf("authentication_failed", "token_exchange_failed") -> {
-                DataError.Network.InvalidCredentials
-            }
-
-            "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
-            else -> null
+private fun ApiErrorResponse.toError(): Error? {
+    return when (code) {
+        in setOf("authentication_failed", "token_exchange_failed") -> {
+            DataError.Network.InvalidCredentials
         }
+
+        "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
+        "VALIDATION_ERROR" -> {
+            if (fieldErrors.isNullOrEmpty()) {
+                DataError.Network.BadRequest
+            } else {
+                val errors = fieldErrors!!.mapValues { entry ->
+                    entry.value.mapNotNull { fieldError ->
+                        fieldError.message?.let {
+                            UnclassifiedFieldError(it)
+                        }
+                    }
+                }
+                RemoteFieldError(errors = errors)
+            }
+        }
+
+        else -> null
     }
+}
+
+private suspend fun ResponseException.toError(): Error {
+    val error = response.body<ApiErrorResponse>().toError()
     if (error != null) return error
 
     return when (response.status) {

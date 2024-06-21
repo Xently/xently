@@ -5,7 +5,7 @@ import co.ke.xently.features.reviewcategory.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviewcategory.data.domain.error.DataError
 import co.ke.xently.features.reviewcategory.data.domain.error.Error
 import co.ke.xently.features.reviewcategory.data.domain.error.Result
-import co.ke.xently.features.reviewcategory.data.domain.error.toReviewCategoryError
+import co.ke.xently.features.reviewcategory.data.domain.error.toError
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
@@ -50,7 +50,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(ex.toReviewCategoryError())
+            Result.Failure(ex.toError())
         }
     }
 

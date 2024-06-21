@@ -23,7 +23,7 @@ import androidx.paging.compose.itemKey
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.Error
-import co.ke.xently.features.stores.data.domain.error.toStoreError
+import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataError
@@ -62,7 +62,7 @@ internal fun StoreListLazyColumn(
                     contentType = "Refresh Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toStoreError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     StoreListErrorContent(
                         error = error,
@@ -93,7 +93,7 @@ internal fun StoreListLazyColumn(
                     contentType = "Prepend Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toStoreError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     StoreListErrorContent(
                         error = error,
@@ -150,7 +150,7 @@ internal fun StoreListLazyColumn(
                     contentType = "Append Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toStoreError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     StoreListErrorContent(
                         error = error,

@@ -73,9 +73,11 @@ import co.ke.xently.features.stores.data.domain.error.FieldError
 import co.ke.xently.features.stores.data.domain.error.LocationError
 import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
+import co.ke.xently.features.stores.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.stores.presentation.utils.asUiText
+import co.ke.xently.features.stores.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
@@ -206,11 +208,7 @@ internal fun StoreEditDetailScreen(
                     navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                 )
                 AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                    )
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
             }
         },
@@ -267,9 +265,9 @@ internal fun StoreEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                 ),
-                isError = state.nameError != null,
+                isError = !state.nameError.isNullOrEmpty(),
                 supportingText = state.nameError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
             OutlinedTextField(
@@ -288,8 +286,8 @@ internal fun StoreEditDetailScreen(
                 isError = state.locationError != null,
                 supportingText = {
                     val error = state.locationError
-                    if (error != null) {
-                        Text(text = error.asUiText().asString(context = context))
+                    if (!error.isNullOrEmpty()) {
+                        Text(text = error.toUiText())
                     } else {
                         Text(text = stringResource(R.string.text_field_supporting_text_location))
                     }
@@ -318,9 +316,9 @@ internal fun StoreEditDetailScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
                 ),
-                isError = state.emailError != null,
+                isError = !state.emailError.isNullOrEmpty(),
                 supportingText = state.emailError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
             OutlinedTextField(
@@ -340,9 +338,9 @@ internal fun StoreEditDetailScreen(
                     keyboardType = KeyboardType.Phone,
                     imeAction = ImeAction.Next,
                 ),
-                isError = state.phoneError != null,
+                isError = !state.phoneError.isNullOrEmpty(),
                 supportingText = state.phoneError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.toUiText()) }
                 },
             )
 
@@ -483,10 +481,14 @@ private class StoreEditDetailUiStateParameterProvider :
             StoreEditDetailScreenUiState(state = StoreEditDetailUiState(isLoading = true)),
             StoreEditDetailScreenUiState(
                 state = StoreEditDetailUiState(
-                    nameError = NameError.entries.random(),
-                    locationError = LocationError.entries.random(),
-                    emailError = EmailError.entries.random(),
-                    phoneError = PhoneError.entries.random(),
+                    nameError = listOf(
+                        NameError.entries.random(),
+                        UnclassifiedFieldError("length must be between 0 and 500"),
+                        UnclassifiedFieldError("must be a future date"),
+                    ),
+                    locationError = listOf(LocationError.entries.random()),
+                    emailError = listOf(EmailError.entries.random()),
+                    phoneError = listOf(PhoneError.entries.random()),
                 ),
             ),
         )

@@ -1,5 +1,5 @@
 package co.ke.xently.features.stores.data.domain.error
 
-enum class PhoneError : FieldError {
+enum class PhoneError : LocalFieldError {
     INVALID_FORMAT,
 }

@@ -1,16 +1,22 @@
 package co.ke.xently.features.products.presentation.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.error.ConfigurationError
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.DescriptionError
 import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.FCMDeviceRegistrationRequired
+import co.ke.xently.features.products.data.domain.error.FieldError
+import co.ke.xently.features.products.data.domain.error.LocalFieldError
 import co.ke.xently.features.products.data.domain.error.NameError
 import co.ke.xently.features.products.data.domain.error.PriceError
+import co.ke.xently.features.products.data.domain.error.RemoteFieldError
+import co.ke.xently.features.products.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.products.data.domain.error.UnknownError
 
-fun Error.asUiText(): UiText {
+private fun DataError.asUiText(): UiText {
     return when (this) {
         DataError.Network.Retryable.RequestTimeout -> UiText.StringResource(R.string.the_request_timed_out)
         DataError.Network.TooManyRequests -> UiText.StringResource(R.string.youve_hit_your_rate_limit)
@@ -40,12 +46,19 @@ fun Error.asUiText(): UiText {
         DataError.Network.UpgradeRequired -> UiText.StringResource(R.string.error_message_upgrade_required)
         DataError.Network.RequestHeaderFieldTooLarge -> UiText.StringResource(R.string.error_message_request_header_too_large)
         DataError.Network.FailedDependency -> UiText.StringResource(R.string.error_message_failed_dependency)
-        UnknownError -> UiText.StringResource(R.string.error_message_default)
+        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
+    }
+}
+
+private fun ConfigurationError.asUiText(): UiText {
+    return when (this) {
         ConfigurationError.StoreSelectionRequired -> UiText.StringResource(R.string.error_store_not_selected)
         ConfigurationError.ShopSelectionRequired -> UiText.StringResource(R.string.error_shop_not_selected)
-        FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
-        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
+    }
+}
 
+private fun FieldError.asUiText(): UiText {
+    return when (this) {
         NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
         PriceError.INVALID -> UiText.StringResource(R.string.error_price_invalid)
         PriceError.ZERO_OR_LESS -> UiText.StringResource(R.string.error_price_zero_or_less)
@@ -53,5 +66,28 @@ fun Error.asUiText(): UiText {
             R.string.error_description_too_long,
             arrayOf(acceptableLength),
         )
+
+        is UnclassifiedFieldError -> UiText.DynamicString(message)
+        is RemoteFieldError -> UiText.StringResource(R.string.error_message_bad_request)
+    }
+}
+
+
+fun Error.asUiText(): UiText {
+    return when (this) {
+        is DataError -> asUiText()
+        is ConfigurationError -> asUiText()
+        is FieldError -> asUiText()
+        is UnknownError -> UiText.StringResource(R.string.error_message_default)
+        FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
+        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
+    }
+}
+
+@Composable
+fun List<LocalFieldError>.toUiText(): String {
+    val context = LocalContext.current
+    return joinToString("\n") {
+        "• ${it.asUiText().asString(context = context)}"
     }
 }

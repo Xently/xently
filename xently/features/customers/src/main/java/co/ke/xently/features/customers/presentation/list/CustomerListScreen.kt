@@ -41,7 +41,7 @@ import co.ke.xently.features.customers.R
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.ConfigurationError
 import co.ke.xently.features.customers.data.domain.error.DataError
-import co.ke.xently.features.customers.data.domain.error.toCustomerError
+import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.list.components.CustomerListEmptyState
 import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
 import co.ke.xently.features.customers.presentation.utils.asUiText
@@ -150,7 +150,7 @@ internal fun CustomerListScreen(
 
                 customers.itemCount == 0 && refreshLoadState is LoadState.Error -> {
                     val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toCustomerError() }
+                        runBlocking { refreshLoadState.error.toError() }
                     }
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),

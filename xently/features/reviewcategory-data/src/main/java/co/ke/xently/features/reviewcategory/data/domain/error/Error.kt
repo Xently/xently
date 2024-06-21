@@ -1,33 +1,19 @@
 package co.ke.xently.features.reviewcategory.data.domain.error
 
 
+import co.ke.xently.libraries.data.network.ApiErrorResponse
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
-import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
 import timber.log.Timber
 
 
-@Serializable
-data class ApiErrorResponse(
-    val code: String? = null,
-    val error: String? = null,
-    val detail: String? = null,
-    val instance: String? = null,
-    val message: String? = null,
-    val status: Int = -1,
-    val timestamp: Instant? = null,
-)
-
 sealed interface Error
 
-data object UnknownError : Error
-
-suspend fun Throwable.toReviewCategoryError(): Error {
+suspend fun Throwable.toError(): Error {
     return when (this) {
-        is ResponseException -> toReviewCategoryError()
+        is ResponseException -> toError()
         is JsonConvertException -> {
             Timber.e(this)
             DataError.Network.Serialization
@@ -40,7 +26,7 @@ suspend fun Throwable.toReviewCategoryError(): Error {
     }
 }
 
-private suspend fun ResponseException.toReviewCategoryError(): Error {
+private suspend fun ResponseException.toError(): Error {
     val error = response.body<ApiErrorResponse>().run {
         when (code) {
             in setOf("authentication_failed", "token_exchange_failed") -> {

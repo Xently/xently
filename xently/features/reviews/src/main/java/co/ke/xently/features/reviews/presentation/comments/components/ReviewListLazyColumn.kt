@@ -23,7 +23,7 @@ import androidx.paging.compose.itemKey
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.error.Error
-import co.ke.xently.features.reviews.data.domain.error.toReviewError
+import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.reviews.data.domain.error.DataError as ReviewDataError
@@ -60,7 +60,7 @@ internal fun ReviewListLazyColumn(
                     contentType = "Refresh Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toReviewError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     ReviewListErrorContent(
                         error = error,
@@ -91,7 +91,7 @@ internal fun ReviewListLazyColumn(
                     contentType = "Prepend Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toReviewError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     ReviewListErrorContent(
                         error = error,
@@ -138,7 +138,7 @@ internal fun ReviewListLazyColumn(
                     contentType = "Append Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toReviewError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     ReviewListErrorContent(
                         error = error,

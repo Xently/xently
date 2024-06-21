@@ -28,7 +28,7 @@ import androidx.paging.compose.itemKey
 import co.ke.xently.features.customers.R
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.Error
-import co.ke.xently.features.customers.data.domain.error.toCustomerError
+import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.utils.asUiText
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.customers.data.domain.error.DataError as CustomerDataError
@@ -66,7 +66,7 @@ internal fun CustomerListLazyColumn(
                     contentType = "Refresh Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toCustomerError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     CustomerListErrorContent(
                         error = error,
@@ -97,7 +97,7 @@ internal fun CustomerListLazyColumn(
                     contentType = "Prepend Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toCustomerError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     CustomerListErrorContent(
                         error = error,
@@ -178,7 +178,7 @@ internal fun CustomerListLazyColumn(
                     contentType = "Append Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toCustomerError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     CustomerListErrorContent(
                         error = error,

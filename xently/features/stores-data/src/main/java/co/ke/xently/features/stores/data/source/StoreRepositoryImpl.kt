@@ -10,7 +10,7 @@ import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.Result
-import co.ke.xently.features.stores.data.domain.error.toStoreError
+import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.libraries.data.image.domain.UploadRequest
@@ -119,7 +119,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toStoreError())
+            return Result.Failure(ex.toError())
         }
     }
 
@@ -222,7 +222,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toStoreError())
+            return Result.Failure(ex.toError())
         }
     }
 
@@ -249,7 +249,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(ex.toStoreError())
+            Result.Failure(ex.toError())
         }
     }
 
@@ -268,7 +268,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(ex.toStoreError())
+            Result.Failure(ex.toError())
         }
     }
 
@@ -281,7 +281,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(ex.toStoreError())
+            Result.Failure(ex.toError())
         }
     }
 

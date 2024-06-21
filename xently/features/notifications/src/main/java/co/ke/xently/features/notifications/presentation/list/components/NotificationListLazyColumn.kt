@@ -23,7 +23,7 @@ import androidx.paging.compose.itemKey
 import co.ke.xently.features.notifications.R
 import co.ke.xently.features.notifications.data.domain.Notification
 import co.ke.xently.features.notifications.data.domain.error.Error
-import co.ke.xently.features.notifications.data.domain.error.toNotificationError
+import co.ke.xently.features.notifications.data.domain.error.toError
 import co.ke.xently.features.notifications.presentation.utils.asUiText
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.notifications.data.domain.error.DataError as NotificationDataError
@@ -60,7 +60,7 @@ internal fun NotificationListLazyColumn(
                     contentType = "Refresh Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toNotificationError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     NotificationListErrorContent(
                         error = error,
@@ -91,7 +91,7 @@ internal fun NotificationListLazyColumn(
                     contentType = "Prepend Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toNotificationError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     NotificationListErrorContent(
                         error = error,
@@ -139,7 +139,7 @@ internal fun NotificationListLazyColumn(
                     contentType = "Append Error",
                 ) {
                     val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toNotificationError() }
+                        runBlocking { loadState.error.toError() }
                     }
                     NotificationListErrorContent(
                         error = error,

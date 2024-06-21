@@ -8,7 +8,7 @@ import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.Result
-import co.ke.xently.features.reviews.data.domain.error.toReviewError
+import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.stores.data.source.StoreRepository
@@ -113,7 +113,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
                 Result.Success(statistics)
             } catch (ex: Exception) {
                 if (ex is CancellationException) throw ex
-                Result.Failure(ex.toReviewError())
+                Result.Failure(ex.toError())
             }
             emit(result)
         }

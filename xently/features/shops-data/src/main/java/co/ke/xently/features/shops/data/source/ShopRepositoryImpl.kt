@@ -8,7 +8,7 @@ import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.Error
 import co.ke.xently.features.shops.data.domain.error.Result
-import co.ke.xently.features.shops.data.domain.error.toShopError
+import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
 import co.ke.xently.features.shops.data.source.local.ShopEntity
 import co.ke.xently.libraries.pagination.data.PagedResponse
@@ -62,7 +62,7 @@ internal class ShopRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toShopError())
+            return Result.Failure(ex.toError())
         }
     }
 
@@ -103,7 +103,7 @@ internal class ShopRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(ex.toShopError())
+            return Result.Failure(ex.toError())
         }
     }
 
