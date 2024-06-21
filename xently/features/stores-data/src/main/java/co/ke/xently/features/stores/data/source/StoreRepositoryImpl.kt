@@ -294,7 +294,12 @@ internal class StoreRepositoryImpl @Inject constructor(
                     httpClient.get(urlString = store.links["images"]!!.href)
                         .body<PagedResponse<UploadResponse>>().run {
                             val newImages = (embedded.values.firstOrNull() ?: emptyList())
-                            selectStore(store.copy(images = newImages))
+                            storeDao.save(
+                                StoreEntity(
+                                    store.copy(images = newImages),
+                                    isActivated = true,
+                                )
+                            )
                         }
                 }
             }
