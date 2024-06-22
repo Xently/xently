@@ -101,6 +101,9 @@ internal class ProductEditDetailViewModel @Inject constructor(
                         unitPrice = "",
                         description = "",
                         product = Product(),
+                        nameError = null,
+                        unitPriceError = null,
+                        descriptionError = null,
                     )
                 }
             }
@@ -169,7 +172,12 @@ internal class ProductEditDetailViewModel @Inject constructor(
             ProductEditDetailAction.ClickSave, ProductEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
-                        it.copy(isLoading = true)
+                        it.copy(
+                            isLoading = true,
+                            nameError = null,
+                            unitPriceError = null,
+                            descriptionError = null,
+                        )
                     }
                     val product = validatedProduct(state)
 

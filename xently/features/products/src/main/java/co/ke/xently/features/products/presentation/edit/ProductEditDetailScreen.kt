@@ -69,12 +69,42 @@ fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Un
     val viewModel = hiltViewModel<ProductEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is ProductEditDetailEvent.Success -> {
+                    when (event.action) {
+                        ProductEditDetailAction.ClickSave -> onClickBack()
+                        ProductEditDetailAction.ClickSaveAndAddAnother -> {
+                            viewModel.onAction(ProductEditDetailAction.ClearFieldsForNewProduct)
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_product_saved_successfully),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
+
+                is ProductEditDetailEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
 
     ProductEditDetailScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
@@ -86,43 +116,12 @@ fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Un
 @Composable
 internal fun ProductEditDetailScreen(
     state: ProductEditDetailUiState,
-    event: ProductEditDetailEvent?,
+    snackbarHostState: SnackbarHostState,
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ProductEditDetailAction) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is ProductEditDetailEvent.Success -> {
-                when (event.action) {
-                    ProductEditDetailAction.ClickSave -> onClickBack()
-                    ProductEditDetailAction.ClickSaveAndAddAnother -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_product_saved_successfully),
-                            duration = SnackbarDuration.Short,
-                        )
-                        onAction(ProductEditDetailAction.ClearFieldsForNewProduct)
-                    }
-
-                    else -> throw NotImplementedError()
-                }
-            }
-
-            is ProductEditDetailEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -330,7 +329,9 @@ private fun ProductEditDetailScreenPreview(
     XentlyTheme {
         ProductEditDetailScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},

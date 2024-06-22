@@ -70,7 +70,14 @@ internal class ShopEditDetailViewModel @Inject constructor(
             ShopEditDetailAction.ClickSaveDetails -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
-                        it.copy(isLoading = true)
+                        it.copy(
+                            isLoading = true,
+                            nameError = null,
+                            websiteError = null,
+                            merchantFirstNameError = null,
+                            merchantLastNameError = null,
+                            merchantEmailAddressError = null,
+                        )
                     }
                     val shop = validatedShop(state)
                     val merchant = validatedMerchant(state)

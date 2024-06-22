@@ -97,12 +97,45 @@ fun StoreEditDetailScreen(
     val viewModel = hiltViewModel<StoreEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is StoreEditDetailEvent.Success -> {
+                    when (event.action) {
+                        StoreEditDetailAction.ClickSave -> onClickBack()
+                        StoreEditDetailAction.ClickSaveAndAddAnother -> {
+                            viewModel.onAction(StoreEditDetailAction.ClearFieldsForNewStore)
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.message_store_saved),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
+
+                is StoreEditDetailEvent.Error -> {
+                    if (event.error !is FieldError) {
+                        snackbarHostState.showSnackbar(
+                            event.error.asUiText().asString(context = context),
+                            duration = SnackbarDuration.Long,
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     StoreEditDetailScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         categories = categories,
         modifier = modifier,
         onClickBack = onClickBack,
@@ -114,45 +147,13 @@ fun StoreEditDetailScreen(
 @Composable
 internal fun StoreEditDetailScreen(
     state: StoreEditDetailUiState,
-    event: StoreEditDetailEvent?,
+    snackbarHostState: SnackbarHostState,
     categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (StoreEditDetailAction) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is StoreEditDetailEvent.Success -> {
-                when (event.action) {
-                    StoreEditDetailAction.ClickSave -> onClickBack()
-                    StoreEditDetailAction.ClickSaveAndAddAnother -> {
-                        snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.message_store_saved),
-                            duration = SnackbarDuration.Short,
-                        )
-                        onAction(StoreEditDetailAction.ClearFieldsForNewStore)
-                    }
-
-                    else -> throw NotImplementedError()
-                }
-            }
-
-            is StoreEditDetailEvent.Error -> {
-                if (event.error !is FieldError) {
-                    snackbarHostState.showSnackbar(
-                        event.error.asUiText().asString(context = context),
-                        duration = SnackbarDuration.Long,
-                    )
-                }
-            }
-        }
-    }
 
     var showLocationPicker by rememberSaveable { mutableStateOf(false) }
     var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
@@ -512,7 +513,9 @@ private fun StoreEditDetailScreenPreview(
     XentlyTheme {
         StoreEditDetailScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},

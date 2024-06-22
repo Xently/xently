@@ -63,11 +63,28 @@ fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit)
     val viewModel = hiltViewModel<ShopEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                ShopEditDetailEvent.Success -> onClickBack()
+                is ShopEditDetailEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
 
     ShopEditDetailScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
@@ -78,28 +95,12 @@ fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit)
 @Composable
 internal fun ShopEditDetailScreen(
     state: ShopEditDetailUiState,
-    event: ShopEditDetailEvent?,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ShopEditDetailAction) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
     val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            ShopEditDetailEvent.Success -> onClickBack()
-            is ShopEditDetailEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -313,7 +314,9 @@ private fun ShopEditDetailScreenPreview(
     XentlyTheme {
         ShopEditDetailScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},
