@@ -55,6 +55,7 @@ import co.ke.xently.features.products.presentation.components.ProductCategoryFil
 import co.ke.xently.features.products.presentation.list.components.ProductListEmptyState
 import co.ke.xently.features.products.presentation.list.components.ProductListLazyColumn
 import co.ke.xently.features.products.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -64,8 +65,6 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     topBar: @Composable () -> Unit = {},
@@ -83,8 +82,6 @@ fun ProductListScreen(
         products = products,
         categories = categories,
         modifier = modifier,
-        onClickSelectShop = onClickSelectShop,
-        onClickSelectBranch = onClickSelectBranch,
         onClickAddProduct = onClickAddProduct,
         onClickEditProduct = onClickEditProduct,
         onAction = viewModel::onAction,
@@ -100,8 +97,6 @@ internal fun ProductListScreen(
     products: LazyPagingItems<Product>,
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
@@ -110,6 +105,8 @@ internal fun ProductListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
+
+    val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(event) {
         when (event) {
@@ -220,21 +217,29 @@ internal fun ProductListScreen(
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = products::retry,
                     ) {
-                        when (error as? ConfigurationError) {
-                            null -> Unit
+                        when (error) {
                             ConfigurationError.ShopSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = onClickSelectShop) {
+                                Button(onClick = eventHandler::requestShopSelection) {
                                     Text(text = stringResource(R.string.action_select_shop))
                                 }
                             }
 
                             ConfigurationError.StoreSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = onClickSelectBranch) {
+                                Button(onClick = eventHandler::requestStoreSelection) {
                                     Text(text = stringResource(R.string.action_select_store))
                                 }
                             }
+
+                            DataError.Network.Unauthorized -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = eventHandler::requestAuthentication) {
+                                    Text(text = stringResource(R.string.action_login))
+                                }
+                            }
+
+                            else -> Unit
                         }
                     }
                 }
@@ -305,8 +310,6 @@ private fun ProductListScreenPreview(
             modifier = Modifier.fillMaxSize(),
             onClickAddProduct = {},
             onClickEditProduct = {},
-            onClickSelectShop = {},
-            onClickSelectBranch = {},
             onAction = {},
         )
     }

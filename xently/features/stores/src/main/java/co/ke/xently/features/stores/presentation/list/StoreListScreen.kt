@@ -4,9 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +57,7 @@ import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterC
 import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
 import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
 import co.ke.xently.features.stores.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -108,6 +112,7 @@ internal fun StoreListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(event) {
         when (event) {
@@ -221,7 +226,14 @@ internal fun StoreListScreen(
                         message = error.asUiText().asString(),
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = stores::retry,
-                    )
+                    ) {
+                        if (error is DataError.Network.Unauthorized) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = eventHandler::requestAuthentication) {
+                                Text(text = stringResource(co.ke.xently.features.shops.R.string.action_login))
+                            }
+                        }
+                    }
                 }
 
                 stores.itemCount == 0 && refreshLoadState is LoadState.Loading -> {

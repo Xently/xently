@@ -39,6 +39,7 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
@@ -46,15 +47,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun LandingScreen(
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickAddStore: (Shop?) -> Unit,
     onClickEditStore: (Store) -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
-    onClickLogin: () -> Unit,
     onClickAddShop: () -> Unit,
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
@@ -73,15 +71,12 @@ fun LandingScreen(
             modifier = modifier,
             state = state,
             event = event,
-            onClickSelectShop = onClickSelectShop,
-            onClickSelectBranch = onClickSelectBranch,
             onClickAddStore = onClickAddStore,
             onClickEditStore = onClickEditStore,
             onClickAddProduct = onClickAddProduct,
             onClickEditProduct = onClickEditProduct,
             onClickAddNewReviewCategory = onClickAddNewReviewCategory,
             onClickViewComments = onClickViewComments,
-            onClickLogin = onClickLogin,
             onClickAddShop = onClickAddShop,
             onClickQrCode = onClickQrCode,
             onClickSettings = onClickSettings,
@@ -95,15 +90,12 @@ internal fun LandingScreen(
     modifier: Modifier = Modifier,
     state: LandingUiState,
     event: LandingEvent?,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickAddStore: (Shop?) -> Unit,
     onClickEditStore: (Store) -> Unit,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
-    onClickLogin: () -> Unit,
     onClickAddShop: () -> Unit,
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
@@ -113,11 +105,12 @@ internal fun LandingScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(event) {
         when (event) {
             null, LandingEvent.Success -> Unit
-            is LandingEvent.SelectStore -> onClickSelectBranch()
+            is LandingEvent.SelectStore -> eventHandler.requestStoreSelection()
             is LandingEvent.Error -> {
                 Toast.makeText(
                     context,
@@ -159,13 +152,8 @@ internal fun LandingScreen(
                 canAddShop = state.canAddShop,
                 selectedMenu = selectedMenu,
                 authenticationState = authenticationState,
-                onClickLogout = { onAction(LandingAction.ClickSignOut) },
-                onClickLogin = onClickLogin,
                 shops = { state.shops },
-                onClickAddShop = { closeDrawer(); onClickAddShop() },
-                onClickSelectShop = { closeDrawer(); onClickSelectShop() },
-                onClickShop = { closeDrawer(); onAction(LandingAction.SelectShop(it)) },
-                onClickAddStore = { closeDrawer(); onClickAddStore(it) },
+                onClickLogout = { onAction(LandingAction.ClickSignOut) },
                 onClickMenu = {
                     when (it) {
                         Menu.QR_CODE -> onClickQrCode()
@@ -179,6 +167,9 @@ internal fun LandingScreen(
                     selectedMenu = Menu.valueOf(currentDestination.name)
                     closeDrawer()
                 },
+                onClickAddShop = { closeDrawer(); onClickAddShop() },
+                onClickShop = { closeDrawer(); onAction(LandingAction.SelectShop(it)) },
+                onClickAddStore = { closeDrawer(); onClickAddStore(it) },
             )
         },
     ) {
@@ -243,8 +234,6 @@ internal fun LandingScreen(
             LandingScreenContent(
                 canAddShop = state.canAddShop,
                 currentDestination = currentDestination,
-                onClickSelectShop = onClickSelectShop,
-                onClickSelectBranch = onClickSelectBranch,
                 onClickEditStore = onClickEditStore,
                 onClickAddStore = { onClickAddStore(null) },
                 navigationIcon = navigationIcon,

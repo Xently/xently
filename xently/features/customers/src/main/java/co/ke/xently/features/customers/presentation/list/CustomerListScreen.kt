@@ -45,6 +45,7 @@ import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.list.components.CustomerListEmptyState
 import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
 import co.ke.xently.features.customers.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -57,8 +58,6 @@ import kotlin.random.Random
 @Composable
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<CustomerListViewModel>()
@@ -73,8 +72,6 @@ fun CustomerListScreen(
         customers = customers,
         modifier = modifier,
         topBar = topBar,
-        onClickSelectShop = onClickSelectShop,
-        onClickSelectBranch = onClickSelectBranch,
     )
 }
 
@@ -85,13 +82,12 @@ internal fun CustomerListScreen(
     event: CustomerListEvent?,
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(event) {
         when (event) {
@@ -162,14 +158,14 @@ internal fun CustomerListScreen(
                             null -> Unit
                             ConfigurationError.ShopSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = onClickSelectShop) {
+                                Button(onClick = eventHandler::requestShopSelection) {
                                     Text(text = stringResource(R.string.action_select_shop))
                                 }
                             }
 
                             ConfigurationError.StoreSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = onClickSelectBranch) {
+                                Button(onClick = eventHandler::requestStoreSelection) {
                                     Text(text = stringResource(R.string.action_select_store))
                                 }
                             }
@@ -261,8 +257,6 @@ private fun CustomerListScreenPreview(
             event = null,
             customers = customers,
             modifier = Modifier.fillMaxSize(),
-            onClickSelectShop = {},
-            onClickSelectBranch = {},
         )
     }
 }

@@ -3,7 +3,9 @@ package co.ke.xently.features.reviews.presentation.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -23,11 +25,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
-import co.ke.xently.features.reviewcategory.data.domain.error.DataError
+import co.ke.xently.features.reviewcategory.data.domain.error.ConfigurationError
+import co.ke.xently.features.reviewcategory.data.domain.error.DataError.Network
 import co.ke.xently.features.reviewcategory.presentation.components.ReviewCategoryItem
 import co.ke.xently.features.reviewcategory.presentation.utils.UiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviews.ReviewCategoriesResponse
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
@@ -42,6 +46,7 @@ internal fun ReviewCategoryListSection(
     onClickSelectCategory: (ReviewCategory) -> Unit,
     onClickMoreCategoryOptions: (ReviewCategory) -> Unit,
 ) {
+    val eventHandler = LocalEventHandler.current
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         UnderlinedHeadline(
             modifier = Modifier
@@ -76,13 +81,33 @@ internal fun ReviewCategoryListSection(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = response.error.asString(),
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (response.type is DataError.Network) {
-                            Button(onClick = onClickRetry) {
-                                Text(text = stringResource(R.string.action_retry))
+                        Text(text = response.error.asString(), modifier = Modifier.weight(1f))
+
+                        when (response.type) {
+                            ConfigurationError.ShopSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = eventHandler::requestShopSelection) {
+                                    Text(text = stringResource(R.string.action_select_shop))
+                                }
+                            }
+
+                            ConfigurationError.StoreSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = eventHandler::requestStoreSelection) {
+                                    Text(text = stringResource(R.string.action_select_store))
+                                }
+                            }
+
+                            is Network.Unauthorized -> {
+                                Button(onClick = eventHandler::requestAuthentication) {
+                                    Text(text = stringResource(R.string.action_login))
+                                }
+                            }
+
+                            else -> {
+                                Button(onClick = onClickRetry) {
+                                    Text(text = stringResource(R.string.action_retry))
+                                }
                             }
                         }
                     }
@@ -134,7 +159,7 @@ private class ReviewCategoryListSectionPreviewParameterProvider :
             ReviewCategoriesResponse.Loading,
             ReviewCategoriesResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
-                type = DataError.Network.Retryable.Unknown,
+                type = Network.Retryable.Unknown,
             ),
             ReviewCategoriesResponse.Success.Empty,
             ReviewCategoriesResponse.Success.NonEmpty(

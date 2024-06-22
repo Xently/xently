@@ -44,8 +44,6 @@ import co.ke.xently.libraries.ui.image.presentation.imageState
 @Composable
 fun ActiveStoreScreen(
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
@@ -60,13 +58,11 @@ fun ActiveStoreScreen(
         state = state,
         event = event,
         modifier = modifier,
-        onClickSelectShop = onClickSelectShop,
-        onClickSelectBranch = onClickSelectBranch,
         onClickEdit = onClickEdit,
         onClickMoreDetails = onClickMoreDetails,
         onClickAddStore = onClickAddStore,
-        topBar = topBar,
         onAction = viewModel::onAction,
+        topBar = topBar,
     )
 }
 
@@ -75,8 +71,6 @@ internal fun ActiveStoreScreen(
     state: ActiveStoreUiState,
     event: ActiveStoreEvent?,
     modifier: Modifier = Modifier,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickAddStore: () -> Unit,
@@ -162,8 +156,6 @@ internal fun ActiveStoreScreen(
                         .fillMaxSize()
                         .padding(paddingValues),
                     isShopSelected = state.isShopSelected,
-                    onClickSelectShop = onClickSelectShop,
-                    onClickSelectBranch = onClickSelectBranch,
                 )
             }
 
@@ -230,13 +222,11 @@ private fun ActiveStoreScreenPreview(
             state = state,
             event = null,
             modifier = Modifier.fillMaxSize(),
-            onClickSelectShop = {},
-            onClickSelectBranch = {},
             onClickEdit = {},
             onClickMoreDetails = {},
             onClickAddStore = {},
-            topBar = {},
             onAction = {},
+            topBar = {},
         )
     }
 }

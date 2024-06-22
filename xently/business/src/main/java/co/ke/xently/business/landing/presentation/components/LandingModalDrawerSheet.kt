@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.business.R
 import co.ke.xently.business.landing.domain.Menu
 import co.ke.xently.features.shops.data.domain.Shop
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.data.auth.CurrentUser
@@ -49,13 +50,12 @@ internal fun LandingModalDrawerSheet(
     modifier: Modifier = Modifier,
     shops: () -> List<Shop>,
     onClickLogout: () -> Unit,
-    onClickLogin: () -> Unit,
     onClickMenu: (Menu) -> Unit,
     onClickAddShop: () -> Unit,
-    onClickSelectShop: () -> Unit,
     onClickShop: (Shop) -> Unit,
     onClickAddStore: (Shop) -> Unit,
 ) {
+    val eventHandler = LocalEventHandler.current
     ModalDrawerSheet(modifier = modifier) {
         Column(
             modifier = Modifier
@@ -66,12 +66,11 @@ internal fun LandingModalDrawerSheet(
             NavigationDrawerHeaderSection(
                 canAddShop = canAddShop,
                 currentUser = authenticationState.currentUser,
-                onClickAddShop = onClickAddShop,
-                onClickAddStore = onClickAddStore,
-                onClickSelectShop = onClickSelectShop,
-                onClickShop = onClickShop,
-                shops = shops,
                 switchAccount = switchAccount,
+                shops = shops,
+                onClickAddShop = onClickAddShop,
+                onClickShop = onClickShop,
+                onClickAddStore = onClickAddStore,
                 onClickSwitchAccount = { switchAccount = !switchAccount },
             )
             AnimatedVisibility(authenticationState.isSignOutInProgress) {
@@ -98,7 +97,7 @@ internal fun LandingModalDrawerSheet(
             } else {
                 NavigationDrawerItem(
                     selected = false,
-                    onClick = onClickLogin,
+                    onClick = eventHandler::requestAuthentication,
                     modifier = Modifier.padding(vertical = 48.dp),
                     label = { Text(text = stringResource(R.string.action_login)) },
                     icon = { Icon(Icons.AutoMirrored.Filled.Login, null) },
@@ -179,17 +178,15 @@ private fun ModalDrawerSheetPreview(
 ) {
     XentlyTheme {
         LandingModalDrawerSheet(
-            selectedMenu = Menu.entries.random(),
             canAddShop = state.canAddShop,
+            selectedMenu = Menu.entries.random(),
             authenticationState = state.authenticationState,
             shops = { emptyList() },
             onClickLogout = {},
-            onClickLogin = {},
             onClickMenu = {},
             onClickAddShop = {},
-            onClickAddStore = {},
-            onClickSelectShop = {},
             onClickShop = {},
+            onClickAddStore = {},
         )
     }
 }

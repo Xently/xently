@@ -52,4 +52,5 @@
     <string name="error_website_invalid_format">Invalid website format</string>
     <string name="error_name_missing">Required field</string>
     <string name="error_shop_not_selected">Shop not selected.</string>
+    <string name="action_login">Login</string>
 </resources>

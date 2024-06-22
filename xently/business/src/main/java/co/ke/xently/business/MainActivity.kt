@@ -39,6 +39,7 @@ import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
+import co.ke.xently.features.ui.core.presentation.EventHandler
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -60,21 +61,29 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
+            val navController = rememberNavController()
+            var initialStoreSelectionRoute: InitialStoreSelectionRoute? by remember {
+                mutableStateOf(null)
+            }
+            val eventHandler = remember {
+                object : EventHandler {
+                    override fun requestAuthentication() {
+                        navController.navigate(AuthenticationNavGraph)
+                    }
 
-            App(setting = themeSetting) {
-                val navController = rememberNavController()
-                var initialStoreSelectionRoute: InitialStoreSelectionRoute? by remember {
-                    mutableStateOf(null)
+                    override fun requestShopSelection() {
+                        navController.navigate(SelectShop)
+                    }
+
+                    override fun requestStoreSelection(shop: Any?) {
+                        navController.navigate(SelectStore)
+                    }
                 }
+            }
+            App(setting = themeSetting, eventHandler = eventHandler) {
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
-                            onClickSelectShop = {
-                                navController.navigate(SelectShop)
-                            },
-                            onClickSelectBranch = {
-                                navController.navigate(SelectStore)
-                            },
                             onClickAddStore = {
                                 navController.navigate(
                                     EditStoreScreen(
@@ -97,9 +106,6 @@ class MainActivity : ComponentActivity() {
                             },
                             onClickViewComments = {
                                 navController.navigate(ReviewCommentListScreen(it.name))
-                            },
-                            onClickLogin = {
-                                navController.navigate(AuthenticationNavGraph)
                             },
                             onClickAddShop = {
                                 navController.navigate(ShopNavGraph.EditShop)
@@ -135,9 +141,6 @@ class MainActivity : ComponentActivity() {
                             },
                             onClickEditShop = {
                                 navController.navigate(ShopNavGraph.EditShop)
-                            },
-                            onShopSelected = {
-                                navController.navigate(SelectStore)
                             },
                         )
                     }

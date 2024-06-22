@@ -64,6 +64,9 @@
     <string name="chart_legend_star">%1$d Star (%2$s)</string>
     <string name="error_message_review_category_not_found">Review category not found.</string>
     <string name="summary_review_total">Total - %1$s</string>
+    <string name="action_login">Login</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="action_select_store">Select Branch</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>

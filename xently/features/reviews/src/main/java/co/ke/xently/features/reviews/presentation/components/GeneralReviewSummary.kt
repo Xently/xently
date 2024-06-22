@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,9 +24,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Rating
+import co.ke.xently.features.reviews.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviews.data.domain.error.DataError.Network
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
 import co.ke.xently.features.reviews.presentation.utils.UiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
@@ -41,6 +44,7 @@ internal fun GeneralReviewSummary(
     onClickRetry: () -> Unit,
 ) {
     val isDark by LocalThemeIsDark.current
+    val eventHandler = LocalEventHandler.current
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
         UnderlinedHeadline(
             modifier = Modifier.fillMaxWidth(),
@@ -53,13 +57,32 @@ internal fun GeneralReviewSummary(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = response.error.asString(),
-                        modifier = Modifier.weight(1f),
-                    )
-                    if (response.type is Network.Retryable) {
-                        Button(onClick = onClickRetry) {
-                            Text(text = stringResource(R.string.action_retry))
+                    Text(text = response.error.asString(), modifier = Modifier.weight(1f))
+                    when (response.type) {
+                        ConfigurationError.ShopSelectionRequired -> {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = eventHandler::requestShopSelection) {
+                                Text(text = stringResource(R.string.action_select_shop))
+                            }
+                        }
+
+                        ConfigurationError.StoreSelectionRequired -> {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = eventHandler::requestStoreSelection) {
+                                Text(text = stringResource(R.string.action_select_store))
+                            }
+                        }
+
+                        is Network.Unauthorized -> {
+                            Button(onClick = eventHandler::requestAuthentication) {
+                                Text(text = stringResource(R.string.action_login))
+                            }
+                        }
+
+                        else -> {
+                            Button(onClick = onClickRetry) {
+                                Text(text = stringResource(R.string.action_retry))
+                            }
                         }
                     }
                 }

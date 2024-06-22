@@ -39,8 +39,6 @@ import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithLeg
 internal fun LandingScreenContent(
     canAddShop: Boolean,
     currentDestination: AppDestination,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
     onClickEditStore: (Store) -> Unit,
     onClickAddStore: () -> Unit,
     navigationIcon: @Composable () -> Unit,
@@ -53,8 +51,6 @@ internal fun LandingScreenContent(
 ) {
     when (currentDestination) {
         AppDestination.DASHBOARD -> ActiveStoreScreen(
-            onClickSelectShop = onClickSelectShop,
-            onClickSelectBranch = onClickSelectBranch,
             onClickEdit = onClickEditStore,
             onClickMoreDetails = onClickEditStore,
             onClickAddStore = onClickAddStore,
@@ -115,10 +111,8 @@ internal fun LandingScreenContent(
         }
 
         AppDestination.PRODUCTS -> ProductListScreen(
-            onClickEditProduct = onClickEditProduct,
             onClickAddProduct = onClickAddProduct,
-            onClickSelectShop = onClickSelectShop,
-            onClickSelectBranch = onClickSelectBranch,
+            onClickEditProduct = onClickEditProduct,
         ) {
             CenterAlignedTopAppBar(
                 navigationIcon = navigationIcon,
@@ -127,10 +121,7 @@ internal fun LandingScreenContent(
             )
         }
 
-        AppDestination.CUSTOMERS -> CustomerListScreen(
-            onClickSelectShop = onClickSelectShop,
-            onClickSelectBranch = onClickSelectBranch,
-        ) {
+        AppDestination.CUSTOMERS -> CustomerListScreen {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets.waterfall,
                 navigationIcon = navigationIcon,

@@ -20,16 +20,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.stores.R
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 
 @Composable
-internal fun NullStoreContent(
-    modifier: Modifier,
-    isShopSelected: Boolean,
-    onClickSelectShop: () -> Unit,
-    onClickSelectBranch: () -> Unit,
-) {
+internal fun NullStoreContent(modifier: Modifier, isShopSelected: Boolean) {
+    val eventHandler = LocalEventHandler.current
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -47,7 +44,7 @@ internal fun NullStoreContent(
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Button(onClick = onClickSelectBranch) {
+                Button(onClick = eventHandler::requestShopSelection) {
                     Text(text = stringResource(R.string.action_select_branch))
                 }
             } else {
@@ -56,7 +53,7 @@ internal fun NullStoreContent(
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Button(onClick = onClickSelectShop) {
+                Button(onClick = eventHandler::requestShopSelection) {
                     Text(text = stringResource(R.string.action_select_shop))
                 }
             }
@@ -77,10 +74,8 @@ private fun NullStoreContentPreview(
 ) {
     XentlyTheme {
         NullStoreContent(
-            isShopSelected = shopSelected,
-            onClickSelectShop = {},
-            onClickSelectBranch = {},
             modifier = Modifier.fillMaxSize(),
+            isShopSelected = shopSelected,
         )
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.business.R
 import co.ke.xently.features.shops.data.domain.Shop
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThumbnail
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.auth.CurrentUser
@@ -44,11 +45,11 @@ internal fun NavigationDrawerHeaderSection(
     switchAccount: Boolean,
     shops: () -> List<Shop>,
     onClickAddShop: () -> Unit,
-    onClickSelectShop: () -> Unit,
     onClickShop: (Shop) -> Unit,
     onClickAddStore: (Shop) -> Unit,
     onClickSwitchAccount: () -> Unit,
 ) {
+    val eventHandler = LocalEventHandler.current
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.run {
@@ -106,7 +107,7 @@ internal fun NavigationDrawerHeaderSection(
             if (switchAccount) {
                 HorizontalDivider()
                 ListItem(
-                    modifier = Modifier.clickable(onClick = onClickSelectShop),
+                    modifier = Modifier.clickable(onClick = eventHandler::requestShopSelection),
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     headlineContent = {
                         Text(
@@ -216,7 +217,6 @@ private fun NavigationDrawerHeaderSectionPreview(
             switchAccount = state.switchAccount,
             shops = { state.shops },
             onClickAddShop = {},
-            onClickSelectShop = {},
             onClickShop = {},
             onClickAddStore = {},
             onClickSwitchAccount = {},

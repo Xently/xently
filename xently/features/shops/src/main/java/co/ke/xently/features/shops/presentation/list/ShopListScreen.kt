@@ -2,15 +2,18 @@ package co.ke.xently.features.shops.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -47,6 +51,7 @@ import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.presentation.list.components.ShopListEmptyState
 import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
 import co.ke.xently.features.shops.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -61,7 +66,6 @@ fun ShopListScreen(
     onClickBack: () -> Unit,
     onClickAddShop: () -> Unit,
     onClickEditShop: (Shop) -> Unit,
-    onShopSelected: (Shop) -> Unit,
 ) {
     val viewModel = hiltViewModel<ShopListViewModel>()
 
@@ -78,7 +82,6 @@ fun ShopListScreen(
         onClickEditShop = onClickEditShop,
         onAction = viewModel::onAction,
         onClickBack = onClickBack,
-        onShopSelected = onShopSelected,
     )
 }
 
@@ -93,11 +96,11 @@ internal fun ShopListScreen(
     onClickEditShop: (Shop) -> Unit,
     onAction: (ShopListAction) -> Unit,
     onClickBack: () -> Unit,
-    onShopSelected: (Shop) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(event) {
         when (event) {
@@ -119,7 +122,7 @@ internal fun ShopListScreen(
                     }
 
                     is ShopListAction.SelectShop -> {
-                        onShopSelected(event.action.shop)
+                        eventHandler.requestStoreSelection(event.action.shop)
                     }
 
                     else -> throw NotImplementedError()
@@ -195,7 +198,14 @@ internal fun ShopListScreen(
                         message = error.asUiText().asString(),
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = shops::retry,
-                    )
+                    ) {
+                        if (error is DataError.Network.Unauthorized) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = eventHandler::requestAuthentication) {
+                                Text(text = stringResource(R.string.action_login))
+                            }
+                        }
+                    }
                 }
 
                 shops.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
@@ -265,7 +275,6 @@ private fun ShopListScreenPreview(
             onClickEditShop = {},
             onAction = {},
             onClickBack = {},
-            onShopSelected = {},
         )
     }
 }
