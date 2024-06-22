@@ -57,7 +57,7 @@ internal fun EditProductImagesCard(
                 val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) {
                     imageUri = it
                 }
-                val image by imageUri.imageState(upload)
+                val image by imageUri.imageState(initialValue = upload)
 
                 LaunchedEffect(index, image) {
                     withResult(index to image)
