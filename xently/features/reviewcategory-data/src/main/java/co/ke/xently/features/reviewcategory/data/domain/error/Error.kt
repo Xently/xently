@@ -5,6 +5,7 @@ import co.ke.xently.libraries.data.network.ApiErrorResponse
 import io.ktor.client.call.DoubleReceiveException
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -16,6 +17,7 @@ sealed interface Error
 suspend fun Throwable.toError(): Error {
     return when (this) {
         is ResponseException -> toError()
+        is HttpRequestTimeoutException -> DataError.Network.Retryable.RequestTimeout
         is JsonConvertException -> {
             Timber.e(this)
             DataError.Network.Serialization
