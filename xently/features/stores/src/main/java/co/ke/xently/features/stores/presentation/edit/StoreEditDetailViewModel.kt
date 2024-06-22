@@ -98,7 +98,16 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 onAction(StoreEditDetailAction.ChangeEmailAddress(""))
                 onAction(StoreEditDetailAction.ChangePhoneNumber(""))
                 onAction(StoreEditDetailAction.ChangeDescription(""))
-                _uiState.update { it.copy(store = Store()) }
+                _uiState.update {
+                    it.copy(
+                        store = Store(),
+                        emailError = null,
+                        nameError = null,
+                        phoneError = null,
+                        locationError = null,
+                        descriptionError = null,
+                    )
+                }
             }
 
             is StoreEditDetailAction.SelectCategory -> {
@@ -219,7 +228,14 @@ internal class StoreEditDetailViewModel @Inject constructor(
             StoreEditDetailAction.ClickSave, StoreEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
-                        it.copy(isLoading = true)
+                        it.copy(
+                            isLoading = true,
+                            emailError = null,
+                            nameError = null,
+                            phoneError = null,
+                            locationError = null,
+                            descriptionError = null,
+                        )
                     }
                     val store = validatedStore(state)
 
@@ -234,6 +250,8 @@ internal class StoreEditDetailViewModel @Inject constructor(
                                         _uiState.update {
                                             it.copy(
                                                 locationError = error.errors["location"]
+                                                    ?: emptyList(),
+                                                descriptionError = error.errors["description"]
                                                     ?: emptyList(),
                                                 emailError = error.errors["email"] ?: emptyList(),
                                                 phoneError = error.errors["telephone"]

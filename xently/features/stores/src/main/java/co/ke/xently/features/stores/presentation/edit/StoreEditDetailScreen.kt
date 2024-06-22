@@ -123,6 +123,7 @@ internal fun StoreEditDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(event) {
         when (event) {
@@ -276,7 +277,7 @@ internal fun StoreEditDetailScreen(
                 onValueChange = { onAction(StoreEditDetailAction.ChangeLocationString(it)) },
                 placeholder = { Text(text = stringResource(R.string.text_field_label_store_location)) },
                 trailingIcon = {
-                    IconButton(onClick = { showLocationPicker = true }) {
+                    IconButton(onClick = { focusManager.clearFocus(); showLocationPicker = true }) {
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = stringResource(R.string.content_desc_store_pick_location),
@@ -352,7 +353,6 @@ internal fun StoreEditDetailScreen(
 
             var serviceValue by remember { mutableStateOf(TextFieldValue()) }
 
-            val focusManager = LocalFocusManager.current
             OutlinedChipTextField(
                 shape = CardDefaults.shape,
                 state = chipState,
@@ -387,6 +387,7 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
@@ -407,6 +408,10 @@ internal fun StoreEditDetailScreen(
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
                 keyboardActions = KeyboardActions { focusManager.clearFocus() },
+                isError = !state.descriptionError.isNullOrEmpty(),
+                supportingText = state.descriptionError?.let {
+                    { Text(text = it.toUiText()) }
+                },
             )
 
             if (state.openingHours.isNotEmpty()) {
@@ -416,8 +421,12 @@ internal fun StoreEditDetailScreen(
                         .padding(horizontal = 16.dp),
                     enableInteraction = !state.disableFields,
                     openingHours = state.openingHours,
-                    onTimeChange = { onAction(StoreEditDetailAction.ChangeOpeningHourTime(it)) },
+                    onTimeChange = {
+                        focusManager.clearFocus()
+                        onAction(StoreEditDetailAction.ChangeOpeningHourTime(it))
+                    },
                     onOpenStatusChange = {
+                        focusManager.clearFocus()
                         onAction(StoreEditDetailAction.ChangeOpeningHourOpenStatus(it))
                     },
                 )

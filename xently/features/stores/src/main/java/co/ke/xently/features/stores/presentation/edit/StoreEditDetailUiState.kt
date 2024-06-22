@@ -50,4 +50,5 @@ data class StoreEditDetailUiState(
             && emailError.isNullOrEmpty()
             && phoneError.isNullOrEmpty()
             && locationError.isNullOrEmpty()
+            && descriptionError.isNullOrEmpty()
 }
