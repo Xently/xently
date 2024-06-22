@@ -1,0 +1,158 @@
+{
+  "project_info": {
+    "project_number": "613285590946",
+    "project_id": "xently-kenya",
+    "storage_bucket": "xently-kenya.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613285590946:android:c60897e032c785177ba4fb",
+        "android_client_info": {
+          "package_name": "co.ke.xently"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613285590946-3d82da38ihntdupujvofhjs6hj0raibe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.ke.xently",
+            "certificate_hash": "5aa8773b36ac50e50cf2b8bd6283272ea2a662f8"
+          }
+        },
+        {
+          "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJIwJg1U5crEcvyniVMkju5Ron5tDuXrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613285590946:android:0df672cbce4a31347ba4fb",
+        "android_client_info": {
+          "package_name": "co.ke.xently.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613285590946-443lo91p63emecv5d7lkbda4m6p49apr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.ke.xently.client",
+            "certificate_hash": "1afa7ac8d65f2cf58b00ccc3cc7079bf3a770a96"
+          }
+        },
+        {
+          "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJIwJg1U5crEcvyniVMkju5Ron5tDuXrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613285590946:android:bc63c58cd22f5e597ba4fb",
+        "android_client_info": {
+          "package_name": "co.ke.xently.client.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613285590946-84qoep93ncijavj41ndlhdh6rcet0j6b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.ke.xently.client.debug",
+            "certificate_hash": "1902d3909237e0a463e9e595823713f1a338e0b7"
+          }
+        },
+        {
+          "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJIwJg1U5crEcvyniVMkju5Ron5tDuXrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613285590946:android:4ea5a3cfa249ffb67ba4fb",
+        "android_client_info": {
+          "package_name": "co.ke.xently.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613285590946-lpavvfkgl73ftoevukvv4fkuc20dp92c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.ke.xently.debug",
+            "certificate_hash": "1902d3909237e0a463e9e595823713f1a338e0b7"
+          }
+        },
+        {
+          "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJIwJg1U5crEcvyniVMkju5Ron5tDuXrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "613285590946-7d6rba7q7vijodq62dn63sprkqo400ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

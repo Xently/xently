@@ -7,4 +7,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.secrets) apply false
+    alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.firebase.performance) apply false
 }

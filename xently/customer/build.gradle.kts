@@ -9,6 +9,9 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.performance)
 }
 
 secrets {
@@ -105,6 +108,8 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.bundles.firebase)
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:auth"))

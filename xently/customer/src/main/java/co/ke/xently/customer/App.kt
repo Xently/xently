@@ -2,6 +2,8 @@ package co.ke.xently.customer
 
 import android.app.Application
 import android.util.Log
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
@@ -19,12 +21,11 @@ class App : Application() {
             object : Timber.Tree() {
                 override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
                     if (priority == Log.ERROR || priority == Log.WARN) {
-                        // TODO: Log to Firebase crashlytics...
-                        /*t?.also(Firebase.crashlytics::recordException)
+                        t?.also(Firebase.crashlytics::recordException)
                             ?: tag?.also {
                                 Firebase.crashlytics.setCustomKey(it, message)
                             }
-                            ?: Firebase.crashlytics.log(message)*/
+                            ?: Firebase.crashlytics.log(message)
                     }
                 }
             }

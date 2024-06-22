@@ -39,12 +39,23 @@ import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Firebase.remoteConfig.apply {
+            setConfigSettingsAsync(
+                remoteConfigSettings {
+                    minimumFetchIntervalInSeconds = 3600
+                }
+            )
+            setDefaultsAsync(R.xml.remote_config_defaults)
+        }
         enableEdgeToEdge()
         setContent {
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
