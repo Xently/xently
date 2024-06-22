@@ -1,6 +1,8 @@
 package co.ke.xently.features.shops.data.domain.error
 
 import co.ke.xently.libraries.data.network.ApiErrorResponse
+import io.ktor.client.call.DoubleReceiveException
+import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
@@ -25,16 +27,24 @@ suspend fun Throwable.toError(): Error {
     }
 }
 
-private suspend fun ResponseException.toError(): Error {
-    val error = response.body<ApiErrorResponse>().run {
-        when (code) {
-            in setOf("authentication_failed", "token_exchange_failed") -> {
-                DataError.Network.InvalidCredentials
-            }
-
-            "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
-            else -> null
+private fun ApiErrorResponse.toError(): Error? {
+    return when (code) {
+        in setOf("authentication_failed", "token_exchange_failed") -> {
+            DataError.Network.InvalidCredentials
         }
+
+        "empty_fcm_device_ids" -> FCMDeviceRegistrationRequired
+        else -> null
+    }
+}
+
+private suspend fun ResponseException.toError(): Error {
+    val error = try {
+        response.body<ApiErrorResponse>().toError()
+    } catch (ex: NoTransformationFoundException) {
+        null
+    } catch (ex: DoubleReceiveException) {
+        null
     }
     if (error != null) return error
 

@@ -1,6 +1,8 @@
 package co.ke.xently.features.products.data.domain.error
 
 import co.ke.xently.libraries.data.network.ApiErrorResponse
+import io.ktor.client.call.DoubleReceiveException
+import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
@@ -54,7 +56,13 @@ private fun ApiErrorResponse.toError(): Error? {
 }
 
 private suspend fun ResponseException.toError(): Error {
-    val error = response.body<ApiErrorResponse>().toError()
+    val error = try {
+        response.body<ApiErrorResponse>().toError()
+    } catch (ex: NoTransformationFoundException) {
+        null
+    } catch (ex: DoubleReceiveException) {
+        null
+    }
     if (error != null) return error
 
     return when (response.status) {
