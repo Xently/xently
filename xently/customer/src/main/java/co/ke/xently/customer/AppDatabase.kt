@@ -49,7 +49,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [
         ServerResponseCache::class,
         AccessControlEntity::class,
