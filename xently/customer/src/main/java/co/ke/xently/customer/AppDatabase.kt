@@ -42,6 +42,8 @@ import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.features.storeservice.data.source.local.RoomTypeConverters.StoreServiceConverter
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceDatabase
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
+import co.ke.xently.libraries.data.local.InstantConverter
+import co.ke.xently.libraries.data.local.ServerResponseCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -49,6 +51,7 @@ import kotlinx.coroutines.withContext
 @Database(
     version = 1,
     entities = [
+        ServerResponseCache::class,
         AccessControlEntity::class,
         UserEntity::class,
         ShopEntity::class,
@@ -65,6 +68,7 @@ import kotlinx.coroutines.withContext
     ],
 )
 @TypeConverters(
+    InstantConverter::class,
     AccessControlConverter::class,
     ShopConverter::class,
     StoreConverter::class,

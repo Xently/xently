@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.onStart
+import kotlinx.datetime.Clock
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,6 +29,12 @@ internal class AccessControlRepositoryImpl @Inject constructor(
 
     override fun findAccessControl(): Flow<AccessControl> {
         suspend fun save(): AccessControl {
+            val accessControl = accessControlDao.first()?.takeIf {
+                (Clock.System.now() - it.lastUpdated).inWholeMilliseconds < REFRESH_INTERVAL.inWholeMilliseconds
+            }
+
+            if (accessControl != null) return accessControl.accessControl
+
             Timber.tag(TAG).i("Saving access control response...")
             return httpClient.get(BASE_URL).body<AccessControl>().also {
                 accessControlDao
@@ -38,7 +45,6 @@ internal class AccessControlRepositoryImpl @Inject constructor(
             .map { it?.accessControl ?: save() }
             .onEmpty { emit(save()) }
             .onStart {
-                val refreshInterval = 1.minutes
                 while (true) {
                     try {
                         emit(save())
@@ -47,14 +53,15 @@ internal class AccessControlRepositoryImpl @Inject constructor(
                         Timber.tag(TAG).e(ex, "Failed to refresh access control")
                         emit(AccessControl())
                     }
-                    Timber.tag(TAG).i("Waiting %s before another check...", refreshInterval)
-                    delay(refreshInterval)
+                    Timber.tag(TAG).i("Waiting %s before another check...", REFRESH_INTERVAL)
+                    delay(REFRESH_INTERVAL)
                 }
             }
             .catch { emit(AccessControl()) }
     }
 
     companion object {
+        private val REFRESH_INTERVAL = 1.minutes
         private val TAG = AccessControlRepository::class.java.simpleName
     }
 }

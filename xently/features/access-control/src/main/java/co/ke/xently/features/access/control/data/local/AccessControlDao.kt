@@ -11,6 +11,9 @@ interface AccessControlDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(accessControl: AccessControlEntity)
 
-    @Query("SELECT * FROM access_controls LIMIT 1")
+    @Query("SELECT * FROM access_controls WHERE id = 1")
     fun findFirst(): Flow<AccessControlEntity?>
+
+    @Query("SELECT * FROM access_controls WHERE id = 1")
+    suspend fun first(): AccessControlEntity?
 }

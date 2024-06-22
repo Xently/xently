@@ -18,4 +18,7 @@ interface StoreCategoryDao {
 
     @Query("SELECT * FROM store_categories")
     fun findAll(): Flow<List<StoreCategoryEntity>>
+
+    @Query("SELECT * FROM store_categories")
+    suspend fun getAll(): List<StoreCategoryEntity>
 }

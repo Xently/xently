@@ -2,11 +2,37 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cd91b5128004c3c4ebb243d386ff0b21",
+    "identityHash": "e79bf6956bdc0670957488c0f2d9993e",
     "entities": [
       {
+        "tableName": "server_response_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "access_controls",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessControl` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessControl` TEXT NOT NULL, `id` INTEGER NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "accessControl",
@@ -17,6 +43,12 @@
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -414,7 +446,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd91b5128004c3c4ebb243d386ff0b21')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e79bf6956bdc0670957488c0f2d9993e')"
     ]
   }
 }
