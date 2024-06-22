@@ -49,13 +49,13 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.image.domain.File
 import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.presentation.imageState
 
 @Composable

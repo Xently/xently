@@ -40,10 +40,10 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random

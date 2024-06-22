@@ -36,9 +36,9 @@ import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 
 @Composable
 internal fun ShopListItem(
@@ -72,9 +72,11 @@ internal fun ShopListItem(
     ListItem(
         modifier = modifier,
         leadingContent = {
-            Card(modifier = Modifier
-                .size(size = 60.dp)
-                .shimmer(isLoading)) {
+            Card(
+                modifier = Modifier
+                    .size(size = 60.dp)
+                    .shimmer(isLoading)
+            ) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Icon(
                         Icons.Default.Business,

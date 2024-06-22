@@ -27,8 +27,8 @@ import co.ke.xently.features.reviews.data.domain.error.DataError.Network
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
 import kotlin.random.Random

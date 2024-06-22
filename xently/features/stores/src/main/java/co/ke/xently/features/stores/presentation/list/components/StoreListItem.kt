@@ -35,8 +35,8 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
 
 @Composable

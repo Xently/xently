@@ -1,8 +1,6 @@
 package co.ke.xently.features.ui.core.presentation.theme
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
@@ -14,8 +12,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -27,7 +23,6 @@ import co.ke.xently.libraries.ui.core.theme.AppTheme
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.defaultShimmerTheme
-import com.valentinilk.shimmer.shimmer
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -108,16 +103,6 @@ private val AppTypography = Typography(
         fontSize = 16.sp,
     )
 )
-
-
-fun Modifier.shimmer(shimmer: Boolean, color: Color? = null): Modifier {
-    return composed {
-        if (shimmer) {
-            background(color ?: MaterialTheme.colorScheme.onSurface)
-                .shimmer()
-        } else Modifier
-    }
-}
 
 @Composable
 fun XentlyTheme(

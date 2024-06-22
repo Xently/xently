@@ -29,8 +29,8 @@ import co.ke.xently.features.reviewcategory.presentation.utils.UiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviews.ReviewCategoriesResponse
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 
 @Composable
 internal fun ReviewCategoryListSection(

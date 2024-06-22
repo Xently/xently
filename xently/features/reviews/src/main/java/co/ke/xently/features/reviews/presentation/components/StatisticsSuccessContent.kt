@@ -44,7 +44,7 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
+import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.BarChart
 import kotlinx.datetime.Month

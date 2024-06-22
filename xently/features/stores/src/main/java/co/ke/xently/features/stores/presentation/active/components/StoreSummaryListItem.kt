@@ -20,8 +20,8 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThumbnail
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.features.ui.core.presentation.theme.shimmer
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.components.shimmer
 
 
 @Composable
