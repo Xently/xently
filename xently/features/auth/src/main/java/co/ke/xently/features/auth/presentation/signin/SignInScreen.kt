@@ -57,6 +57,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.domain.GoogleAuthorizationHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
@@ -69,14 +71,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun SignInScreen(
-    state: SignInUiState,
-    event: SignInEvent?,
     modifier: Modifier = Modifier,
-    onAction: (SignInAction) -> Unit,
     onClickBack: () -> Unit,
     onClickCreateAccount: () -> Unit,
     onClickForgotPassword: () -> Unit,
 ) {
+    val viewModel = hiltViewModel<SignInViewModel>()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
@@ -88,7 +89,7 @@ internal fun SignInScreen(
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 val result = Identity.getAuthorizationClient(context)
                     .getAuthorizationResultFromIntent(activityResult.data)
-                onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
+                viewModel.onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
             } else {
                 scope.launch {
                     snackbarHostState.showSnackbar(
@@ -99,46 +100,47 @@ internal fun SignInScreen(
             }
         }
 
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            SignInEvent.Success -> onClickBack()
-            is SignInEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                SignInEvent.Success -> onClickBack()
+                is SignInEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
 
-            is SignInEvent.GetGoogleAccessToken -> {
-                val authorizationHandler = GoogleAuthorizationHandler.create(
-                    context = context,
-                    accountId = event.user.id,
-                )
-                val result = authorizationHandler.handleAuthorization()
-                if (!result.hasResolution()) {
-                    onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
-                } else {
-                    val pendingIntent = result.pendingIntent
-                    when {
-                        pendingIntent == null && result.accessToken != null -> {
-                            // This may not be necessary (https://developers.google.com/identity/authorization/android),
-                            // but it is here as a defensive fallback
-                            onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
-                        }
+                is SignInEvent.GetGoogleAccessToken -> {
+                    val authorizationHandler = GoogleAuthorizationHandler.create(
+                        context = context,
+                        accountId = event.user.id,
+                    )
+                    val result = authorizationHandler.handleAuthorization()
+                    if (!result.hasResolution()) {
+                        viewModel.onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
+                    } else {
+                        val pendingIntent = result.pendingIntent
+                        when {
+                            pendingIntent == null && result.accessToken != null -> {
+                                // This may not be necessary (https://developers.google.com/identity/authorization/android),
+                                // but it is here as a defensive fallback
+                                viewModel.onAction(SignInAction.FinaliseGoogleSignIn(accessToken = result.accessToken))
+                            }
 
-                        pendingIntent == null -> {
-                            snackbarHostState.showSnackbar(
-                                context.getString(R.string.error_google_sign_in_failed),
-                                duration = SnackbarDuration.Long,
-                            )
-                        }
+                            pendingIntent == null -> {
+                                snackbarHostState.showSnackbar(
+                                    context.getString(R.string.error_google_sign_in_failed),
+                                    duration = SnackbarDuration.Long,
+                                )
+                            }
 
-                        else -> {
-                            resultLauncher.launch(
-                                IntentSenderRequest.Builder(pendingIntent)
-                                    .build(),
-                            )
+                            else -> {
+                                resultLauncher.launch(
+                                    IntentSenderRequest.Builder(pendingIntent)
+                                        .build(),
+                                )
+                            }
                         }
                     }
                 }
@@ -146,6 +148,25 @@ internal fun SignInScreen(
         }
     }
 
+    SignInScreen(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier,
+        onAction = viewModel::onAction,
+        onClickCreateAccount = onClickCreateAccount,
+        onClickForgotPassword = onClickForgotPassword,
+    )
+}
+
+@Composable
+private fun SignInScreen(
+    state: SignInUiState,
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier,
+    onAction: (SignInAction) -> Unit,
+    onClickCreateAccount: () -> Unit,
+    onClickForgotPassword: () -> Unit,
+) {
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -396,12 +417,13 @@ private fun SignInScreenPreview(
     XentlyTheme {
         SignInScreen(
             state = state,
-            event = null,
-            onClickBack = {},
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
+            modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClickCreateAccount = {},
             onClickForgotPassword = {},
-            modifier = Modifier.fillMaxSize(),
         )
     }
 }

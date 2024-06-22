@@ -50,11 +50,34 @@ fun ReviewsAndFeedbackScreen(
     val viewModel = hiltViewModel<ReviewsAndFeedbackViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                ReviewsAndFeedbackEvent.Success -> Unit
+                is ReviewsAndFeedbackEvent.Error.ReviewCategories -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is ReviewsAndFeedbackEvent.Error.ReviewsAndFeedback -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
     ReviewsAndFeedbackScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         onClickAddNewReviewCategory = onClickAddNewReviewCategory,
         onAction = viewModel::onAction,
@@ -66,36 +89,14 @@ fun ReviewsAndFeedbackScreen(
 @Composable
 internal fun ReviewsAndFeedbackScreen(
     state: ReviewsAndFeedbackUiState,
-    event: ReviewsAndFeedbackEvent?,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     onClickAddNewReviewCategory: () -> Unit,
     onAction: (ReviewsAndFeedbackAction) -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
     val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, ReviewsAndFeedbackEvent.Success -> Unit
-            is ReviewsAndFeedbackEvent.Error.ReviewCategories -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
-            is ReviewsAndFeedbackEvent.Error.ReviewsAndFeedback -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         topBar = topBar,
@@ -283,7 +284,9 @@ private fun ReviewsScreenPreview(
     XentlyTheme {
         ReviewsAndFeedbackScreen(
             state = state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             onClickAddNewReviewCategory = {},
             onAction = {},
             onClickViewComments = {},

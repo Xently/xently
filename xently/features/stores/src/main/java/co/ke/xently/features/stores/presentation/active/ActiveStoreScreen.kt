@@ -52,11 +52,47 @@ fun ActiveStoreScreen(
     val viewModel = hiltViewModel<ActiveStoreViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                ActiveStoreEvent.SelectShop, ActiveStoreEvent.SelectStore -> Unit
+                is ActiveStoreEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is ActiveStoreEvent.Success -> {
+                    when (event.action) {
+                        is ActiveStoreAction.ProcessImageData -> Unit
+                        is ActiveStoreAction.ProcessImageUpdateData -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_image_updated),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        is ActiveStoreAction.RemoveImageAtPosition -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_image_removed),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     ActiveStoreScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         onClickEdit = onClickEdit,
         onClickMoreDetails = onClickMoreDetails,
@@ -69,7 +105,7 @@ fun ActiveStoreScreen(
 @Composable
 internal fun ActiveStoreScreen(
     state: ActiveStoreUiState,
-    event: ActiveStoreEvent?,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     onClickEdit: (Store) -> Unit,
     onClickMoreDetails: (Store) -> Unit,
@@ -77,41 +113,6 @@ internal fun ActiveStoreScreen(
     onAction: (ActiveStoreAction) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, ActiveStoreEvent.SelectShop, ActiveStoreEvent.SelectStore -> Unit
-            is ActiveStoreEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
-            is ActiveStoreEvent.Success -> {
-                when (event.action) {
-                    is ActiveStoreAction.ProcessImageData -> Unit
-                    is ActiveStoreAction.ProcessImageUpdateData -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_image_updated),
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
-
-                    is ActiveStoreAction.RemoveImageAtPosition -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_image_removed),
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -220,7 +221,9 @@ private fun ActiveStoreScreenPreview(
     XentlyTheme {
         ActiveStoreScreen(
             state = state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             modifier = Modifier.fillMaxSize(),
             onClickEdit = {},
             onClickMoreDetails = {},

@@ -72,13 +72,42 @@ fun ProductListScreen(
     val viewModel = hiltViewModel<ProductListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val products = viewModel.products.collectAsLazyPagingItems()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is ProductListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is ProductListEvent.Success -> {
+                    when (event.action) {
+                        is ProductListAction.DeleteProduct -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_product_deleted),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
+            }
+        }
+    }
+
     ProductListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         products = products,
         categories = categories,
         modifier = modifier,
@@ -93,7 +122,7 @@ fun ProductListScreen(
 @Composable
 internal fun ProductListScreen(
     state: ProductListUiState,
-    event: ProductListEvent?,
+    snackbarHostState: SnackbarHostState,
     products: LazyPagingItems<Product>,
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
@@ -102,36 +131,7 @@ internal fun ProductListScreen(
     onAction: (ProductListAction) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
-
     val eventHandler = LocalEventHandler.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is ProductListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
-            is ProductListEvent.Success -> {
-                when (event.action) {
-                    is ProductListAction.DeleteProduct -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_product_deleted),
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
-
-                    else -> throw NotImplementedError()
-                }
-            }
-        }
-    }
 
     Scaffold(
         modifier = modifier,
@@ -266,6 +266,7 @@ internal fun ProductListScreen(
     }
 }
 
+
 private class ProductListScreenUiState(
     val state: ProductListUiState,
     val products: PagingData<Product> = PagingData.from(
@@ -304,7 +305,9 @@ private fun ProductListScreenPreview(
     XentlyTheme {
         ProductListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             products = products,
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),

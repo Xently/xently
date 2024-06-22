@@ -63,12 +63,30 @@ fun CustomerListScreen(
     val viewModel = hiltViewModel<CustomerListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val customers = viewModel.customers.collectAsLazyPagingItems()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is CustomerListEvent.Success -> Unit
+
+                is CustomerListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
 
     CustomerListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         customers = customers,
         modifier = modifier,
         topBar = topBar,
@@ -79,28 +97,12 @@ fun CustomerListScreen(
 @Composable
 internal fun CustomerListScreen(
     state: CustomerListUiState,
-    event: CustomerListEvent?,
+    snackbarHostState: SnackbarHostState,
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, is CustomerListEvent.Success -> Unit
-
-            is CustomerListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
 
     Scaffold(
         modifier = modifier,
@@ -254,7 +256,9 @@ private fun CustomerListScreenPreview(
     XentlyTheme {
         CustomerListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             customers = customers,
             modifier = Modifier.fillMaxSize(),
         )

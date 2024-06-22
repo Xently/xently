@@ -70,12 +70,46 @@ fun ShopListScreen(
     val viewModel = hiltViewModel<ShopListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val shops = viewModel.shops.collectAsLazyPagingItems()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is ShopListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is ShopListEvent.Success -> {
+                    when (event.action) {
+                        is ShopListAction.DeleteShop -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_shop_deleted),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        is ShopListAction.SelectShop -> {
+                            eventHandler.requestStoreSelection(event.action.shop)
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
+            }
+        }
+    }
 
     ShopListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         shops = shops,
         modifier = modifier,
         onClickAddShop = onClickAddShop,
@@ -89,7 +123,7 @@ fun ShopListScreen(
 @Composable
 internal fun ShopListScreen(
     state: ShopListUiState,
-    event: ShopListEvent?,
+    snackbarHostState: SnackbarHostState,
     shops: LazyPagingItems<Shop>,
     modifier: Modifier = Modifier,
     onClickAddShop: () -> Unit,
@@ -97,40 +131,7 @@ internal fun ShopListScreen(
     onAction: (ShopListAction) -> Unit,
     onClickBack: () -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is ShopListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
-            is ShopListEvent.Success -> {
-                when (event.action) {
-                    is ShopListAction.DeleteShop -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_shop_deleted),
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
-
-                    is ShopListAction.SelectShop -> {
-                        eventHandler.requestStoreSelection(event.action.shop)
-                    }
-
-                    else -> throw NotImplementedError()
-                }
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -268,7 +269,9 @@ private fun ShopListScreenPreview(
     XentlyTheme {
         ShopListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             shops = shops,
             modifier = Modifier.fillMaxSize(),
             onClickAddShop = {},

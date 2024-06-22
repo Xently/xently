@@ -47,13 +47,13 @@ fun PickStoreLocationScreen(
 ) {
     val viewModel = hiltViewModel<PickStoreLocationViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
 
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            PickStoreLocationEvent.SelectionConfirmed -> onClickBack()
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                PickStoreLocationEvent.SelectionConfirmed -> onClickBack()
+            }
         }
     }
 

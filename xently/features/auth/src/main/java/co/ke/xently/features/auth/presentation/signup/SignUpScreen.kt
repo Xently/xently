@@ -30,12 +30,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,53 +52,55 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
-import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 
 @Composable
 internal fun SignUpScreen(
-    state: SignUpUiState,
-    event: SignUpEvent?,
     modifier: Modifier = Modifier,
-    onAction: (SignUpAction) -> Unit,
     onClickBack: () -> Unit,
     onClickSignIn: () -> Unit,
 ) {
+    val viewModel = hiltViewModel<SignUpViewModel>()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val context = LocalContext.current
 
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is SignUpEvent.Error -> {
-                val result = snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                    actionLabel = if (event.type is DataError.Network) {
-                        context.getString(R.string.action_retry)
-                    } else {
-                        null
-                    },
-                )
-
-                when (result) {
-                    SnackbarResult.Dismissed -> {
-
-                    }
-
-                    SnackbarResult.ActionPerformed -> {
-
-                    }
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                SignUpEvent.Success -> onClickBack()
+                is SignUpEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
                 }
             }
-
-            SignUpEvent.Success -> onClickBack()
         }
     }
 
+    SignUpScreen(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier,
+        onAction = viewModel::onAction,
+        onClickSignIn = onClickSignIn,
+    )
+}
+
+@Composable
+private fun SignUpScreen(
+    state: SignUpUiState,
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier,
+    onAction: (SignUpAction) -> Unit,
+    onClickSignIn: () -> Unit,
+) {
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -339,10 +341,11 @@ private fun SignUpScreenPreview(
     XentlyTheme {
         SignUpScreen(
             state = state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             modifier = Modifier.fillMaxSize(),
             onAction = {},
-            onClickBack = {},
             onClickSignIn = {},
         )
     }

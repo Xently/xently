@@ -59,7 +59,33 @@ fun LandingScreen(
 ) {
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
+
+    val context = LocalContext.current
+    val eventHandler = LocalEventHandler.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                LandingEvent.Success -> Unit
+                is LandingEvent.SelectStore -> eventHandler.requestStoreSelection()
+                is LandingEvent.Error -> {
+                    Toast.makeText(
+                        context,
+                        event.error.asString(context = context),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+
+                is LandingEvent.ShopError -> {
+                    Toast.makeText(
+                        context,
+                        event.error.asString(context = context),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+        }
+    }
 
     CompositionLocalProvider(
         LocalAuthenticationState provides AuthenticationState(
@@ -70,7 +96,6 @@ fun LandingScreen(
         LandingScreen(
             modifier = modifier,
             state = state,
-            event = event,
             onClickAddStore = onClickAddStore,
             onClickEditStore = onClickEditStore,
             onClickAddProduct = onClickAddProduct,
@@ -89,7 +114,6 @@ fun LandingScreen(
 internal fun LandingScreen(
     modifier: Modifier = Modifier,
     state: LandingUiState,
-    event: LandingEvent?,
     onClickAddStore: (Shop?) -> Unit,
     onClickEditStore: (Store) -> Unit,
     onClickAddProduct: () -> Unit,
@@ -103,31 +127,6 @@ internal fun LandingScreen(
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
-    val context = LocalContext.current
-    val eventHandler = LocalEventHandler.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, LandingEvent.Success -> Unit
-            is LandingEvent.SelectStore -> eventHandler.requestStoreSelection()
-            is LandingEvent.Error -> {
-                Toast.makeText(
-                    context,
-                    event.error.asString(context = context),
-                    Toast.LENGTH_LONG,
-                ).show()
-            }
-
-            is LandingEvent.ShopError -> {
-                Toast.makeText(
-                    context,
-                    event.error.asString(context = context),
-                    Toast.LENGTH_LONG,
-                ).show()
-            }
-        }
-    }
 
     val closeDrawer: () -> Unit = {
         scope.launch {

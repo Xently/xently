@@ -54,12 +54,30 @@ fun NotificationListScreen(
     val viewModel = hiltViewModel<NotificationListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val notifications = viewModel.notifications.collectAsLazyPagingItems()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is NotificationListEvent.Success -> Unit
+
+                is NotificationListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
 
     NotificationListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         notifications = notifications,
         modifier = modifier,
         topBar = topBar,
@@ -70,28 +88,11 @@ fun NotificationListScreen(
 @Composable
 internal fun NotificationListScreen(
     state: NotificationListUiState,
-    event: NotificationListEvent?,
+    snackbarHostState: SnackbarHostState,
     notifications: LazyPagingItems<Notification>,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, is NotificationListEvent.Success -> Unit
-
-            is NotificationListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -201,7 +202,9 @@ private fun NotificationListScreenPreview(
     XentlyTheme {
         NotificationListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             notifications = notifications,
             modifier = Modifier.fillMaxSize(),
         )

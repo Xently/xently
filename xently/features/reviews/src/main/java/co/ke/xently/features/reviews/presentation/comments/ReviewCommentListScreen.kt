@@ -72,12 +72,29 @@ fun ReviewCommentListScreen(
     val viewModel = hiltViewModel<ReviewCommentListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val reviews = viewModel.reviews.collectAsLazyPagingItems()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is ReviewCommentListEvent.Success -> Unit
+                is ReviewCommentListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
+    }
 
     ReviewCommentListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         reviews = reviews,
         modifier = modifier,
         onClickBack = onClickBack,
@@ -89,28 +106,12 @@ fun ReviewCommentListScreen(
 @Composable
 internal fun ReviewCommentListScreen(
     state: ReviewCommentListUiState,
-    event: ReviewCommentListEvent?,
+    snackbarHostState: SnackbarHostState,
     reviews: LazyPagingItems<Review>,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ReviewCommentListAction) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null, is ReviewCommentListEvent.Success -> Unit
-            is ReviewCommentListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -269,7 +270,9 @@ private fun ProductListScreenPreview(
     XentlyTheme {
         ReviewCommentListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             reviews = reviews,
             onClickBack = {},
             onAction = {},

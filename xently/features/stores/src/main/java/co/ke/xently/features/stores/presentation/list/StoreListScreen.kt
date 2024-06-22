@@ -77,13 +77,46 @@ fun StoreListScreen(
     val viewModel = hiltViewModel<StoreListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val event by viewModel.event.collectAsStateWithLifecycle(null)
     val stores = viewModel.stores.collectAsLazyPagingItems()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is StoreListEvent.Error -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is StoreListEvent.Success -> {
+                    when (event.action) {
+                        is StoreListAction.DeleteStore -> {
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.message_store_deleted),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        is StoreListAction.SelectStore -> {
+                            onStoreSelected(event.action.store)
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
+            }
+        }
+    }
+
     StoreListScreen(
         state = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         stores = stores,
         categories = categories,
         modifier = modifier,
@@ -91,7 +124,6 @@ fun StoreListScreen(
         onClickEditStore = onClickEditStore,
         onAction = viewModel::onAction,
         onClickBack = onClickBack,
-        onStoreSelected = onStoreSelected,
     )
 }
 
@@ -99,7 +131,7 @@ fun StoreListScreen(
 @Composable
 internal fun StoreListScreen(
     state: StoreListUiState,
-    event: StoreListEvent?,
+    snackbarHostState: SnackbarHostState,
     stores: LazyPagingItems<Store>,
     categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
@@ -107,41 +139,8 @@ internal fun StoreListScreen(
     onClickEditStore: (Store) -> Unit,
     onAction: (StoreListAction) -> Unit,
     onClickBack: () -> Unit,
-    onStoreSelected: (Store) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
-
-    LaunchedEffect(event) {
-        when (event) {
-            null -> Unit
-            is StoreListEvent.Error -> {
-                snackbarHostState.showSnackbar(
-                    event.error.asString(context = context),
-                    duration = SnackbarDuration.Long,
-                )
-            }
-
-            is StoreListEvent.Success -> {
-                when (event.action) {
-                    is StoreListAction.DeleteStore -> {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.message_store_deleted),
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
-
-                    is StoreListAction.SelectStore -> {
-                        onStoreSelected(event.action.store)
-                    }
-
-                    else -> throw NotImplementedError()
-                }
-            }
-        }
-    }
 
     Scaffold(
         modifier = modifier,
@@ -294,7 +293,9 @@ private fun StoreListScreenPreview(
     XentlyTheme {
         StoreListScreen(
             state = state.state,
-            event = null,
+            snackbarHostState = remember {
+                SnackbarHostState()
+            },
             stores = stores,
             categories = emptyList(),
             modifier = Modifier.fillMaxSize(),
@@ -302,7 +303,6 @@ private fun StoreListScreenPreview(
             onClickEditStore = {},
             onAction = {},
             onClickBack = {},
-            onStoreSelected = {},
         )
     }
 }
