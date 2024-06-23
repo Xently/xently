@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -122,6 +124,7 @@ internal fun ProductEditDetailScreen(
     onClickBack: () -> Unit,
     onAction: (ProductEditDetailAction) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -192,7 +195,7 @@ internal fun ProductEditDetailScreen(
                     .padding(horizontal = 16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
-                    capitalization = KeyboardCapitalization.Words,
+                    capitalization = KeyboardCapitalization.Sentences,
                 ),
                 isError = !state.nameError.isNullOrEmpty(),
                 supportingText = state.nameError?.let {
@@ -243,6 +246,7 @@ internal fun ProductEditDetailScreen(
                 supportingText = state.descriptionError?.let {
                     { Text(text = it.toUiText()) }
                 },
+                keyboardActions = KeyboardActions { focusManager.clearFocus() },
             )
 
             Text(
