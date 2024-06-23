@@ -102,8 +102,8 @@ internal fun SettingsScreen(
         )
     }
 
-    val termsOfService = "https://xently.co.ke"
-    val privacyPolicy = "https://xently.co.ke"
+    val termsOfService = "https://xently.co.ke/termsandconditions.html"
+    val privacyPolicy = "https://xently.co.ke/privacy.html"
     val context = LocalContext.current
     val settings = listOf(
         Setting(

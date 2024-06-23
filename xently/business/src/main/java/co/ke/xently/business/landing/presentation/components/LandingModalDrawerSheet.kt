@@ -111,7 +111,7 @@ internal fun LandingModalDrawerSheet(
             modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
             val content = LocalContext.current
-            val privacyPolicy = "https://xently.co.ke"
+            val privacyPolicy = "https://xently.co.ke/privacy.html"
             TextButton(onClick = { content.openUrl(privacyPolicy) }) {
                 Text(text = stringResource(R.string.action_label_privacy_policy))
             }
@@ -124,7 +124,7 @@ internal fun LandingModalDrawerSheet(
                     .padding(horizontal = 8.dp),
             )
 
-            val termsOfService = "https://xently.co.ke"
+            val termsOfService = "https://xently.co.ke/termsandconditions.html"
             TextButton(onClick = { content.openUrl(termsOfService) }) {
                 Text(text = stringResource(R.string.action_label_terms_of_service))
             }
