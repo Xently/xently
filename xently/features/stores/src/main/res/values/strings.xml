@@ -78,4 +78,6 @@
     <string name="message_image_removed">Image successfully removed.</string>
     <string name="message_image_updated">Image successfully updated.</string>
     <string name="action_select_store">Select Branch</string>
+    <string name="message_confirm_store_deletion">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="content_desc_more_options_for_store">More options for store \"%1$s, %2$s\".</string>
 </resources>

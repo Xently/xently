@@ -51,7 +51,7 @@ internal fun StoreListItem(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            text = { Text(text = """Are you sure you want to delete the "$store"?""") },
+            text = { Text(text = stringResource(R.string.message_confirm_store_deletion, store)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -87,9 +87,19 @@ internal fun StoreListItem(
             }
         },
         supportingContent = {
+            var maxLines by rememberSaveable { mutableIntStateOf(1) }
             Text(
                 text = store.name,
-                modifier = Modifier.shimmer(isLoading),
+                fontWeight = FontWeight.Light,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = maxLines,
+                modifier = Modifier
+                    .shimmer(isLoading)
+                    .clickable(
+                        role = Role.Checkbox,
+                        indication = ripple(radius = 1_000.dp),
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { maxLines = if (maxLines == 1) Int.MAX_VALUE else 1 },
             )
         },
         headlineContent = {
@@ -99,6 +109,7 @@ internal fun StoreListItem(
                     modifier = Modifier
                         .weight(1f)
                         .shimmer(isLoading),
+                    maxLines = 1,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -107,7 +118,11 @@ internal fun StoreListItem(
                 Box(modifier = Modifier.shimmer(isLoading)) {
                     Icon(
                         Icons.Default.MoreVert,
-                        contentDescription = """More options for store "${store.name}, ${store.shop.name}".""",
+                        contentDescription = stringResource(
+                            R.string.content_desc_more_options_for_store,
+                            store.name,
+                            store.shop.name,
+                        ),
                         modifier = Modifier.clickable(
                             role = Role.Checkbox,
                             indication = ripple(bounded = false),
