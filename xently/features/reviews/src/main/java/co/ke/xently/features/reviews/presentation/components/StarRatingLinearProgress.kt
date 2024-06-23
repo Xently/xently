@@ -31,10 +31,10 @@ internal fun StarRatingLinearProgress(
         label = "progress-animation",
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
     )
-    val color = if (isDark) ProgressIndicatorDefaults.linearColor
-    else xentlyLinearProgressLight
-    val trackColor = if (isDark) ProgressIndicatorDefaults.linearTrackColor
-    else xentlyLinearProgressLightTrack
+    val color = /*if (isDark) */ProgressIndicatorDefaults.linearColor
+//    else xentlyLinearProgressLight
+    val trackColor = /*if (isDark) */ProgressIndicatorDefaults.linearTrackColor
+//    else xentlyLinearProgressLightTrack
     Box(
         modifier = modifier
             .height(12.dp)

@@ -47,10 +47,7 @@ internal fun GeneralReviewSummary(
     val isDark by LocalThemeIsDark.current
     val eventHandler = LocalEventHandler.current
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        UnderlinedHeadline(
-            modifier = Modifier.fillMaxWidth(),
-            headline = headline,
-        )
+        UnderlinedHeadline(modifier = Modifier.fillMaxWidth(), headline = headline)
 
         when (response) {
             is ReviewSummaryResponse.Failure -> {
@@ -183,6 +180,10 @@ private class ReviewSummaryResponsePreviewParameterProvider :
             ReviewSummaryResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
                 type = Network.Retryable.Unknown,
+            ),
+            ReviewSummaryResponse.Failure(
+                error = UiText.DynamicString("Sample error message"),
+                type = Network.Unauthorized,
             ),
             ReviewSummaryResponse.Success(
                 Rating(

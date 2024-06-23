@@ -10,9 +10,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.domain.StarRating
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
@@ -61,7 +63,7 @@ internal fun StarRatingRow(
             Icon(
                 icon,
                 tint = starRating.tint(isDark),
-                contentDescription = "${index + 1} - star",
+                contentDescription = stringResource(R.string.star, index + 1),
             )
         }
     }
