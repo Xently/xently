@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,12 +51,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
 import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
 import co.ke.xently.features.stores.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
@@ -223,10 +226,29 @@ internal fun StoreListScreen(
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = stores::retry,
                     ) {
-                        if (error is DataError.Network.Unauthorized) {
-                            Spacer(modifier = Modifier.height(16.dp))
+                        val eventHandler = LocalEventHandler.current
+                        when (error) {
+                            ConfigurationError.ShopSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = eventHandler::requestShopSelection) {
+                                    Text(text = stringResource(R.string.action_select_shop))
+                                }
+                            }
 
-                            LoginAndRetryButtonsRow(onRetry = stores::retry)
+                            ConfigurationError.StoreSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = eventHandler::requestStoreSelection) {
+                                    Text(text = stringResource(R.string.action_select_store))
+                                }
+                            }
+
+                            DataError.Network.Unauthorized -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                LoginAndRetryButtonsRow(onRetry = stores::retry)
+                            }
+
+                            else -> Unit
                         }
                     }
                 }
