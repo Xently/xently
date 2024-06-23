@@ -12,10 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChipDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,10 +58,6 @@ internal fun StatisticsFilters(
                     label = {
                         Text(text = year.toString())
                     },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
                     trailingIcon = if (year != selectedYear) null else {
                         {
                             Icon(
@@ -97,15 +91,14 @@ internal fun StatisticsFilters(
                         label = {
                             Text(text = month.toString())
                         },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
                         trailingIcon = if (month != selectedMonth) null else {
                             {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Unselect month - $selectedMonth",
+                                    contentDescription = stringResource(
+                                        R.string.content_desc_unselect_month,
+                                        selectedMonth,
+                                    ),
                                     modifier = Modifier
                                         .size(InputChipDefaults.AvatarSize)
                                         .clickable(onClick = { onClickRemoveMonth(month) }),

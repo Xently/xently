@@ -39,11 +39,15 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
+import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.BarChart
@@ -88,54 +92,10 @@ internal fun StatisticsSuccessContent(
                 )
             },
         )
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-        ) {
-            item(key = "total-reviews", contentType = "total-reviews") {
-                StatisticSummaryCard(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .shimmer(isLoading),
-                    stat = success.data.totalReviews.coolFormat(),
-                    title = stringResource(R.string.reviews_statistics_total_reviews_title),
-                    statColor = MaterialTheme.colorScheme.primary,
-                )
-            }
-            item(key = "general-sentiment", contentType = "general-sentiment") {
-                StatisticSummaryCard(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .shimmer(isLoading),
-                    stat = success.data.generalSentiment.text,
-                    title = stringResource(R.string.reviews_statistics_general_sentiments_title),
-                    statColor = when (success.data.generalSentiment) {
-                        ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
-                        ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
-                    },
-                )
-            }
-            item(key = "percentage-satisfaction", contentType = "percentage-satisfaction") {
-                StatisticSummaryCard(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .shimmer(isLoading),
-                    stat = "${success.data.percentageSatisfaction}%",
-                    title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
-                    statColor = MaterialTheme.colorScheme.primary,
-                )
-            }
-            item(key = "average-rating", contentType = "average-rating") {
-                StatisticSummaryCard(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .shimmer(isLoading),
-                    stat = success.data.averageRating.toString(),
-                    title = stringResource(R.string.reviews_statistics_average_rating_title),
-                    statColor = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
+        StatisticOverviewRow(
+            isLoading = isLoading,
+            success = success,
+        )
         var showFilters by rememberSaveable { mutableStateOf(false) }
         val selectedYear = filters.year
         val selectedMonth = filters.month
@@ -262,6 +222,99 @@ internal fun StatisticsSuccessContent(
                     Text(text = stringResource(R.string.button_label_adjust_filters))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun StatisticOverviewRow(
+    isLoading: Boolean,
+    success: StatisticsResponse.Success,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+    ) {
+        item(key = "total-reviews", contentType = "total-reviews") {
+            StatisticSummaryCard(
+                modifier = Modifier
+                    .width(120.dp)
+                    .shimmer(isLoading),
+                stat = success.data.totalReviews.coolFormat(),
+                title = stringResource(R.string.reviews_statistics_total_reviews_title),
+                statColor = MaterialTheme.colorScheme.primary,
+            )
+        }
+        item(key = "general-sentiment", contentType = "general-sentiment") {
+            StatisticSummaryCard(
+                modifier = Modifier
+                    .width(120.dp)
+                    .shimmer(isLoading),
+                stat = success.data.generalSentiment.text,
+                title = stringResource(R.string.reviews_statistics_general_sentiments_title),
+                statColor = when (success.data.generalSentiment) {
+                    ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
+                    ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
+                },
+            )
+        }
+        item(key = "percentage-satisfaction", contentType = "percentage-satisfaction") {
+            StatisticSummaryCard(
+                modifier = Modifier
+                    .width(120.dp)
+                    .shimmer(isLoading),
+                stat = "${success.data.percentageSatisfaction}%",
+                title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
+                statColor = MaterialTheme.colorScheme.primary,
+            )
+        }
+        item(key = "average-rating", contentType = "average-rating") {
+            StatisticSummaryCard(
+                modifier = Modifier
+                    .width(120.dp)
+                    .shimmer(isLoading),
+                stat = success.data.averageRating.toString(),
+                title = stringResource(R.string.reviews_statistics_average_rating_title),
+                statColor = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+private data class StatisticOverviewRowContent(
+    val isLoading: Boolean,
+    val success: StatisticsResponse.Success,
+)
+
+private class StatisticOverviewRowContentPreviewProvider :
+    PreviewParameterProvider<StatisticOverviewRowContent> {
+    override val values: Sequence<StatisticOverviewRowContent>
+        get() = sequenceOf(
+            StatisticOverviewRowContent(
+                isLoading = false,
+                success = StatisticsResponseSuccessSample,
+            ),
+            StatisticOverviewRowContent(
+                isLoading = true,
+                success = StatisticsResponseSuccessSample,
+            ),
+        )
+}
+
+@XentlyPreview
+@Composable
+private fun StatisticOverviewRowPreview(
+    @PreviewParameter(StatisticOverviewRowContentPreviewProvider::class)
+    content: StatisticOverviewRowContent,
+) {
+    XentlyTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            StatisticOverviewRow(
+                isLoading = content.isLoading,
+                success = content.success,
+            )
         }
     }
 }

@@ -68,6 +68,7 @@
     <string name="action_select_shop">Select Shop</string>
     <string name="action_select_store">Select Branch</string>
     <string name="star">%1$s - star</string>
+    <string name="content_desc_unselect_month">Unselect month - %1$s</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>

@@ -75,7 +75,7 @@ internal fun ReviewContent(
             StatisticsResponse.Loading -> {
                 StatisticsSuccessContent(
                     category = category,
-                    success = StatisticsResponseSuccess,
+                    success = StatisticsResponseSuccessSample,
                     filters = filters,
                     isLoading = true,
                     onClickSelectYear = {},
@@ -104,7 +104,7 @@ internal fun ReviewContent(
     }
 }
 
-private val StatisticsResponseSuccess = StatisticsResponse.Success(
+internal val StatisticsResponseSuccessSample = StatisticsResponse.Success(
     data = ReviewCategory.Statistics(
         totalReviews = 100,
         generalSentiment = ReviewCategory.Statistics.GeneralSentiment.Positive,
@@ -137,7 +137,7 @@ private data class ReviewContentState(
 private class ReviewContentPreviewProvider : PreviewParameterProvider<ReviewContentState> {
     override val values: Sequence<ReviewContentState>
         get() = sequenceOf(
-            ReviewContentState(response = StatisticsResponseSuccess),
+            ReviewContentState(response = StatisticsResponseSuccessSample),
             ReviewContentState(response = StatisticsResponse.Loading),
             ReviewContentState(
                 response = StatisticsResponse.Failure(
