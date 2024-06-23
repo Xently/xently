@@ -56,6 +56,7 @@ import co.ke.xently.features.products.presentation.list.components.ProductListEm
 import co.ke.xently.features.products.presentation.list.components.ProductListLazyColumn
 import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -234,9 +235,8 @@ internal fun ProductListScreen(
 
                             DataError.Network.Unauthorized -> {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = eventHandler::requestAuthentication) {
-                                    Text(text = stringResource(R.string.action_login))
-                                }
+
+                                LoginAndRetryButtonsRow(onRetry = products::retry)
                             }
 
                             else -> Unit

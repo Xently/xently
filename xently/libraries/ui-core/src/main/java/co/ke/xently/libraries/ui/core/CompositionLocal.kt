@@ -1,6 +1,9 @@
 package co.ke.xently.libraries.ui.core
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import co.ke.xently.libraries.data.auth.AuthenticationState
 
@@ -15,6 +18,6 @@ val LocalAuthenticationEventHandler = staticCompositionLocalOf {
     NoopAuthenticationEventHandler
 }
 
-val LocalAuthenticationState = staticCompositionLocalOf {
-    AuthenticationState()
+val LocalAuthenticationState = compositionLocalOf<State<AuthenticationState>> {
+    mutableStateOf(AuthenticationState())
 }

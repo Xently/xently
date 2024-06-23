@@ -50,7 +50,6 @@ internal class AccessControlRepositoryImpl @Inject constructor(
                         emit(save())
                     } catch (ex: Exception) {
                         if (ex is CancellationException) throw ex
-                        Timber.tag(TAG).e(ex, "Failed to refresh access control")
                         emit(AccessControl())
                     }
                     Timber.tag(TAG).i("Waiting %s before another check...", REFRESH_INTERVAL)

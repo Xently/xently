@@ -38,4 +38,5 @@
     <string name="error_shop_not_selected">Shop not selected.</string>
     <string name="action_select_shop">Select Shop</string>
     <string name="action_select_store">Select Branch</string>
+    <string name="action_login">Login</string>
 </resources>

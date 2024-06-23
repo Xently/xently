@@ -2,8 +2,10 @@ package co.ke.xently.features.notifications.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -26,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -39,6 +42,7 @@ import co.ke.xently.features.notifications.data.domain.error.toError
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListEmptyState
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListLazyColumn
 import co.ke.xently.features.notifications.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -144,7 +148,17 @@ internal fun NotificationListScreen(
                         message = error.asUiText().asString(),
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = notifications::retry,
-                    )
+                    ) {
+                        when (error) {
+                            DataError.Network.Unauthorized -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                LoginAndRetryButtonsRow(onRetry = notifications::retry)
+                            }
+
+                            else -> Unit
+                        }
+                    }
                 }
 
                 notifications.itemCount == 0 && refreshLoadState is LoadState.Loading -> {

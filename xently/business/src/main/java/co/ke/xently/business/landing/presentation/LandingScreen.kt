@@ -40,7 +40,6 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
-import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
 
@@ -59,6 +58,7 @@ fun LandingScreen(
 ) {
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val authenticationState = viewModel.authenticationState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
@@ -87,12 +87,7 @@ fun LandingScreen(
         }
     }
 
-    CompositionLocalProvider(
-        LocalAuthenticationState provides AuthenticationState(
-            isSignOutInProgress = state.isLoading,
-            currentUser = state.user,
-        )
-    ) {
+    CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
         LandingScreen(
             modifier = modifier,
             state = state,
@@ -145,7 +140,7 @@ internal fun LandingScreen(
         modifier = modifier,
         drawerState = drawerState,
         drawerContent = {
-            val authenticationState = LocalAuthenticationState.current
+            val authenticationState by LocalAuthenticationState.current
 
             LandingModalDrawerSheet(
                 canAddShop = state.canAddShop,

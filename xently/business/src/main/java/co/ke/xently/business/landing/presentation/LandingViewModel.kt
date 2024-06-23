@@ -9,12 +9,16 @@ import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
 import co.ke.xently.features.auth.presentation.utils.asUiText
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.shops.presentation.utils.asUiText
+import co.ke.xently.libraries.data.auth.AuthenticationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +33,14 @@ internal class LandingViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LandingUiState())
     val uiState = _uiState.asStateFlow()
+
+    val authenticationState = uiState.map {
+        AuthenticationState(isSignOutInProgress = it.isLoading, currentUser = it.user)
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = AuthenticationState(),
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+    )
 
     private val _event = Channel<LandingEvent>()
     val event: Flow<LandingEvent> = _event.receiveAsFlow()

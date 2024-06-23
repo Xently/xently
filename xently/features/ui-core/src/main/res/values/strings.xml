@@ -8,4 +8,6 @@
     <string name="headline_enter_category">Categories</string>
     <string name="text_field_placeholder_category_name">enter category name</string>
     <string name="action_add">Add</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_login">Login</string>
 </resources>

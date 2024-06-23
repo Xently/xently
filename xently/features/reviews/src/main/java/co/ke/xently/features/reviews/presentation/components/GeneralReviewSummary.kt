@@ -29,6 +29,7 @@ import co.ke.xently.features.reviews.data.domain.error.DataError.Network
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
@@ -74,9 +75,9 @@ internal fun GeneralReviewSummary(
                         }
 
                         is Network.Unauthorized -> {
-                            Button(onClick = eventHandler::requestAuthentication) {
-                                Text(text = stringResource(R.string.action_login))
-                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LoginAndRetryButtonsRow(onRetry = onClickRetry)
                         }
 
                         else -> {

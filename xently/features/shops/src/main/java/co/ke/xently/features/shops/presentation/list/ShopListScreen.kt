@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +51,7 @@ import co.ke.xently.features.shops.presentation.list.components.ShopListEmptySta
 import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
 import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -131,7 +131,6 @@ internal fun ShopListScreen(
     onAction: (ShopListAction) -> Unit,
     onClickBack: () -> Unit,
 ) {
-    val eventHandler = LocalEventHandler.current
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -202,9 +201,8 @@ internal fun ShopListScreen(
                     ) {
                         if (error is DataError.Network.Unauthorized) {
                             Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = eventHandler::requestAuthentication) {
-                                Text(text = stringResource(R.string.action_login))
-                            }
+
+                            LoginAndRetryButtonsRow(onRetry = shops::retry)
                         }
                     }
                 }

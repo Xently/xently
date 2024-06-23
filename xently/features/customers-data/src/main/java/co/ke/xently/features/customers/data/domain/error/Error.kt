@@ -17,6 +17,8 @@ suspend fun Throwable.toError(): Error {
     return when (this) {
         is ResponseException -> toError()
         is HttpRequestTimeoutException -> DataError.Network.Retryable.RequestTimeout
+        is ShopSelectionRequiredException -> ConfigurationError.ShopSelectionRequired
+        is StoreSelectionRequiredException -> ConfigurationError.StoreSelectionRequired
         is JsonConvertException -> {
             Timber.e(this)
             DataError.Network.Serialization

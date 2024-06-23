@@ -3,6 +3,8 @@ package co.ke.xently.features.reviews.presentation.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import co.ke.xently.features.reviews.presentation.reviews.BarGraphData
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
 import co.ke.xently.features.reviews.presentation.utils.UiText
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.aay.compose.barChart.model.BarParameters
@@ -53,9 +56,17 @@ internal fun ReviewContent(
                         text = it.error.asString(),
                         modifier = Modifier.weight(1f),
                     )
-                    if (it.type is DataError.Network.Retryable) {
-                        Button(onClick = onClickRetry) {
-                            Text(text = stringResource(R.string.action_retry))
+                    when (it.type) {
+                        is DataError.Network.Unauthorized -> {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LoginAndRetryButtonsRow(onRetry = onClickRetry)
+                        }
+
+                        else -> {
+                            Button(onClick = onClickRetry) {
+                                Text(text = stringResource(R.string.action_retry))
+                            }
                         }
                     }
                 }

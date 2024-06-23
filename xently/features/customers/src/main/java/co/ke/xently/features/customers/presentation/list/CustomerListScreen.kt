@@ -46,6 +46,7 @@ import co.ke.xently.features.customers.presentation.list.components.CustomerList
 import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
 import co.ke.xently.features.customers.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -156,8 +157,7 @@ internal fun CustomerListScreen(
                         canRetry = error is DataError.Network.Retryable,
                         onClickRetry = customers::retry,
                     ) {
-                        when (error as? ConfigurationError) {
-                            null -> Unit
+                        when (error) {
                             ConfigurationError.ShopSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Button(onClick = eventHandler::requestShopSelection) {
@@ -171,6 +171,14 @@ internal fun CustomerListScreen(
                                     Text(text = stringResource(R.string.action_select_store))
                                 }
                             }
+
+                            DataError.Network.Unauthorized -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                LoginAndRetryButtonsRow(onRetry = customers::retry)
+                            }
+
+                            else -> Unit
                         }
                     }
                 }
