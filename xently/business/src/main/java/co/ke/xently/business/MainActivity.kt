@@ -4,11 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -16,11 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import co.ke.xently.business.domain.EditProductScreen
 import co.ke.xently.business.domain.EditStoreScreen
-import co.ke.xently.business.domain.InitialStoreSelectionRoute
-import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectShop
-import co.ke.xently.business.domain.InitialStoreSelectionRoute.SelectStore
 import co.ke.xently.business.domain.PickLocation
 import co.ke.xently.business.domain.ReviewCommentListScreen
+import co.ke.xently.business.domain.SelectShopScreen
 import co.ke.xently.business.domain.SettingsScreen
 import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.landing.domain.LandingScreen
@@ -62,9 +57,6 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
             val navController = rememberNavController()
-            var initialStoreSelectionRoute: InitialStoreSelectionRoute? by remember {
-                mutableStateOf(null)
-            }
             val eventHandler = remember {
                 object : EventHandler {
                     override fun requestAuthentication() {
@@ -72,11 +64,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     override fun requestShopSelection() {
-                        navController.navigate(SelectShop)
+                        navController.navigate(SelectShopScreen)
                     }
 
                     override fun requestStoreSelection(shop: Any?) {
-                        navController.navigate(SelectStore)
+                        navController.navigate(SelectStoreScreen)
                     }
                 }
             }
@@ -128,12 +120,7 @@ class MainActivity : ComponentActivity() {
                     composable<PickLocation> {
                         PickStoreLocationScreen(onClickBack = navController::navigateUp)
                     }
-                    composable<SelectShop> {
-                        LaunchedEffect(Unit) {
-                            if (initialStoreSelectionRoute == null) {
-                                initialStoreSelectionRoute = SelectShop
-                            }
-                        }
+                    composable<SelectShopScreen> {
                         ShopListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddShop = {
@@ -144,12 +131,7 @@ class MainActivity : ComponentActivity() {
                             },
                         )
                     }
-                    composable<SelectStore> {
-                        LaunchedEffect(Unit) {
-                            if (initialStoreSelectionRoute == null) {
-                                initialStoreSelectionRoute = SelectStore
-                            }
-                        }
+                    composable<SelectStoreScreen> {
                         StoreListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddStore = {
@@ -159,12 +141,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(EditStoreScreen(storeId = it.id))
                             },
                             onStoreSelected = {
-                                initialStoreSelectionRoute?.let {
-                                    navController.popBackStack(
-                                        it,
-                                        inclusive = true
-                                    )
-                                }
+                                navController.popBackStack(LandingScreen, inclusive = false)
                             },
                         )
                     }
