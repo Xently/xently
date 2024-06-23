@@ -19,13 +19,11 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.Exception
-import kotlin.Long
 import kotlin.String
-import kotlin.TODO
-import kotlin.Unit
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.run
 import kotlin.to
@@ -39,23 +37,15 @@ internal class ReviewRepositoryImpl @Inject constructor(
     private val shopRepository: ShopRepository,
     private val storeRepository: StoreRepository,
 ) : ReviewRepository {
-    override suspend fun save(review: Review): Result<Unit, Error> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun findById(id: Long): Flow<Result<Review, Error>> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>> {
         return shopRepository.findActivatedShop().map { result ->
             when (result) {
                 is ShopResult.Failure -> Result.Failure(ConfigurationError.ShopSelectionRequired)
                 is ShopResult.Success -> {
-                    val urlString =
-                        result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
-                    val response =
-                        httpClient.get(urlString = urlString)
+                    try {
+                        val urlString =
+                            result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
+                        val response = httpClient.get(urlString = urlString)
                             .body<Rating>()
                             .run {
                                 copy(
@@ -63,7 +53,12 @@ internal class ReviewRepositoryImpl @Inject constructor(
                                     totalPerStar = totalPerStar.sortedByDescending { it.star },
                                 )
                             }
-                    Result.Success(response)
+                        Result.Success(response)
+                    } catch (ex: Exception) {
+                        if (ex is CancellationException) throw ex
+                        Timber.e(ex)
+                        Result.Failure(ex.toError())
+                    }
                 }
             }
         }
@@ -74,10 +69,10 @@ internal class ReviewRepositoryImpl @Inject constructor(
             when (result) {
                 is StoreResult.Failure -> Result.Failure(ConfigurationError.StoreSelectionRequired)
                 is StoreResult.Success -> {
-                    val urlString =
-                        result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
-                    val response =
-                        httpClient.get(urlString = urlString)
+                    try {
+                        val urlString =
+                            result.data.links["reviews-summary"]!!.hrefWithoutQueryParamTemplates()
+                        val response = httpClient.get(urlString = urlString)
                             .body<Rating>()
                             .run {
                                 copy(
@@ -85,7 +80,12 @@ internal class ReviewRepositoryImpl @Inject constructor(
                                     totalPerStar = totalPerStar.sortedByDescending { it.star },
                                 )
                             }
-                    Result.Success(response)
+                        Result.Success(response)
+                    } catch (ex: Exception) {
+                        if (ex is CancellationException) throw ex
+                        Timber.e(ex)
+                        Result.Failure(ex.toError())
+                    }
                 }
             }
         }

@@ -69,26 +69,32 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
             when (result) {
                 is StoreResult.Failure -> Result.Failure(ConfigurationError.StoreSelectionRequired)
                 is StoreResult.Success -> {
-                    val urlString =
-                        result.data.links["review-categories"]!!.hrefWithoutQueryParamTemplates()
-                    val response = httpClient.get(urlString)
-                        .body<PagedResponse<ReviewCategory>>().run {
-                            (embedded.values.firstOrNull() ?: emptyList()).also { categories ->
-                                coroutineScope {
-                                    launch {
-                                        database.withTransactionFacade {
-                                            reviewCategoryDao.deleteAll()
-                                            reviewCategoryDao.save(
-                                                categories.map {
-                                                    ReviewCategoryEntity(reviewCategory = it)
-                                                }
-                                            )
+                    try {
+                        val urlString =
+                            result.data.links["review-categories"]!!.hrefWithoutQueryParamTemplates()
+                        val response = httpClient.get(urlString = urlString)
+                            .body<PagedResponse<ReviewCategory>>().run {
+                                (embedded.values.firstOrNull() ?: emptyList()).also { categories ->
+                                    coroutineScope {
+                                        launch {
+                                            database.withTransactionFacade {
+                                                reviewCategoryDao.deleteAll()
+                                                reviewCategoryDao.save(
+                                                    categories.map {
+                                                        ReviewCategoryEntity(reviewCategory = it)
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    Result.Success(response)
+                        Result.Success(response)
+                    } catch (ex: Exception) {
+                        if (ex is CancellationException) throw ex
+                        Timber.e(ex)
+                        Result.Failure(ex.toError())
+                    }
                 }
             }
         }

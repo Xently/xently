@@ -11,8 +11,6 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ReviewRepository {
-    suspend fun save(review: Review): Result<Unit, Error>
-    suspend fun findById(id: Long): Flow<Result<Review, Error>>
     suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>>
     suspend fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, Error>>
     suspend fun findStoreReviewStatistics(
