@@ -175,7 +175,12 @@ private fun SignUpScreen(
                         capitalization = KeyboardCapitalization.Words,
                     ),
                     shape = RoundedCornerShape(35),
-                    placeholder = { Text(text = "John Doe") },
+                    placeholder = {
+                        Text(
+                            text = "John Doe",
+                            fontWeight = FontWeight.ExtraLight,
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -196,7 +201,7 @@ private fun SignUpScreen(
                     placeholder = {
                         Text(
                             text = "your.email@example.org",
-                            fontWeight = FontWeight.ExtraLight
+                            fontWeight = FontWeight.ExtraLight,
                         )
                     },
                     shape = RoundedCornerShape(35),
@@ -220,7 +225,7 @@ private fun SignUpScreen(
                     placeholder = {
                         Text(
                             text = "************",
-                            fontWeight = FontWeight.ExtraLight
+                            fontWeight = FontWeight.ExtraLight,
                         )
                     },
                     visualTransformation = remember(state.isPasswordVisible) {
