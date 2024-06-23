@@ -1,18 +1,21 @@
 package co.ke.xently.features.reviews.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -232,54 +235,55 @@ private fun StatisticOverviewRow(
     success: StatisticsResponse.Success,
     modifier: Modifier = Modifier,
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Max)
+            .horizontalScroll(rememberScrollState()),
     ) {
-        item(key = "total-reviews", contentType = "total-reviews") {
-            StatisticSummaryCard(
-                modifier = Modifier
-                    .width(120.dp)
-                    .shimmer(isLoading),
-                stat = success.data.totalReviews.coolFormat(),
-                title = stringResource(R.string.reviews_statistics_total_reviews_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
-        }
-        item(key = "general-sentiment", contentType = "general-sentiment") {
-            StatisticSummaryCard(
-                modifier = Modifier
-                    .width(120.dp)
-                    .shimmer(isLoading),
-                stat = success.data.generalSentiment.text,
-                title = stringResource(R.string.reviews_statistics_general_sentiments_title),
-                statColor = when (success.data.generalSentiment) {
-                    ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
-                    ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
-                },
-            )
-        }
-        item(key = "percentage-satisfaction", contentType = "percentage-satisfaction") {
-            StatisticSummaryCard(
-                modifier = Modifier
-                    .width(120.dp)
-                    .shimmer(isLoading),
-                stat = "${success.data.percentageSatisfaction}%",
-                title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
-        }
-        item(key = "average-rating", contentType = "average-rating") {
-            StatisticSummaryCard(
-                modifier = Modifier
-                    .width(120.dp)
-                    .shimmer(isLoading),
-                stat = success.data.averageRating.toString(),
-                title = stringResource(R.string.reviews_statistics_average_rating_title),
-                statColor = MaterialTheme.colorScheme.primary,
-            )
-        }
+        Spacer(modifier = Modifier.width(16.dp))
+        StatisticSummaryCard(
+            modifier = Modifier
+                .width(150.dp)
+                .fillMaxHeight()
+                .shimmer(isLoading),
+            stat = success.data.totalReviews.coolFormat(),
+            title = stringResource(R.string.reviews_statistics_total_reviews_title),
+            statColor = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        StatisticSummaryCard(
+            modifier = Modifier
+                .width(150.dp)
+                .fillMaxHeight()
+                .shimmer(isLoading),
+            stat = success.data.generalSentiment.text,
+            title = stringResource(R.string.reviews_statistics_general_sentiments_title),
+            statColor = when (success.data.generalSentiment) {
+                ReviewCategory.Statistics.GeneralSentiment.Positive -> Color.Green
+                ReviewCategory.Statistics.GeneralSentiment.Negative -> Color.Red
+            },
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        StatisticSummaryCard(
+            modifier = Modifier
+                .width(150.dp)
+                .fillMaxHeight()
+                .shimmer(isLoading),
+            stat = "${success.data.percentageSatisfaction}%",
+            title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
+            statColor = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        StatisticSummaryCard(
+            modifier = Modifier
+                .width(150.dp)
+                .fillMaxHeight()
+                .shimmer(isLoading),
+            stat = success.data.averageRating.toString(),
+            title = stringResource(R.string.reviews_statistics_average_rating_title),
+            statColor = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
 
@@ -306,15 +310,12 @@ private class StatisticOverviewRowContentPreviewProvider :
 @XentlyPreview
 @Composable
 private fun StatisticOverviewRowPreview(
-    @PreviewParameter(StatisticOverviewRowContentPreviewProvider::class)
-    content: StatisticOverviewRowContent,
+    @PreviewParameter(StatisticOverviewRowContentPreviewProvider::class) content: StatisticOverviewRowContent,
 ) {
     XentlyTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
-            StatisticOverviewRow(
-                isLoading = content.isLoading,
-                success = content.success,
-            )
-        }
+        StatisticOverviewRow(
+            isLoading = content.isLoading,
+            success = content.success,
+        )
     }
 }

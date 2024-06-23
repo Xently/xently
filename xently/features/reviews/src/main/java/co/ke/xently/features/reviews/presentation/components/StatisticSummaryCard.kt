@@ -22,32 +22,29 @@ internal fun StatisticSummaryCard(
     title: String,
     statColor: Color,
 ) {
-    OutlinedCard(
-        modifier = modifier,
-        content = {
-            Text(
-                text = stat,
-                color = statColor,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 24.dp),
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 24.dp),
-                style = MaterialTheme.typography.labelMedium,
-            )
-        },
-    )
+    OutlinedCard(modifier = modifier) {
+        Text(
+            text = stat,
+            color = statColor,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 24.dp),
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp),
+            style = MaterialTheme.typography.labelMedium,
+        )
+    }
 }
 
 @XentlyThemePreview
