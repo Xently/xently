@@ -235,6 +235,7 @@ private fun StatisticOverviewRow(
     success: StatisticsResponse.Success,
     modifier: Modifier = Modifier,
 ) {
+    val cardWidth = 140.dp
     Row(
         modifier = modifier
             .height(IntrinsicSize.Max)
@@ -243,7 +244,7 @@ private fun StatisticOverviewRow(
         Spacer(modifier = Modifier.width(16.dp))
         StatisticSummaryCard(
             modifier = Modifier
-                .width(150.dp)
+                .width(cardWidth)
                 .fillMaxHeight()
                 .shimmer(isLoading),
             stat = success.data.totalReviews.coolFormat(),
@@ -253,7 +254,7 @@ private fun StatisticOverviewRow(
         Spacer(modifier = Modifier.width(16.dp))
         StatisticSummaryCard(
             modifier = Modifier
-                .width(150.dp)
+                .width(cardWidth)
                 .fillMaxHeight()
                 .shimmer(isLoading),
             stat = success.data.generalSentiment.text,
@@ -266,7 +267,7 @@ private fun StatisticOverviewRow(
         Spacer(modifier = Modifier.width(16.dp))
         StatisticSummaryCard(
             modifier = Modifier
-                .width(150.dp)
+                .width(cardWidth)
                 .fillMaxHeight()
                 .shimmer(isLoading),
             stat = "${success.data.percentageSatisfaction}%",
@@ -276,7 +277,7 @@ private fun StatisticOverviewRow(
         Spacer(modifier = Modifier.width(16.dp))
         StatisticSummaryCard(
             modifier = Modifier
-                .width(150.dp)
+                .width(cardWidth)
                 .fillMaxHeight()
                 .shimmer(isLoading),
             stat = success.data.averageRating.toString(),
