@@ -97,6 +97,7 @@ dependencies {
     implementation(libs.bundles.ui)
     implementation(libs.bundles.ui.navigation)
     implementation(libs.adaptive.navigation)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
