@@ -180,7 +180,11 @@ internal fun StoreSelectionListScreen(
             )
         },
     ) { paddingValues ->
-        StoreListScreenContent(stores = stores, paddingValues = paddingValues) { store ->
+        StoreListScreenContent(
+            stores = stores,
+            paddingValues = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) { store ->
             if (store != null) {
                 StoreListItem(
                     store = store,

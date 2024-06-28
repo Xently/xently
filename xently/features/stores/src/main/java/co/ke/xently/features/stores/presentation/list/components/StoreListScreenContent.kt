@@ -1,5 +1,6 @@
 package co.ke.xently.features.stores.presentation.list.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import kotlinx.coroutines.runBlocking
 internal fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
     paddingValues: PaddingValues,
+    verticalArrangement: Arrangement.HorizontalOrVertical,
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     val refreshLoadState = stores.loadState.refresh
@@ -108,6 +110,7 @@ internal fun StoreListScreenContent(
                     stores = stores,
                     modifier = Modifier.matchParentSize(),
                     storeListItem = storeListItem,
+                    verticalArrangement = verticalArrangement,
                 )
             }
         }

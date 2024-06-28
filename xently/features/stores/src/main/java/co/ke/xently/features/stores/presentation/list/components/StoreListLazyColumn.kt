@@ -31,11 +31,12 @@ import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataErro
 internal fun StoreListLazyColumn(
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.HorizontalOrVertical,
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = verticalArrangement,
     ) {
         when (val loadState = stores.loadState.refresh) {
             is LoadState.NotLoading -> Unit

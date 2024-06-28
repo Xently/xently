@@ -144,9 +144,6 @@ internal fun LandingScreen(
             layoutType = customNavSuiteType,
             navigationSuiteItems = {
                 AppDestination.entries.forEach { destination ->
-                    val showLabel =
-                        adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
-                                && customNavSuiteType == NavigationSuiteType.NavigationBar
                     item(
                         icon = {
                             Icon(
@@ -154,13 +151,11 @@ internal fun LandingScreen(
                                 contentDescription = stringResource(destination.contentDescription),
                             )
                         },
-                        label = if (showLabel) null else {
-                            {
-                                Text(
-                                    text = stringResource(destination.label),
-                                    modifier = Modifier.basicMarquee(),
-                                )
-                            }
+                        label = {
+                            Text(
+                                text = stringResource(destination.label),
+                                modifier = Modifier.basicMarquee(),
+                            )
                         },
                         selected = destination == currentDestination,
                         onClick = {
