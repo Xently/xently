@@ -43,7 +43,7 @@ android {
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        applicationId = "co.ke.xently.customer"
+        applicationId = "co.ke.xently"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = libs.versions.android.version.code.get().toInt()
