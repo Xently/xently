@@ -1,6 +1,5 @@
 package co.ke.xently.features.stores.presentation.list.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,9 +31,7 @@ import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataErro
 internal fun StoreListLazyColumn(
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
-    onStoreSelected: (Store) -> Unit,
-    onClickEditStore: (Store) -> Unit,
-    onClickConfirmDelete: (Store) -> Unit,
+    storeListItem: @Composable (Store?) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -110,23 +107,7 @@ internal fun StoreListLazyColumn(
         ) { index ->
             val store = stores[index]
 
-            if (store != null) {
-                StoreListItem(
-                    store = store,
-                    onClickUpdate = { onClickEditStore(store) },
-                    onClickConfirmDelete = { onClickConfirmDelete(store) },
-                    modifier = Modifier.clickable {
-                        onStoreSelected(store)
-                    },
-                )
-            } else {
-                StoreListItem(
-                    store = Store.DEFAULT,
-                    isLoading = true,
-                    onClickUpdate = {},
-                    onClickConfirmDelete = {},
-                )
-            }
+            storeListItem(store)
         }
 
         when (val loadState = stores.loadState.append) {

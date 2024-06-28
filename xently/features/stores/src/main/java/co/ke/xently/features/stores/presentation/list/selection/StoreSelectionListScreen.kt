@@ -1,25 +1,20 @@
-package co.ke.xently.features.stores.presentation.list
+package co.ke.xently.features.stores.presentation.list.selection
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,10 +27,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,39 +37,30 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.error.ConfigurationError
-import co.ke.xently.features.stores.data.domain.error.DataError
-import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
-import co.ke.xently.features.stores.presentation.list.components.StoreListEmptyState
-import co.ke.xently.features.stores.presentation.list.components.StoreListLazyColumn
-import co.ke.xently.features.stores.presentation.utils.asUiText
-import co.ke.xently.features.ui.core.presentation.LocalEventHandler
-import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
+import co.ke.xently.features.stores.presentation.list.components.StoreListItem
+import co.ke.xently.features.stores.presentation.list.components.StoreListScreenContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 
 @Composable
-fun StoreListScreen(
+fun StoreSelectionListScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickAddStore: () -> Unit,
     onClickEditStore: (Store) -> Unit,
     onStoreSelected: (Store) -> Unit,
 ) {
-    val viewModel = hiltViewModel<StoreListViewModel>()
+    val viewModel = hiltViewModel<StoreSelectionListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val stores = viewModel.stores.collectAsLazyPagingItems()
@@ -89,23 +73,23 @@ fun StoreListScreen(
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                is StoreListEvent.Error -> {
+                is StoreSelectionListEvent.Error -> {
                     snackbarHostState.showSnackbar(
                         event.error.asString(context = context),
                         duration = SnackbarDuration.Long,
                     )
                 }
 
-                is StoreListEvent.Success -> {
+                is StoreSelectionListEvent.Success -> {
                     when (event.action) {
-                        is StoreListAction.DeleteStore -> {
+                        is StoreSelectionListAction.DeleteStore -> {
                             snackbarHostState.showSnackbar(
                                 context.getString(R.string.message_store_deleted),
                                 duration = SnackbarDuration.Short,
                             )
                         }
 
-                        is StoreListAction.SelectStore -> {
+                        is StoreSelectionListAction.SelectStore -> {
                             onStoreSelected(event.action.store)
                         }
 
@@ -116,7 +100,7 @@ fun StoreListScreen(
         }
     }
 
-    StoreListScreen(
+    StoreSelectionListScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         stores = stores,
@@ -131,15 +115,15 @@ fun StoreListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun StoreListScreen(
-    state: StoreListUiState,
+internal fun StoreSelectionListScreen(
+    state: StoreSelectionListUiState,
     snackbarHostState: SnackbarHostState,
     stores: LazyPagingItems<Store>,
     categories: List<StoreCategory>,
     modifier: Modifier = Modifier,
     onClickAddStore: () -> Unit,
     onClickEditStore: (Store) -> Unit,
-    onAction: (StoreListAction) -> Unit,
+    onAction: (StoreSelectionListAction) -> Unit,
     onClickBack: () -> Unit,
 ) {
     Scaffold(
@@ -172,10 +156,10 @@ internal fun StoreListScreen(
                             StoreCategoryFilterChip(
                                 item = item,
                                 onClickSelectCategory = {
-                                    onAction(StoreListAction.SelectCategory(item))
+                                    onAction(StoreSelectionListAction.SelectCategory(item))
                                 },
                                 onClickRemoveCategory = {
-                                    onAction(StoreListAction.RemoveCategory(item))
+                                    onAction(StoreSelectionListAction.RemoveCategory(item))
                                 },
                             )
                         }
@@ -196,88 +180,34 @@ internal fun StoreListScreen(
             )
         },
     ) { paddingValues ->
-        val refreshLoadState = stores.loadState.refresh
-        val isRefreshing by remember(refreshLoadState, stores.itemCount) {
-            derivedStateOf { refreshLoadState == LoadState.Loading && stores.itemCount > 0 }
-        }
-        PullRefreshBox(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            isRefreshing = isRefreshing,
-            onRefresh = stores::refresh,
-        ) {
-            when {
-                stores.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
-                    StoreListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = stringResource(R.string.message_no_stores_found),
-                        onClickRetry = stores::refresh,
-                    )
-                }
-
-                stores.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    StoreListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable,
-                        onClickRetry = stores::retry,
-                    ) {
-                        val eventHandler = LocalEventHandler.current
-                        when (error) {
-                            ConfigurationError.ShopSelectionRequired -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = eventHandler::requestShopSelection) {
-                                    Text(text = stringResource(R.string.action_select_shop))
-                                }
-                            }
-
-                            ConfigurationError.StoreSelectionRequired -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = eventHandler::requestStoreSelection) {
-                                    Text(text = stringResource(R.string.action_select_store))
-                                }
-                            }
-
-                            DataError.Network.Unauthorized -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                LoginAndRetryButtonsRow(onRetry = stores::retry)
-                            }
-
-                            else -> Unit
-                        }
-                    }
-                }
-
-                stores.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-
-                else -> {
-                    StoreListLazyColumn(
-                        modifier = Modifier.matchParentSize(),
-                        stores = stores,
-                        onClickEditStore = onClickEditStore,
-                        onStoreSelected = { onAction(StoreListAction.SelectStore(it)) },
-                        onClickConfirmDelete = { onAction(StoreListAction.DeleteStore(it)) },
-                    )
-                }
+        StoreListScreenContent(stores = stores, paddingValues = paddingValues) { store ->
+            if (store != null) {
+                StoreListItem(
+                    store = store,
+                    onClickUpdate = { onClickEditStore(store) },
+                    onClickConfirmDelete = { onAction(StoreSelectionListAction.DeleteStore(store)) },
+                    modifier = Modifier.clickable {
+                        onAction(
+                            StoreSelectionListAction.SelectStore(
+                                store
+                            )
+                        )
+                    },
+                )
+            } else {
+                StoreListItem(
+                    store = Store.DEFAULT,
+                    isLoading = true,
+                    onClickUpdate = {},
+                    onClickConfirmDelete = {},
+                )
             }
         }
     }
 }
 
-private class StoreListScreenUiState(
-    val state: StoreListUiState,
+private class StoreSelectionListScreenUiState(
+    val state: StoreSelectionListUiState,
     val stores: PagingData<Store> = PagingData.from(
         List(10) {
             Store(
@@ -293,23 +223,23 @@ private class StoreListScreenUiState(
 )
 
 private class StoreListUiStateParameterProvider :
-    PreviewParameterProvider<StoreListScreenUiState> {
-    override val values: Sequence<StoreListScreenUiState>
+    PreviewParameterProvider<StoreSelectionListScreenUiState> {
+    override val values: Sequence<StoreSelectionListScreenUiState>
         get() = sequenceOf(
-            StoreListScreenUiState(state = StoreListUiState()),
-            StoreListScreenUiState(state = StoreListUiState(isLoading = true)),
+            StoreSelectionListScreenUiState(state = StoreSelectionListUiState()),
+            StoreSelectionListScreenUiState(state = StoreSelectionListUiState(isLoading = true)),
         )
 }
 
 @XentlyPreview
 @Composable
-private fun StoreListScreenPreview(
+private fun StoreSelectionListScreenPreview(
     @PreviewParameter(StoreListUiStateParameterProvider::class)
-    state: StoreListScreenUiState,
+    state: StoreSelectionListScreenUiState,
 ) {
     val stores = flowOf(state.stores).collectAsLazyPagingItems()
     XentlyTheme {
-        StoreListScreen(
+        StoreSelectionListScreen(
             state = state.state,
             snackbarHostState = remember {
                 SnackbarHostState()

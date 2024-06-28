@@ -33,7 +33,7 @@ import co.ke.xently.features.shops.domain.ShopNavGraph
 import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
-import co.ke.xently.features.stores.presentation.list.StoreListScreen
+import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
@@ -135,7 +135,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable<SelectStoreScreen> {
-                        StoreListScreen(
+                        StoreSelectionListScreen(
                             onClickBack = navController::navigateUp,
                             onClickAddStore = {
                                 navController.navigate(EditStoreScreen())

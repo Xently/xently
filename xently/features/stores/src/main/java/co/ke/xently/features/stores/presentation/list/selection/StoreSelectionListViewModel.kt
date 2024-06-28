@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.list
+package co.ke.xently.features.stores.presentation.list.selection
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -40,21 +40,21 @@ import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class StoreListViewModel @Inject constructor(
+internal class StoreSelectionListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: StoreRepository,
     shopRepository: ShopRepository,
     private val storeCategoryRepository: StoreCategoryRepository,
 ) : ViewModel() {
     private companion object {
-        private val KEY = StoreListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
+        private val KEY = StoreSelectionListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
     }
 
-    private val _uiState = MutableStateFlow(StoreListUiState())
-    val uiState: StateFlow<StoreListUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(StoreSelectionListUiState())
+    val uiState: StateFlow<StoreSelectionListUiState> = _uiState.asStateFlow()
 
-    private val _event = Channel<StoreListEvent>()
-    val event: Flow<StoreListEvent> = _event.receiveAsFlow()
+    private val _event = Channel<StoreSelectionListEvent>()
+    val event: Flow<StoreSelectionListEvent> = _event.receiveAsFlow()
 
     private val _selectedCategories = savedStateHandle.getStateFlow(KEY, emptySet<String>())
 
@@ -109,27 +109,27 @@ internal class StoreListViewModel @Inject constructor(
             XentlyPagingSource(apiCall = call)
         }
 
-    fun onAction(action: StoreListAction) {
+    fun onAction(action: StoreSelectionListAction) {
         when (action) {
-            is StoreListAction.ChangeQuery -> {
+            is StoreSelectionListAction.ChangeQuery -> {
                 _uiState.update { it.copy(query = action.query) }
             }
 
-            is StoreListAction.SelectCategory -> {
+            is StoreSelectionListAction.SelectCategory -> {
                 val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
                 savedStateHandle[KEY] = storeCategories + action.category.name
             }
 
-            is StoreListAction.RemoveCategory -> {
+            is StoreSelectionListAction.RemoveCategory -> {
                 val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
                 savedStateHandle[KEY] = storeCategories - action.category.name
             }
 
-            is StoreListAction.Search -> {
+            is StoreSelectionListAction.Search -> {
                 _filters.update { it.copy(query = action.query) }
             }
 
-            is StoreListAction.DeleteStore -> {
+            is StoreSelectionListAction.DeleteStore -> {
                 viewModelScope.launch {
                     _uiState.update {
                         it.copy(isLoading = true)
@@ -137,7 +137,7 @@ internal class StoreListViewModel @Inject constructor(
                     when (val result = repository.deleteStore(store = action.store)) {
                         is Result.Failure -> {
                             _event.send(
-                                StoreListEvent.Error(
+                                StoreSelectionListEvent.Error(
                                     result.error.asUiText(),
                                     result.error
                                 )
@@ -145,7 +145,7 @@ internal class StoreListViewModel @Inject constructor(
                         }
 
                         is Result.Success -> {
-                            _event.send(StoreListEvent.Success(action))
+                            _event.send(StoreSelectionListEvent.Success(action))
                         }
                     }
                 }.invokeOnCompletion {
@@ -155,7 +155,7 @@ internal class StoreListViewModel @Inject constructor(
                 }
             }
 
-            is StoreListAction.SelectStore -> {
+            is StoreSelectionListAction.SelectStore -> {
                 viewModelScope.launch {
                     _uiState.update {
                         it.copy(isLoading = true)
@@ -163,7 +163,7 @@ internal class StoreListViewModel @Inject constructor(
                     when (val result = repository.selectStore(store = action.store)) {
                         is Result.Failure -> {
                             _event.send(
-                                StoreListEvent.Error(
+                                StoreSelectionListEvent.Error(
                                     result.error.asUiText(),
                                     result.error
                                 )
@@ -171,7 +171,7 @@ internal class StoreListViewModel @Inject constructor(
                         }
 
                         is Result.Success -> {
-                            _event.send(StoreListEvent.Success(action))
+                            _event.send(StoreSelectionListEvent.Success(action))
                         }
                     }
                 }.invokeOnCompletion {

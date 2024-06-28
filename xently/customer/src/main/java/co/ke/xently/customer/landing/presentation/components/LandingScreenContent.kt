@@ -11,7 +11,7 @@ import co.ke.xently.customer.R
 import co.ke.xently.customer.landing.domain.AppDestination
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
-import co.ke.xently.features.stores.presentation.list.StoreListScreen
+import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +22,7 @@ internal fun LandingScreenContent(
 ) {
     when (currentDestination) {
         AppDestination.DASHBOARD -> {
-            StoreListScreen(
+            StoreSelectionListScreen(
                 onClickBack = {},
                 onClickAddStore = {},
                 onClickEditStore = {},
