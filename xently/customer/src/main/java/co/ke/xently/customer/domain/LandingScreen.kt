@@ -1,4 +1,4 @@
-package co.ke.xently.customer.landing.domain
+package co.ke.xently.customer.domain
 
 import kotlinx.serialization.Serializable
 
