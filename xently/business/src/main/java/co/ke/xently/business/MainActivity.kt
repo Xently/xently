@@ -18,8 +18,9 @@ import co.ke.xently.business.domain.PickLocation
 import co.ke.xently.business.domain.ReviewCommentListScreen
 import co.ke.xently.business.domain.SelectShopScreen
 import co.ke.xently.business.domain.SettingsScreen
-import co.ke.xently.business.landing.domain.EditStoreReviewCategoryScreen
-import co.ke.xently.business.landing.domain.LandingScreen
+import co.ke.xently.business.domain.EditStoreReviewCategoryScreen
+import co.ke.xently.business.domain.LandingScreen
+import co.ke.xently.business.domain.SelectStoreScreen
 import co.ke.xently.business.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
