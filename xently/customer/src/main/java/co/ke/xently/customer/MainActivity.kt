@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import co.ke.xently.customer.domain.LandingScreen
+import co.ke.xently.customer.domain.MoreDetailsScreen
 import co.ke.xently.customer.domain.PickLocationScreen
 import co.ke.xently.customer.domain.SettingsScreen
 import co.ke.xently.customer.domain.StoreDetailScreen
@@ -26,6 +27,7 @@ import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
+import co.ke.xently.features.stores.presentation.moredetails.MoreDetailsScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
 import com.google.firebase.ktx.Firebase
@@ -86,7 +88,7 @@ class MainActivity : ComponentActivity() {
                         StoreDetailScreen(
                             onClickBack = navController::navigateUp,
                             onClickMoreDetails = {
-                                /*TODO*/
+                                navController.navigate(MoreDetailsScreen(storeId = it.id))
                             },
                             allStoreProductsContent = {
                                 CategoryFilterableProductListContent(
@@ -97,6 +99,11 @@ class MainActivity : ComponentActivity() {
 //                                RecommendedProductsContent()
                                 Text(text = "Recommended products")
                             },
+                        )
+                    }
+                    composable<MoreDetailsScreen> {
+                        MoreDetailsScreen(
+                            onClickBack = navController::navigateUp,
                         )
                     }
                     composable<PickLocationScreen> {
