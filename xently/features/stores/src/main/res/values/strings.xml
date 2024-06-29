@@ -82,4 +82,11 @@
     <string name="content_desc_more_options_for_store">More options for store \"%1$s, %2$s\".</string>
     <string name="action_add_bookmark">Add bookmark</string>
     <string name="action_remove_bookmark">Remove bookmark</string>
+    <string name="action_label_review_to_get_points"><![CDATA[Get points & Review]]></string>
+    <string name="message_click_to_get_review_points"><![CDATA[Click button to get points & review]]></string>
+    <string name="message_review_requirement">You can only review if you are at this location. Please turn on your location.</string>
+    <string name="error_message_navigation_app_not_found">Sorry, an app for handling directions was not found.</string>
+    <string name="action_install">Install</string>
+    <string name="tab_all_store_products">All products</string>
+    <string name="tab_recommended_products">Recommended products</string>
 </resources>

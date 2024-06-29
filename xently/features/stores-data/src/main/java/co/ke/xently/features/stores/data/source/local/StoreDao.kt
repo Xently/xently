@@ -11,6 +11,9 @@ interface StoreDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(vararg stores: StoreEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(stores: List<StoreEntity>)
+
     @Query("DELETE FROM stores")
     suspend fun deleteAll()
 
@@ -34,4 +37,7 @@ interface StoreDao {
 
     @Query("SELECT isActivated FROM stores WHERE id = :id")
     suspend fun isActivatedByStoreId(id: Long): Boolean
+
+    @Query("DELETE FROM stores WHERE isActivated = 0")
+    suspend fun deleteAllExceptActivated()
 }

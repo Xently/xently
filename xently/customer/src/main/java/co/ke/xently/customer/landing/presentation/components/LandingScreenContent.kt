@@ -22,6 +22,7 @@ import co.ke.xently.customer.R
 import co.ke.xently.customer.landing.domain.AppDestination
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
+import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithLegalRequirements
 
@@ -31,10 +32,11 @@ internal fun LandingScreenContent(
     currentDestination: AppDestination,
     navigationIcon: @Composable () -> Unit,
     onClickSettingsMenu: () -> Unit,
+    onClickStore: (Store) -> Unit,
 ) {
     when (currentDestination) {
         AppDestination.DASHBOARD -> {
-            StoreListScreen {
+            StoreListScreen(onClickStore = onClickStore) {
                 CenterAlignedTopAppBar(
                     navigationIcon = navigationIcon,
                     title = { Text(text = stringResource(R.string.app_name)) },

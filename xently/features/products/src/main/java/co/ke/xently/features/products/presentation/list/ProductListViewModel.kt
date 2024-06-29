@@ -6,18 +6,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
 import co.ke.xently.features.products.data.domain.error.Result
-import co.ke.xently.features.products.data.domain.error.ShopSelectionRequiredException
-import co.ke.xently.features.products.data.domain.error.StoreSelectionRequiredException
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
-import co.ke.xently.features.stores.data.domain.error.ConfigurationError
-import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,16 +31,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class ProductListViewModel @Inject constructor(
+internal open class ProductListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    storeRepository: StoreRepository,
 ) : ViewModel() {
     private companion object {
         private val KEY = ProductListViewModel::class.java.name.plus("SELECTED_PRODUCT_CATEGORIES")
@@ -74,39 +67,29 @@ internal class ProductListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(ProductFilters())
 
-    val products: Flow<PagingData<Product>> =
-        storeRepository.findActiveStore().flatMapLatest { result ->
-            when (result) {
-                is StoreResult.Failure -> {
-                    pager {
-                        when (result.error) {
-                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
-                            ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
-                        }
-                    }.flow
-                }
+    open val products: Flow<PagingData<Product>> = savedStateHandle.getStateFlow(
+        key = "productsUrl",
+        initialValue = "",
+    ).flatMapLatest(::getProductPagingDataFlow)
 
-                is StoreResult.Success -> {
-                    _selectedCategories.combine(_filters) { categories, filters ->
-                        filters.copy(
-                            categories = categories.map {
-                                ProductCategory(name = it)
-                            }.toSet(),
-                        )
-                    }.flatMapLatest { filters ->
-                        pager { url ->
-                            repository.getProducts(
-                                filters = filters,
-                                url = url
-                                    ?: result.data.links["products"]!!.hrefWithoutQueryParamTemplates(),
-                            )
-                        }.flow
-                    }
-                }
-            }
-        }.cachedIn(viewModelScope)
+    protected fun getProductPagingDataFlow(productsUrl: String): Flow<PagingData<Product>> {
+        return _selectedCategories.combine(_filters) { categories, filters ->
+            filters.copy(
+                categories = categories.map {
+                    ProductCategory(name = it)
+                }.toSet(),
+            )
+        }.flatMapLatest { filters ->
+            pager { url ->
+                repository.getProducts(
+                    filters = filters,
+                    url = url ?: productsUrl,
+                )
+            }.flow
+        }
+    }
 
-    private fun pager(call: suspend (String?) -> PagedResponse<Product>) =
+    protected fun pager(call: suspend (String?) -> PagedResponse<Product>) =
         Pager(PagingConfig(pageSize = 20)) {
             XentlyPagingSource(apiCall = call)
         }

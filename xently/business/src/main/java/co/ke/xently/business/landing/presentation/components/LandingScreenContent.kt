@@ -27,7 +27,7 @@ import co.ke.xently.business.landing.domain.AppDestination
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
 import co.ke.xently.features.products.data.domain.Product
-import co.ke.xently.features.products.presentation.list.ProductListScreen
+import co.ke.xently.features.products.presentation.list.ActiveStoreProductListScreen
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackScreen
 import co.ke.xently.features.stores.data.domain.Store
@@ -110,7 +110,7 @@ internal fun LandingScreenContent(
             )
         }
 
-        AppDestination.PRODUCTS -> ProductListScreen(
+        AppDestination.PRODUCTS -> ActiveStoreProductListScreen(
             onClickAddProduct = onClickAddProduct,
             onClickEditProduct = onClickEditProduct,
         ) {

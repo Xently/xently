@@ -55,4 +55,6 @@
     <string name="action_select_shop">Select Shop</string>
     <string name="action_select_store">Select Branch</string>
     <string name="action_login">Login</string>
+    <string name="message_confirm_product_deletion">Are you sure you want to delete the \"%1$s\"?</string>
+    <string name="content_desc_more_options_for_product">More options for product \"%1$s\".</string>
 </resources>

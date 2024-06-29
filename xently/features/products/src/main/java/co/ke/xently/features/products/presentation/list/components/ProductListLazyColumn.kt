@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -31,8 +32,7 @@ import co.ke.xently.features.products.data.domain.error.DataError as ProductData
 internal fun ProductListLazyColumn(
     products: LazyPagingItems<Product>,
     modifier: Modifier = Modifier,
-    onClickEditProduct: (Product) -> Unit,
-    onClickConfirmDelete: (Product) -> Unit,
+    productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -108,20 +108,7 @@ internal fun ProductListLazyColumn(
         ) { index ->
             val product = products[index]
 
-            if (product != null) {
-                ProductListItem(
-                    product = product,
-                    onClickUpdate = { onClickEditProduct(product) },
-                    onClickConfirmDelete = { onClickConfirmDelete(product) },
-                )
-            } else {
-                ProductListItem(
-                    product = Product.DEFAULT,
-                    isLoading = true,
-                    onClickUpdate = {},
-                    onClickConfirmDelete = {},
-                )
-            }
+            productListItem(product)
         }
 
         when (val loadState = products.loadState.append) {

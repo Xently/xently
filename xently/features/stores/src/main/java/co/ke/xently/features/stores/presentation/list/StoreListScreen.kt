@@ -17,7 +17,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -34,11 +33,13 @@ import co.ke.xently.features.stores.presentation.list.components.StoreListScreen
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun StoreListScreen(
     modifier: Modifier = Modifier,
+    onClickStore: (Store) -> Unit,
     topBar: @Composable () -> Unit,
 ) {
     val viewModel = hiltViewModel<StoreListViewModel>()
@@ -46,7 +47,7 @@ fun StoreListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val stores = viewModel.stores.collectAsLazyPagingItems()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -71,6 +72,7 @@ fun StoreListScreen(
         modifier = modifier,
         onAction = viewModel::onAction,
         topBar = topBar,
+        onClickStore = onClickStore,
     )
 }
 
@@ -81,6 +83,7 @@ internal fun StoreListScreen(
     snackbarHostState: SnackbarHostState,
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
+    onClickStore: (Store) -> Unit,
     onAction: (StoreListAction) -> Unit,
     topBar: @Composable () -> Unit,
 ) {
@@ -112,8 +115,8 @@ internal fun StoreListScreen(
                 StoreListItemCard(
                     store = store,
                     isLoading = false,
-                    onClick = {},
-                    onClickToggleBookmark = {},
+                    onClick = { onClickStore(store) },
+                    onClickToggleBookmark = { onAction(StoreListAction.ToggleBookmark(store)) },
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
             } else {
@@ -165,13 +168,12 @@ private fun StoreSelectionListScreenPreview(
     XentlyTheme {
         StoreListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             stores = stores,
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             topBar = {},
+            onClickStore = {},
         )
     }
 }

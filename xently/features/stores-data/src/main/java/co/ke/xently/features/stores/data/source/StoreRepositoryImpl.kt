@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -210,7 +211,23 @@ internal class StoreRepositoryImpl @Inject constructor(
                 }
             }
         }.body<PagedResponse<Store>>().run {
-            copy(embedded = mapOf("views" to (embedded.values.firstOrNull() ?: emptyList())))
+            val stores = embedded.values.firstOrNull() ?: emptyList()
+            coroutineScope {
+                launch {
+                    database.withTransactionFacade {
+                        val activated = storeDao.getActivated()
+                        storeDao.save(
+                            stores.map { store ->
+                                StoreEntity(
+                                    store,
+                                    isActivated = store.id == activated?.id,
+                                )
+                            },
+                        )
+                    }
+                }
+            }
+            copy(embedded = mapOf("views" to stores))
         }
     }
 

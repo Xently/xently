@@ -35,6 +35,7 @@ import co.ke.xently.customer.landing.domain.AppDestination
 import co.ke.xently.customer.landing.domain.Menu
 import co.ke.xently.customer.landing.presentation.components.LandingModalDrawerSheet
 import co.ke.xently.customer.landing.presentation.components.LandingScreenContent
+import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 fun LandingScreen(
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
+    onClickStore: (Store) -> Unit,
 ) {
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -80,6 +82,7 @@ fun LandingScreen(
             modifier = modifier,
             onClickSettings = onClickSettings,
             onAction = viewModel::onAction,
+            onClickStore = onClickStore,
         )
     }
 }
@@ -89,6 +92,7 @@ internal fun LandingScreen(
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
     onAction: (LandingAction) -> Unit,
+    onClickStore: (Store) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -187,6 +191,7 @@ internal fun LandingScreen(
                 currentDestination = currentDestination,
                 navigationIcon = navigationIcon,
                 onClickSettingsMenu = onClickSettings,
+                onClickStore = onClickStore,
             )
         }
     }

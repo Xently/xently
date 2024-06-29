@@ -1,22 +1,13 @@
 package co.ke.xently.features.products.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,48 +20,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
-import co.ke.xently.features.products.data.domain.error.ConfigurationError
-import co.ke.xently.features.products.data.domain.error.DataError
-import co.ke.xently.features.products.data.domain.error.toError
-import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
-import co.ke.xently.features.products.presentation.list.components.ProductListEmptyState
-import co.ke.xently.features.products.presentation.list.components.ProductListLazyColumn
-import co.ke.xently.features.products.presentation.utils.asUiText
+import co.ke.xently.features.products.presentation.list.components.ManipulatableProductListItem
+import co.ke.xently.features.products.presentation.list.components.ProductCategoriesLazyRow
+import co.ke.xently.features.products.presentation.list.components.ProductListContent
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
-import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.pagination.PullRefreshBox
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 
 @Composable
-fun ProductListScreen(
+fun ActiveStoreProductListScreen(
     modifier: Modifier = Modifier,
     onClickAddProduct: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val viewModel = hiltViewModel<ProductListViewModel>()
+    val viewModel = hiltViewModel<ActiveStoreProductListViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val products = viewModel.products.collectAsLazyPagingItems()
@@ -106,7 +87,7 @@ fun ProductListScreen(
         }
     }
 
-    ProductListScreen(
+    ActiveStoreProductListScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         products = products,
@@ -121,7 +102,7 @@ fun ProductListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ProductListScreen(
+internal fun ActiveStoreProductListScreen(
     state: ProductListUiState,
     snackbarHostState: SnackbarHostState,
     products: LazyPagingItems<Product>,
@@ -132,8 +113,6 @@ internal fun ProductListScreen(
     onAction: (ProductListAction) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val eventHandler = LocalEventHandler.current
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -152,23 +131,11 @@ internal fun ProductListScreen(
                 )*/
 
                 if (categories.isNotEmpty()) {
-                    LazyRow(
+                    ProductCategoriesLazyRow(
+                        categories = categories,
+                        onAction = onAction,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                    ) {
-                        items(categories, key = { it.name }) { item ->
-                            ProductCategoryFilterChip(
-                                item = item,
-                                onClickSelectCategory = {
-                                    onAction(ProductListAction.SelectCategory(item))
-                                },
-                                onClickRemoveCategory = {
-                                    onAction(ProductListAction.RemoveCategory(item))
-                                },
-                            )
-                        }
-                    }
+                    )
                 }
             }
         },
@@ -185,89 +152,36 @@ internal fun ProductListScreen(
             )
         },
     ) { paddingValues ->
-        val refreshLoadState = products.loadState.refresh
-        val isRefreshing by remember(refreshLoadState, products.itemCount) {
-            derivedStateOf {
-                refreshLoadState == LoadState.Loading
-                        && products.itemCount > 0
-            }
-        }
-        PullRefreshBox(
+        val eventHandler = LocalEventHandler.current
+
+        ProductListContent(
+            products = products,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            isRefreshing = isRefreshing,
-            onRefresh = products::refresh,
-        ) {
-            when {
-                products.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
-                    ProductListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = stringResource(R.string.message_no_products_found),
-                        onClickRetry = products::refresh,
-                    )
-                }
-
-                products.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    ProductListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable,
-                        onClickRetry = products::retry,
-                    ) {
-                        when (error) {
-                            ConfigurationError.ShopSelectionRequired -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = eventHandler::requestShopSelection) {
-                                    Text(text = stringResource(R.string.action_select_shop))
-                                }
-                            }
-
-                            ConfigurationError.StoreSelectionRequired -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(onClick = eventHandler::requestStoreSelection) {
-                                    Text(text = stringResource(R.string.action_select_store))
-                                }
-                            }
-
-                            DataError.Network.Unauthorized -> {
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                LoginAndRetryButtonsRow(onRetry = products::retry)
-                            }
-
-                            else -> Unit
-                        }
-                    }
-                }
-
-                products.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-
-                else -> {
-                    ProductListLazyColumn(
-                        products = products,
-                        modifier = Modifier.matchParentSize(),
-                        onClickEditProduct = onClickEditProduct,
-                        onClickConfirmDelete = { onAction(ProductListAction.DeleteProduct(it)) },
-                    )
-                }
+            onClickSelectShop = eventHandler::requestShopSelection,
+            onClickSelectStore = eventHandler::requestStoreSelection,
+        ) { product ->
+            if (product != null) {
+                ManipulatableProductListItem(
+                    product = product,
+                    onClickUpdate = { onClickEditProduct(product) },
+                    onClickConfirmDelete = { onAction(ProductListAction.DeleteProduct(product)) },
+                )
+            } else {
+                ManipulatableProductListItem(
+                    product = Product.DEFAULT,
+                    isLoading = true,
+                    onClickUpdate = {},
+                    onClickConfirmDelete = {},
+                )
             }
         }
     }
 }
 
 
-private class ProductListScreenUiState(
+internal class ProductListScreenUiState(
     val state: ProductListUiState,
     val products: PagingData<Product> = PagingData.from(
         List(10) {
@@ -286,7 +200,7 @@ private class ProductListScreenUiState(
     },
 )
 
-private class ProductListUiStateParameterProvider :
+internal class ProductListUiStateParameterProvider :
     PreviewParameterProvider<ProductListScreenUiState> {
     override val values: Sequence<ProductListScreenUiState>
         get() = sequenceOf(
@@ -303,11 +217,9 @@ private fun ProductListScreenPreview(
 ) {
     val products = flowOf(state.products).collectAsLazyPagingItems()
     XentlyTheme {
-        ProductListScreen(
+        ActiveStoreProductListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             products = products,
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),

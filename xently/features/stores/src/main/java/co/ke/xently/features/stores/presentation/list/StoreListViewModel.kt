@@ -57,6 +57,10 @@ internal class StoreListViewModel @Inject constructor(
             is StoreListAction.Search -> {
                 _filters.update { it.copy(query = action.query) }
             }
+
+            is StoreListAction.ToggleBookmark -> {
+//                TODO()
+            }
         }
     }
 }
