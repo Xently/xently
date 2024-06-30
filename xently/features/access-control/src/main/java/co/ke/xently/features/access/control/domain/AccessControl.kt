@@ -18,29 +18,37 @@ data class AccessControl(
     }
 
     val addShopUrl: String
-        get() = links["add-shop"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["add-shop"].hrefWithoutQueryParamTemplates()
     val googleSignInUrl: String
-        get() = links["google-sign-in"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["google-sign-in"].hrefWithoutQueryParamTemplates()
     val emailPasswordSignInUrl: String
-        get() = links["email-password-sign-in"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["email-password-sign-in"].hrefWithoutQueryParamTemplates()
     val emailPasswordSignUpUrl: String
-        get() = links["email-password-sign-up"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["email-password-sign-up"].hrefWithoutQueryParamTemplates()
     val requestPasswordResetUrl: String
-        get() = links["request-password-reset"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["request-password-reset"].hrefWithoutQueryParamTemplates()
     val storeCategoriesUrl: String
-        get() = links["store-categories"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["store-categories"].hrefWithoutQueryParamTemplates()
     val productCategoriesUrl: String
-        get() = links["product-categories"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["product-categories"].hrefWithoutQueryParamTemplates()
     val myNotificationsUrl: String
-        get() = links["my-notifications"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["my-notifications"].hrefWithoutQueryParamTemplates()
     val upsertFcmDeviceIdUrl: String
-        get() = links["upsert-fcm-device-id"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["upsert-fcm-device-id"].hrefWithoutQueryParamTemplates()
     val removeFcmDeviceIdUrl: String
-        get() = links["remove-fcm-device-id"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["remove-fcm-device-id"].hrefWithoutQueryParamTemplates()
     val shopsAssociatedWithMyAccountUrl: String
-        get() = links["shops-associated-with-my-account"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["shops-associated-with-my-account"].hrefWithoutQueryParamTemplates()
     val storesUrl: String
-        get() = links["stores"]!!.hrefWithoutQueryParamTemplates()
+        get() = this["stores"].hrefWithoutQueryParamTemplates()
+
+    private operator fun get(ref: String): Link {
+        return getLinkByRef(ref)
+    }
+
+    private fun getLinkByRef(ref: String): Link {
+        return links[ref] ?: BASE_URLS[ref]!!
+    }
 
     companion object {
         private val BASE_URLS = mapOf(
