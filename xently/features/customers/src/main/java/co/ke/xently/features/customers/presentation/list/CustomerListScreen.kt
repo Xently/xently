@@ -41,6 +41,7 @@ import co.ke.xently.features.customers.R
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.ConfigurationError
 import co.ke.xently.features.customers.data.domain.error.DataError
+import co.ke.xently.features.customers.data.domain.error.UnknownError
 import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.list.components.CustomerListEmptyState
 import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
@@ -154,7 +155,7 @@ internal fun CustomerListScreen(
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable,
+                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
                         onClickRetry = customers::retry,
                     ) {
                         when (error) {

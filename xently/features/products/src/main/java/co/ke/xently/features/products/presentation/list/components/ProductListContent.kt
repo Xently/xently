@@ -64,7 +64,7 @@ internal fun ProductListContent(
                 ProductListEmptyState(
                     modifier = Modifier.matchParentSize(),
                     message = error.asUiText().asString(),
-                    canRetry = error is DataError.Network.Retryable,
+                    canRetry = error is DataError.Network.Retryable || error is UnknownError,
                     onClickRetry = products::retry,
                 ) {
                     when (error) {

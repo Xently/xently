@@ -146,7 +146,7 @@ internal fun NotificationListScreen(
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable,
+                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
                         onClickRetry = notifications::retry,
                     ) {
                         when (error) {

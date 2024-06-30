@@ -66,7 +66,7 @@ internal fun StoreListScreenContent(
                 StoreListEmptyState(
                     modifier = Modifier.matchParentSize(),
                     message = error.asUiText().asString(),
-                    canRetry = error is DataError.Network.Retryable,
+                    canRetry = error is DataError.Network.Retryable || error is UnknownError,
                     onClickRetry = stores::retry,
                 ) {
                     val eventHandler = LocalEventHandler.current

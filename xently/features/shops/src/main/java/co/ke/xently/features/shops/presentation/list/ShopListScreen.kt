@@ -196,7 +196,7 @@ internal fun ShopListScreen(
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable,
+                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
                         onClickRetry = shops::retry,
                     ) {
                         if (error is DataError.Network.Unauthorized) {
