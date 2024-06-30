@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import co.ke.xently.customer.R
 import co.ke.xently.customer.landing.domain.AppDestination
-import co.ke.xently.features.customers.presentation.list.CustomerListScreen
+import co.ke.xently.features.customers.presentation.list.CustomerScoreboardListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
@@ -78,7 +78,7 @@ internal fun LandingScreenContent(
             }
         }
 
-        AppDestination.SCOREBOARD -> CustomerListScreen {
+        AppDestination.SCOREBOARD -> CustomerScoreboardListScreen {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets.waterfall,
                 navigationIcon = navigationIcon,

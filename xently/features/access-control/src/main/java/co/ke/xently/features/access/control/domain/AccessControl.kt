@@ -41,6 +41,10 @@ data class AccessControl(
         get() = this["shops-associated-with-my-account"].hrefWithoutQueryParamTemplates()
     val storesUrl: String
         get() = this["stores"].hrefWithoutQueryParamTemplates()
+    val visitRankingUrl: String
+        get() = this["visit-ranking"].hrefWithoutQueryParamTemplates()
+    val myVisitRankingUrl: String
+        get() = this["my-visit-ranking"].hrefWithoutQueryParamTemplates()
 
     private operator fun get(ref: String): Link {
         return getLinkByRef(ref)
@@ -62,7 +66,9 @@ data class AccessControl(
             "email-password-sign-in" to Link(href = "$BASE_URL/auth/sign-in"),
             "email-password-sign-up" to Link(href = "$BASE_URL/auth/sign-up"),
             "request-password-reset" to Link(href = "$BASE_URL/auth/request-password-reset"),
-            "stores" to Link(href = "${BASE_URL}/stores")
+            "stores" to Link(href = "${BASE_URL}/stores"),
+            "visit-ranking" to Link(href = "$BASE_URL/statistics/rankings"),
+            "my-visit-ranking" to Link(href = "$BASE_URL/statistics/my-rankings"),
         )
     }
 }

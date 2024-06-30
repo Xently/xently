@@ -1,5 +1,6 @@
 package co.ke.xently.features.customers.data.source
 
+import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.CustomerFilters
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
@@ -17,16 +18,22 @@ import javax.inject.Singleton
 internal class CustomerRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: CustomerDatabase,
+    private val accessControlRepository: AccessControlRepository,
 ) : CustomerRepository {
     private val customerDao = database.customerDao()
     override suspend fun getCustomers(
-        url: String,
+        url: String?,
         filters: CustomerFilters,
     ): PagedResponse<Customer> {
-        return httpClient.get(urlString = url).body<PagedResponse<Customer>>().run {
+        val urlString = url ?: accessControlRepository.getAccessControl().visitRankingUrl
+        return httpClient.get(urlString = urlString).body<PagedResponse<Customer>>().run {
             (embedded.values.firstOrNull() ?: emptyList()).let { customers ->
                 coroutineScope {
-                    launch { customerDao.save(customers.map { CustomerEntity(customer = it) }) }
+                    launch {
+                        database.withTransactionFacade {
+                            customerDao.save(customers.map { CustomerEntity(customer = it) })
+                        }
+                    }
                 }
                 copy(embedded = mapOf("views" to customers))
             }

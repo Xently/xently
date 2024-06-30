@@ -19,10 +19,7 @@ internal fun MoreDetailListItem(
     isLoading: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ListItem(
             supportingContent = content,
             headlineContent = {
@@ -34,7 +31,7 @@ internal fun MoreDetailListItem(
             },
         )
         if (showDivider) {
-            HorizontalDivider()
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
         }
     }
 }

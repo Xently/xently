@@ -102,9 +102,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable<MoreDetailsScreen> {
-                        MoreDetailsScreen(
-                            onClickBack = navController::navigateUp,
-                        )
+                        MoreDetailsScreen(onClickBack = navController::navigateUp)
                     }
                     composable<PickLocationScreen> {
                         PickStoreLocationScreen(onClickBack = navController::navigateUp)

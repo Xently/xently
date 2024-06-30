@@ -60,10 +60,37 @@ import kotlin.random.Random
 @Composable
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
-    topBar: @Composable () -> Unit = {},
+    topBar: @Composable () -> Unit,
 ) {
     val viewModel = hiltViewModel<CustomerListViewModel>()
 
+    CustomerScoreboardListScreen(
+        viewModel = viewModel,
+        modifier = modifier,
+        topBar = topBar,
+    )
+}
+
+@Composable
+fun CustomerScoreboardListScreen(
+    modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit,
+) {
+    val viewModel = hiltViewModel<CustomerScoreboardListViewModel>()
+
+    CustomerScoreboardListScreen(
+        viewModel = viewModel,
+        modifier = modifier,
+        topBar = topBar,
+    )
+}
+
+@Composable
+private fun CustomerScoreboardListScreen(
+    viewModel: CustomerScoreboardListViewModel,
+    modifier: Modifier,
+    topBar: @Composable () -> Unit,
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val customers = viewModel.customers.collectAsLazyPagingItems()
 

@@ -43,7 +43,7 @@ internal fun CustomerListItem(
         },
         headlineContent = {
             Text(
-                text = "Position $position - ${customer.totalPoints} Points",
+                text = stringResource(R.string.position_points, position, customer.totalPoints),
                 fontWeight = FontWeight.Bold,
             )
         },
@@ -60,12 +60,16 @@ private class CustomerListItemParameterProvider : PreviewParameterProvider<Custo
     override val values: Sequence<Customer>
         get() = sequenceOf(
             Customer(
-                name = "Chips Kuku",
+                name = "Jane Doe",
                 id = "1",
+                position = Random.nextInt(1, 2),
+                totalPoints = Random.nextInt(10, 1_000),
             ),
             Customer(
-                name = "Chips Kuku, Bhajia, Smokies, Fish, Yoghurt, Sugar & Chicken",
+                name = "John Doe",
                 id = "1",
+                position = Random.nextInt(1, 2),
+                totalPoints = Random.nextInt(10, 1_000),
             ),
         )
 }
@@ -79,7 +83,7 @@ private fun CustomerListItemPreview(
     XentlyTheme {
         CustomerListItem(
             customer = customer,
-            position = Random.nextInt(),
+            position = Random.nextInt(1, 2),
         )
     }
 }
