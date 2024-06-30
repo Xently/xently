@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message_successful_scan">You just earned %d Xently points! This brings your total to %d points.</string>
+    <string name="message_scan_qr_location_not_captured">Please, enable location tracking to ensure you are at this place before a successful scan.</string>
+    <string name="action_okay">Okay</string>
+    <string name="action_share_experience">Leave a review</string>
+    <string name="action_skip_share_experience">Not now</string>
+</resources>
