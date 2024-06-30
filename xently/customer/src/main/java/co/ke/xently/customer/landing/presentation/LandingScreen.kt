@@ -45,6 +45,7 @@ fun LandingScreen(
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
     onClickStore: (Store) -> Unit,
+    onClickEditProfile: () -> Unit,
 ) {
     val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,6 +84,7 @@ fun LandingScreen(
             onClickSettings = onClickSettings,
             onAction = viewModel::onAction,
             onClickStore = onClickStore,
+            onClickEditProfile = onClickEditProfile,
         )
     }
 }
@@ -93,6 +95,7 @@ internal fun LandingScreen(
     onClickSettings: () -> Unit,
     onAction: (LandingAction) -> Unit,
     onClickStore: (Store) -> Unit,
+    onClickEditProfile: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -192,6 +195,7 @@ internal fun LandingScreen(
                 navigationIcon = navigationIcon,
                 onClickSettingsMenu = onClickSettings,
                 onClickStore = onClickStore,
+                onClickEditProfile = onClickEditProfile,
             )
         }
     }

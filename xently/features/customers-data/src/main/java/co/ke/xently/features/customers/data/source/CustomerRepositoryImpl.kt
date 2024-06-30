@@ -25,7 +25,7 @@ internal class CustomerRepositoryImpl @Inject constructor(
         url: String?,
         filters: CustomerFilters,
     ): PagedResponse<Customer> {
-        val urlString = url ?: accessControlRepository.getAccessControl().visitRankingUrl
+        val urlString = url ?: accessControlRepository.getAccessControl().rankingsStatisticsUrl
         return httpClient.get(urlString = urlString).body<PagedResponse<Customer>>().run {
             (embedded.values.firstOrNull() ?: emptyList()).let { customers ->
                 coroutineScope {

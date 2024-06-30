@@ -22,6 +22,7 @@ import co.ke.xently.customer.R
 import co.ke.xently.customer.landing.domain.AppDestination
 import co.ke.xently.features.customers.presentation.list.CustomerScoreboardListScreen
 import co.ke.xently.features.notifications.presentation.list.NotificationListScreen
+import co.ke.xently.features.profile.presentation.detail.ProfileDetailScreen
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.list.StoreListScreen
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithLegalRequirements
@@ -30,9 +31,10 @@ import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithLeg
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun LandingScreenContent(
     currentDestination: AppDestination,
-    navigationIcon: @Composable () -> Unit,
     onClickSettingsMenu: () -> Unit,
     onClickStore: (Store) -> Unit,
+    onClickEditProfile: () -> Unit,
+    navigationIcon: @Composable () -> Unit,
 ) {
     when (currentDestination) {
         AppDestination.DASHBOARD -> {
@@ -94,6 +96,12 @@ internal fun LandingScreenContent(
             )
         }
 
-        AppDestination.PROFILE -> Unit // TODO: Add implementation...
+        AppDestination.PROFILE -> ProfileDetailScreen(onClickEditProfile = onClickEditProfile) {
+            CenterAlignedTopAppBar(
+                windowInsets = WindowInsets.waterfall,
+                navigationIcon = navigationIcon,
+                title = { Text(text = stringResource(R.string.topbar_title_profile)) },
+            )
+        }
     }
 }

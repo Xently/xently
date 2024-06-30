@@ -69,6 +69,7 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     api(project(":xently:features:profile-data"))
+    implementation(project(":xently:features:auth-data"))
 
     debugImplementation(libs.bundles.ui.debug)
 

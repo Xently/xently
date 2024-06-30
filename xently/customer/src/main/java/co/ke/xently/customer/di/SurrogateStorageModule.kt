@@ -8,6 +8,7 @@ import co.ke.xently.features.notification.topic.data.source.local.NotificationTo
 import co.ke.xently.features.notifications.data.source.local.NotificationDatabase
 import co.ke.xently.features.productcategory.data.source.local.ProductCategoryDatabase
 import co.ke.xently.features.products.data.source.local.ProductDatabase
+import co.ke.xently.features.profile.data.source.local.ProfileStatisticDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
@@ -31,6 +32,11 @@ abstract class SurrogateStorageModule {
     abstract fun bindAuthenticationDatabase(
         database: AppDatabase,
     ): AuthenticationDatabase
+
+    @Binds
+    abstract fun bindProfileStatisticDatabase(
+        database: AppDatabase,
+    ): ProfileStatisticDatabase
 
     @Binds
     abstract fun bindShopDatabase(

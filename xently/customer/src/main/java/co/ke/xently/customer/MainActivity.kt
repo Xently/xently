@@ -17,12 +17,14 @@ import androidx.navigation.compose.rememberNavController
 import co.ke.xently.customer.domain.LandingScreen
 import co.ke.xently.customer.domain.MoreDetailsScreen
 import co.ke.xently.customer.domain.PickLocationScreen
+import co.ke.xently.customer.domain.ProfileEditDetailScreen
 import co.ke.xently.customer.domain.SettingsScreen
 import co.ke.xently.customer.domain.StoreDetailScreen
 import co.ke.xently.customer.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.products.presentation.list.CategoryFilterableProductListContent
+import co.ke.xently.features.profile.presentation.edit.ProfileEditDetailScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
@@ -70,6 +72,12 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = LandingScreen) {
                     composable<LandingScreen> {
                         LandingScreen(
+                            onClickSettings = {
+                                navController.navigate(SettingsScreen)
+                            },
+                            onClickEditProfile = {
+                                navController.navigate(ProfileEditDetailScreen)
+                            },
                             onClickStore = {
                                 navController.navigate(
                                     StoreDetailScreen(
@@ -77,9 +85,6 @@ class MainActivity : ComponentActivity() {
                                         productsUrl = it.links["products"]!!.hrefWithoutQueryParamTemplates(),
                                     )
                                 )
-                            },
-                            onClickSettings = {
-                                navController.navigate(SettingsScreen)
                             },
                         )
                     }
@@ -100,6 +105,9 @@ class MainActivity : ComponentActivity() {
                                 Text(text = "Recommended products")
                             },
                         )
+                    }
+                    composable<ProfileEditDetailScreen> {
+                        ProfileEditDetailScreen(onClickBack = navController::navigateUp)
                     }
                     composable<MoreDetailsScreen> {
                         MoreDetailsScreen(onClickBack = navController::navigateUp)

@@ -41,10 +41,12 @@ data class AccessControl(
         get() = this["shops-associated-with-my-account"].hrefWithoutQueryParamTemplates()
     val storesUrl: String
         get() = this["stores"].hrefWithoutQueryParamTemplates()
-    val visitRankingUrl: String
-        get() = this["visit-ranking"].hrefWithoutQueryParamTemplates()
-    val myVisitRankingUrl: String
-        get() = this["my-visit-ranking"].hrefWithoutQueryParamTemplates()
+    val rankingsStatisticsUrl: String
+        get() = this["rankings-statistics"].hrefWithoutQueryParamTemplates()
+    val myRankingStatisticsUrl: String
+        get() = this["my-ranking-statistics"].hrefWithoutQueryParamTemplates()
+    val myProfileStatisticsUrl: String
+        get() = this["my-profile-statistics"].hrefWithoutQueryParamTemplates()
 
     private operator fun get(ref: String): Link {
         return getLinkByRef(ref)
@@ -67,8 +69,9 @@ data class AccessControl(
             "email-password-sign-up" to Link(href = "$BASE_URL/auth/sign-up"),
             "request-password-reset" to Link(href = "$BASE_URL/auth/request-password-reset"),
             "stores" to Link(href = "${BASE_URL}/stores"),
-            "visit-ranking" to Link(href = "$BASE_URL/statistics/rankings"),
-            "my-visit-ranking" to Link(href = "$BASE_URL/statistics/my-rankings"),
+            "rankings-statistics" to Link(href = "$BASE_URL/statistics/rankings"),
+            "my-ranking-statistics" to Link(href = "$BASE_URL/statistics/my-rankings"),
+            "my-profile-statistics" to Link(href = "$BASE_URL/statistics/my-profile"),
         )
     }
 }
