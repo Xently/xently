@@ -4,4 +4,5 @@ import co.ke.xently.libraries.data.local.TransactionFacadeDatabase
 
 interface ReviewDatabase : TransactionFacadeDatabase {
     fun reviewDao(): ReviewDao
+    fun reviewRequestDao(): ReviewRequestDao
 }

@@ -76,6 +76,7 @@ fun ReviewRequestScreen(
         reviewCategories = reviewCategories,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
+        onAction = viewModel::onAction,
     )
 }
 
@@ -87,6 +88,7 @@ internal fun ReviewRequestScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
+    onAction: (ReviewRequestAction) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -151,6 +153,7 @@ internal fun ReviewRequestScreen(
                 else -> {
                     ReviewRequestLazyColumn(
                         state = state,
+                        onAction = onAction,
                         reviewCategories = reviewCategories,
                         modifier = Modifier.matchParentSize(),
                     )

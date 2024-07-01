@@ -32,6 +32,7 @@ import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEnti
 import co.ke.xently.features.reviewcategory.data.source.local.RoomTypeConverters.ReviewCategoryConverter
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
 import co.ke.xently.features.reviews.data.source.local.ReviewEntity
+import co.ke.xently.features.reviews.data.source.local.ReviewRequestEntity
 import co.ke.xently.features.reviews.data.source.local.RoomTypeConverters.ReviewConverter
 import co.ke.xently.features.shops.data.source.local.RoomTypeConverters.ShopConverter
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
@@ -52,8 +53,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
 @Database(
-    version = 3,
+    version = 4,
     entities = [
+        ReviewRequestEntity::class,
         ProfileStatisticEntity::class,
         ServerResponseCache::class,
         AccessControlEntity::class,

@@ -18,10 +18,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -31,6 +33,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -49,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.components.StarRatingRow
+import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction
+import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction.PostRating
+import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction.RequestMessageEdit
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestUiState
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
@@ -98,9 +104,9 @@ internal fun ReviewCategoryCard(
     category: ReviewCategory,
     index: Int,
     state: ReviewRequestUiState,
+    onAction: (ReviewRequestAction) -> Unit,
 ) {
     val isDark by LocalThemeIsDark.current
-
     val focusManager = LocalFocusManager.current
 
     OutlinedCard {
@@ -145,14 +151,14 @@ internal fun ReviewCategoryCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             onClick = {
                 selectedStarRating = it
-                /*val url = category.getReviewPostingUrl(it)
-                pushEvent(
-                    Event.PostRating(
+                val url = category.getReviewPostingUrl(it)
+                onAction(
+                    PostRating(
                         categoryName = category.name,
                         url = url,
                         message = message.takeIf(String::isNotBlank)
                     ),
-                )*/
+                )
             },
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -170,9 +176,16 @@ internal fun ReviewCategoryCard(
 
         SnackbarHost(hostState = hostState)
 
-        /*ShowErrorSnackBarWhenApplicable(error = subState.error, snackbarHostState = hostState) {
-            state.latestEvent?.let(pushEvent)
-        }*/
+        val context = LocalContext.current
+        val error = subState.error
+        LaunchedEffect(index, error) {
+            if (error != null) {
+                hostState.showSnackbar(
+                    error.asString(context = context),
+                    duration = SnackbarDuration.Long,
+                )
+            }
+        }
 
         val activateEditMode by remember(
             index,
@@ -189,8 +202,8 @@ internal fun ReviewCategoryCard(
         if (activateEditMode) {
             Spacer(modifier = Modifier.height(8.dp))
             val onSendMessageClick by rememberUpdatedState {
-                /*val url = category.getReviewPostingUrl(selectedStarRating)
-                pushEvent(Event.PostRating(category.name, url, message))*/
+                val url = category.getReviewPostingUrl(selectedStarRating)
+                onAction(PostRating(category.name, url, message))
                 focusManager.clearFocus()
             }
             OutlinedTextField(
@@ -235,7 +248,7 @@ internal fun ReviewCategoryCard(
             ListItem(
                 headlineContent = { Text(text = message) },
                 trailingContent = {
-                    IconButton(onClick = { /*pushEvent(Event.RequestMessageEdit(category.name))*/ }) {
+                    IconButton(onClick = { onAction(RequestMessageEdit(category.name)) }) {
                         Icon(
                             Icons.Outlined.Edit,
                             contentDescription = stringResource(
@@ -373,6 +386,7 @@ private fun ReviewCategoryCardPreview(
             index = state.index,
             state = state.state,
             category = state.category,
+            onAction = {},
         )
     }
 }

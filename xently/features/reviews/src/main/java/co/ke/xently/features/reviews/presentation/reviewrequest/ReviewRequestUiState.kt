@@ -1,6 +1,7 @@
 package co.ke.xently.features.reviews.presentation.reviewrequest
 
 import androidx.compose.runtime.Stable
+import co.ke.xently.features.reviews.presentation.utils.UiText
 
 @Stable
 data class ReviewRequestUiState(
@@ -20,7 +21,7 @@ data class ReviewRequestUiState(
 
     data class SubState(
         val isPosting: Boolean = false,
-        val error: Throwable? = null,
+        val error: UiText? = null,
         val isEditRequested: Boolean = false,
         val message: String = "",
     )

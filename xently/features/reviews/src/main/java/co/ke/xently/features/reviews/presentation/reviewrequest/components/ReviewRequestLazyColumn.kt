@@ -1,6 +1,7 @@
 package co.ke.xently.features.reviews.presentation.reviewrequest.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.components.UnderlinedHeadline
+import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestUiState
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import kotlinx.coroutines.runBlocking
@@ -35,10 +37,12 @@ internal fun ReviewRequestLazyColumn(
     state: ReviewRequestUiState,
     reviewCategories: LazyPagingItems<ReviewCategory>,
     modifier: Modifier = Modifier,
+    onAction: (ReviewRequestAction) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item(
             key = "Rating brief",
@@ -123,6 +127,7 @@ internal fun ReviewRequestLazyColumn(
                 index = index,
                 state = state,
                 category = category,
+                onAction = onAction,
             )
         }
 

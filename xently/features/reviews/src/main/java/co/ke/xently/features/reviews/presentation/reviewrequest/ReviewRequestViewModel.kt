@@ -9,7 +9,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
+import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
+import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,11 +22,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ReviewRequestViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val repository: ReviewRepository,
     private val reviewCategoryRepository: ReviewCategoryRepository,
 ) : ViewModel() {
@@ -51,15 +55,57 @@ internal class ReviewRequestViewModel @Inject constructor(
     fun onAction(action: ReviewRequestAction) {
         when (action) {
             is ReviewRequestAction.ChangeMessage -> {
-
-            }
-
-            is ReviewRequestAction.PostRating -> {
-
+                _uiState.update {
+                    val categorySubStates = it.getUpdatedSubCategoryState(action.categoryName) {
+                        copy(message = action.message)
+                    }
+                    it.copy(categorySubStates = categorySubStates)
+                }
             }
 
             is ReviewRequestAction.RequestMessageEdit -> {
+                _uiState.update {
+                    val categorySubStates = it.getUpdatedSubCategoryState(action.categoryName) {
+                        copy(isEditRequested = true)
+                    }
+                    it.copy(categorySubStates = categorySubStates)
+                }
+            }
 
+            is ReviewRequestAction.PostRating -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        val categorySubStates = it.getUpdatedSubCategoryState(action.categoryName) {
+                            copy(isPosting = true, error = null)
+                        }
+                        it.copy(categorySubStates = categorySubStates)
+                    }
+                    when (val result = repository.postRating(action.url, action.message)) {
+                        is Result.Failure -> {
+                            _uiState.update {
+                                val categorySubStates =
+                                    it.getUpdatedSubCategoryState(action.categoryName) {
+                                        copy(isPosting = false, error = result.error.asUiText())
+                                    }
+                                it.copy(categorySubStates = categorySubStates)
+                            }
+                        }
+
+                        is Result.Success -> {
+                            _uiState.update {
+                                val categorySubStates =
+                                    it.getUpdatedSubCategoryState(action.categoryName) {
+                                        copy(
+                                            isPosting = false,
+                                            error = null,
+                                            isEditRequested = action.message.isNullOrBlank(),
+                                        )
+                                    }
+                                it.copy(categorySubStates = categorySubStates)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

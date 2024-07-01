@@ -11,9 +11,11 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ReviewRepository {
-    suspend fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>>
-    suspend fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, Error>>
-    suspend fun findStoreReviewStatistics(
+    suspend fun postRating(url: String, message: String?): Result<Unit, Error>
+    suspend fun syncWithServer()
+    fun findSummaryReviewForCurrentlyActiveShop(): Flow<Result<Rating, Error>>
+    fun findSummaryReviewForCurrentlyActiveStore(): Flow<Result<Rating, Error>>
+    fun findStoreReviewStatistics(
         category: ReviewCategory,
         filters: ReviewStatisticsFilters,
     ): Flow<Result<ReviewCategory.Statistics, Error>>
