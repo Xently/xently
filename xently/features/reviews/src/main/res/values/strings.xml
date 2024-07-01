@@ -69,6 +69,11 @@
     <string name="action_select_store">Select Branch</string>
     <string name="star">%1$s - star</string>
     <string name="content_desc_unselect_month">Unselect month - %1$s</string>
+    <string name="message_no_review_categories_found">No review categories.</string>
+    <string name="topbar_title_review_request">Kindly Share Your Experience</string>
+    <string name="review_request_headline">On a scale of 1 to 5, with 1 being the worst and 5 being the best.</string>
+    <string name="content_desc_send_review">Send review description for %1$s</string>
+    <string name="content_desc_edit_review">Edit review description for %1$s</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>

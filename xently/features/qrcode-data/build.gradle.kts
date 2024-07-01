@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:libraries:location-tracker"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)

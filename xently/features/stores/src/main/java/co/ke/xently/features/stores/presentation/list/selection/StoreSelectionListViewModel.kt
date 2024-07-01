@@ -47,7 +47,8 @@ internal class StoreSelectionListViewModel @Inject constructor(
     private val storeCategoryRepository: StoreCategoryRepository,
 ) : ViewModel() {
     private companion object {
-        private val KEY = StoreSelectionListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
+        private val KEY =
+            StoreSelectionListViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
     }
 
     private val _uiState = MutableStateFlow(StoreSelectionListUiState())

@@ -1,4 +1,4 @@
-package co.ke.xently.features.qrcode.data
+package co.ke.xently.features.qrcode.data.domain
 
 import co.ke.xently.libraries.data.core.Link
 import kotlinx.serialization.SerialName

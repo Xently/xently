@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.ui.graphics.vector.ImageVector
 import co.ke.xently.customer.R
 

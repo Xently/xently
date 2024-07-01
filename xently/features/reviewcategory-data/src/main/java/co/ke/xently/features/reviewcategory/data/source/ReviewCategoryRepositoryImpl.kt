@@ -99,4 +99,9 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun findReviewCategories(url: String): PagedResponse<ReviewCategory> {
+        return httpClient.get(urlString = url)
+            .body<PagedResponse<ReviewCategory>>()
+    }
 }

@@ -28,6 +28,7 @@ internal fun UnderlinedHeadline(
     headline: String,
     modifier: Modifier = Modifier,
     dividerSpace: Dp = 8.dp,
+    fontWeight: FontWeight = FontWeight.SemiBold,
     verticalAlignment: Alignment.Vertical = Alignment.Bottom,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
@@ -42,8 +43,8 @@ internal fun UnderlinedHeadline(
         ) {
             Text(
                 text = headline,
+                fontWeight = fontWeight,
                 modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.SemiBold,
             )
             trailingContent()
         }

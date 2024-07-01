@@ -24,7 +24,10 @@ typealias Granted = Boolean
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-inline fun rememberLocationPermissionLauncher(crossinline onPermissionGranted: (Granted) -> Unit): Launcher {
+inline fun rememberLocationPermissionLauncher(
+    autoProcessStateOnRender: Boolean = true,
+    crossinline onPermissionGranted: (Granted) -> Unit,
+): Launcher {
     val permissions = if (LocalInspectionMode.current) {
         remember { LocationPermissionsState.Simulated }
     } else {
@@ -36,8 +39,10 @@ inline fun rememberLocationPermissionLauncher(crossinline onPermissionGranted: (
         onPermissionGranted(isGranted)
     }
 
-    SideEffect {
-        onPermissionGranted(permissions.allPermissionsGranted)
+    if (autoProcessStateOnRender) {
+        SideEffect {
+            onPermissionGranted(permissions.allPermissionsGranted)
+        }
     }
     return remember(permissions) {
         Launcher {

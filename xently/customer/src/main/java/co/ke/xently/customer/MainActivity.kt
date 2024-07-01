@@ -18,6 +18,7 @@ import co.ke.xently.customer.domain.LandingScreen
 import co.ke.xently.customer.domain.MoreDetailsScreen
 import co.ke.xently.customer.domain.PickLocationScreen
 import co.ke.xently.customer.domain.ProfileEditDetailScreen
+import co.ke.xently.customer.domain.ReviewRequestScreen
 import co.ke.xently.customer.domain.SettingsScreen
 import co.ke.xently.customer.domain.StoreDetailScreen
 import co.ke.xently.customer.landing.presentation.LandingScreen
@@ -25,6 +26,7 @@ import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.products.presentation.list.CategoryFilterableProductListContent
 import co.ke.xently.features.profile.presentation.edit.ProfileEditDetailScreen
+import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
@@ -92,6 +94,9 @@ class MainActivity : ComponentActivity() {
                     composable<StoreDetailScreen> {
                         StoreDetailScreen(
                             onClickBack = navController::navigateUp,
+                            onClickReviewStore = {
+                                navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
+                            },
                             onClickMoreDetails = {
                                 navController.navigate(MoreDetailsScreen(storeId = it.id))
                             },
@@ -108,6 +113,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<ProfileEditDetailScreen> {
                         ProfileEditDetailScreen(onClickBack = navController::navigateUp)
+                    }
+                    composable<ReviewRequestScreen> {
+                        ReviewRequestScreen(onClickBack = navController::navigateUp)
                     }
                     composable<MoreDetailsScreen> {
                         MoreDetailsScreen(onClickBack = navController::navigateUp)

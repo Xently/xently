@@ -21,6 +21,7 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,12 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -46,16 +47,22 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.ke.xently.features.qrcode.presentation.ScanQrCodeAlertDialog
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.detail.components.QrCodeCard
 import co.ke.xently.features.stores.presentation.detail.components.StoreDetailListItem
 import co.ke.xently.features.stores.presentation.detail.components.StoreImagesBox
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.location.tracker.domain.error.LocationRequestError
+import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
+import co.ke.xently.libraries.location.tracker.presentation.rememberEnableLocationGPSLauncher
+import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import kotlinx.coroutines.launch
 
 typealias StoreDetailContentScope = BoxScope
 
@@ -64,6 +71,7 @@ fun StoreDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onClickMoreDetails: (Store) -> Unit,
+    onClickReviewStore: (String) -> Unit,
     allStoreProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
     recommendedProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
 ) {
@@ -73,17 +81,72 @@ fun StoreDetailScreen(
 
     val snackbarHostState = rememberSnackbarHostState()
 
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val enableGPSLauncher = rememberEnableLocationGPSLauncher(snackbarHostState = snackbarHostState)
+    val locationPermissionLauncher =
+        rememberLocationPermissionLauncher(autoProcessStateOnRender = false) { granted ->
+            if (granted) {
+                viewModel.onAction(StoreDetailAction.GetPointsAndReview)
+            } else {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.message_location_permission_denied),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+        }
 
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
                 is StoreDetailEvent.Success -> Unit
-                is StoreDetailEvent.Error -> {
+                is StoreDetailEvent.Error.Store -> {
                     snackbarHostState.showSnackbar(
                         event.error.asString(context = context),
                         duration = SnackbarDuration.Long,
                     )
+                }
+
+                is StoreDetailEvent.Error.QrCode -> {
+                    snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+                is StoreDetailEvent.Error.LocationTracker -> {
+                    val actionLabel = when (event.type) {
+                        LocationRequestError.UNKNOWN,
+                        LocationRequestError.NO_KNOWN_LOCATION,
+                        -> null
+
+                        PermissionError.GPS_DISABLED -> {
+                            context.getString(R.string.action_enable_gps)
+                        }
+
+                        PermissionError.PERMISSION_DENIED -> {
+                            context.getString(R.string.action_grant_location_permission)
+                        }
+                    }
+                    val result = snackbarHostState.showSnackbar(
+                        event.error.asString(context = context),
+                        duration = SnackbarDuration.Long,
+                        actionLabel = actionLabel,
+                    )
+                    when (result) {
+                        SnackbarResult.Dismissed -> Unit
+                        SnackbarResult.ActionPerformed -> when (event.type) {
+                            LocationRequestError.UNKNOWN,
+                            LocationRequestError.NO_KNOWN_LOCATION,
+                            -> Unit
+
+                            PermissionError.GPS_DISABLED -> enableGPSLauncher.launch()
+                            PermissionError.PERMISSION_DENIED -> locationPermissionLauncher.launch()
+                        }
+                    }
                 }
             }
         }
@@ -94,9 +157,12 @@ fun StoreDetailScreen(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
+        onAction = viewModel::onAction,
+        onClickReviewStore = onClickReviewStore,
         onClickMoreDetails = onClickMoreDetails,
         allStoreProductsContent = allStoreProductsContent,
         recommendedProductsContent = recommendedProductsContent,
+        onGetPointsAndReviewClick = { scope.launch { locationPermissionLauncher.launch() } },
     )
 }
 
@@ -109,14 +175,30 @@ internal fun StoreDetailScreen(
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
     onClickMoreDetails: (Store) -> Unit,
+    onAction: (StoreDetailAction) -> Unit = {},
+    onClickReviewStore: (String) -> Unit = {},
+    onGetPointsAndReviewClick: () -> Unit = {},
     allStoreProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
     recommendedProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
 ) {
+    if (state.isProcessingQrCode) {
+        ScanQrCodeAlertDialog(
+            response = state.qrCodeScanResponse,
+            onDismissRequest = { onAction(StoreDetailAction.DismissQrCodeProcessingDialog) },
+            onPositiveButtonClick = {
+                onAction(StoreDetailAction.DismissQrCodeProcessingDialog)
+                state.qrCodeScanResponse
+                    ?.reviewCategoriesUrl
+                    ?.let(onClickReviewStore)
+            },
+        )
+    }
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-//        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier,/*.nestedScroll(scrollBehavior.nestedScrollConnection)*/
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
@@ -137,7 +219,9 @@ internal fun StoreDetailScreen(
                             shape = RoundedCornerShape(20),
                             contentPadding = PaddingValues(vertical = 12.dp),
                             onClick = { state.store?.let(onClickMoreDetails) },
-                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                            ),
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .shimmer(state.isLoading),
@@ -152,13 +236,20 @@ internal fun StoreDetailScreen(
                     QrCodeCard(
                         isLoading = state.isLoading,
                         modifier = Modifier.padding(16.dp),
-                        onGetPointsAndReviewClick = { /*TODO*/ },
+                        onGetPointsAndReviewClick = onGetPointsAndReviewClick,
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 }
                 TopAppBar(
-                    title = { /*TODO*/ },
+                    title = {
+                        Text(
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            text = state.store?.name
+                                ?: stringResource(R.string.topbar_title_store_details),
+                        )
+                    },
                     navigationIcon = {
                         NavigateBackIconButton(onClick = onClickBack)
                     },

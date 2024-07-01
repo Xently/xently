@@ -1,8 +1,10 @@
 package co.ke.xently.features.reviews.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Star
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.domain.StarRating
@@ -48,11 +51,14 @@ internal fun StarRatingRow(
     average: Float,
     maximumStarRating: Int,
     modifier: Modifier = Modifier,
+    iconSize: Dp? = null,
+    horizontalArrangement: Arrangement.HorizontalOrVertical = Arrangement.spacedBy(4.dp),
+    onClick: ((Int) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier,
+        horizontalArrangement = horizontalArrangement,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         average.getRatings(maximumStarRating).forEachIndexed { index, starRating ->
             val icon = when (starRating) {
@@ -64,6 +70,21 @@ internal fun StarRatingRow(
                 icon,
                 tint = starRating.tint(isDark),
                 contentDescription = stringResource(R.string.star, index + 1),
+                modifier = Modifier
+                    .run {
+                        if (onClick == null) {
+                            this
+                        } else {
+                            clickable { onClick(index + 1) }
+                        }
+                    }
+                    .run {
+                        if (iconSize == null) {
+                            this
+                        } else {
+                            size(iconSize)
+                        }
+                    },
             )
         }
     }

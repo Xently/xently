@@ -15,8 +15,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import co.ke.xently.features.reviews.presentation.theme.xentlyLinearProgressLight
-import co.ke.xently.features.reviews.presentation.theme.xentlyLinearProgressLightTrack
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 

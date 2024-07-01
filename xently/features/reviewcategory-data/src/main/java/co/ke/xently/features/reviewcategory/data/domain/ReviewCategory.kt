@@ -47,6 +47,11 @@ data class ReviewCategory(
         )
     }
 
+    fun getReviewPostingUrl(starRating: Int): String {
+        val link = links["post-review"]!!
+        return link.href.replace("{starRating}", starRating.toString())
+    }
+
     override fun toString(): String {
         return name
     }

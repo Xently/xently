@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import co.ke.xently.features.qrcode.R
-import co.ke.xently.features.qrcode.data.QrCodeResponse
+import co.ke.xently.features.qrcode.data.domain.QrCodeResponse
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link

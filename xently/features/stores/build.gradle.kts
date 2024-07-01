@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.chip.text.field)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:features:qrcode"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
