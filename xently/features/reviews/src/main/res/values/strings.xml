@@ -74,6 +74,9 @@
     <string name="review_request_headline">On a scale of 1 to 5, with 1 being the worst and 5 being the best.</string>
     <string name="content_desc_send_review">Send review description for %1$s</string>
     <string name="content_desc_edit_review">Edit review description for %1$s</string>
+    <string name="headline_public_star_agent">Tap a star to rate publicly</string>
+    <string name="text_field_placeholder_description">Optional description…</string>
+    <string name="message_default_review_question_prefix">"How do you rate the "</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>

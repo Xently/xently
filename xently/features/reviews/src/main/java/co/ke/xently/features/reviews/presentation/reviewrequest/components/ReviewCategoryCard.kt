@@ -65,6 +65,7 @@ import kotlin.time.Duration.Companion.days
 
 @Composable
 private fun rememberCategoryQuestion(name: String, question: String?): AnnotatedString {
+    val context = LocalContext.current
     return remember(question, name) {
         buildAnnotatedString {
             if (!question.isNullOrBlank()) {
@@ -84,7 +85,7 @@ private fun rememberCategoryQuestion(name: String, question: String?): Annotated
                 pop()
                 append(suffix)
             } else {
-                append("How do you rate the ")
+                append(context.getString(R.string.message_default_review_question_prefix))
                 pushStyle(
                     SpanStyle(
                         fontWeight = FontWeight.ExtraBold,
@@ -164,7 +165,7 @@ internal fun ReviewCategoryCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Tap a star to rate publicly",
+            text = stringResource(R.string.headline_public_star_agent),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Light,
             modifier = Modifier
@@ -212,7 +213,7 @@ internal fun ReviewCategoryCard(
                     .fillMaxWidth(),
                 value = message,
                 onValueChange = { message = it },
-                placeholder = { Text("Optional description...") },
+                placeholder = { Text(stringResource(R.string.text_field_placeholder_description)) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Send,

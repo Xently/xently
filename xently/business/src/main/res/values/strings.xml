@@ -24,4 +24,5 @@
     <string name="content_desc_topbar_menu">Show extra menu options</string>
     <string name="action_content_desc_switch_account">Switch account</string>
     <string name="content_desc_is_currently_selected">Is currently selected/active</string>
+    <string name="content_description_profile_picture">Profile picture</string>
 </resources>

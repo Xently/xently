@@ -69,8 +69,8 @@ internal fun NavigationDrawerHeaderSection(
                     ) {
                         Icon(
                             Icons.Default.Person,
-                            contentDescription = "Profile picture",
                             modifier = Modifier.matchParentSize(),
+                            contentDescription = stringResource(R.string.content_description_profile_picture),
                         )
                     }
                 },

@@ -31,8 +31,8 @@ import java.util.UUID
 
 @Composable
 internal fun NavigationDrawerHeaderSection(
-    modifier: Modifier = Modifier,
     currentUser: CurrentUser?,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -49,8 +49,8 @@ internal fun NavigationDrawerHeaderSection(
                     ) {
                         Icon(
                             Icons.Default.Person,
-                            contentDescription = "Profile picture",
                             modifier = Modifier.matchParentSize(),
+                            contentDescription = stringResource(R.string.content_description_profile_picture),
                         )
                     }
                 },
