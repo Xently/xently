@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toUpperCase
@@ -127,8 +128,8 @@ private fun rememberGoogleMapsDirectionLauncher(
 @Composable
 internal fun StoreDetailListItem(
     store: Store,
-    isLoading: Boolean = false,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
 ) {
     val scope = rememberCoroutineScope()
@@ -177,7 +178,7 @@ internal fun StoreDetailListItem(
             ) {
                 Icon(
                     Icons.Default.LocationOn,
-                    contentDescription = "Navigate to location...",
+                    contentDescription = stringResource(R.string.content_description_navigate_to_location),
                 )
             }
         },
@@ -188,12 +189,12 @@ internal fun StoreDetailListItem(
 @Composable
 private fun StoreDetailListItemPreview(
     @PreviewParameter(StoreDetailUiStateParameterProvider::class)
-    state: StoreDetailUiState,
+    state: Pair<StoreDetailUiState, Boolean>,
 ) {
     XentlyTheme {
         StoreDetailListItem(
-            isLoading = state.isLoading,
-            store = state.store ?: Store.DEFAULT,
+            isLoading = state.first.isLoading,
+            store = state.first.store ?: Store.DEFAULT,
         )
     }
 }

@@ -99,4 +99,5 @@
     <string name="message_location_permission_denied">We need to ensure you are at the shop before continuing.</string>
     <string name="action_enable_gps">Enable GPS</string>
     <string name="action_grant_location_permission">Grant Permission</string>
+    <string name="content_description_navigate_to_location">Navigate to location…</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.unit.sp
 import co.ke.xently.business.R
 import co.ke.xently.business.landing.domain.AppDestination
 import co.ke.xently.features.customers.presentation.list.CustomerListScreen
@@ -57,7 +61,15 @@ internal fun LandingScreenContent(
         ) {
             CenterAlignedTopAppBar(
                 navigationIcon = navigationIcon,
-                title = { Text(text = stringResource(R.string.app_name)) },
+                title = {
+                    Text(
+                        maxLines = 1,
+                        letterSpacing = 1.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        text = stringResource(R.string.app_name).toUpperCase(Locale.current),
+                    )
+                },
                 actions = {
                     Box {
                         var expanded by rememberSaveable { mutableStateOf(false) }

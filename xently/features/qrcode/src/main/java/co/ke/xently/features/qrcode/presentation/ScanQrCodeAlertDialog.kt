@@ -69,10 +69,10 @@ fun ScanQrCodeAlertDialog(
                             strokeWidth = 8.dp,
                         )
                         Text(
-                            text = "Please wait, as we verify that you are at this location...",
-                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleLarge,
+                            text = stringResource(R.string.message_processing_qr_code),
                         )
                     }
                 } else {

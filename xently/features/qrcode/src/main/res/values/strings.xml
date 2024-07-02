@@ -34,4 +34,5 @@
     <string name="action_okay">Okay</string>
     <string name="action_share_experience">Leave a review</string>
     <string name="action_skip_share_experience">Not now</string>
+    <string name="message_processing_qr_code">Please wait, as we verify that you are at this location…</string>
 </resources>

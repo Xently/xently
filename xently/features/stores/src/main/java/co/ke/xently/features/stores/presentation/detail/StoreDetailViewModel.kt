@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import co.ke.xently.features.qrcode.data.domain.error.Result as QrCodeResult
@@ -44,6 +43,9 @@ internal class StoreDetailViewModel @Inject constructor(
 
     private val _event = Channel<StoreDetailEvent>()
     val event: Flow<StoreDetailEvent> = _event.receiveAsFlow()
+
+    private val _isProcessingQrCode = Channel<Boolean>()
+    val isProcessingQrCode: Flow<Boolean> = _isProcessingQrCode.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -85,8 +87,8 @@ internal class StoreDetailViewModel @Inject constructor(
     fun onAction(action: StoreDetailAction) {
         when (action) {
             is StoreDetailAction.DismissQrCodeProcessingDialog -> {
-                _uiState.update {
-                    it.copy(isProcessingQrCode = false)
+                viewModelScope.launch {
+                    _isProcessingQrCode.send(false)
                 }
             }
 
@@ -94,11 +96,10 @@ internal class StoreDetailViewModel @Inject constructor(
                 viewModelScope.launch {
                     when (val result = locationTracker.getCurrentLocation()) {
                         is LocationTrackerResult.Success -> {
-                            val state = _uiState.updateAndGet {
-                                it.copy(isProcessingQrCode = true)
-                            }
-                            val pointsUrl =
-                                state.store!!.links["qr-code"]!!.hrefWithoutQueryParamTemplates()
+                            _isProcessingQrCode.send(true)
+                            val pointsUrl = _uiState.value.store!!
+                                .links["qr-code"]!!
+                                .hrefWithoutQueryParamTemplates()
                             getPointsAndReview(
                                 pointsUrl = pointsUrl,
                                 location = result.data,

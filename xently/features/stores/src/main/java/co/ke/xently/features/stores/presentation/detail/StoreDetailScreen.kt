@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -152,11 +153,18 @@ fun StoreDetailScreen(
         }
     }
 
+    val isProcessingQrCode by produceState(false, viewModel) {
+        viewModel.isProcessingQrCode.collect {
+            this.value = it
+        }
+    }
+
     StoreDetailScreen(
         state = state,
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
+        isProcessingQrCode = isProcessingQrCode,
         onAction = viewModel::onAction,
         onClickReviewStore = onClickReviewStore,
         onClickMoreDetails = onClickMoreDetails,
@@ -172,6 +180,7 @@ fun StoreDetailScreen(
 internal fun StoreDetailScreen(
     state: StoreDetailUiState,
     modifier: Modifier = Modifier,
+    isProcessingQrCode: Boolean = false,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
     onClickMoreDetails: (Store) -> Unit,
@@ -181,7 +190,7 @@ internal fun StoreDetailScreen(
     allStoreProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
     recommendedProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
 ) {
-    if (state.isProcessingQrCode) {
+    if (isProcessingQrCode) {
         ScanQrCodeAlertDialog(
             response = state.qrCodeScanResponse,
             onDismissRequest = { onAction(StoreDetailAction.DismissQrCodeProcessingDialog) },
@@ -312,15 +321,22 @@ internal fun StoreDetailScreen(
     }
 }
 
-internal class StoreDetailUiStateParameterProvider : PreviewParameterProvider<StoreDetailUiState> {
-    override val values: Sequence<StoreDetailUiState>
+internal class StoreDetailUiStateParameterProvider :
+    PreviewParameterProvider<Pair<StoreDetailUiState, Boolean>> {
+    override val values: Sequence<Pair<StoreDetailUiState, Boolean>>
         get() = sequenceOf(
             StoreDetailUiState(
                 isLoading = true,
-            ),
+            ) to false,
             StoreDetailUiState(
                 store = Store.DEFAULT,
-            ),
+            ) to false,
+            StoreDetailUiState(
+                isLoading = true,
+            ) to true,
+            StoreDetailUiState(
+                store = Store.DEFAULT,
+            ) to true,
         )
 }
 
@@ -328,11 +344,12 @@ internal class StoreDetailUiStateParameterProvider : PreviewParameterProvider<St
 @Composable
 private fun StoreDetailScreenPreview(
     @PreviewParameter(StoreDetailUiStateParameterProvider::class)
-    state: StoreDetailUiState,
+    state: Pair<StoreDetailUiState, Boolean>,
 ) {
     XentlyTheme {
         StoreDetailScreen(
-            state = state,
+            state = state.first,
+            isProcessingQrCode = state.second,
             onClickBack = {},
             onClickMoreDetails = {},
         )
