@@ -3,9 +3,9 @@ package co.ke.xently.customer.landing.domain
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.ui.graphics.vector.ImageVector
 import co.ke.xently.customer.R
 
@@ -23,7 +23,7 @@ enum class AppDestination(
     ),
     SCOREBOARD(
         R.string.app_destination_scoreboard,
-        Icons.Default.Scoreboard,
+        Icons.Default.Explore,
         R.string.app_destination_scoreboard
     ),
     NOTIFICATIONS(
