@@ -17,7 +17,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,9 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import co.ke.xently.business.MainAction
+import co.ke.xently.business.MainEvent
+import co.ke.xently.business.MainUiState
+import co.ke.xently.business.MainViewModel
 import co.ke.xently.business.R
 import co.ke.xently.business.landing.domain.AppDestination
 import co.ke.xently.business.landing.domain.Menu
@@ -44,7 +46,8 @@ import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
 
 @Composable
-fun LandingScreen(
+internal fun LandingScreen(
+    viewModel: MainViewModel,
     modifier: Modifier = Modifier,
     onClickAddStore: (Shop?) -> Unit,
     onClickEditStore: (Store) -> Unit,
@@ -56,9 +59,7 @@ fun LandingScreen(
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
 ) {
-    val viewModel = hiltViewModel<LandingViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val authenticationState = viewModel.authenticationState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
@@ -66,9 +67,9 @@ fun LandingScreen(
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                LandingEvent.Success -> Unit
-                is LandingEvent.SelectStore -> eventHandler.requestStoreSelection()
-                is LandingEvent.Error -> {
+                MainEvent.Success -> Unit
+                is MainEvent.SelectStore -> eventHandler.requestStoreSelection()
+                is MainEvent.Error -> {
                     Toast.makeText(
                         context,
                         event.error.asString(context = context),
@@ -76,7 +77,7 @@ fun LandingScreen(
                     ).show()
                 }
 
-                is LandingEvent.ShopError -> {
+                is MainEvent.ShopError -> {
                     Toast.makeText(
                         context,
                         event.error.asString(context = context),
@@ -87,28 +88,27 @@ fun LandingScreen(
         }
     }
 
-    CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
-        LandingScreen(
-            modifier = modifier,
-            state = state,
-            onClickAddStore = onClickAddStore,
-            onClickEditStore = onClickEditStore,
-            onClickAddProduct = onClickAddProduct,
-            onClickEditProduct = onClickEditProduct,
-            onClickAddNewReviewCategory = onClickAddNewReviewCategory,
-            onClickViewComments = onClickViewComments,
-            onClickAddShop = onClickAddShop,
-            onClickQrCode = onClickQrCode,
-            onClickSettings = onClickSettings,
-            onAction = viewModel::onAction,
-        )
-    }
+    LandingScreen(
+        state = state,
+        modifier = modifier,
+        onClickAddStore = onClickAddStore,
+        onClickEditStore = onClickEditStore,
+        onClickAddProduct = onClickAddProduct,
+        onClickEditProduct = onClickEditProduct,
+        onClickAddNewReviewCategory = onClickAddNewReviewCategory,
+        onClickViewComments = onClickViewComments,
+        onClickAddShop = onClickAddShop,
+        onClickQrCode = onClickQrCode,
+        onClickSettings = onClickSettings,
+        onClickLogout = { viewModel.onAction(MainAction.ClickSignOut) },
+        onClickShop = { viewModel.onAction(MainAction.SelectShop(it)) },
+    )
 }
 
 @Composable
 internal fun LandingScreen(
     modifier: Modifier = Modifier,
-    state: LandingUiState,
+    state: MainUiState,
     onClickAddStore: (Shop?) -> Unit,
     onClickEditStore: (Store) -> Unit,
     onClickAddProduct: () -> Unit,
@@ -118,7 +118,8 @@ internal fun LandingScreen(
     onClickAddShop: () -> Unit,
     onClickQrCode: () -> Unit,
     onClickSettings: () -> Unit,
-    onAction: (LandingAction) -> Unit,
+    onClickLogout: () -> Unit,
+    onClickShop: (Shop) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -147,7 +148,7 @@ internal fun LandingScreen(
                 selectedMenu = selectedMenu,
                 authenticationState = authenticationState,
                 shops = { state.shops },
-                onClickLogout = { onAction(LandingAction.ClickSignOut) },
+                onClickLogout = onClickLogout,
                 onClickMenu = {
                     when (it) {
                         Menu.QR_CODE -> onClickQrCode()
@@ -162,7 +163,7 @@ internal fun LandingScreen(
                     closeDrawer()
                 },
                 onClickAddShop = { closeDrawer(); onClickAddShop() },
-                onClickShop = { closeDrawer(); onAction(LandingAction.SelectShop(it)) },
+                onClickShop = { closeDrawer(); onClickShop(it) },
                 onClickAddStore = { closeDrawer(); onClickAddStore(it) },
             )
         },

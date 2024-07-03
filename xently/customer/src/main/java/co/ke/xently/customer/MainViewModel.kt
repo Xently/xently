@@ -1,4 +1,4 @@
-package co.ke.xently.customer.landing.presentation
+package co.ke.xently.customer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,6 @@ import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
 import co.ke.xently.features.auth.presentation.utils.asUiText
-import co.ke.xently.features.shops.data.source.ShopRepository
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -22,17 +20,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
 @HiltViewModel
-internal class LandingViewModel @Inject constructor(
-    private val shopRepository: ShopRepository,
+internal class MainViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val accessControlRepository: AccessControlRepository,
     private val googleAuthenticationHandler: GoogleAuthenticationHandler,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(LandingUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(MainUiState())
+    private val uiState = _uiState.asStateFlow()
 
     val authenticationState = uiState.map {
         AuthenticationState(isSignOutInProgress = it.isLoading, currentUser = it.user)
@@ -42,15 +38,10 @@ internal class LandingViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
     )
 
-    private val _event = Channel<LandingEvent>()
-    val event: Flow<LandingEvent> = _event.receiveAsFlow()
+    private val _event = Channel<MainEvent>()
+    val event: Flow<MainEvent> = _event.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            shopRepository.findTop10ShopsOrderByIsActivated().collect {
-                _uiState.update { state -> state.copy(shops = it) }
-            }
-        }
         viewModelScope.launch {
             accessControlRepository.findAccessControl().collect {
                 _uiState.update { state -> state.copy(canAddShop = it.canAddShop) }
@@ -63,9 +54,9 @@ internal class LandingViewModel @Inject constructor(
         }
     }
 
-    fun onAction(action: LandingAction) {
+    fun onAction(action: MainAction) {
         when (action) {
-            LandingAction.ClickSignOut -> {
+            MainAction.ClickSignOut -> {
                 viewModelScope.launch {
                     _uiState.update {
                         it.copy(isLoading = true)
@@ -73,7 +64,7 @@ internal class LandingViewModel @Inject constructor(
                     when (val result = userRepository.signOut()) {
                         is Result.Failure -> {
                             _event.send(
-                                LandingEvent.Error(
+                                MainEvent.Error(
                                     error = result.error.asUiText(),
                                     type = result.error,
                                 )
@@ -82,33 +73,7 @@ internal class LandingViewModel @Inject constructor(
 
                         is Result.Success -> {
                             googleAuthenticationHandler.signOut()
-                            _event.send(LandingEvent.Success)
-                        }
-                    }
-                }.invokeOnCompletion {
-                    _uiState.update {
-                        it.copy(isLoading = false)
-                    }
-                }
-            }
-
-            is LandingAction.SelectShop -> {
-                viewModelScope.launch {
-                    _uiState.update {
-                        it.copy(isLoading = true)
-                    }
-                    when (val result = shopRepository.selectShop(shop = action.shop)) {
-                        is ShopResult.Failure -> {
-                            _event.send(
-                                LandingEvent.ShopError(
-                                    result.error.asUiText(),
-                                    result.error,
-                                )
-                            )
-                        }
-
-                        is ShopResult.Success -> {
-                            _event.send(LandingEvent.SelectStore)
+                            _event.send(MainEvent.Success)
                         }
                     }
                 }.invokeOnCompletion {

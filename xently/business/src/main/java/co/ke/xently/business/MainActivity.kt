@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -37,6 +38,7 @@ import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionLi
 import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -57,6 +59,7 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
+            val mainViewModel = hiltViewModel<MainViewModel>()
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
             val navController = rememberNavController()
@@ -76,89 +79,95 @@ class MainActivity : ComponentActivity() {
                 }
             }
             App(setting = themeSetting, eventHandler = eventHandler) {
-                NavHost(navController = navController, startDestination = LandingScreen) {
-                    composable<LandingScreen> {
-                        LandingScreen(
-                            onClickAddStore = {
-                                navController.navigate(
-                                    EditStoreScreen(
-                                        addStoreUrl = it?.links?.get("add-store")
-                                            ?.hrefWithoutQueryParamTemplates(),
+                val authenticationState =
+                    mainViewModel.authenticationState.collectAsStateWithLifecycle()
+
+                CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
+                    NavHost(navController = navController, startDestination = LandingScreen) {
+                        composable<LandingScreen> {
+                            LandingScreen(
+                                viewModel = mainViewModel,
+                                onClickAddStore = {
+                                    navController.navigate(
+                                        EditStoreScreen(
+                                            addStoreUrl = it?.links?.get("add-store")
+                                                ?.hrefWithoutQueryParamTemplates(),
+                                        )
                                     )
-                                )
-                            },
-                            onClickEditStore = {
-                                navController.navigate(EditStoreScreen(storeId = it.id))
-                            },
-                            onClickAddProduct = {
-                                navController.navigate(EditProductScreen())
-                            },
-                            onClickEditProduct = {
-                                navController.navigate(EditProductScreen(productId = it.id))
-                            },
-                            onClickAddNewReviewCategory = {
-                                navController.navigate(EditStoreReviewCategoryScreen)
-                            },
-                            onClickViewComments = {
-                                navController.navigate(ReviewCommentListScreen(it.name))
-                            },
-                            onClickAddShop = {
-                                navController.navigate(ShopNavGraph.EditShop)
-                            },
-                            onClickQrCode = {
-                                /*TODO*/
-                            },
-                            onClickSettings = {
-                                navController.navigate(SettingsScreen)
-                            },
-                        )
-                    }
-                    authenticationNavigation(navController = navController)
-                    composable<EditProductScreen> {
-                        ProductEditDetailScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<EditStoreScreen> {
-                        StoreEditDetailScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<PickLocation> {
-                        PickStoreLocationScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<SelectShopScreen> {
-                        ShopListScreen(
-                            onClickBack = navController::navigateUp,
-                            onClickAddShop = {
-                                navController.navigate(ShopNavGraph.EditShop)
-                            },
-                            onClickEditShop = {
-                                navController.navigate(ShopNavGraph.EditShop)
-                            },
-                        )
-                    }
-                    composable<SelectStoreScreen> {
-                        StoreSelectionListScreen(
-                            onClickBack = navController::navigateUp,
-                            onClickAddStore = {
-                                navController.navigate(EditStoreScreen())
-                            },
-                            onClickEditStore = {
-                                navController.navigate(EditStoreScreen(storeId = it.id))
-                            },
-                            onStoreSelected = {
-                                navController.popBackStack(LandingScreen, inclusive = false)
-                            },
-                        )
-                    }
-                    composable<ShopNavGraph.EditShop> {
-                        ShopEditDetailScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<EditStoreReviewCategoryScreen> {
-                        ReviewCategoryEditDetailScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<ReviewCommentListScreen> {
-                        ReviewCommentListScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<SettingsScreen> {
-                        SettingsScreen(onClickBack = navController::navigateUp)
+                                },
+                                onClickEditStore = {
+                                    navController.navigate(EditStoreScreen(storeId = it.id))
+                                },
+                                onClickAddProduct = {
+                                    navController.navigate(EditProductScreen())
+                                },
+                                onClickEditProduct = {
+                                    navController.navigate(EditProductScreen(productId = it.id))
+                                },
+                                onClickAddNewReviewCategory = {
+                                    navController.navigate(EditStoreReviewCategoryScreen)
+                                },
+                                onClickViewComments = {
+                                    navController.navigate(ReviewCommentListScreen(it.name))
+                                },
+                                onClickAddShop = {
+                                    navController.navigate(ShopNavGraph.EditShop)
+                                },
+                                onClickQrCode = {
+                                    /*TODO*/
+                                },
+                                onClickSettings = {
+                                    navController.navigate(SettingsScreen)
+                                },
+                            )
+                        }
+                        authenticationNavigation(navController = navController)
+                        composable<EditProductScreen> {
+                            ProductEditDetailScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<EditStoreScreen> {
+                            StoreEditDetailScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<PickLocation> {
+                            PickStoreLocationScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<SelectShopScreen> {
+                            ShopListScreen(
+                                onClickBack = navController::navigateUp,
+                                onClickAddShop = {
+                                    navController.navigate(ShopNavGraph.EditShop)
+                                },
+                                onClickEditShop = {
+                                    navController.navigate(ShopNavGraph.EditShop)
+                                },
+                            )
+                        }
+                        composable<SelectStoreScreen> {
+                            StoreSelectionListScreen(
+                                onClickBack = navController::navigateUp,
+                                onClickAddStore = {
+                                    navController.navigate(EditStoreScreen())
+                                },
+                                onClickEditStore = {
+                                    navController.navigate(EditStoreScreen(storeId = it.id))
+                                },
+                                onStoreSelected = {
+                                    navController.popBackStack(LandingScreen, inclusive = false)
+                                },
+                            )
+                        }
+                        composable<ShopNavGraph.EditShop> {
+                            ShopEditDetailScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<EditStoreReviewCategoryScreen> {
+                            ReviewCategoryEditDetailScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<ReviewCommentListScreen> {
+                            ReviewCommentListScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<SettingsScreen> {
+                            SettingsScreen(onClickBack = navController::navigateUp)
+                        }
                     }
                 }
             }

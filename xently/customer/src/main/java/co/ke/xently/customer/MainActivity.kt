@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocatio
 import co.ke.xently.features.stores.presentation.moredetails.MoreDetailsScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -54,6 +56,7 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
+            val mainViewModel = hiltViewModel<MainViewModel>()
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
             val navController = rememberNavController()
@@ -71,60 +74,65 @@ class MainActivity : ComponentActivity() {
                 }
             }
             App(setting = themeSetting, eventHandler = eventHandler) {
-                NavHost(navController = navController, startDestination = LandingScreen) {
-                    composable<LandingScreen> {
-                        LandingScreen(
-                            onClickSettings = {
-                                navController.navigate(SettingsScreen)
-                            },
-                            onClickEditProfile = {
-                                navController.navigate(ProfileEditDetailScreen)
-                            },
-                            onClickStore = {
-                                navController.navigate(
-                                    StoreDetailScreen(
-                                        storeId = it.id,
-                                        productsUrl = it.links["products"]!!.hrefWithoutQueryParamTemplates(),
+                val authenticationState =
+                    mainViewModel.authenticationState.collectAsStateWithLifecycle()
+                CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
+                    NavHost(navController = navController, startDestination = LandingScreen) {
+                        composable<LandingScreen> {
+                            LandingScreen(
+                                viewModel = mainViewModel,
+                                onClickSettings = {
+                                    navController.navigate(SettingsScreen)
+                                },
+                                onClickEditProfile = {
+                                    navController.navigate(ProfileEditDetailScreen)
+                                },
+                                onClickStore = {
+                                    navController.navigate(
+                                        StoreDetailScreen(
+                                            storeId = it.id,
+                                            productsUrl = it.links["products"]!!.hrefWithoutQueryParamTemplates(),
+                                        )
                                     )
-                                )
-                            },
-                        )
-                    }
-                    authenticationNavigation(navController = navController)
-                    composable<StoreDetailScreen> {
-                        StoreDetailScreen(
-                            onClickBack = navController::navigateUp,
-                            onClickReviewStore = {
-                                navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
-                            },
-                            onClickMoreDetails = {
-                                navController.navigate(MoreDetailsScreen(storeId = it.id))
-                            },
-                            allStoreProductsContent = {
-                                CategoryFilterableProductListContent(
-                                    modifier = Modifier.matchParentSize(),
-                                )
-                            },
-                            recommendedProductsContent = {
+                                },
+                            )
+                        }
+                        authenticationNavigation(navController = navController)
+                        composable<StoreDetailScreen> {
+                            StoreDetailScreen(
+                                onClickBack = navController::navigateUp,
+                                onClickReviewStore = {
+                                    navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
+                                },
+                                onClickMoreDetails = {
+                                    navController.navigate(MoreDetailsScreen(storeId = it.id))
+                                },
+                                allStoreProductsContent = {
+                                    CategoryFilterableProductListContent(
+                                        modifier = Modifier.matchParentSize(),
+                                    )
+                                },
+                                recommendedProductsContent = {
 //                                RecommendedProductsContent()
-                                Text(text = "Recommended products")
-                            },
-                        )
-                    }
-                    composable<ProfileEditDetailScreen> {
-                        ProfileEditDetailScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<ReviewRequestScreen> {
-                        ReviewRequestScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<MoreDetailsScreen> {
-                        MoreDetailsScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<PickLocationScreen> {
-                        PickStoreLocationScreen(onClickBack = navController::navigateUp)
-                    }
-                    composable<SettingsScreen> {
-                        SettingsScreen(onClickBack = navController::navigateUp)
+                                    Text(text = "Recommended products")
+                                },
+                            )
+                        }
+                        composable<ProfileEditDetailScreen> {
+                            ProfileEditDetailScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<ReviewRequestScreen> {
+                            ReviewRequestScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<MoreDetailsScreen> {
+                            MoreDetailsScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<PickLocationScreen> {
+                            PickStoreLocationScreen(onClickBack = navController::navigateUp)
+                        }
+                        composable<SettingsScreen> {
+                            SettingsScreen(onClickBack = navController::navigateUp)
+                        }
                     }
                 }
             }

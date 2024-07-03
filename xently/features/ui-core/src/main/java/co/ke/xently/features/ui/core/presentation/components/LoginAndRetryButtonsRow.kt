@@ -23,20 +23,21 @@ fun LoginAndRetryButtonsRow(modifier: Modifier = Modifier, onRetry: () -> Unit) 
     val authenticationState by LocalAuthenticationState.current
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedButton(onClick = onRetry) {
+            Text(text = stringResource(R.string.action_retry))
+        }
         if (authenticationState.isAuthenticated) {
             LaunchedEffect(Unit) {
                 onRetry()
             }
-        }
-        OutlinedButton(onClick = onRetry) {
-            Text(text = stringResource(R.string.action_retry))
-        }
-        /*LaunchedEffect(Unit) {
-            eventHandler.requestAuthentication()
-        }*/
+        } else {
+            LaunchedEffect(Unit) {
+                eventHandler.requestAuthentication()
+            }
 
-        Button(onClick = eventHandler::requestAuthentication) {
-            Text(text = stringResource(R.string.action_login))
+            Button(onClick = eventHandler::requestAuthentication) {
+                Text(text = stringResource(R.string.action_login))
+            }
         }
     }
 }

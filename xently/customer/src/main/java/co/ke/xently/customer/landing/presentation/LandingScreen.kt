@@ -17,7 +17,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,9 +26,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import co.ke.xently.customer.MainAction
+import co.ke.xently.customer.MainEvent
+import co.ke.xently.customer.MainViewModel
 import co.ke.xently.customer.R
 import co.ke.xently.customer.landing.domain.AppDestination
 import co.ke.xently.customer.landing.domain.Menu
@@ -41,25 +41,22 @@ import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.launch
 
 @Composable
-fun LandingScreen(
+internal fun LandingScreen(
+    viewModel: MainViewModel,
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
     onClickStore: (Store) -> Unit,
     onClickEditProfile: () -> Unit,
 ) {
-    val viewModel = hiltViewModel<LandingViewModel>()
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val authenticationState = viewModel.authenticationState.collectAsStateWithLifecycle()
-
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
 
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                LandingEvent.Success -> Unit
-                is LandingEvent.SelectStore -> eventHandler.requestStoreSelection()
-                is LandingEvent.Error -> {
+                MainEvent.Success -> Unit
+                is MainEvent.SelectStore -> eventHandler.requestStoreSelection()
+                is MainEvent.Error -> {
                     Toast.makeText(
                         context,
                         event.error.asString(context = context),
@@ -67,7 +64,7 @@ fun LandingScreen(
                     ).show()
                 }
 
-                is LandingEvent.ShopError -> {
+                is MainEvent.ShopError -> {
                     Toast.makeText(
                         context,
                         event.error.asString(context = context),
@@ -78,24 +75,22 @@ fun LandingScreen(
         }
     }
 
-    CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
-        LandingScreen(
-            modifier = modifier,
-            onClickSettings = onClickSettings,
-            onAction = viewModel::onAction,
-            onClickStore = onClickStore,
-            onClickEditProfile = onClickEditProfile,
-        )
-    }
+    LandingScreen(
+        modifier = modifier,
+        onClickSettings = onClickSettings,
+        onClickStore = onClickStore,
+        onClickEditProfile = onClickEditProfile,
+        onClickLogout = { viewModel.onAction(MainAction.ClickSignOut) },
+    )
 }
 
 @Composable
 internal fun LandingScreen(
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
-    onAction: (LandingAction) -> Unit,
     onClickStore: (Store) -> Unit,
     onClickEditProfile: () -> Unit,
+    onClickLogout: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -122,7 +117,7 @@ internal fun LandingScreen(
             LandingModalDrawerSheet(
                 selectedMenu = selectedMenu,
                 authenticationState = authenticationState,
-                onClickLogout = { onAction(LandingAction.ClickSignOut) },
+                onClickLogout = onClickLogout,
                 onClickMenu = {
                     when (it) {
                         Menu.SETTINGS -> onClickSettings()
