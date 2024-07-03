@@ -13,6 +13,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +32,8 @@ import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.Error
 import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.utils.asUiText
+import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.customers.data.domain.error.DataError as CustomerDataError
 
@@ -70,7 +74,7 @@ internal fun CustomerListLazyColumn(
                     }
                     CustomerListErrorContent(
                         error = error,
-                        onClickRetry = customers::retry,
+                        onClickRetry = customers::refresh,
                     )
                 }
             }
@@ -204,6 +208,23 @@ private fun CustomerListErrorContent(error: Error, onClickRetry: () -> Unit) {
         if (error is CustomerDataError.Network.Retryable) {
             Button(onClick = onClickRetry) {
                 Text(text = stringResource(R.string.action_retry))
+            }
+        } else if (error is CustomerDataError.Network.Unauthorized) {
+            val eventHandler = LocalEventHandler.current
+            val authenticationState by LocalAuthenticationState.current
+
+            if (authenticationState.isAuthenticated) {
+                LaunchedEffect(Unit) {
+                    onClickRetry()
+                }
+            } else {
+                LaunchedEffect(Unit) {
+                    eventHandler.requestAuthentication()
+                }
+            }
+
+            Button(onClick = eventHandler::requestAuthentication) {
+                Text(text = stringResource(R.string.action_login))
             }
         }
     }
