@@ -47,6 +47,8 @@ data class AccessControl(
         get() = this["my-ranking-statistics"].hrefWithoutQueryParamTemplates()
     val myProfileStatisticsUrl: String
         get() = this["my-profile-statistics"].hrefWithoutQueryParamTemplates()
+    val recommendationsUrl: String
+        get() = this["recommendations"].hrefWithoutQueryParamTemplates()
 
     private operator fun get(ref: String): Link {
         return getLinkByRef(ref)
@@ -72,6 +74,7 @@ data class AccessControl(
             "rankings-statistics" to Link(href = "$BASE_URL/statistics/rankings"),
             "my-ranking-statistics" to Link(href = "$BASE_URL/statistics/my-rankings"),
             "my-profile-statistics" to Link(href = "$BASE_URL/statistics/my-profile"),
+            "recommendations" to Link(href = "$BASE_URL/store/recommendations"),
         )
     }
 }

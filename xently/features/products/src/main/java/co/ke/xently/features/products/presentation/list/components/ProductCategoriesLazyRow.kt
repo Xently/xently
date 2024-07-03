@@ -24,7 +24,7 @@ internal fun ProductCategoriesLazyRow(
     ) {
         items(categories, key = { it.name }) { item ->
             ProductCategoryFilterChip(
-                item = item,
+                category = item,
                 onClickSelectCategory = {
                     onAction(ProductListAction.SelectCategory(item))
                 },

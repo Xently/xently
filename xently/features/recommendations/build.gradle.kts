@@ -57,6 +57,9 @@ dependencies {
     implementation(libs.bundles.ui.navigation)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:libraries:pagination-data"))
+    implementation(project(":xently:features:products"))
+    implementation(project(":xently:features:stores"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
@@ -69,6 +72,9 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     api(project(":xently:features:recommendations-data"))
+    implementation(project(":xently:libraries:location-tracker"))
+    implementation(project(":xently:features:stores-data"))
+    implementation(project(":xently:features:products-data"))
 
     debugImplementation(libs.bundles.ui.debug)
 

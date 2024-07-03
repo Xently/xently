@@ -27,6 +27,9 @@ import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
 import co.ke.xently.features.products.presentation.list.CategoryFilterableProductListContent
 import co.ke.xently.features.profile.presentation.edit.ProfileEditDetailScreen
+import co.ke.xently.features.recommendations.domain.RecommendationNavGraph
+import co.ke.xently.features.recommendations.presentation.RecommendationViewModel
+import co.ke.xently.features.recommendations.presentation.recommendationNavigation
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
@@ -58,6 +61,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel = hiltViewModel<MainViewModel>()
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
+            val recommendationViewModel = hiltViewModel<RecommendationViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
             val navController = rememberNavController()
             val eventHandler = remember {
@@ -85,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(SettingsScreen)
                                 },
                                 onClickFilterStores = {
-                                    navController.navigate(PickLocationScreen)
+                                    navController.navigate(RecommendationNavGraph)
                                 },
                                 onClickEditProfile = {
                                     navController.navigate(ProfileEditDetailScreen)
@@ -101,6 +105,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         authenticationNavigation(navController = navController)
+                        recommendationNavigation(
+                            navController = navController,
+                            viewModel = recommendationViewModel,
+                        )
                         composable<StoreDetailScreen> {
                             StoreDetailScreen(
                                 onClickBack = navController::navigateUp,

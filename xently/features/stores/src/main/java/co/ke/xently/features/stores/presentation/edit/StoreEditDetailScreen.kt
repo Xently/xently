@@ -240,7 +240,7 @@ internal fun StoreEditDetailScreen(
                 ) {
                     items(categories, key = { it.name }) { item ->
                         StoreCategoryFilterChip(
-                            item = item,
+                            category = item,
                             onClickSelectCategory = {
                                 onAction(StoreEditDetailAction.SelectCategory(item))
                             },

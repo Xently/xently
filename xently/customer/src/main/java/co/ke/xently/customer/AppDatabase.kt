@@ -27,6 +27,9 @@ import co.ke.xently.features.products.data.source.local.RoomTypeConverters.Produ
 import co.ke.xently.features.profile.data.source.local.ProfileStatisticDatabase
 import co.ke.xently.features.profile.data.source.local.ProfileStatisticEntity
 import co.ke.xently.features.profile.data.source.local.RoomTypeConverters.ProfileStatisticConverter
+import co.ke.xently.features.recommendations.data.source.local.RecommendationDatabase
+import co.ke.xently.features.recommendations.data.source.local.RecommendationEntity
+import co.ke.xently.features.recommendations.data.source.local.RoomTypeConverters.RecommendationConverter
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEntity
 import co.ke.xently.features.reviewcategory.data.source.local.RoomTypeConverters.ReviewCategoryConverter
@@ -53,8 +56,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
 @Database(
-    version = 4,
+    version = 5,
     entities = [
+        RecommendationEntity::class,
         ReviewRequestEntity::class,
         ProfileStatisticEntity::class,
         ServerResponseCache::class,
@@ -74,6 +78,7 @@ import kotlinx.coroutines.withContext
     ],
 )
 @TypeConverters(
+    RecommendationConverter::class,
     ProfileStatisticConverter::class,
     InstantConverter::class,
     AccessControlConverter::class,
@@ -103,7 +108,8 @@ abstract class AppDatabase : RoomDatabase(),
     CustomerDatabase,
     NotificationDatabase,
     NotificationTopicDatabase,
-    ProfileStatisticDatabase {
+    ProfileStatisticDatabase,
+    RecommendationDatabase {
     override suspend fun <R> withTransactionFacade(block: suspend () -> R): R {
         return withTransaction(block)
     }

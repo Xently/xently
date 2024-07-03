@@ -1,6 +1,8 @@
 package co.ke.xently.libraries.ui.core.components
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -21,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.R
 
 
@@ -30,6 +34,8 @@ fun SearchBar(
     query: String,
     placeholder: String,
     modifier: Modifier = Modifier,
+    bottomPadding: Dp? = null,
+    horizontalPadding: Dp? = null,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     blankQueryIcon: (@Composable () -> Unit)? = null,
@@ -37,7 +43,17 @@ fun SearchBar(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     SearchBar(
-        modifier = modifier,
+        modifier = Modifier
+            .run {
+                if (expanded) {
+                    Modifier
+                } else {
+                    fillMaxWidth()
+                        .padding(bottom = bottomPadding ?: 16.dp)
+                        .padding(horizontal = horizontalPadding ?: 16.dp)
+                }
+            }
+            .then(modifier),
         expanded = expanded,
         content = content,
         onExpandedChange = { expanded = it },

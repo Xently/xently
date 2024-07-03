@@ -19,22 +19,22 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 
 @Composable
-internal fun StoreCategoryFilterChip(
-    item: StoreCategory,
+fun StoreCategoryFilterChip(
+    category: StoreCategory,
     modifier: Modifier = Modifier,
     onClickSelectCategory: () -> Unit,
     onClickRemoveCategory: () -> Unit,
 ) {
     FilterChip(
         modifier = modifier,
-        selected = item.selected,
+        selected = category.selected,
         onClick = onClickSelectCategory,
-        label = { Text(text = item.name) },
-        trailingIcon = if (!item.selected) null else {
+        label = { Text(text = category.name) },
+        trailingIcon = if (!category.selected) null else {
             {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Remove ${item.name} from selected categories",
+                    contentDescription = "Remove ${category.name} from selected categories",
                     modifier = Modifier
                         .size(InputChipDefaults.AvatarSize)
                         .clickable(onClick = onClickRemoveCategory),
@@ -57,7 +57,7 @@ private fun StoreCategoryFilterChipPreview(
 ) {
     XentlyTheme {
         StoreCategoryFilterChip(
-            item = StoreCategory(
+            category = StoreCategory(
                 name = "Electronics",
                 selected = selected,
             ),

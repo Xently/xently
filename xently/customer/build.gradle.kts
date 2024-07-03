@@ -126,6 +126,7 @@ dependencies {
     implementation(project(":xently:features:settings"))
     implementation(project(":xently:features:shops"))
     implementation(project(":xently:features:stores"))
+    implementation(project(":xently:features:recommendations"))
 
     debugImplementation(libs.bundles.ui.debug)
 

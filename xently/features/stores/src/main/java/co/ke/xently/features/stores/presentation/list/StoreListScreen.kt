@@ -114,9 +114,7 @@ internal fun StoreListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
                 SearchBar(
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .align(Alignment.CenterHorizontally),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                     query = state.query,
                     onSearch = { onAction(StoreListAction.Search(it)) },
                     onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },

@@ -61,6 +61,10 @@ dependencies {
 
     implementation(project(":xently:libraries:data-core"))
     implementation(project(":xently:libraries:pagination-data"))
+    implementation(project(":xently:libraries:location-tracker"))
+    implementation(project(":xently:features:stores-data"))
+    implementation(project(":xently:features:products-data"))
+    implementation(project(":xently:features:access-control"))
 
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
