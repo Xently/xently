@@ -47,6 +47,7 @@ internal fun LandingScreen(
     onClickSettings: () -> Unit,
     onClickStore: (Store) -> Unit,
     onClickEditProfile: () -> Unit,
+    onClickFilterStores: () -> Unit,
 ) {
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
@@ -80,6 +81,7 @@ internal fun LandingScreen(
         onClickSettings = onClickSettings,
         onClickStore = onClickStore,
         onClickEditProfile = onClickEditProfile,
+        onClickFilterStores = onClickFilterStores,
         onClickLogout = { viewModel.onAction(MainAction.ClickSignOut) },
     )
 }
@@ -91,6 +93,7 @@ internal fun LandingScreen(
     onClickStore: (Store) -> Unit,
     onClickEditProfile: () -> Unit,
     onClickLogout: () -> Unit,
+    onClickFilterStores: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -191,6 +194,7 @@ internal fun LandingScreen(
                 onClickSettingsMenu = onClickSettings,
                 onClickStore = onClickStore,
                 onClickEditProfile = onClickEditProfile,
+                onClickFilterStores = onClickFilterStores,
             )
         }
     }

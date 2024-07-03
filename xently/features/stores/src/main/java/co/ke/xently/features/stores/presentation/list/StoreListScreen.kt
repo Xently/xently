@@ -7,18 +7,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -27,12 +36,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.list.components.StoreListItemCard
 import co.ke.xently.features.stores.presentation.list.components.StoreListScreenContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
@@ -40,6 +51,7 @@ import kotlinx.coroutines.flow.flowOf
 fun StoreListScreen(
     modifier: Modifier = Modifier,
     onClickStore: (Store) -> Unit,
+    onClickFilterStores: () -> Unit,
     topBar: @Composable () -> Unit,
 ) {
     val viewModel = hiltViewModel<StoreListViewModel>()
@@ -73,6 +85,7 @@ fun StoreListScreen(
         onAction = viewModel::onAction,
         topBar = topBar,
         onClickStore = onClickStore,
+        onClickFilterStores = onClickFilterStores,
     )
 }
 
@@ -85,24 +98,38 @@ internal fun StoreListScreen(
     modifier: Modifier = Modifier,
     onClickStore: (Store) -> Unit,
     onAction: (StoreListAction) -> Unit,
+    onClickFilterStores: () -> Unit,
     topBar: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
+            Column(
+                modifier = Modifier
+                    .windowInsetsPadding(TopAppBarDefaults.windowInsets),
+            ) {
                 topBar()
                 AnimatedVisibility(state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-
-                /*SearchBar(
+                SearchBar(
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .align(Alignment.CenterHorizontally),
                     query = state.query,
                     onSearch = { onAction(StoreListAction.Search(it)) },
                     onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
-                )*/
+                    blankQueryIcon = {
+                        IconButton(onClick = onClickFilterStores) {
+                            Icon(
+                                Icons.Default.Tune,
+                                contentDescription = stringResource(R.string.content_desc_filter_stores),
+                            )
+                        }
+                    },
+                ) {}
             }
         },
     ) { paddingValues ->
@@ -158,6 +185,7 @@ private class StoreListUiStateParameterProvider :
         )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @XentlyPreview
 @Composable
 private fun StoreSelectionListScreenPreview(
@@ -172,8 +200,16 @@ private fun StoreSelectionListScreenPreview(
             stores = stores,
             modifier = Modifier.fillMaxSize(),
             onAction = {},
-            topBar = {},
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text(text = "Example") },
+                    navigationIcon = {
+                        Icon(Icons.Default.Menu, contentDescription = null)
+                    },
+                )
+            },
             onClickStore = {},
+            onClickFilterStores = {},
         )
     }
 }

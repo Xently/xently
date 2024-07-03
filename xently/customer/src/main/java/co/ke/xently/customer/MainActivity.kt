@@ -84,6 +84,9 @@ class MainActivity : ComponentActivity() {
                                 onClickSettings = {
                                     navController.navigate(SettingsScreen)
                                 },
+                                onClickFilterStores = {
+                                    navController.navigate(PickLocationScreen)
+                                },
                                 onClickEditProfile = {
                                     navController.navigate(ProfileEditDetailScreen)
                                 },

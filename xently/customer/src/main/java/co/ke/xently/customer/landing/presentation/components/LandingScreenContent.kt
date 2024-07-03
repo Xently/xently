@@ -39,11 +39,15 @@ internal fun LandingScreenContent(
     onClickSettingsMenu: () -> Unit,
     onClickStore: (Store) -> Unit,
     onClickEditProfile: () -> Unit,
+    onClickFilterStores: () -> Unit,
     navigationIcon: @Composable () -> Unit,
 ) {
     when (currentDestination) {
         AppDestination.DASHBOARD -> {
-            StoreListScreen(onClickStore = onClickStore) {
+            StoreListScreen(
+                onClickStore = onClickStore,
+                onClickFilterStores = onClickFilterStores,
+            ) {
                 CenterAlignedTopAppBar(
                     navigationIcon = navigationIcon,
                     title = {

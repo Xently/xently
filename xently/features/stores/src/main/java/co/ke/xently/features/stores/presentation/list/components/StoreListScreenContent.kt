@@ -37,6 +37,7 @@ internal fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
     paddingValues: PaddingValues,
     verticalArrangement: Arrangement.HorizontalOrVertical,
+    modifier: Modifier = Modifier,
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     val refreshLoadState = stores.loadState.refresh
@@ -44,7 +45,7 @@ internal fun StoreListScreenContent(
         derivedStateOf { refreshLoadState == LoadState.Loading && stores.itemCount > 0 }
     }
     PullRefreshBox(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(paddingValues),
         isRefreshing = isRefreshing,

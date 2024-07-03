@@ -101,4 +101,6 @@
     <string name="action_grant_location_permission">Grant Permission</string>
     <string name="content_description_navigate_to_location">Navigate to location…</string>
     <string name="action_login">Login</string>
+    <string name="search_stores_placeholder">Search hotel, product, location…</string>
+    <string name="content_desc_filter_stores">Filter to find a more appropriate place</string>
 </resources>

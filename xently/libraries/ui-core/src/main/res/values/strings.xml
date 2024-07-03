@@ -3,4 +3,6 @@
     <string name="theme_system_default">System default</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="content_desc_clear_search_query">Clear search query</string>
+    <string name="content_desc_exit_search">Exit search</string>
 </resources>
