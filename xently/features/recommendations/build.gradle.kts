@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.bundles.ui.navigation)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:features:qrcode-data"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)

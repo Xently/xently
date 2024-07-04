@@ -35,7 +35,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal open class ProductListViewModel @Inject constructor(
+open class ProductListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
@@ -48,7 +48,7 @@ internal open class ProductListViewModel @Inject constructor(
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
 
     private val _event = Channel<ProductListEvent>()
-    val event: Flow<ProductListEvent> = _event.receiveAsFlow()
+    internal val event: Flow<ProductListEvent> = _event.receiveAsFlow()
 
     private val _selectedCategories = savedStateHandle.getStateFlow(KEY, emptySet<String>())
 
@@ -94,7 +94,7 @@ internal open class ProductListViewModel @Inject constructor(
             XentlyPagingSource(apiCall = call)
         }
 
-    fun onAction(action: ProductListAction) {
+    internal fun onAction(action: ProductListAction) {
         when (action) {
             is ProductListAction.ChangeQuery -> {
                 _uiState.update { it.copy(query = action.query) }

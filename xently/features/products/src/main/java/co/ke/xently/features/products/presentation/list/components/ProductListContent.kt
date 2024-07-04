@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ internal fun ProductListContent(
     modifier: Modifier = Modifier,
     onClickSelectShop: () -> Unit,
     onClickSelectStore: () -> Unit,
+    extraPrependContent: LazyListScope.() -> Unit = {},
     productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
     val refreshLoadState = products.loadState.refresh
@@ -107,6 +109,7 @@ internal fun ProductListContent(
                     products = products,
                     modifier = Modifier.matchParentSize(),
                     productListItem = productListItem,
+                    extraPrependContent = extraPrependContent,
                 )
             }
         }

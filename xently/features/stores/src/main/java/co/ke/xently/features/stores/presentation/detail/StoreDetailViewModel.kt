@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.qrcode.data.source.QrCodeRepository
 import co.ke.xently.features.qrcode.presentation.utils.asUiText
+import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.StoreRepository
@@ -32,24 +34,24 @@ import co.ke.xently.libraries.location.tracker.domain.error.Result as LocationTr
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class StoreDetailViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val repository: StoreRepository,
-    private val qrCodeRepository: QrCodeRepository,
-    private val locationTracker: LocationTracker,
+open class StoreDetailViewModel @Inject constructor(
+    protected val savedStateHandle: SavedStateHandle,
+    protected val repository: StoreRepository,
+    protected val qrCodeRepository: QrCodeRepository,
+    protected val locationTracker: LocationTracker,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(StoreDetailUiState())
-    val uiState: StateFlow<StoreDetailUiState> = _uiState.asStateFlow()
+    internal val uiState: StateFlow<StoreDetailUiState> = _uiState.asStateFlow()
 
     private val _event = Channel<StoreDetailEvent>()
-    val event: Flow<StoreDetailEvent> = _event.receiveAsFlow()
+    internal val event: Flow<StoreDetailEvent> = _event.receiveAsFlow()
 
     private val _isProcessingQrCode = Channel<Boolean>()
     val isProcessingQrCode: Flow<Boolean> = _isProcessingQrCode.receiveAsFlow()
 
     init {
         viewModelScope.launch {
-            savedStateHandle.getStateFlow("storeId", -1L)
+            getStoreResultFlow()
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
                 .catch { throwable ->
                     val error = throwable.toError()
@@ -61,7 +63,6 @@ internal class StoreDetailViewModel @Inject constructor(
                     )
                     _uiState.update { it.copy(isLoading = false) }
                 }
-                .flatMapLatest(repository::findById)
                 .collect { result ->
                     when (result) {
                         is Result.Failure -> {
@@ -82,6 +83,11 @@ internal class StoreDetailViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    protected open fun getStoreResultFlow(): Flow<Result<Store, DataError>> {
+        return savedStateHandle.getStateFlow("storeId", -1L)
+            .flatMapLatest(repository::findById)
     }
 
     fun onAction(action: StoreDetailAction) {

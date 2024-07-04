@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -19,22 +18,27 @@ import co.ke.xently.customer.domain.LandingScreen
 import co.ke.xently.customer.domain.MoreDetailsScreen
 import co.ke.xently.customer.domain.PickLocationScreen
 import co.ke.xently.customer.domain.ProfileEditDetailScreen
+import co.ke.xently.customer.domain.RecommendationDetailsScreen
+import co.ke.xently.customer.domain.RecommendationRequestScreen
+import co.ke.xently.customer.domain.RecommendationResponseScreen
 import co.ke.xently.customer.domain.ReviewRequestScreen
 import co.ke.xently.customer.domain.SettingsScreen
 import co.ke.xently.customer.domain.StoreDetailScreen
 import co.ke.xently.customer.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
+import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.products.presentation.list.CategoryFilterableProductListContent
+import co.ke.xently.features.products.presentation.list.ProductListViewModel
 import co.ke.xently.features.profile.presentation.edit.ProfileEditDetailScreen
-import co.ke.xently.features.recommendations.domain.RecommendationNavGraph
 import co.ke.xently.features.recommendations.presentation.RecommendationViewModel
-import co.ke.xently.features.recommendations.presentation.recommendationNavigation
+import co.ke.xently.features.recommendations.presentation.details.RecommendationDetailsViewModel
+import co.ke.xently.features.recommendations.presentation.request.RecommendationRequestScreen
+import co.ke.xently.features.recommendations.presentation.response.RecommendationResponseScreen
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
-import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.stores.presentation.moredetails.MoreDetailsScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
@@ -89,7 +93,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(SettingsScreen)
                                 },
                                 onClickFilterStores = {
-                                    navController.navigate(RecommendationNavGraph)
+                                    navController.navigate(RecommendationRequestScreen)
                                 },
                                 onClickEditProfile = {
                                     navController.navigate(ProfileEditDetailScreen)
@@ -105,29 +109,61 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         authenticationNavigation(navController = navController)
-                        recommendationNavigation(
-                            navController = navController,
-                            viewModel = recommendationViewModel,
-                        )
-                        composable<StoreDetailScreen> {
-                            StoreDetailScreen(
+                        composable<RecommendationRequestScreen> {
+                            RecommendationRequestScreen(
+                                viewModel = recommendationViewModel,
                                 onClickBack = navController::navigateUp,
-                                onClickReviewStore = {
-                                    navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
+                                onClickSearch = {
+                                    navController.navigate(RecommendationResponseScreen)
                                 },
+                            )
+                        }
+                        composable<RecommendationResponseScreen> {
+                            RecommendationResponseScreen(
+                                viewModel = recommendationViewModel,
+                                onClickBack = navController::navigateUp,
+                                onClickRecommendation = {
+                                    navController.navigate(
+                                        RecommendationDetailsScreen(recommendationId = it.id)
+                                    )
+                                },
+                            )
+                        }
+                        composable<RecommendationDetailsScreen> {
+                            val viewModel = hiltViewModel<RecommendationDetailsViewModel>()
+                            val productListViewModel = hiltViewModel<ProductListViewModel>()
+                            StoreDetailScreen(
+                                viewModel = viewModel,
+                                onClickBack = navController::navigateUp,
                                 onClickMoreDetails = {
                                     navController.navigate(MoreDetailsScreen(storeId = it.id))
                                 },
-                                allStoreProductsContent = {
-                                    CategoryFilterableProductListContent(
-                                        modifier = Modifier.matchParentSize(),
-                                    )
+                                onClickReviewStore = {
+                                    navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
                                 },
-                                recommendedProductsContent = {
-//                                RecommendedProductsContent()
-                                    Text(text = "Recommended products")
+                            ) {
+                                CategoryFilterableProductListContent(
+                                    viewModel = productListViewModel,
+                                    modifier = Modifier.matchParentSize(),
+                                )
+                            }
+                        }
+                        composable<StoreDetailScreen> {
+                            val viewModel = hiltViewModel<ProductListViewModel>()
+                            StoreDetailScreen(
+                                onClickBack = navController::navigateUp,
+                                onClickMoreDetails = {
+                                    navController.navigate(MoreDetailsScreen(storeId = it.id))
                                 },
-                            )
+                                onClickReviewStore = {
+                                    navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
+                                },
+                            ) {
+                                CategoryFilterableProductListContent(
+                                    viewModel = viewModel,
+                                    modifier = Modifier.matchParentSize(),
+                                )
+                            }
                         }
                         composable<ProfileEditDetailScreen> {
                             ProfileEditDetailScreen(onClickBack = navController::navigateUp)

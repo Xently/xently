@@ -4,11 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -22,8 +22,11 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun CategoryFilterableProductListContent(modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<ProductListViewModel>()
+fun CategoryFilterableProductListContent(
+    viewModel: ProductListViewModel,
+    modifier: Modifier = Modifier,
+    extraPrependContent: LazyListScope.() -> Unit = {},
+) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val products = viewModel.products.collectAsLazyPagingItems()
 
@@ -32,6 +35,7 @@ fun CategoryFilterableProductListContent(modifier: Modifier = Modifier) {
         categories = categories,
         products = products,
         onAction = viewModel::onAction,
+        extraPrependContent = extraPrependContent,
     )
 }
 
@@ -41,6 +45,7 @@ internal fun CategoryFilterableProductListContent(
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
     onAction: (ProductListAction) -> Unit,
+    extraPrependContent: LazyListScope.() -> Unit = {},
 ) {
     Column(modifier = modifier) {
         AnimatedVisibility(visible = categories.isNotEmpty()) {
@@ -57,6 +62,7 @@ internal fun CategoryFilterableProductListContent(
             products = products,
             onClickSelectShop = {},
             onClickSelectStore = {},
+            extraPrependContent = extraPrependContent,
         ) { product ->
             if (product != null) {
                 ProductListItem(product = product)

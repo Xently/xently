@@ -2,6 +2,7 @@ package co.ke.xently.features.recommendations.presentation.response
 
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -49,10 +50,11 @@ import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-internal fun RecommendationResponseScreen(
+fun RecommendationResponseScreen(
     viewModel: RecommendationViewModel,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
+    onClickRecommendation: (Store) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val stores = viewModel.recommendations.collectAsLazyPagingItems()
@@ -80,6 +82,7 @@ internal fun RecommendationResponseScreen(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
+        onClickStore = onClickRecommendation,
     )
 }
 
@@ -92,6 +95,7 @@ internal fun RecommendationResponseScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
+    onClickStore: (Store) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -122,6 +126,9 @@ internal fun RecommendationResponseScreen(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                         )
+                    },
+                    modifier = Modifier.clickable {
+                      onClickStore(store)
                     },
                 )
             } else {

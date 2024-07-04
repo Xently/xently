@@ -4,7 +4,6 @@ import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
 import co.ke.xently.features.recommendations.data.domain.RecommendationResponse
 import co.ke.xently.features.recommendations.data.domain.error.DataError
-import co.ke.xently.features.recommendations.data.domain.error.Error
 import co.ke.xently.features.recommendations.data.domain.error.Result
 import co.ke.xently.features.recommendations.data.source.local.RecommendationDatabase
 import co.ke.xently.features.recommendations.data.source.local.RecommendationEntity
@@ -29,10 +28,10 @@ internal class RecommendationRepositoryImpl @Inject constructor(
     private val accessControlRepository: AccessControlRepository,
 ) : RecommendationRepository {
     private val recommendationDao = database.recommendationDao()
-    override fun findById(id: Long): Flow<Result<RecommendationResponse, Error>> {
+    override fun findById(id: Long): Flow<Result<RecommendationResponse, DataError.Local>> {
         return recommendationDao.findById(id = id).map { entity ->
             if (entity == null) {
-                Result.Failure(DataError.Network.ResourceNotFound)
+                Result.Failure(DataError.Local.ITEM_NOT_FOUND)
             } else {
                 Result.Success(entity.recommendation)
             }
@@ -55,9 +54,7 @@ internal class RecommendationRepositoryImpl @Inject constructor(
                 coroutineScope {
                     launch {
                         recommendationDao.save(recommendations.map {
-                            RecommendationEntity(
-                                recommendation = it
-                            )
+                            RecommendationEntity(recommendation = it)
                         })
                     }
                 }

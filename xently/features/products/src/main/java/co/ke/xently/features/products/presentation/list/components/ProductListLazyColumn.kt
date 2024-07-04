@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import co.ke.xently.features.products.data.domain.error.DataError as ProductData
 internal fun ProductListLazyColumn(
     products: LazyPagingItems<Product>,
     modifier: Modifier = Modifier,
+    extraPrependContent: LazyListScope.() -> Unit,
     productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
     LazyColumn(
@@ -104,6 +106,8 @@ internal fun ProductListLazyColumn(
                 }
             }
         }
+
+        extraPrependContent()
 
         items(
             count = products.itemCount,

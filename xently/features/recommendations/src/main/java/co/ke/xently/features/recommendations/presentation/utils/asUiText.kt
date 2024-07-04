@@ -21,6 +21,7 @@ private fun DataError.asUiText(): UiText {
         DataError.Network.Serialization -> UiText.StringResource(R.string.error_serialization)
         DataError.Network.Retryable.Unknown -> UiText.StringResource(R.string.error_message_default)
         DataError.Local.DISK_FULL -> UiText.StringResource(R.string.error_disk_full)
+        DataError.Local.ITEM_NOT_FOUND -> UiText.StringResource(R.string.error_message_missing_resource)
         DataError.Network.ResourceNotFound -> UiText.StringResource(R.string.error_message_missing_resource)
         DataError.Network.Unauthorized -> UiText.StringResource(R.string.error_message_authentication_required)
         DataError.Network.Retryable.Permission -> UiText.StringResource(R.string.error_message_authorisation_required)

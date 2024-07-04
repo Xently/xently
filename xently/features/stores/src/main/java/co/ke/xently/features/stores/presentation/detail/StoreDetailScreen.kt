@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -17,12 +14,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -31,11 +26,8 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -70,14 +62,12 @@ typealias StoreDetailContentScope = BoxScope
 @Composable
 fun StoreDetailScreen(
     modifier: Modifier = Modifier,
+    viewModel: StoreDetailViewModel = hiltViewModel<StoreDetailViewModel>(),
     onClickBack: () -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickReviewStore: (String) -> Unit,
-    allStoreProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
-    recommendedProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
+    content: @Composable (StoreDetailContentScope.() -> Unit) = {},
 ) {
-    val viewModel = hiltViewModel<StoreDetailViewModel>()
-
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val snackbarHostState = rememberSnackbarHostState()
@@ -162,15 +152,14 @@ fun StoreDetailScreen(
     StoreDetailScreen(
         state = state,
         modifier = modifier,
+        isProcessingQrCode = isProcessingQrCode,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
-        isProcessingQrCode = isProcessingQrCode,
+        onClickMoreDetails = onClickMoreDetails,
         onAction = viewModel::onAction,
         onClickReviewStore = onClickReviewStore,
-        onClickMoreDetails = onClickMoreDetails,
-        allStoreProductsContent = allStoreProductsContent,
-        recommendedProductsContent = recommendedProductsContent,
         onGetPointsAndReviewClick = { scope.launch { locationPermissionLauncher.launch() } },
+        content = content,
     )
 }
 
@@ -187,8 +176,7 @@ internal fun StoreDetailScreen(
     onAction: (StoreDetailAction) -> Unit = {},
     onClickReviewStore: (String) -> Unit = {},
     onGetPointsAndReviewClick: () -> Unit = {},
-    allStoreProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
-    recommendedProductsContent: @Composable StoreDetailContentScope.() -> Unit = {},
+    content: @Composable (StoreDetailContentScope.() -> Unit) = {},
 ) {
     if (isProcessingQrCode) {
         ScanQrCodeAlertDialog(
@@ -267,57 +255,12 @@ internal fun StoreDetailScreen(
             }
         },
     ) { innerPadding ->
-        Column(
+        Box(
+            content = content,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-        ) {
-            var selectedContentType by rememberSaveable { mutableStateOf(StoreDetailContentType.AllStoreProducts) }
-            SecondaryTabRow(selectedTabIndex = selectedContentType.ordinal) {
-                StoreDetailContentType.entries.forEach { contentType ->
-                    Tab(
-                        selected = selectedContentType == contentType,
-                        onClick = { selectedContentType = contentType },
-                        text = {
-                            Text(
-                                text = stringResource(contentType.title),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    )
-                }
-            }
-            val pagerState = rememberPagerState(initialPage = selectedContentType.ordinal) {
-                StoreDetailContentType.entries.size
-            }
-
-            LaunchedEffect(pagerState.currentPage) {
-                if (pagerState.currentPage != selectedContentType.ordinal) {
-                    selectedContentType = StoreDetailContentType.entries[pagerState.currentPage]
-                }
-            }
-            LaunchedEffect(selectedContentType) {
-                if (selectedContentType.ordinal != pagerState.currentPage) {
-                    pagerState.animateScrollToPage(selectedContentType.ordinal)
-                }
-            }
-
-            HorizontalPager(
-                state = pagerState,
-                key = { StoreDetailContentType.entries[it] },
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            ) { selectedPageIndex ->
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (StoreDetailContentType.entries[selectedPageIndex]) {
-                        StoreDetailContentType.AllStoreProducts -> allStoreProductsContent()
-                        StoreDetailContentType.RecommendedProducts -> recommendedProductsContent()
-                    }
-                }
-            }
-        }
+        )
     }
 }
 
