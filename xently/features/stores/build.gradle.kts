@@ -71,6 +71,7 @@ dependencies {
 
     implementation(project(":xently:features:ui-core"))
     implementation(project(":xently:features:shops"))
+    implementation(project(":xently:features:location-picker"))
     implementation(project(":xently:features:storecategory"))
     implementation(project(":xently:features:storeservice"))
     implementation(project(":xently:features:openinghours"))

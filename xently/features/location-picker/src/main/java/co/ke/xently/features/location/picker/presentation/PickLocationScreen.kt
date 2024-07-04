@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.locationpickup
+package co.ke.xently.features.location.picker.presentation
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +28,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import co.ke.xently.features.stores.R
-import co.ke.xently.features.stores.presentation.locationpickup.components.PickLocationBottomBarCard
+import co.ke.xently.features.location.picker.R
+import co.ke.xently.features.location.picker.presentation.components.PickLocationBottomBarCard
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.presentation.ForegroundLocationTracker
@@ -41,28 +41,28 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PickStoreLocationScreen(
+fun PickLocationScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
 ) {
-    val viewModel = hiltViewModel<PickStoreLocationViewModel>()
+    val viewModel = hiltViewModel<PickLocationViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                PickStoreLocationEvent.SelectionConfirmed -> onClickBack()
+                PickLocationEvent.SelectionConfirmed -> onClickBack()
             }
         }
     }
 
-    PickStoreLocationScreen(
+    PickLocationScreen(
         modifier = modifier,
         location = state.location,
         positionMarkerAtTheCentre = positionMarkerAtTheCentre,
-        onLocationChange = { viewModel.onAction(PickStoreLocationAction.UpdateLocation(it)) },
-        onClickConfirmSelection = { viewModel.onAction(PickStoreLocationAction.ConfirmSelection) },
+        onLocationChange = { viewModel.onAction(PickLocationAction.UpdateLocation(it)) },
+        onClickConfirmSelection = { viewModel.onAction(PickLocationAction.ConfirmSelection) },
     ) {
         CenterAlignedTopAppBar(
             title = {
@@ -90,7 +90,7 @@ fun PickStoreLocationScreen(
 }
 
 @Composable
-internal fun PickStoreLocationScreen(
+internal fun PickLocationScreen(
     location: Location?,
     modifier: Modifier = Modifier,
     positionMarkerAtTheCentre: Boolean = true,
@@ -150,24 +150,23 @@ internal fun PickStoreLocationScreen(
     }
 }
 
-private class PickStoreLocationUiStateParameterProvider :
-    PreviewParameterProvider<PickStoreLocationUiState> {
-    override val values: Sequence<PickStoreLocationUiState>
+private class PickLocationUiStateParameterProvider : PreviewParameterProvider<PickLocationUiState> {
+    override val values: Sequence<PickLocationUiState>
         get() = sequenceOf(
-            PickStoreLocationUiState(),
-            PickStoreLocationUiState(location = Location()),
-            PickStoreLocationUiState(location = Location(latitude = 1.0, longitude = 2.0)),
+            PickLocationUiState(),
+            PickLocationUiState(location = Location()),
+            PickLocationUiState(location = Location(latitude = 1.0, longitude = 2.0)),
         )
 }
 
 @XentlyPreview
 @Composable
-private fun PickStoreLocationScreenPreview(
-    @PreviewParameter(PickStoreLocationUiStateParameterProvider::class)
-    state: PickStoreLocationUiState,
+private fun PickLocationScreenPreview(
+    @PreviewParameter(PickLocationUiStateParameterProvider::class)
+    state: PickLocationUiState,
 ) {
     XentlyTheme {
-        PickStoreLocationScreen(
+        PickLocationScreen(
             location = state.location,
             modifier = Modifier.fillMaxSize(),
             onClickConfirmSelection = {},

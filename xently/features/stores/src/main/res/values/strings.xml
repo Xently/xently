@@ -58,9 +58,6 @@
     <string name="text_field_label_store_services">Added value for customer</string>
     <string name="action_add_store">Add Branch</string>
     <string name="top_bar_title_edit_store_details">Edit details</string>
-    <string name="appbar_title_pick_store_location">Pick Location</string>
-    <string name="action_confirm_selection">Confirm Selection</string>
-    <string name="action_use_my_current_location">Use My Location</string>
     <string name="error_location_invalid_format">Invalid format. Should be latitude,longitude</string>
     <string name="error_location_invalid_latitude">Invalid latitude (y-coordinate)</string>
     <string name="error_location_invalid_longitude">Invalid latitude (x-coordinate)</string>
@@ -71,8 +68,6 @@
     <string name="message_store_deleted">Branch successfully delete.</string>
     <string name="top_bar_title_select_store">Click To Select Branch</string>
     <string name="message_store_saved">Store saved successfully.</string>
-    <string name="action_center_marker">Center marker</string>
-    <string name="action_close">Close</string>
     <string name="content_desc_action_more_store_image_options">More options for image</string>
     <string name="message_confirm_store_image_deletion">Are you sure you want to delete the image?</string>
     <string name="message_image_removed">Image successfully removed.</string>

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "co.ke.xently.features.recommendations"
+    namespace = "co.ke.xently.features.location.picker"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
@@ -59,26 +59,16 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
-
     implementation(libs.bundles.ktor)
     implementation(libs.timber)
     implementation(libs.date.time)
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
-    implementation(project(":xently:libraries:pagination-data"))
-    implementation(project(":xently:features:products"))
-    implementation(project(":xently:features:stores"))
-    implementation(project(":xently:features:location-picker"))
-    api(project(":xently:features:recommendations-data"))
-    implementation(project(":xently:features:stores-data"))
-    implementation(project(":xently:features:products-data"))
+    api(project(":xently:libraries:location-tracker"))
 
     debugImplementation(libs.bundles.ui.debug)
 
-    testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

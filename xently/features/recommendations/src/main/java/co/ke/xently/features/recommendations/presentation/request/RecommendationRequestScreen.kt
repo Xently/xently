@@ -36,7 +36,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +52,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.ke.xently.features.location.picker.presentation.PickLocationDialog
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.recommendations.R
@@ -72,7 +76,6 @@ internal fun RecommendationRequestScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onRequestSuccess: () -> Unit,
-    onClickPinLocation: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val storeCategories by viewModel.storeCategories.collectAsStateWithLifecycle()
@@ -97,13 +100,12 @@ internal fun RecommendationRequestScreen(
 
     RecommendationRequestScreen(
         state = state,
-        modifier = modifier,
         storeCategories = storeCategories,
         productCategories = productCategories,
+        modifier = modifier,
+        snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
-        snackbarHostState = snackbarHostState,
-        onClickPinLocation = onClickPinLocation,
     )
 }
 
@@ -116,9 +118,19 @@ internal fun RecommendationRequestScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
-    onClickPinLocation: () -> Unit,
     onAction: (RecommendationAction) -> Unit,
 ) {
+    var showLocationPicker by rememberSaveable { mutableStateOf(false) }
+
+    if (showLocationPicker) {
+        PickLocationDialog(
+            location = state.location,
+            modifier = Modifier.fillMaxSize(),
+            onDismissRequest = { showLocationPicker = false },
+            onLocationChange = { onAction(RecommendationAction.ChangeLocation(it)) },
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -142,7 +154,7 @@ internal fun RecommendationRequestScreen(
                     onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },
                     placeholder = stringResource(R.string.search_placeholder_location),
                     blankQueryIcon = {
-                        IconButton(onClick = onClickPinLocation) {
+                        IconButton(onClick = { showLocationPicker = true }) {
                             Icon(
                                 Icons.Default.AddLocationAlt,
                                 contentDescription = stringResource(R.string.action_label_pick_location),
@@ -359,7 +371,6 @@ private fun RecommendationRequestScreenPreview(
             productCategories = state.productCategories,
             onClickBack = {},
             onAction = {},
-            onClickPinLocation = {},
         )
     }
 }

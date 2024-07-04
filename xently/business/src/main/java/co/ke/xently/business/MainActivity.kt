@@ -35,7 +35,7 @@ import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
 import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
-import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
+import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                             StoreEditDetailScreen(onClickBack = navController::navigateUp)
                         }
                         composable<PickLocation> {
-                            PickStoreLocationScreen(onClickBack = navController::navigateUp)
+                            PickLocationScreen(onClickBack = navController::navigateUp)
                         }
                         composable<SelectShopScreen> {
                             ShopListScreen(

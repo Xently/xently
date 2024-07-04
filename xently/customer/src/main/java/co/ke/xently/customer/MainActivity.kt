@@ -34,7 +34,7 @@ import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestScr
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
 import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
-import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
+import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.stores.presentation.moredetails.MoreDetailsScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
@@ -139,7 +139,7 @@ class MainActivity : ComponentActivity() {
                             MoreDetailsScreen(onClickBack = navController::navigateUp)
                         }
                         composable<PickLocationScreen> {
-                            PickStoreLocationScreen(onClickBack = navController::navigateUp)
+                            PickLocationScreen(onClickBack = navController::navigateUp)
                         }
                         composable<SettingsScreen> {
                             SettingsScreen(onClickBack = navController::navigateUp)

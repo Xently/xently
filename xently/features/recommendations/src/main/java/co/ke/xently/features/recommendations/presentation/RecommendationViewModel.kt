@@ -123,6 +123,10 @@ class RecommendationViewModel @Inject constructor(
                 _uiState.update { it.copy(query = action.query) }
             }
 
+            is RecommendationAction.ChangeLocation -> {
+                _uiState.update { it.copy(location = action.location) }
+            }
+
             is RecommendationAction.ChangeMaximumPrice -> {
                 _uiState.update { it.copy(maximumPrice = action.price) }
             }

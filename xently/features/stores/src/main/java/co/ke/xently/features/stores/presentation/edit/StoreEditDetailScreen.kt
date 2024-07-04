@@ -19,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -35,8 +34,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,10 +55,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.ke.xently.features.location.picker.presentation.PickLocationDialog
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.openinghours.presentation.WeeklyOpeningHourInput
 import co.ke.xently.features.shops.data.domain.Shop
@@ -75,7 +71,6 @@ import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
-import co.ke.xently.features.stores.presentation.locationpickup.PickStoreLocationScreen
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.stores.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
@@ -156,47 +151,14 @@ internal fun StoreEditDetailScreen(
     val focusManager = LocalFocusManager.current
 
     var showLocationPicker by rememberSaveable { mutableStateOf(false) }
-    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
 
     if (showLocationPicker) {
-        Dialog(
+        PickLocationDialog(
+            location = state.location,
+            modifier = Modifier.fillMaxSize(),
             onDismissRequest = { showLocationPicker = false },
-            properties = DialogProperties(
-                decorFitsSystemWindows = false,
-                usePlatformDefaultWidth = false,
-            ),
-        ) {
-            PickStoreLocationScreen(
-                location = state.location,
-                modifier = Modifier.fillMaxSize(),
-                positionMarkerAtTheCentre = positionMarkerAtTheCentre,
-                onClickConfirmSelection = { showLocationPicker = false },
-                onLocationChange = { onAction(StoreEditDetailAction.ChangeLocation(it)) },
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(text = stringResource(R.string.appbar_title_pick_store_location))
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { showLocationPicker = false },
-                            content = {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.action_close),
-                                )
-                            },
-                        )
-                    },
-                    actions = {
-                        TextButton(
-                            content = { Text(text = stringResource(R.string.action_center_marker)) },
-                            onClick = { positionMarkerAtTheCentre = !positionMarkerAtTheCentre },
-                        )
-                    },
-                )
-            }
-        }
+            onLocationChange = { onAction(StoreEditDetailAction.ChangeLocation(it)) },
+        )
     }
 
     Scaffold(

@@ -18,7 +18,6 @@ fun NavGraphBuilder.recommendationNavigation(
                 viewModel = viewModel,
                 onClickBack = navController::navigateUp,
                 onRequestSuccess = { /*TODO*/ },
-                onClickPinLocation = { /*TODO*/ },
             )
         }
         composable<RecommendationNavGraph.RecommendationResponse> {

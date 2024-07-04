@@ -1,4 +1,4 @@
-package co.ke.xently.features.stores.presentation.locationpickup
+package co.ke.xently.features.location.picker.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -17,14 +17,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class PickStoreLocationViewModel @Inject constructor(
+internal class PickLocationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(PickStoreLocationUiState())
-    val uiState: StateFlow<PickStoreLocationUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(PickLocationUiState())
+    val uiState: StateFlow<PickLocationUiState> = _uiState.asStateFlow()
 
-    private val _event = Channel<PickStoreLocationEvent>()
-    val event: Flow<PickStoreLocationEvent> = _event.receiveAsFlow()
+    private val _event = Channel<PickLocationEvent>()
+    val event: Flow<PickLocationEvent> = _event.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -46,17 +46,17 @@ internal class PickStoreLocationViewModel @Inject constructor(
         }
     }
 
-    fun onAction(action: PickStoreLocationAction) {
+    fun onAction(action: PickLocationAction) {
         when (action) {
-            is PickStoreLocationAction.UpdateLocation -> {
+            is PickLocationAction.UpdateLocation -> {
                 _uiState.update {
                     it.copy(location = action.location)
                 }
             }
 
-            is PickStoreLocationAction.ConfirmSelection -> {
+            is PickLocationAction.ConfirmSelection -> {
                 viewModelScope.launch {
-                    _event.send(PickStoreLocationEvent.SelectionConfirmed)
+                    _event.send(PickLocationEvent.SelectionConfirmed)
                 }
             }
         }
