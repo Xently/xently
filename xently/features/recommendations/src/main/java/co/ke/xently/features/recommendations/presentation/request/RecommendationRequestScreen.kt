@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,12 +34,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -208,8 +212,8 @@ internal fun RecommendationRequestScreen(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Icon(Icons.Default.Sell, contentDescription = null)
                 Text(text = stringResource(R.string.headline_price_range))
@@ -220,6 +224,7 @@ internal fun RecommendationRequestScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) {
+                val focusManager = LocalFocusManager.current
                 val minimumPrice = remember(state.minimumPrice) {
                     state.minimumPrice?.removeSuffix(".0") ?: ""
                 }
@@ -241,7 +246,23 @@ internal fun RecommendationRequestScreen(
                         )
                     },
                     prefix = { Text(text = "KES") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        },
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = remember(state.maximumPrice) {
+                            derivedStateOf {
+                                if (state.maximumPrice.isNullOrBlank()) {
+                                    ImeAction.Next
+                                } else {
+                                    KeyboardOptions.Default.imeAction
+                                }
+                            }
+                        }.value,
+                    ),
                 )
 
                 val maximumPrice = remember(state.maximumPrice) {
@@ -265,11 +286,27 @@ internal fun RecommendationRequestScreen(
                         )
                     },
                     prefix = { Text(text = "KES") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        },
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = remember(state.minimumPrice) {
+                            derivedStateOf {
+                                if (state.minimumPrice.isNullOrBlank()) {
+                                    ImeAction.Next
+                                } else {
+                                    KeyboardOptions.Default.imeAction
+                                }
+                            }
+                        }.value,
+                    ),
                 )
             }
             PrimaryButton(
-                enabled = !state.isLoading && !state.disableFields,
+                enabled = state.enableSearchButton,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
