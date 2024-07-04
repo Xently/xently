@@ -75,7 +75,7 @@ internal fun RecommendationRequestScreen(
     viewModel: RecommendationViewModel,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
-    onRequestSuccess: () -> Unit,
+    onClickSearch: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val storeCategories by viewModel.storeCategories.collectAsStateWithLifecycle()
@@ -87,7 +87,7 @@ internal fun RecommendationRequestScreen(
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                is RecommendationEvent.Success -> onRequestSuccess()
+                is RecommendationEvent.Success -> Unit
                 is RecommendationEvent.Error -> {
                     snackbarHostState.showSnackbar(
                         event.error.asString(context = context),
@@ -105,6 +105,7 @@ internal fun RecommendationRequestScreen(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onClickBack = onClickBack,
+        onClickSearch = onClickSearch,
         onAction = viewModel::onAction,
     )
 }
@@ -118,6 +119,7 @@ internal fun RecommendationRequestScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = rememberSnackbarHostState(),
     onClickBack: () -> Unit,
+    onClickSearch: () -> Unit,
     onAction: (RecommendationAction) -> Unit,
 ) {
     var showLocationPicker by rememberSaveable { mutableStateOf(false) }
@@ -318,15 +320,13 @@ internal fun RecommendationRequestScreen(
                 )
             }
             PrimaryButton(
+                onClick = onClickSearch,
                 enabled = state.enableSearchButton,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 16.dp),
                 label = stringResource(R.string.action_label_search_place),
-                onClick = {
-//                    component.pushEvent(Event.ClickSubmitFilters)
-                },
             )
         }
     }
@@ -371,6 +371,7 @@ private fun RecommendationRequestScreenPreview(
             productCategories = state.productCategories,
             onClickBack = {},
             onAction = {},
+            onClickSearch = {},
         )
     }
 }

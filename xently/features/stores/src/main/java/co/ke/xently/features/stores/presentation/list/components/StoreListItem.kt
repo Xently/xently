@@ -68,8 +68,53 @@ internal fun StoreListItem(
         )
     }
 
+    StoreListItem(
+        store = store,
+        modifier = modifier,
+        isLoading = isLoading,
+        trailingHeadlineContent = {
+            var expanded by rememberSaveable { mutableStateOf(false) }
+
+            Box(modifier = Modifier.shimmer(isLoading)) {
+                Icon(
+                    Icons.Default.MoreVert,
+                    contentDescription = stringResource(
+                        R.string.content_desc_more_options_for_store,
+                        store.name,
+                        store.shop.name,
+                    ),
+                    modifier = Modifier.clickable(
+                        role = Role.Checkbox,
+                        indication = ripple(bounded = false),
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) { expanded = !isLoading },
+                )
+
+                DropdownMenuWithUpdateAndDelete(
+                    expanded = expanded,
+                    onExpandChanged = { expanded = it },
+                    onClickUpdate = { onClickUpdate(); expanded = false },
+                    onClickDelete = {
+                        showDeleteDialog = true
+                        expanded = false
+                    },
+                )
+            }
+        },
+    )
+}
+
+@Composable
+fun StoreListItem(
+    store: Store,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    trailingHeadlineContent: @Composable (() -> Unit)? = null,
+    trailingContent: @Composable (() -> Unit)? = null,
+) {
     ListItem(
         modifier = modifier,
+        trailingContent = trailingContent,
         leadingContent = {
             Card(
                 modifier = Modifier
@@ -113,33 +158,8 @@ internal fun StoreListItem(
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                 )
-                var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box(modifier = Modifier.shimmer(isLoading)) {
-                    Icon(
-                        Icons.Default.MoreVert,
-                        contentDescription = stringResource(
-                            R.string.content_desc_more_options_for_store,
-                            store.name,
-                            store.shop.name,
-                        ),
-                        modifier = Modifier.clickable(
-                            role = Role.Checkbox,
-                            indication = ripple(bounded = false),
-                            interactionSource = remember { MutableInteractionSource() },
-                        ) { expanded = !isLoading },
-                    )
-
-                    DropdownMenuWithUpdateAndDelete(
-                        expanded = expanded,
-                        onExpandChanged = { expanded = it },
-                        onClickUpdate = { onClickUpdate(); expanded = false },
-                        onClickDelete = {
-                            showDeleteDialog = true
-                            expanded = false
-                        },
-                    )
-                }
+                trailingHeadlineContent?.invoke()
             }
         },
     )

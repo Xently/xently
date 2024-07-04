@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
@@ -14,6 +15,7 @@ import co.ke.xently.features.recommendations.data.domain.RecommendationResponse
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
+import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,7 +90,7 @@ class RecommendationViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         )
 
-    val recommendations: Flow<PagingData<RecommendationResponse>> = uiState.mapLatest { state ->
+    val recommendations: Flow<PagingData<Store>> = uiState.mapLatest { state ->
         RecommendationRequest(
             location = state.location,
             storeDistanceMeters = null,
@@ -110,6 +112,8 @@ class RecommendationViewModel @Inject constructor(
                     request = request,
                 )
             }.flow
+        }.map { data ->
+            data.map { it.store }
         }.cachedIn(viewModelScope)
 
     private fun pager(call: suspend (String?) -> PagedResponse<RecommendationResponse>) =

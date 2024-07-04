@@ -68,7 +68,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":xently:features:ui-core"))
-    implementation(project(":xently:libraries:pagination-data"))
+    implementation(project(":xently:libraries:ui-pagination"))
     implementation(project(":xently:features:products"))
     implementation(project(":xently:features:stores"))
     implementation(project(":xently:features:location-picker"))

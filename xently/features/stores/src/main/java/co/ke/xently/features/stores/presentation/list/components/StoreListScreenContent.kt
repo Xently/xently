@@ -33,7 +33,7 @@ import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.runBlocking
 
 @Composable
-internal fun StoreListScreenContent(
+fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
     paddingValues: PaddingValues,
     verticalArrangement: Arrangement.HorizontalOrVertical,

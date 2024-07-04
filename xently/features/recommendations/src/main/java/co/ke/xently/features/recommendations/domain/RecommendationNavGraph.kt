@@ -9,7 +9,4 @@ data object RecommendationNavGraph {
 
     @Serializable
     internal data object RecommendationResponse
-
-    @Serializable
-    internal data object RequestPasswordReset
 }

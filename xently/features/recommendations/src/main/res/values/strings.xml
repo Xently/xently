@@ -39,4 +39,5 @@
     <string name="action_label_search_place">SEARCH FOR PLACE</string>
     <string name="action_label_pick_location">Pick location</string>
     <string name="search_placeholder_location">Search for location</string>
+    <string name="topbar_title_recommendation_response">Recommendations</string>
 </resources>
