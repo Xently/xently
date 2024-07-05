@@ -62,7 +62,7 @@ typealias StoreDetailContentScope = BoxScope
 @Composable
 fun StoreDetailScreen(
     modifier: Modifier = Modifier,
-    viewModel: StoreDetailViewModel = hiltViewModel<StoreDetailViewModel>(),
+    viewModel: AbstractStoreDetailViewModel = hiltViewModel<StoreDetailViewModel>(),
     onClickBack: () -> Unit,
     onClickMoreDetails: (Store) -> Unit,
     onClickReviewStore: (String) -> Unit,

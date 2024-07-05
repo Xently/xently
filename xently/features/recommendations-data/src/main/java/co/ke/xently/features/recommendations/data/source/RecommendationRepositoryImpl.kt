@@ -7,6 +7,7 @@ import co.ke.xently.features.recommendations.data.domain.error.DataError
 import co.ke.xently.features.recommendations.data.domain.error.Result
 import co.ke.xently.features.recommendations.data.source.local.RecommendationDatabase
 import co.ke.xently.features.recommendations.data.source.local.RecommendationEntity
+import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -25,10 +26,11 @@ import javax.inject.Singleton
 internal class RecommendationRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val database: RecommendationDatabase,
+    private val storeRepository: StoreRepository,
     private val accessControlRepository: AccessControlRepository,
-) : RecommendationRepository {
+) : RecommendationRepository, StoreRepository by storeRepository {
     private val recommendationDao = database.recommendationDao()
-    override fun findById(id: Long): Flow<Result<RecommendationResponse, DataError.Local>> {
+    override fun findRecommendationById(id: Long): Flow<Result<RecommendationResponse, DataError.Local>> {
         return recommendationDao.findById(id = id).map { entity ->
             if (entity == null) {
                 Result.Failure(DataError.Local.ITEM_NOT_FOUND)

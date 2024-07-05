@@ -6,8 +6,7 @@ import co.ke.xently.features.recommendations.data.domain.error.DataError.Local
 import co.ke.xently.features.recommendations.data.domain.error.Result
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.detail.StoreDetailViewModel
+import co.ke.xently.features.stores.presentation.detail.AbstractStoreDetailViewModel
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,18 +22,17 @@ class RecommendationDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     qrCodeRepository: QrCodeRepository,
     locationTracker: LocationTracker,
-    storeRepository: StoreRepository,
-    private val recommendationRepository: RecommendationRepository,
-) : StoreDetailViewModel(
-    savedStateHandle = savedStateHandle,
-    repository = storeRepository,
-    qrCodeRepository = qrCodeRepository,
+    repository: RecommendationRepository,
+) : AbstractStoreDetailViewModel(
+    repository = repository,
     locationTracker = locationTracker,
+    savedStateHandle = savedStateHandle,
+    qrCodeRepository = qrCodeRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getStoreResultFlow(): Flow<StoreResult<Store, StoreDataError>> {
         return savedStateHandle.getStateFlow("recommendationId", -1L)
-            .flatMapLatest(recommendationRepository::findById)
+            .flatMapLatest((repository as RecommendationRepository)::findRecommendationById)
             .map { result ->
                 when (result) {
                     is Result.Failure -> {
