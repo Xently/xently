@@ -150,11 +150,11 @@ internal fun RecommendationRequestScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
                 SearchBar(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
                     query = state.query,
-                    onSearch = { onAction(RecommendationAction.SearchLocation(it)) },
-                    onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },
                     placeholder = stringResource(R.string.search_placeholder_location),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },
+                    onSearch = { onAction(RecommendationAction.SearchLocation(it)) },
                     blankQueryIcon = {
                         IconButton(onClick = { showLocationPicker = true }) {
                             Icon(
@@ -163,7 +163,7 @@ internal fun RecommendationRequestScreen(
                             )
                         }
                     },
-                ) {}
+                )
             }
         },
     ) { paddingValues ->

@@ -1,15 +1,22 @@
 package co.ke.xently.libraries.ui.core.components
 
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -21,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.R
@@ -36,11 +45,12 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     bottomPadding: Dp? = null,
     horizontalPadding: Dp? = null,
+    suggestions: List<String> = emptyList(),
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    blankQueryIcon: (@Composable () -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit,
+    blankQueryIcon: @Composable (() -> Unit)? = null,
 ) {
+    val isQueryBlank by remember(query) { derivedStateOf { query.isBlank() } }
     var expanded by rememberSaveable { mutableStateOf(false) }
     SearchBar(
         modifier = Modifier
@@ -55,7 +65,6 @@ fun SearchBar(
             }
             .then(modifier),
         expanded = expanded,
-        content = content,
         onExpandedChange = { expanded = it },
         inputField = {
             SearchBarDefaults.InputField(
@@ -87,9 +96,6 @@ fun SearchBar(
                     }
                 },
                 trailingIcon = {
-                    val isQueryBlank by remember(query) {
-                        derivedStateOf { query.isBlank() }
-                    }
                     if (isQueryBlank) {
                         blankQueryIcon?.invoke()
                     } else {
@@ -109,29 +115,61 @@ fun SearchBar(
                 },
             )
         },
-    ) /*{
+    ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            repeat(4) { idx ->
-                val resultText = "Suggestion $idx"
-                ListItem(
-                    headlineContent = { Text(text = resultText) },
-                    supportingContent = { Text(text = "Additional info") },
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null
-                        )
-                    },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier
-                        .clickable {
-                            onSearch(resultText)
-                            expanded = false
-                        }
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
+            if (!isQueryBlank) {
+                SuggestionListItem(suggestion = query) {
+                    onSearch(query)
+                    expanded = false
+                }
+            }
+            suggestions.forEach { suggestion ->
+                SuggestionListItem(suggestion = suggestion) {
+                    onSearch(suggestion)
+                    expanded = false
+                }
             }
         }
-    }*/
+    }
+}
+
+@Composable
+private fun SuggestionListItem(
+    suggestion: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = suggestion,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        leadingContent = {
+            Icon(
+                Icons.Filled.Restore,
+                contentDescription = null,
+            )
+        },
+        trailingContent = {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+            )
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+            .clickable(onClick = onClick)
+            /*.padding(horizontal = 16.dp, vertical = 4.dp)*/,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SuggestionListItemPreview() {
+    SuggestionListItem(suggestion = "Example suggestion") {}
 }

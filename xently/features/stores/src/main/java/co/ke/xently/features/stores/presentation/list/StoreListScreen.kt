@@ -114,11 +114,11 @@ internal fun StoreListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
                 SearchBar(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
                     query = state.query,
-                    onSearch = { onAction(StoreListAction.Search(it)) },
-                    onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
+                    onSearch = { onAction(StoreListAction.Search(it)) },
                     blankQueryIcon = {
                         IconButton(onClick = onClickFilterStores) {
                             Icon(
@@ -127,7 +127,7 @@ internal fun StoreListScreen(
                             )
                         }
                     },
-                ) {}
+                )
             }
         },
     ) { paddingValues ->
