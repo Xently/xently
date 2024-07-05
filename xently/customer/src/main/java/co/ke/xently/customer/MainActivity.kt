@@ -124,7 +124,10 @@ class MainActivity : ComponentActivity() {
                                 onClickBack = navController::navigateUp,
                                 onClickRecommendation = {
                                     navController.navigate(
-                                        RecommendationDetailsScreen(recommendationId = it.id)
+                                        RecommendationDetailsScreen(
+                                            recommendationId = it.id,
+                                            productsUrl = it.links["products"]!!.hrefWithoutQueryParamTemplates(),
+                                        )
                                     )
                                 },
                             )
