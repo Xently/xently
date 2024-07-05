@@ -33,7 +33,7 @@ import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
 
 @Composable
-internal fun ProductListItem(
+fun ProductListItem(
     product: Product,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,

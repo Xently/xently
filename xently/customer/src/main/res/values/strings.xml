@@ -17,4 +17,6 @@
     <string name="anonymous">Anonymous</string>
     <string name="anonymous_email">anonymous@example.org</string>
     <string name="content_description_profile_picture">Profile picture</string>
+    <string name="headline_missed_products">Missed products</string>
+    <string name="headline_matched_products">Matched products</string>
 </resources>
