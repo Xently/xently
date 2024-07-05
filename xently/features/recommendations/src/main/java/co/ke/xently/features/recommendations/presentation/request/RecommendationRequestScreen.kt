@@ -19,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLocationAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -151,6 +153,8 @@ internal fun RecommendationRequestScreen(
                 }
                 SearchBar(
                     query = state.query,
+                    exitSearchIcon = Icons.Default.Close,
+                    clearSearchQueryIcon = Icons.Default.Delete,
                     placeholder = stringResource(R.string.search_placeholder_location),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },

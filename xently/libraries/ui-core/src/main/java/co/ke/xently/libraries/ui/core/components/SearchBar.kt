@@ -9,7 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +46,8 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     bottomPadding: Dp? = null,
     horizontalPadding: Dp? = null,
+    exitSearchIcon: ImageVector? = null,
+    clearSearchQueryIcon: ImageVector? = null,
     suggestions: List<String> = emptyList(),
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -84,7 +87,8 @@ fun SearchBar(
                     IconButton(onClick = { expanded = !expanded }) {
                         if (expanded) {
                             Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
+                                exitSearchIcon
+                                    ?: Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.content_desc_exit_search),
                             )
                         } else {
@@ -107,7 +111,8 @@ fun SearchBar(
                             },
                         ) {
                             Icon(
-                                Icons.Default.Close,
+                                clearSearchQueryIcon
+                                    ?: Icons.Default.Clear,
                                 contentDescription = stringResource(R.string.content_desc_clear_search_query),
                             )
                         }
