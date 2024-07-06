@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -76,7 +77,6 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.bundles.ktor)
     implementation(libs.androidx.material.icons.extended)
-    implementation(libs.bundles.map)
     api(project(":kwanza-tukule:features:ui-core"))
     api(project(":kwanza-tukule:libraries:data-customer"))
     api(project(":kwanza-tukule:libraries:data-route"))

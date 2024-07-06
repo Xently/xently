@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_open">Open</string>
+    <string name="to">to</string>
+    <string name="ok_shorthand">OK</string>
+    <string name="content_desc_switch_to_text_input">Switch to Text Input</string>
+    <string name="action_select_time">Select Time</string>
+    <string name="action_enter_time">Enter Time</string>
+    <string name="headline_opening_hours">Opening Hours: Opening Time to Closing Time</string>
+</resources>

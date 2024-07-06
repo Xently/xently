@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.RemoveShoppingCart
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -61,6 +60,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -226,7 +226,7 @@ private fun TopAppBar(
                     .height(270.dp),
             ) {
                 HorizontalPager(state = pagerState) { index ->
-                    co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                    co.ke.xently.libraries.ui.image.XentlyImage(
                         contentScale = ContentScale.FillBounds,
                         data = product.images[index],
                         modifier = Modifier
@@ -403,9 +403,9 @@ private fun ProductDetailScreenPreview(
                             enabled = Random.nextBoolean(),
                             role = Role.Button,
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = rememberRipple(
+                            indication = ripple(
                                 bounded = false,
-                                radius = 40.dp / 2
+                                radius = 40.dp / 2,
                             ),
                         ),
                     content = {

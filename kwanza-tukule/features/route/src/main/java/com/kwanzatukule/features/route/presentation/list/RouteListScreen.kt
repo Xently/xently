@@ -38,8 +38,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import co.ke.xently.libraries.pagination.presentation.PaginatedLazyColumn
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.pagination.PaginatedLazyColumn
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.features.route.presentation.list.components.RouteListItem

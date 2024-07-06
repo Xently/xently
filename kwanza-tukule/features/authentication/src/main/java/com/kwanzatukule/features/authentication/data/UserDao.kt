@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insertAll(vararg users: User)
+    suspend fun save(vararg users: UserEntity)
 
     @Query("DELETE FROM user")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM user LIMIT 1")
-    fun findFirst(): Flow<User?>
+    fun findFirst(): Flow<UserEntity?>
 
     @Query("SELECT * FROM user LIMIT 1")
-    suspend fun first(): User?
+    suspend fun first(): UserEntity?
 }

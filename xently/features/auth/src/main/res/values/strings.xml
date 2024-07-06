@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_sign_in">Sign In</string>
+    <string name="the_request_timed_out">The request timed out</string>
+    <string name="youve_hit_your_rate_limit">You\'ve hit your rate limit</string>
+    <string name="no_internet">Couldn\'t reach server. Check your internet connection.</string>
+    <string name="file_too_large">The file you tried to upload was too large.</string>
+    <string name="server_error">Oops, something went wrong. Please try again.</string>
+    <string name="unknown_error">An unknown error occurred</string>
+    <string name="error_disk_full">Failed to save the item because your device\'s disk is full</string>
+    <string name="error_serialization">Oops, couldn\'t parse data.</string>
+    <string name="error_password_too_short">The password is too short</string>
+    <string name="action_register">Create an account</string>
+    <string name="or">Or</string>
+    <string name="action_label_forgot_password">Forgot Password?</string>
+    <string name="action_hide_password">Hide password</string>
+    <string name="action_show_password">Show password</string>
+    <string name="field_label_password">Password</string>
+    <string name="field_label_email">Email</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_sign_in_with_google">Continue with Google</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="field_label_name">Name</string>
+    <string name="action_request_password_reset">Request Password Reset</string>
+    <string name="error_password_no_digit">User at least 1 number.</string>
+    <string name="error_password_no_uppercase">User at least 1 capital letter.</string>
+    <string name="error_google_sign_in_unexpected_error">Something unexepected went wrong. Please try again.</string>
+    <string name="error_google_sign_in_no_credentials_found">No credentials found.</string>
+    <string name="error_google_sign_in_unsupported_provider">Google Sign-In is not supported. Please use other alternatives.</string>
+    <string name="error_google_sign_in_interrupted">Authentication interrupted.</string>
+    <string name="error_google_sign_in_cancelled">Authentication cancelled.</string>
+    <string name="error_google_sign_in_unrecongised_credential_type">Unrecognised credential type.</string>
+    <string name="error_google_sign_in_invalid_google_id_response">Invalid Google ID.</string>
+    <string name="error_google_sign_in_failed">Google sign-in failed.</string>
+</resources>

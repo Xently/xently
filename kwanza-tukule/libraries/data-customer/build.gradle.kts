@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -70,5 +71,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":xently:libraries:data-core"))
     implementation(project(":xently:libraries:location-tracker"))
-    api(project(":xently:libraries:pagination"))
+    api(project(":xently:libraries:ui-pagination"))
 }

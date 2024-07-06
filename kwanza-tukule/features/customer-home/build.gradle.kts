@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -85,6 +86,6 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     api(project(":kwanza-tukule:features:ui-core"))
     api(project(":kwanza-tukule:features:catalogue"))
-    api(project(":xently:libraries:pagination"))
+    api(project(":xently:libraries:ui-pagination"))
     implementation(project(":kwanza-tukule:features:shopping-cart"))
 }

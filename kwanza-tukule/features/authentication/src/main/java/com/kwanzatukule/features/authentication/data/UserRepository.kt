@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
@@ -31,9 +32,10 @@ class UserRepository @Inject constructor(
                     null
                 } else {
                     CurrentUser(
-                        uid = user.id,
-                        firstName = user.firstName,
-                        lastName = user.lastName,
+                        id = user.id,
+                        email = user.email,
+                        name = listOfNotNull(user.firstName, user.lastName)
+                            .joinToString(" "),
                     )
                 }
             }
@@ -45,13 +47,21 @@ class UserRepository @Inject constructor(
             delay(duration)
             database.withTransactionFacade {
                 database.userDao().deleteAll()
-                database.userDao().insertAll(User(1, email, password, email, null))
+                database.userDao().save(
+                    UserEntity(
+                        id = UUID.randomUUID().toString(),
+                        firstName = email,
+                        lastName = password,
+                        email = email,
+                        accessToken = null
+                    )
+                )
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            return Result.Failure(DataError.Network.NO_INTERNET)
+            return Result.Failure(DataError.Network.entries.random())
         }
     }
 

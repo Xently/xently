@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.libraries.pagination.domain.PagingSource
+import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.kwanzatukule.features.catalogue.domain.Category
@@ -38,7 +38,7 @@ class HomeComponentImpl(
             initialLoadSize = 20,
         )
     ) {
-        PagingSource { url ->
+        XentlyPagingSource { url ->
             repository.getCategories(url)
         }
     }.flow.cachedIn(componentScope)
@@ -49,7 +49,7 @@ class HomeComponentImpl(
             initialLoadSize = 20,
         )
     ) {
-        PagingSource { url ->
+        XentlyPagingSource { url ->
             repository.getProducts(url ?: "https://localhost/suggested-products")
         }
     }.flow.cachedIn(componentScope)
@@ -60,7 +60,7 @@ class HomeComponentImpl(
             initialLoadSize = 20,
         )
     ) {
-        PagingSource { url ->
+        XentlyPagingSource { url ->
             repository.getProducts(url ?: "https://localhost/featured-products")
         }
     }.flow.cachedIn(componentScope)

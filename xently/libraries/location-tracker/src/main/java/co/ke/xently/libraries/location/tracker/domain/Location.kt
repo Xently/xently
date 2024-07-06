@@ -1,9 +1,11 @@
 package co.ke.xently.libraries.location.tracker.domain
 
+import android.os.Parcelable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.SaverScope
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -12,6 +14,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 @Stable
+@Parcelize
 data class Location(
     @SerialName("latitude")
     val latitude: Double = Double.NaN,
@@ -20,7 +23,7 @@ data class Location(
     @Transient
     val name: String? = null,
     val averageCoordinates: Double = ((latitude + longitude) / 2),
-) {
+) : Parcelable {
     fun isUsable() = (!latitude.isNaN()
             || !longitude.isNaN())
 
@@ -28,8 +31,27 @@ data class Location(
         return if (!name.isNullOrBlank()) {
             name
         } else {
-            "x=$longitude,y=$latitude"
+            coordinatesString()
         }
+    }
+
+    fun coordinatesString() = "x=$longitude,y=$latitude"
+    override fun hashCode(): Int {
+        var result = latitude.hashCode()
+        result = 31 * result + longitude.hashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Location
+
+        if (latitude != other.latitude) return false
+        if (longitude != other.longitude) return false
+
+        return true
     }
 
     object Saver : androidx.compose.runtime.saveable.Saver<MutableState<Location?>, String> {

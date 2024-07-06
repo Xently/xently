@@ -26,10 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.domain.formatNumber
+import co.ke.xently.libraries.ui.core.domain.formatPrice
 import com.kwanzatukule.features.cart.domain.ShoppingCart
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.domain.formatNumber
-import com.kwanzatukule.features.core.domain.formatPrice
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @Composable
@@ -69,7 +69,7 @@ fun ShoppingListItem(
                 modifier = Modifier.size(60.dp),
                 shape = MaterialTheme.shapes.medium,
             ) {
-                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyImage(
                     item.product.image,
                     contentDescription = "Image of ${item.product.name}",
                     modifier = Modifier.fillMaxSize(),

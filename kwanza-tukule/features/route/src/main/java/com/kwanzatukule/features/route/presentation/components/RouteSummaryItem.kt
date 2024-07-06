@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import com.kwanzatukule.features.core.domain.formatNumber
+import co.ke.xently.libraries.ui.core.domain.formatNumber
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary

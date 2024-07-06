@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Xently Business</string>
+    <string name="app_destination_dashboard">Dashboard</string>
+    <string name="app_destination_products">Products</string>
+    <string name="app_destination_customers">Customers</string>
+    <string name="app_destination_notifications">Notifications</string>
+    <string name="app_destination_reviews">Reviews</string>
+    <string name="topbar_title_reviews">Reviews &amp; Feedback</string>
+    <string name="topbar_title_notifications">Notifications</string>
+    <string name="topbar_title_customers">Customer Ranking</string>
+    <string name="topbar_title_products">Menu/Products</string>
+    <string name="app_destination_qr_code">QR Code</string>
+    <string name="app_destination_settings">Settings</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="action_add_shop">Add Shop</string>
+    <string name="action_login">Login</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_label_privacy_policy">Privacy Policy</string>
+    <string name="action_label_terms_of_service">Terms of Service</string>
+    <string name="action_add_store">Add Branch</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="anonymous_email">anonymous@example.org</string>
+    <string name="content_desc_open_navigation_drawer">Open navigation drawer</string>
+    <string name="content_desc_topbar_menu">Show extra menu options</string>
+    <string name="action_content_desc_switch_account">Switch account</string>
+    <string name="content_desc_is_currently_selected">Is currently selected/active</string>
+    <string name="content_description_profile_picture">Profile picture</string>
 </resources>

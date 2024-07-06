@@ -55,7 +55,7 @@ fun AdvertCard(
         },
         trailingContent = if (advert.image == null) null else {
             {
-                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyImage(
                     data = advert.image,
                     contentDescription = null,
                     modifier = Modifier

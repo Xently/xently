@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="customers_total_title">
+        <item quantity="zero">Total: %d Customers</item>
+        <item quantity="one">Total: %d Customer</item>
+        <item quantity="two">Total: %d Customers</item>
+        <item quantity="few">Total: %d Customers</item>
+        <item quantity="many">Total: %d Customers</item>
+        <item quantity="other">Total: %d Customers</item>
+    </plurals>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<defaults>
+    <entry>
+        <key>contact_us_email_address</key>
+        <value>info@xently.co.ke</value>
+    </entry>
+    <entry>
+        <key>terms_of_service_url</key>
+        <value>https://xently.co.ke/termsandconditions.html</value>
+    </entry>
+    <entry>
+        <key>privacy_policy_url</key>
+        <value>https://xently.co.ke/privacy.html</value>
+    </entry>
+    <entry>
+        <key>maximum_image_size_bytes</key>
+        <value>5242880</value>
+    </entry>
+    <entry>
+        <key>maximum_number_of_uploadable_images</key>
+        <value>5</value>
+    </entry>
+</defaults>

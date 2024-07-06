@@ -1,6 +1,6 @@
 package com.kwanzatukule.libraries.data.route.data
 
-import co.ke.xently.libraries.pagination.domain.models.PagedResponse
+import co.ke.xently.libraries.pagination.data.PagedResponse
 import com.kwanzatukule.libraries.data.route.domain.Route
 import com.kwanzatukule.libraries.data.route.domain.RouteSummary
 import com.kwanzatukule.libraries.data.route.domain.error.DataError

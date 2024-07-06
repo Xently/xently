@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -35,9 +36,9 @@ fun ShoppingCartBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
                 enabled = shoppingCart.numberOfItems > 0,
                 role = Role.Button,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = androidx.compose.material.ripple.rememberRipple(
+                indication = ripple(
                     bounded = false,
-                    radius = 40.dp / 2
+                    radius = 40.dp / 2,
                 ),
             ),
         content = {

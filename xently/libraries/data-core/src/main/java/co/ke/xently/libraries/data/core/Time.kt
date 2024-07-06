@@ -66,6 +66,14 @@ data class Time(
         }
     }
 
+    companion object {
+        fun now(): Time {
+            val localDateTime = Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+            return Time(localDateTime.hour, localDateTime.minute)
+        }
+    }
+
     object TimeAsStringSerializer : KSerializer<Time> {
         override val descriptor: SerialDescriptor =
             PrimitiveSerialDescriptor("Time", PrimitiveKind.STRING)
@@ -96,7 +104,7 @@ data class Time(
             val (hour, minute) = time.split(':').map {
                 it.toInt()
             }
-            val utcOffset = UtcOffset.parse(offset)
+            val utcOffset = UtcOffset.parse(offset, UtcOffset.Formats.FOUR_DIGITS)
             return Time(hour = hour, minute = minute, utcOffset = utcOffset)
                 .toLocalTime()
         }

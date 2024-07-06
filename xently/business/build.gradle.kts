@@ -4,11 +4,15 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.performance)
 }
 
 secrets {
@@ -36,11 +40,11 @@ android {
         }
     }
 
-    namespace = "co.ke.xently"
+    namespace = "co.ke.xently.business"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        applicationId = "co.ke.xently.business"
+        applicationId = "co.ke.xently.client"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = libs.versions.android.version.code.get().toInt()
@@ -91,29 +95,48 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.bundles.ui)
+    implementation(libs.bundles.ui.navigation)
+    implementation(libs.adaptive.navigation)
+    implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    implementation(libs.bundles.room)
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.bundles.ktor)
+    implementation(libs.timber)
+    implementation(libs.date.time)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.bundles.firebase)
+
+    implementation(project(":xently:features:ui-core"))
+    implementation(project(":xently:features:auth"))
+    implementation(project(":xently:features:access-control"))
+    implementation(project(":xently:features:customers"))
+    implementation(project(":xently:features:location-picker"))
+    implementation(project(":xently:features:merchant"))
+    implementation(project(":xently:features:notifications"))
+    implementation(project(":xently:features:notification-topic"))
+    implementation(project(":xently:features:products"))
+    implementation(project(":xently:features:profile"))
+    implementation(project(":xently:features:qrcode"))
+    implementation(project(":xently:features:reviewcategory"))
+    implementation(project(":xently:features:reviews"))
+    implementation(project(":xently:features:settings"))
+    implementation(project(":xently:features:shops"))
+    implementation(project(":xently:features:stores"))
+
+    debugImplementation(libs.bundles.ui.debug)
+
+    testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.bundles.decompose)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.paging)
-
-    testImplementation(libs.androidx.room.testing)
-    implementation(libs.timber)
-
-    implementation(libs.bundles.ktor)
-    implementation(libs.okhttp.logging)
 }

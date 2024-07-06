@@ -13,4 +13,4 @@ git-crypt-key
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+**/src/debug/res/xml/network_security_config.xml

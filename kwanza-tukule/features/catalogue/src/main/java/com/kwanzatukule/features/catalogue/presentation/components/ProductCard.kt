@@ -40,8 +40,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.domain.formatPrice
 import com.kwanzatukule.features.catalogue.domain.Product
-import com.kwanzatukule.features.core.domain.formatPrice
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -67,7 +67,7 @@ fun ProductCard(
                     .fillMaxWidth()
                     .height(128.dp),
             ) {
-                co.ke.xently.libraries.ui.image.XentlyAsyncImage(
+                co.ke.xently.libraries.ui.image.XentlyImage(
                     data = product.image,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),

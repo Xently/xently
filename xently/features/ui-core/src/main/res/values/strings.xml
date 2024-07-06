@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="action_privacy_policy">Privacy Policy</string>
+    <string name="action_term_of_services">Term of Services</string>
+    <string name="action_update">Update</string>
+    <string name="action_delete">Delete</string>
+    <string name="headline_enter_category">Categories</string>
+    <string name="text_field_placeholder_category_name">enter category name</string>
+    <string name="action_add">Add</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_login">Login</string>
 </resources>

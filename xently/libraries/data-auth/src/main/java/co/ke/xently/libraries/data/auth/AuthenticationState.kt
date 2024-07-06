@@ -6,4 +6,7 @@ import androidx.compose.runtime.Stable
 data class AuthenticationState(
     val isSignOutInProgress: Boolean = false,
     val currentUser: CurrentUser? = null,
-)
+) {
+    val isAuthenticated: Boolean
+        get() = currentUser != null
+}
