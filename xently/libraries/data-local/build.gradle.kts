@@ -35,7 +35,6 @@ android {
         jvmTarget = libs.versions.android.jvm.target.get()
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
     composeOptions {
