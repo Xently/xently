@@ -12,6 +12,9 @@
 #   public *;
 #}
 
+#Doc https://developer.android.com/build/shrink-code#keep-code
+#-printusage ../../.kotlin/customer/usage.txt
+#-printseeds ../../.kotlin/customer/seeds.txt
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
@@ -19,6 +22,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
+-keepnames class * extends androidx.lifecycle.ViewModel
 -keep class * extends java.lang.Throwable { *; }
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn org.slf4j.impl.StaticMDCBinder
