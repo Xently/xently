@@ -29,8 +29,15 @@ import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String = ""): URLBuilder {
-    val baseURlBuilder = URLBuilder(baseURL)
+fun interface BaseURL {
+    fun get(): String
+}
+
+private var cachedBaseURL: String? = null
+
+fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String? = null): URLBuilder {
+    val urlString = baseURL ?: cachedBaseURL ?: return this
+    val baseURlBuilder = URLBuilder(urlString)
     return apply {
         if (baseURlBuilder.host == host && baseURlBuilder.protocol.name != protocol.name) {
             protocol = baseURlBuilder.protocol
@@ -39,52 +46,63 @@ fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String = ""): URLBuilder {
 }
 
 
-class HttpClientFactory(
+class HttpClientFactory private constructor(
     private val context: Context,
     private val json: Json,
     private val accessTokenProvider: AccessTokenProvider,
+    private val baseURL: BaseURL,
 ) {
-    operator fun invoke(): HttpClient {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                redactHeader(HttpHeaders.Authorization)
-                redactHeader(HttpHeaders.Cookie)
-                HttpLoggingInterceptor.Level.NONE
+    init {
+        synchronized(Unit) {
+            if (cachedBaseURL == null) {
+                Timber.tag(TAG).i("Caching base URL...")
+                cachedBaseURL = baseURL.get()
             }
         }
-        val cacheInterceptor = Interceptor { chain ->
-            val request = chain.request()
-            var response = chain.proceed(
-                request.newBuilder()
-                    .cacheControl(CacheControl.parse(request.headers)).build()
-            )
-            if (response.code == 504 && response.request.cacheControl.onlyIfCached) {
-                // See, https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#other
-                response = chain.proceed(
-                    response.request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_NETWORK).build()
-                )
-            }
-            return@Interceptor response
-        }
-        val cache = Cache(context.cacheDir, (5 * 1024 * 1024).toLong())
-        val okHttpClient = OkHttpClient.Builder()
-            .cache(cache)
-            .addInterceptor(cacheInterceptor) // maintain order - cache may depend on the headers
-            .addInterceptor(loggingInterceptor)
-            .connectTimeout(60L, TimeUnit.SECONDS)
-            .readTimeout(30L, TimeUnit.SECONDS)
-            .writeTimeout(15L, TimeUnit.SECONDS)
-            .build()
-        return HttpClient(OkHttp) {
-            engine {
-                preconfigured = okHttpClient
-            }
-            configurePlugins()
-        }.withPlugins()
     }
+
+    private val httpClient: HttpClient
+        get() {
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                level = if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    redactHeader(HttpHeaders.Authorization)
+                    redactHeader(HttpHeaders.Cookie)
+                    HttpLoggingInterceptor.Level.NONE
+                }
+            }
+            val cacheInterceptor = Interceptor { chain ->
+                val request = chain.request()
+                var response = chain.proceed(
+                    request.newBuilder()
+                        .cacheControl(CacheControl.parse(request.headers)).build()
+                )
+                if (response.code == 504 && response.request.cacheControl.onlyIfCached) {
+                    // See, https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#other
+                    response = chain.proceed(
+                        response.request.newBuilder()
+                            .cacheControl(CacheControl.FORCE_NETWORK).build()
+                    )
+                }
+                return@Interceptor response
+            }
+            val cache = Cache(context.cacheDir, (5 * 1024 * 1024).toLong())
+            val okHttpClient = OkHttpClient.Builder()
+                .cache(cache)
+                .addInterceptor(cacheInterceptor) // maintain order - cache may depend on the headers
+                .addInterceptor(loggingInterceptor)
+                .connectTimeout(60L, TimeUnit.SECONDS)
+                .readTimeout(30L, TimeUnit.SECONDS)
+                .writeTimeout(15L, TimeUnit.SECONDS)
+                .build()
+            return HttpClient(OkHttp) {
+                engine {
+                    preconfigured = okHttpClient
+                }
+                configurePlugins()
+            }.withPlugins()
+        }
 
     private fun <T : HttpClientEngineConfig> HttpClientConfig<T>.configurePlugins() {
         expectSuccess = true
@@ -132,10 +150,12 @@ class HttpClientFactory(
                     && !request.headers.contains(HttpHeaders.Authorization)
 
             if (shouldConfigureAuth) {
-                Timber.i("Configuring authentication credentials...")
+                Timber.tag(TAG)
+                    .i("Configuring authentication credentials...")
                 val accessToken = accessTokenProvider.getAccessToken()
                 if (!accessToken.isNullOrBlank()) {
-                    Timber.i("Successfully configured authentication credentials...")
+                    Timber.tag(TAG)
+                        .i("Successfully configured authentication credentials...")
                     request.headers[HttpHeaders.Authorization] = "Bearer $accessToken"
                 }
             }
@@ -164,5 +184,18 @@ class HttpClientFactory(
 
     companion object {
         private const val TAG = "HttpClientFactory"
+        operator fun invoke(
+            context: Context,
+            json: Json,
+            accessTokenProvider: AccessTokenProvider,
+            baseURL: BaseURL,
+        ): HttpClient {
+            return HttpClientFactory(
+                context = context,
+                json = json,
+                accessTokenProvider = accessTokenProvider,
+                baseURL = baseURL,
+            ).httpClient
+        }
     }
 }
