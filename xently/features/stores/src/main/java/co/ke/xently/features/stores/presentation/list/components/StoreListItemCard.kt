@@ -2,6 +2,7 @@ package co.ke.xently.features.stores.presentation.list.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -135,7 +136,7 @@ internal fun StoreListItemCard(
             var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
             XentlyImage(
                 data = store.images.getOrNull(index),
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier.fillMaxSize(),
                 onError = {
                     if (index != store.images.lastIndex) index += 1
                 },

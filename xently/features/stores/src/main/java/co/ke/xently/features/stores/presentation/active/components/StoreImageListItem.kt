@@ -1,6 +1,7 @@
 package co.ke.xently.features.stores.presentation.active.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -79,7 +80,7 @@ internal fun StoreImageListItem(
             ) {
                 XentlyImage(
                     data = image,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.fillMaxSize(),
                 )
                 if (isLoading) CircularProgressIndicator()
             }
