@@ -180,54 +180,6 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (productCategories.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.headline_product_categories),
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    for (category in productCategories) {
-                        ProductCategoryFilterChip(
-                            category = category,
-                            onClickSelectCategory = {
-                                onAction(RecommendationAction.ProductSelectCategory(category))
-                            },
-                            onClickRemoveCategory = {
-                                onAction(RecommendationAction.ProductRemoveCategory(category))
-                            },
-                        )
-                    }
-                }
-            }
-
-            if (storeCategories.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.headline_store_categories)
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    for (category in storeCategories) {
-                        StoreCategoryFilterChip(
-                            category = category,
-                            onClickSelectCategory = {
-                                onAction(RecommendationAction.StoreSelectCategory(category))
-                            },
-                            onClickRemoveCategory = {
-                                onAction(RecommendationAction.StoreRemoveCategory(category))
-                            },
-                        )
-                    }
-                }
-            }
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -323,6 +275,55 @@ internal fun RecommendationRequestScreen(
                     ),
                 )
             }
+
+            if (productCategories.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.headline_product_categories),
+                )
+
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (category in productCategories) {
+                        ProductCategoryFilterChip(
+                            category = category,
+                            onClickSelectCategory = {
+                                onAction(RecommendationAction.ProductSelectCategory(category))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(RecommendationAction.ProductRemoveCategory(category))
+                            },
+                        )
+                    }
+                }
+            }
+
+            if (storeCategories.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.headline_store_categories)
+                )
+
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (category in storeCategories) {
+                        StoreCategoryFilterChip(
+                            category = category,
+                            onClickSelectCategory = {
+                                onAction(RecommendationAction.StoreSelectCategory(category))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(RecommendationAction.StoreRemoveCategory(category))
+                            },
+                        )
+                    }
+                }
+            }
+
             PrimaryButton(
                 onClick = onClickSearch,
                 enabled = state.enableSearchButton,
