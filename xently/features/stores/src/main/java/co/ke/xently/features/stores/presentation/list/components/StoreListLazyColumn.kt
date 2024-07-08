@@ -1,6 +1,7 @@
 package co.ke.xently.features.stores.presentation.list.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,10 +37,12 @@ internal fun StoreListLazyColumn(
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.HorizontalOrVertical,
+    contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
+        contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
     ) {
         when (val loadState = stores.loadState.refresh) {

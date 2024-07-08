@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,9 +34,9 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
-    paddingValues: PaddingValues,
     verticalArrangement: Arrangement.HorizontalOrVertical,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     val refreshLoadState = stores.loadState.refresh
@@ -45,11 +44,9 @@ fun StoreListScreenContent(
         derivedStateOf { refreshLoadState == LoadState.Loading && stores.itemCount > 0 }
     }
     PullRefreshBox(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(paddingValues),
         isRefreshing = isRefreshing,
         onRefresh = stores::refresh,
+        modifier = modifier.fillMaxSize(),
     ) {
         when {
             stores.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
@@ -111,6 +108,7 @@ fun StoreListScreenContent(
                     stores = stores,
                     modifier = Modifier.matchParentSize(),
                     storeListItem = storeListItem,
+                    contentPadding = contentPadding,
                     verticalArrangement = verticalArrangement,
                 )
             }
