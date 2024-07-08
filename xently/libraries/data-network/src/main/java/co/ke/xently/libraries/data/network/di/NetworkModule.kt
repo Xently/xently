@@ -2,6 +2,7 @@ package co.ke.xently.libraries.data.network.di
 
 import android.content.Context
 import co.ke.xently.libraries.data.network.AccessTokenProvider
+import co.ke.xently.libraries.data.network.BaseURL
 import co.ke.xently.libraries.data.network.HttpClientFactory
 import dagger.Module
 import dagger.Provides
@@ -30,12 +31,14 @@ object NetworkModule {
         @ApplicationContext
         context: Context,
         json: Json,
+        baseURL: BaseURL,
         accessTokenProvider: AccessTokenProvider,
     ): HttpClient {
         return HttpClientFactory(
             context = context,
             json = json,
+            baseURL = baseURL,
             accessTokenProvider = accessTokenProvider,
-        )()
+        )
     }
 }
