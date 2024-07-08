@@ -41,6 +41,7 @@ import co.ke.xently.features.products.presentation.list.components.ProductListCo
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
@@ -123,12 +124,12 @@ internal fun ActiveStoreProductListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                /*SearchBar(
+                SearchBar(
                     query = state.query,
                     onSearch = { onAction(ProductListAction.Search(it)) },
                     onQueryChange = { onAction(ProductListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_products_placeholder),
-                )*/
+                )
 
                 if (categories.isNotEmpty()) {
                     ProductCategoriesLazyRow(
