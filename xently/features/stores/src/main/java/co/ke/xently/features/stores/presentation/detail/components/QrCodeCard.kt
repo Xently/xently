@@ -1,8 +1,6 @@
 package co.ke.xently.features.stores.presentation.detail.components
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ListItem
@@ -52,16 +50,6 @@ internal fun QrCodeCard(
                     )
                 }
             },
-        )
-
-        Text(
-            text = stringResource(R.string.message_review_requirement),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-                .padding(horizontal = 16.dp)
-                .shimmer(isLoading),
         )
     }
 }
