@@ -3,6 +3,7 @@ package co.ke.xently.features.stores.presentation.list
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -133,8 +134,9 @@ internal fun StoreListScreen(
     ) { paddingValues ->
         StoreListScreenContent(
             stores = stores,
-            paddingValues = paddingValues,
+            modifier = Modifier.padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
         ) { store ->
             if (store != null) {
                 StoreListItemCard(
@@ -142,7 +144,6 @@ internal fun StoreListScreen(
                     isLoading = false,
                     onClick = { onClickStore(store) },
                     onClickToggleBookmark = { onAction(StoreListAction.ToggleBookmark(store)) },
-                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             } else {
                 StoreListItemCard(
@@ -150,8 +151,6 @@ internal fun StoreListScreen(
                     isLoading = true,
                     onClick = {},
                     onClickToggleBookmark = {},
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
                 )
             }
         }
