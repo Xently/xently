@@ -4,7 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.secrets)
     id("kotlin-parcelize")
+}
+
+secrets {
+    propertiesFileName = "data.network.properties"
 }
 
 android {
