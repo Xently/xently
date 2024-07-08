@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -51,6 +53,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.components.SearchBar
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -141,12 +144,14 @@ internal fun StoreSelectionListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                /*SearchBar(
+                SearchBar(
                     query = state.query,
-                    onSearch = { onAction(StoreListAction.Search(it)) },
-                    onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
+                    exitSearchIcon = Icons.Default.Close,
+                    clearSearchQueryIcon = Icons.Default.Delete,
+                    onSearch = { onAction(StoreSelectionListAction.Search(it)) },
+                    onQueryChange = { onAction(StoreSelectionListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
-                )*/
+                )
                 if (categories.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),

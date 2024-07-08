@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -145,12 +148,14 @@ internal fun ShopListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                /*SearchBar(
+                SearchBar(
                     query = state.query,
+                    exitSearchIcon = Icons.Default.Close,
+                    clearSearchQueryIcon = Icons.Default.Delete,
                     onSearch = { onAction(ShopListAction.Search(it)) },
                     onQueryChange = { onAction(ShopListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_shops_placeholder),
-                )*/
+                )
             }
         },
         floatingActionButton = {
