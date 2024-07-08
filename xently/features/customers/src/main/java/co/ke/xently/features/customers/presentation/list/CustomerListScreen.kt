@@ -51,6 +51,8 @@ import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.components.SearchBar
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -119,6 +121,7 @@ private fun CustomerScoreboardListScreen(
         customers = customers,
         modifier = modifier,
         topBar = topBar,
+        onAction = viewModel::onAction,
     )
 }
 
@@ -129,6 +132,7 @@ internal fun CustomerListScreen(
     snackbarHostState: SnackbarHostState,
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
+    onAction: (CustomerListAction) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
     val eventHandler = LocalEventHandler.current
@@ -143,12 +147,12 @@ internal fun CustomerListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                /*SearchBar(
+                SearchBar(
                     query = state.query,
                     onSearch = { onAction(CustomerListAction.Search(it)) },
                     onQueryChange = { onAction(CustomerListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_customers_placeholder),
-                )*/
+                )
             }
         },
     ) { paddingValues ->
@@ -292,10 +296,9 @@ private fun CustomerListScreenPreview(
     XentlyTheme {
         CustomerListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             customers = customers,
+            onAction = {},
             modifier = Modifier.fillMaxSize(),
         )
     }
