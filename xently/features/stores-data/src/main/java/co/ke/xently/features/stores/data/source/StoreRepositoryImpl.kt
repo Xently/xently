@@ -16,6 +16,7 @@ import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.domain.UriToByteArrayConverter
+import co.ke.xently.libraries.location.tracker.data.LocationSettingDelegate
 import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -51,6 +52,7 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.let
 import kotlin.random.Random
 import kotlin.run
+import kotlin.takeIf
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.to
 import co.ke.xently.features.openinghours.data.domain.error.Result as OpeningHourResult
@@ -66,6 +68,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private val openingHourRepository: OpeningHourRepository,
 ) : StoreRepository {
     private val storeDao = database.storeDao()
+    private val currentLocation by LocationSettingDelegate(null)
 
     override suspend fun save(store: Store, addStoreUrl: String?): Result<Unit, Error> {
         val httpRequestBuilder: HttpRequestBuilder.() -> Unit = {
@@ -178,13 +181,15 @@ internal class StoreRepositoryImpl @Inject constructor(
 
     override suspend fun getStores(url: String?, filters: StoreFilters): PagedResponse<Store> {
         val urlString = url ?: accessControlRepository.getAccessControl().storesUrl
+        val location = filters.location?.takeIf { it.isUsable() }
+            ?: currentLocation
         return httpClient.get(urlString = urlString) {
             url {
                 parameters.run {
                     if (!filters.query.isNullOrBlank()) set("q", filters.query)
-                    if (filters.location != null) {
-                        set("latitude", filters.location.latitude.toString())
-                        set("longitude", filters.location.longitude.toString())
+                    if (location != null) {
+                        set("latitude", location.latitude.toString())
+                        set("longitude", location.longitude.toString())
                     }
                     if (!filters.minimumPrice.isNullOrBlank()) set("minPrice", filters.minimumPrice)
                     if (!filters.maximumPrice.isNullOrBlank()) set("maxPrice", filters.maximumPrice)
@@ -196,7 +201,7 @@ internal class StoreRepositoryImpl @Inject constructor(
                         filters.sortBy.ifEmpty {
                             buildList {
                                 add("score,desc")
-                                if (filters.location != null) {
+                                if (location != null) {
                                     add("distance,asc")
                                 }
                             }

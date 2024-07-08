@@ -65,7 +65,7 @@ class HttpClientFactory private constructor(
         get() {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 level = if (BuildConfig.DEBUG) {
-                    HttpLoggingInterceptor.Level.BODY
+                    HttpLoggingInterceptor.Level.valueOf(BuildConfig.HTTP_LOG_LEVEL)
                 } else {
                     redactHeader(HttpHeaders.Authorization)
                     redactHeader(HttpHeaders.Cookie)
