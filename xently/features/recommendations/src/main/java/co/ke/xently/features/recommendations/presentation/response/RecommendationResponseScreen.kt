@@ -51,7 +51,7 @@ import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun RecommendationResponseScreen(
+internal fun RecommendationResponseScreen(
     viewModel: RecommendationViewModel,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,

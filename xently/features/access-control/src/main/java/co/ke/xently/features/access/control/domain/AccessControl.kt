@@ -70,7 +70,7 @@ data class AccessControl(
             "email-password-sign-in" to Link(href = "$BASE_URL/auth/sign-in"),
             "email-password-sign-up" to Link(href = "$BASE_URL/auth/sign-up"),
             "request-password-reset" to Link(href = "$BASE_URL/auth/request-password-reset"),
-            "stores" to Link(href = "${BASE_URL}/stores"),
+            "stores" to Link(href = "$BASE_URL/stores"),
             "rankings-statistics" to Link(href = "$BASE_URL/statistics/rankings"),
             "my-ranking-statistics" to Link(href = "$BASE_URL/statistics/my-rankings"),
             "my-profile-statistics" to Link(href = "$BASE_URL/statistics/my-profile"),

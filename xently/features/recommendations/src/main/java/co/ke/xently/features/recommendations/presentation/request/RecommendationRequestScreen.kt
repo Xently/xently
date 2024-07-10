@@ -73,7 +73,7 @@ import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
-fun RecommendationRequestScreen(
+internal fun RecommendationRequestScreen(
     viewModel: RecommendationViewModel,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
