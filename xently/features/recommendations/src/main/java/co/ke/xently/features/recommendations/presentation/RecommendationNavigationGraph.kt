@@ -68,7 +68,7 @@ fun NavGraphBuilder.recommendationNavigation(
                 },
             )
         }
-        composable<RecommendationDetailsScreen> {
+        composable<RecommendationDetailsScreen> {navBackStackEntry ->
             val viewModel = hiltViewModel<RecommendationDetailsViewModel>()
 
             val recommendation by viewModel.recommendation.collectAsStateWithLifecycle()
@@ -78,7 +78,10 @@ fun NavGraphBuilder.recommendationNavigation(
                 onClickMoreDetails = onClickMoreDetails,
                 onClickReviewStore = onClickReviewStore,
             ) {
-                val productListViewModel = hiltViewModel<ProductListViewModel>()
+                val entry = remember(navBackStackEntry) {
+                    navController.getBackStackEntry(RecommendationNavGraph)
+                }
+                val productListViewModel = hiltViewModel<ProductListViewModel>(entry)
 
                 CategoryFilterableProductListContent(
                     viewModel = productListViewModel,

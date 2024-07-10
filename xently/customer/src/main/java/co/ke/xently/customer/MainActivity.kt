@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import co.ke.xently.customer.domain.LandingScreen
 import co.ke.xently.customer.domain.MoreDetailsScreen
 import co.ke.xently.customer.domain.PickLocationScreen
@@ -112,8 +113,11 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(ReviewRequestScreen(reviewCategoriesUrl = it))
                             },
                         )
-                        composable<StoreDetailScreen> {
-                            val viewModel = hiltViewModel<ProductListViewModel>()
+                        composable<StoreDetailScreen> { navBackStackEntry ->
+                            val entry = remember(navBackStackEntry) {
+                                navController.getBackStackEntry(navBackStackEntry.toRoute<StoreDetailScreen>())
+                            }
+                            val viewModel = hiltViewModel<ProductListViewModel>(entry)
                             StoreDetailScreen(
                                 onClickBack = navController::navigateUp,
                                 onClickMoreDetails = {
