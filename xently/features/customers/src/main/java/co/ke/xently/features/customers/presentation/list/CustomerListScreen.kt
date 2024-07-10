@@ -96,7 +96,7 @@ private fun CustomerScoreboardListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val customers = viewModel.customers.collectAsLazyPagingItems()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 

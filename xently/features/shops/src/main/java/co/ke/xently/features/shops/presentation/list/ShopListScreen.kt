@@ -59,6 +59,7 @@ import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.SearchBar
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -75,7 +76,7 @@ fun ShopListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val shops = viewModel.shops.collectAsLazyPagingItems()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
@@ -272,9 +273,7 @@ private fun ShopListScreenPreview(
     XentlyTheme {
         ShopListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             shops = shops,
             modifier = Modifier.fillMaxSize(),
             onClickAddShop = {},

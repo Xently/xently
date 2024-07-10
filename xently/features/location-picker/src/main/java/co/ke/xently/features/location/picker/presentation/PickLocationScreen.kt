@@ -11,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +36,7 @@ import co.ke.xently.libraries.location.tracker.presentation.LocationPickerMap
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +99,7 @@ internal fun PickLocationScreen(
     onLocationChange: (Location) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val scope = rememberCoroutineScope()
 

@@ -28,7 +28,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -53,6 +52,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.features.merchant.data.domain.error.EmailError as MerchantEmailError
 import co.ke.xently.features.merchant.data.domain.error.NameError as MerchantNameError
 import co.ke.xently.features.shops.data.domain.error.NameError as ShopNameError
@@ -64,7 +64,7 @@ fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit)
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -314,9 +314,7 @@ private fun ShopEditDetailScreenPreview(
     XentlyTheme {
         ShopEditDetailScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},

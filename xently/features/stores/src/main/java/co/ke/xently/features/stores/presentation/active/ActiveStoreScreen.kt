@@ -39,6 +39,7 @@ import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.image.presentation.imageState
 
 @Composable
@@ -53,7 +54,7 @@ fun ActiveStoreScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -221,9 +222,7 @@ private fun ActiveStoreScreenPreview(
     XentlyTheme {
         ActiveStoreScreen(
             state = state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onClickEdit = {},
             onClickMoreDetails = {},
