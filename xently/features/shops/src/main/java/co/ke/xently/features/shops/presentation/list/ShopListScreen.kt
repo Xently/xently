@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -151,7 +151,7 @@ internal fun ShopListScreen(
                 SearchBar(
                     query = state.query,
                     exitSearchIcon = Icons.Default.Close,
-                    clearSearchQueryIcon = Icons.Default.Delete,
+                    clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     onSearch = { onAction(ShopListAction.Search(it)) },
                     onQueryChange = { onAction(ShopListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_shops_placeholder),

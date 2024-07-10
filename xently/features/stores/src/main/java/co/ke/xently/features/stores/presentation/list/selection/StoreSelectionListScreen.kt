@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -147,7 +147,7 @@ internal fun StoreSelectionListScreen(
                 SearchBar(
                     query = state.query,
                     exitSearchIcon = Icons.Default.Close,
-                    clearSearchQueryIcon = Icons.Default.Delete,
+                    clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     onSearch = { onAction(StoreSelectionListAction.Search(it)) },
                     onQueryChange = { onAction(StoreSelectionListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
