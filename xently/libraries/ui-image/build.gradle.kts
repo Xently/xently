@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
 }
 
@@ -71,7 +72,7 @@ dependencies {
     implementation(project(":xently:libraries:data-core"))
     api(project(":xently:libraries:data-image"))
 
-    implementation(libs.androidx.work.manager)
-
+    implementation(libs.bundles.work.manager)
+    ksp(libs.androidx.hilt.compiler)
     androidTestImplementation(libs.androidx.work.manager.testing)
 }

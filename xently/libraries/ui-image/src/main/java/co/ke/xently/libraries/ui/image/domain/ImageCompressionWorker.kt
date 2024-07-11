@@ -3,6 +3,7 @@ package co.ke.xently.libraries.ui.image.domain
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -12,10 +13,13 @@ import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.exceptions.InvalidFileException
 import coil3.toAndroidUri
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class ImageCompressionWorker(
-    appContext: Context,
-    private val params: WorkerParameters,
+@HiltWorker
+class ImageCompressionWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted private val params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
     /*override suspend fun getForegroundInfo(): ForegroundInfo {
         val channelName =
