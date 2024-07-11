@@ -167,8 +167,8 @@ private fun SuggestionListItem(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
-            .clickable(onClick = onClick)
-            /*.padding(horizontal = 16.dp, vertical = 4.dp)*/,
+            .clickable(onClick = onClick),
+        /*.padding(horizontal = 16.dp, vertical = 4.dp)*/
     )
 }
 

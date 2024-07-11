@@ -43,10 +43,11 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
         val body = ReviewCategory.SaveRequest(
             name = reviewCategory.name,
         )
-        val store = when(val result = storeRepository.getActiveStore()){
+        val store = when (val result = storeRepository.getActiveStore()) {
             is co.ke.xently.features.stores.data.domain.error.Result.Failure -> {
                 return Result.Failure(ConfigurationError.valueOf(result.error.name))
             }
+
             is co.ke.xently.features.stores.data.domain.error.Result.Success -> result.data
         }
 

@@ -33,6 +33,7 @@ private fun ApiErrorResponse.toError(): Error? {
         in setOf("authentication_failed", "token_exchange_failed") -> {
             DataError.Network.InvalidCredentials
         }
+
         else -> null
     }
 }

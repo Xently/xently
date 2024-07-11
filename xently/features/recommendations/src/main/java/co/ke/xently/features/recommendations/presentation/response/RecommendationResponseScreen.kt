@@ -129,7 +129,7 @@ internal fun RecommendationResponseScreen(
                         )
                     },
                     modifier = Modifier.clickable {
-                      onClickStore(store)
+                        onClickStore(store)
                     },
                 )
             } else {
