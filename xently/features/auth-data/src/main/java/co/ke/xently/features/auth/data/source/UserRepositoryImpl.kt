@@ -5,8 +5,9 @@ import co.ke.xently.features.auth.data.domain.EmailAndPasswordAuthRequest
 import co.ke.xently.features.auth.data.domain.GoogleAuthRequest
 import co.ke.xently.features.auth.data.domain.GoogleUser
 import co.ke.xently.features.auth.data.domain.SignUpReset
-import co.ke.xently.features.auth.data.domain.error.DataError
+import co.ke.xently.features.auth.data.domain.error.Error
 import co.ke.xently.features.auth.data.domain.error.Result
+import co.ke.xently.features.auth.data.domain.error.toError
 import co.ke.xently.libraries.data.auth.CurrentUser
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -43,7 +44,7 @@ internal class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun requestPasswordReset(email: String): Result<Unit, DataError> {
+    override suspend fun requestPasswordReset(email: String): Result<Unit, Error> {
         val urlString = accessControlRepository.getAccessControl().requestPasswordResetUrl
         return getResult {
             httpClient.post(urlString)
@@ -54,7 +55,7 @@ internal class UserRepositoryImpl @Inject constructor(
         name: String,
         email: String,
         password: String,
-    ): Result<Unit, DataError> {
+    ): Result<Unit, Error> {
         val names = name.split("\\s+".toRegex(), limit = 1)
         val body = SignUpReset(
             emailAddress = email,
@@ -66,7 +67,7 @@ internal class UserRepositoryImpl @Inject constructor(
         return authenticate(urlString = accessControl.emailPasswordSignUpUrl, body = body)
     }
 
-    override suspend fun signInWithGoogle(user: GoogleUser): Result<Unit, DataError> {
+    override suspend fun signInWithGoogle(user: GoogleUser): Result<Unit, Error> {
         val body = GoogleAuthRequest(
             idToken = user.idToken,
             accessToken = user.accessToken,
@@ -80,7 +81,7 @@ internal class UserRepositoryImpl @Inject constructor(
     override suspend fun signInWithEmailAndPassword(
         email: String,
         password: String,
-    ): Result<Unit, DataError> {
+    ): Result<Unit, Error> {
         val body = EmailAndPasswordAuthRequest(
             email = email,
             password = password,
@@ -89,7 +90,7 @@ internal class UserRepositoryImpl @Inject constructor(
         return authenticate(urlString = accessControl.emailPasswordSignInUrl, body = body)
     }
 
-    override suspend fun signOut(): Result<Unit, DataError> {
+    override suspend fun signOut(): Result<Unit, Error> {
         database.postSignout()
         return Result.Success(Unit)
     }
@@ -97,7 +98,7 @@ internal class UserRepositoryImpl @Inject constructor(
     private suspend inline fun <reified T> authenticate(
         urlString: String,
         body: T,
-    ): Result<Unit, DataError> {
+    ): Result<Unit, Error> {
         return getResult {
             httpClient.post(urlString) {
                 url {
@@ -116,14 +117,14 @@ internal class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    private inline fun getResult(execute: () -> Unit): Result<Unit, DataError> {
+    private suspend inline fun getResult(execute: () -> Unit): Result<Unit, Error> {
         return try {
             execute()
             Result.Success(Unit)
         } catch (ex: Exception) {
             if (ex is CancellationException) throw ex
             Timber.e(ex)
-            Result.Failure(DataError.Network.entries.random())
+            Result.Failure(ex.toError())
         }
     }
 }
