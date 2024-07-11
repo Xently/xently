@@ -30,6 +30,7 @@ import co.ke.xently.features.products.presentation.list.ProductListViewModel
 import co.ke.xently.features.profile.presentation.edit.ProfileEditDetailScreen
 import co.ke.xently.features.recommendations.domain.RecommendationNavGraph
 import co.ke.xently.features.recommendations.presentation.recommendationNavigation
+import co.ke.xently.features.reviews.SyncReviewsWorker
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestScreen
 import co.ke.xently.features.settings.presentation.SettingsScreen
 import co.ke.xently.features.settings.presentation.SettingsViewModel
@@ -48,6 +49,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        SyncReviewsWorker.start(applicationContext)
+
         Firebase.remoteConfig.apply {
             setConfigSettingsAsync(
                 remoteConfigSettings {

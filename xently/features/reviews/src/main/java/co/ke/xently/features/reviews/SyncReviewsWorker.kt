@@ -44,7 +44,7 @@ class SyncReviewsWorker @AssistedInject constructor(
                     .setConstraints(constraints)
                     .build()
 
-            return WorkManager.getInstance(context)
+            return WorkManager.getInstance(context.applicationContext)
                 .enqueueUniquePeriodicWork(
                     SyncReviewsWorker::class.java.simpleName,
                     ExistingPeriodicWorkPolicy.KEEP,
