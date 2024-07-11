@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -213,8 +212,8 @@ internal fun StoreDetailScreen(
                         )
 
                         TextButton(
-                            shape = RoundedCornerShape(20),
-                            contentPadding = PaddingValues(vertical = 12.dp),
+                            shape = RectangleShape,
+                            contentPadding = PaddingValues(bottom = 12.dp),
                             onClick = { state.store?.let(onClickMoreDetails) },
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = MaterialTheme.colorScheme.onBackground,
@@ -236,7 +235,11 @@ internal fun StoreDetailScreen(
                         onGetPointsAndReviewClick = onGetPointsAndReviewClick,
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .padding(horizontal = 16.dp),
+                    )
                 }
                 TopAppBar(
                     title = {
