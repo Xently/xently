@@ -79,7 +79,6 @@
     <string name="action_remove_bookmark">Remove bookmark</string>
     <string name="action_label_review_to_get_points"><![CDATA[Get points & Review]]></string>
     <string name="message_click_to_get_review_points"><![CDATA[Click button to get points & review]]></string>
-    <string name="message_review_requirement">You can only review if you are at this location. Please turn on your location.</string>
     <string name="error_message_navigation_app_not_found">Sorry, an app for handling directions was not found.</string>
     <string name="action_install">Install</string>
     <string name="tab_all_store_products">All products</string>
