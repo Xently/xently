@@ -62,7 +62,7 @@ internal fun CategoryFilterableProductListContent(
             products = products,
             onClickSelectShop = {},
             onClickSelectStore = {},
-            extraPrependContent = extraPrependContent,
+            postPrependContent = extraPrependContent,
         ) { product ->
             if (product != null) {
                 ProductListItem(product = product)
