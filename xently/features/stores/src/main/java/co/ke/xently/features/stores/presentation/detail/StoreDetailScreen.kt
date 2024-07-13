@@ -2,23 +2,15 @@ package co.ke.xently.features.stores.presentation.detail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -29,22 +21,17 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.qrcode.presentation.ScanQrCodeAlertDialog
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.presentation.detail.components.QrCodeCard
-import co.ke.xently.features.stores.presentation.detail.components.StoreDetailListItem
-import co.ke.xently.features.stores.presentation.detail.components.StoreImagesBox
+import co.ke.xently.features.stores.presentation.detail.components.StoreDetail
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.domain.error.LocationRequestError
 import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
@@ -52,7 +39,6 @@ import co.ke.xently.libraries.location.tracker.presentation.rememberEnableLocati
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.launch
 
@@ -198,49 +184,12 @@ internal fun StoreDetailScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Box {
-                Column {
-                    StoreImagesBox(
-                        modifier = Modifier.height(300.dp),
-                        images = state.store?.images ?: emptyList(),
-                    )
-
-                    Card(shape = RectangleShape) {
-                        StoreDetailListItem(
-                            store = state.store ?: Store.DEFAULT,
-                            isLoading = state.isLoading,
-                            snackbarHostState = snackbarHostState,
-                        )
-
-                        TextButton(
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(bottom = 12.dp),
-                            onClick = { state.store?.let(onClickMoreDetails) },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onBackground,
-                            ),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .shimmer(state.isLoading),
-                        ) {
-                            Text(
-                                text = stringResource(R.string.action_more_details),
-                                textDecoration = TextDecoration.Underline,
-                            )
-                        }
-                    }
-
-                    QrCodeCard(
-                        isLoading = state.isLoading,
-                        modifier = Modifier.padding(16.dp),
-                        onGetPointsAndReviewClick = onGetPointsAndReviewClick,
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .padding(horizontal = 16.dp),
-                    )
-                }
+                StoreDetail(
+                    state = state,
+                    snackbarHostState = snackbarHostState,
+                    onClickMoreDetails = onClickMoreDetails,
+                    onGetPointsAndReviewClick = onGetPointsAndReviewClick,
+                )
                 TopAppBar(
                     title = {
                         Text(
@@ -250,9 +199,7 @@ internal fun StoreDetailScreen(
                                 ?: stringResource(R.string.topbar_title_store_details),
                         )
                     },
-                    navigationIcon = {
-                        NavigateBackIconButton(onClick = onClickBack)
-                    },
+                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 )
             }
