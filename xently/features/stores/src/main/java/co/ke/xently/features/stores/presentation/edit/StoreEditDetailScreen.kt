@@ -78,6 +78,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.m3.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
@@ -94,7 +95,7 @@ fun StoreEditDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -475,9 +476,7 @@ private fun StoreEditDetailScreenPreview(
     XentlyTheme {
         StoreEditDetailScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},

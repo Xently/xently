@@ -18,9 +18,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,7 +73,7 @@ import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
-fun RecommendationRequestScreen(
+internal fun RecommendationRequestScreen(
     viewModel: RecommendationViewModel,
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
@@ -154,7 +154,7 @@ internal fun RecommendationRequestScreen(
                 SearchBar(
                     query = state.query,
                     exitSearchIcon = Icons.Default.Close,
-                    clearSearchQueryIcon = Icons.Default.Delete,
+                    clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     placeholder = stringResource(R.string.search_placeholder_location),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },
@@ -180,54 +180,6 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (productCategories.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.headline_product_categories),
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    for (category in productCategories) {
-                        ProductCategoryFilterChip(
-                            category = category,
-                            onClickSelectCategory = {
-                                onAction(RecommendationAction.ProductSelectCategory(category))
-                            },
-                            onClickRemoveCategory = {
-                                onAction(RecommendationAction.ProductRemoveCategory(category))
-                            },
-                        )
-                    }
-                }
-            }
-
-            if (storeCategories.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.headline_store_categories)
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    for (category in storeCategories) {
-                        StoreCategoryFilterChip(
-                            category = category,
-                            onClickSelectCategory = {
-                                onAction(RecommendationAction.StoreSelectCategory(category))
-                            },
-                            onClickRemoveCategory = {
-                                onAction(RecommendationAction.StoreRemoveCategory(category))
-                            },
-                        )
-                    }
-                }
-            }
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -323,6 +275,55 @@ internal fun RecommendationRequestScreen(
                     ),
                 )
             }
+
+            if (productCategories.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.headline_product_categories),
+                )
+
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (category in productCategories) {
+                        ProductCategoryFilterChip(
+                            category = category,
+                            onClickSelectCategory = {
+                                onAction(RecommendationAction.ProductSelectCategory(category))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(RecommendationAction.ProductRemoveCategory(category))
+                            },
+                        )
+                    }
+                }
+            }
+
+            if (storeCategories.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.headline_store_categories)
+                )
+
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (category in storeCategories) {
+                        StoreCategoryFilterChip(
+                            category = category,
+                            onClickSelectCategory = {
+                                onAction(RecommendationAction.StoreSelectCategory(category))
+                            },
+                            onClickRemoveCategory = {
+                                onAction(RecommendationAction.StoreRemoveCategory(category))
+                            },
+                        )
+                    }
+                }
+            }
+
             PrimaryButton(
                 onClick = onClickSearch,
                 enabled = state.enableSearchButton,

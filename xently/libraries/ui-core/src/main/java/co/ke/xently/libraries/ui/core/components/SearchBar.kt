@@ -8,9 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -154,13 +153,13 @@ private fun SuggestionListItem(
         },
         leadingContent = {
             Icon(
-                Icons.Filled.Restore,
+                Icons.Filled.Search,
                 contentDescription = null,
             )
         },
         trailingContent = {
             Icon(
-                Icons.AutoMirrored.Filled.ArrowForward,
+                Icons.Default.ArrowOutward,
                 contentDescription = null,
             )
         },
@@ -168,8 +167,8 @@ private fun SuggestionListItem(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
-            .clickable(onClick = onClick)
-            /*.padding(horizontal = 16.dp, vertical = 4.dp)*/,
+            .clickable(onClick = onClick),
+        /*.padding(horizontal = 16.dp, vertical = 4.dp)*/
     )
 }
 

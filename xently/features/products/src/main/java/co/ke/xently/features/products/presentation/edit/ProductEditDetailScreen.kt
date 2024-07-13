@@ -35,7 +35,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -64,6 +63,7 @@ import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlin.random.Random
 
 @Composable
@@ -72,7 +72,7 @@ fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Un
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -333,9 +333,7 @@ private fun ProductEditDetailScreenPreview(
     XentlyTheme {
         ProductEditDetailScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},

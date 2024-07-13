@@ -31,7 +31,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +46,7 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
 fun ReviewCategoryEditDetailScreen(
@@ -56,7 +56,7 @@ fun ReviewCategoryEditDetailScreen(
     val viewModel = hiltViewModel<ReviewCategoryEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -205,9 +205,7 @@ private fun ReviewCategoryEditDetailScreenPreview(
     XentlyTheme {
         ReviewCategoryEditDetailScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},

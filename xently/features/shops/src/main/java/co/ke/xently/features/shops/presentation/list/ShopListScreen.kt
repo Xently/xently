@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,8 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.components.SearchBar
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -72,7 +76,7 @@ fun ShopListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val shops = viewModel.shops.collectAsLazyPagingItems()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
     val eventHandler = LocalEventHandler.current
@@ -145,12 +149,14 @@ internal fun ShopListScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                /*SearchBar(
+                SearchBar(
                     query = state.query,
+                    exitSearchIcon = Icons.Default.Close,
+                    clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     onSearch = { onAction(ShopListAction.Search(it)) },
                     onQueryChange = { onAction(ShopListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_shops_placeholder),
-                )*/
+                )
             }
         },
         floatingActionButton = {
@@ -267,9 +273,7 @@ private fun ShopListScreenPreview(
     XentlyTheme {
         ShopListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             shops = shops,
             modifier = Modifier.fillMaxSize(),
             onClickAddShop = {},

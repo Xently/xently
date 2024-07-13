@@ -63,6 +63,7 @@ import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.domain.GoogleAuthorizationHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
 import com.google.android.gms.auth.api.identity.Identity
 import com.mmk.kmpauth.uihelper.google.GoogleButtonMode
@@ -78,7 +79,7 @@ internal fun SignInScreen(
 ) {
     val viewModel = hiltViewModel<SignInViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -417,9 +418,7 @@ private fun SignInScreenPreview(
     XentlyTheme {
         SignInScreen(
             state = state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClickCreateAccount = {},

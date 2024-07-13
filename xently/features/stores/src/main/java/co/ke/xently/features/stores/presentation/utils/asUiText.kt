@@ -79,7 +79,6 @@ fun Error.asUiText(): UiText {
         is FieldError -> asUiText()
         is UnknownError -> UiText.StringResource(R.string.error_message_default)
         FCMDeviceRegistrationRequired -> UiText.StringResource(R.string.error_message_fcm_device_registration_required)
-        DataError.Network.InvalidCredentials -> UiText.StringResource(R.string.error_message_invalid_auth_credentials)
     }
 }
 

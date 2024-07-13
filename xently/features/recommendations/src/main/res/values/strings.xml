@@ -40,4 +40,6 @@
     <string name="action_label_pick_location">Pick location</string>
     <string name="search_placeholder_location">Search for location</string>
     <string name="topbar_title_recommendation_response">Recommendations</string>
+    <string name="headline_missed_products">Missed products</string>
+    <string name="headline_matched_products">Matched products</string>
 </resources>

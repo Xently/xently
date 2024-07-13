@@ -25,6 +25,7 @@ import co.ke.xently.business.domain.SettingsScreen
 import co.ke.xently.business.landing.presentation.LandingScreen
 import co.ke.xently.features.auth.domain.AuthenticationNavGraph
 import co.ke.xently.features.auth.presentation.authenticationNavigation
+import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.products.presentation.edit.ProductEditDetailScreen
 import co.ke.xently.features.reviewcategory.presentation.edit.ReviewCategoryEditDetailScreen
 import co.ke.xently.features.reviews.presentation.comments.ReviewCommentListScreen
@@ -35,7 +36,6 @@ import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
 import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
-import co.ke.xently.features.location.picker.presentation.PickLocationScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState

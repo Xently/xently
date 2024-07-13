@@ -45,6 +45,7 @@ import co.ke.xently.features.notifications.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -60,7 +61,7 @@ fun NotificationListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val notifications = viewModel.notifications.collectAsLazyPagingItems()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -216,9 +217,7 @@ private fun NotificationListScreenPreview(
     XentlyTheme {
         NotificationListScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             notifications = notifications,
             modifier = Modifier.fillMaxSize(),
         )

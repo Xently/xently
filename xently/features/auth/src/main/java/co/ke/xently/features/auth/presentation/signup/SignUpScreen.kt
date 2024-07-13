@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
 internal fun SignUpScreen(
@@ -66,7 +67,7 @@ internal fun SignUpScreen(
 ) {
     val viewModel = hiltViewModel<SignUpViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -346,9 +347,7 @@ private fun SignUpScreenPreview(
     XentlyTheme {
         SignUpScreen(
             state = state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onAction = {},
             onClickSignIn = {},

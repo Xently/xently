@@ -34,6 +34,7 @@ googleServices = "4.4.2"
 googleid = "1.1.1"
 hilt = "2.51.1"
 hilt-navigation = "1.2.0"
+hilt-work-manager = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 kmpauthUihelper = "2.0.0"
@@ -62,6 +63,8 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-work-manager" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-work-manager" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
@@ -184,3 +187,6 @@ ui-debug = [
 ui-navigation = [
     "navigation-compose",
     "hilt-navigation-compose"]
+work-manager = [
+    "androidx-hilt-work",
+    "androidx-work-manager"]

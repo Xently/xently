@@ -135,6 +135,10 @@ dependencies {
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
 
+    implementation(libs.bundles.work.manager)
+    ksp(libs.androidx.hilt.compiler)
+    androidTestImplementation(libs.androidx.work.manager.testing)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

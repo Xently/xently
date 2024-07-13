@@ -35,6 +35,7 @@ import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import com.aay.compose.barChart.model.BarParameters
 import kotlinx.datetime.Month
@@ -51,7 +52,7 @@ fun ReviewsAndFeedbackScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -284,9 +285,7 @@ private fun ReviewsScreenPreview(
     XentlyTheme {
         ReviewsAndFeedbackScreen(
             state = state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             onClickAddNewReviewCategory = {},
             onAction = {},
             onClickViewComments = {},

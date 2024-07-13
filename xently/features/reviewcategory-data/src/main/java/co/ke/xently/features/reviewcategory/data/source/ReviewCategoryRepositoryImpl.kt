@@ -13,8 +13,11 @@ import co.ke.xently.libraries.pagination.data.PagedResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -26,9 +29,7 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.also
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.random.Random
 import kotlin.run
-import kotlin.time.Duration.Companion.milliseconds
 import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
 @Singleton
@@ -39,12 +40,26 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
 ) : ReviewCategoryRepository {
     private val reviewCategoryDao = database.reviewCategoryDao()
     override suspend fun save(reviewCategory: ReviewCategory): Result<Unit, Error> {
-        val duration = Random.nextLong(5_000, 10_000).milliseconds
+        val body = ReviewCategory.SaveRequest(
+            name = reviewCategory.name,
+        )
+        val store = when (val result = storeRepository.getActiveStore()) {
+            is co.ke.xently.features.stores.data.domain.error.Result.Failure -> {
+                return Result.Failure(ConfigurationError.valueOf(result.error.name))
+            }
+
+            is co.ke.xently.features.stores.data.domain.error.Result.Success -> result.data
+        }
+
         return try {
-            delay(duration)
+            val urlString = store.links["review-categories"]!!.hrefWithoutQueryParams()
+            val response = httpClient.post(urlString) {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body<ReviewCategory>()
             database.withTransactionFacade {
                 reviewCategoryDao
-                    .save(ReviewCategoryEntity(reviewCategory = reviewCategory))
+                    .save(ReviewCategoryEntity(reviewCategory = response))
             }
             Result.Success(Unit)
         } catch (ex: Exception) {

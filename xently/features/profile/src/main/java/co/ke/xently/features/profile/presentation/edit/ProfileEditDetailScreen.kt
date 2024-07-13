@@ -29,7 +29,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -47,13 +46,14 @@ import co.ke.xently.features.profile.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
+import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
 fun ProfileEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit) {
     val viewModel = hiltViewModel<ProfileEditDetailViewModel>()
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = rememberSnackbarHostState()
 
     val context = LocalContext.current
 
@@ -188,9 +188,7 @@ private fun ProfileEditDetailScreenPreview(
     XentlyTheme {
         ProfileEditDetailScreen(
             state = state.state,
-            snackbarHostState = remember {
-                SnackbarHostState()
-            },
+            snackbarHostState = rememberSnackbarHostState(),
             modifier = Modifier.fillMaxSize(),
             onClickBack = {},
             onAction = {},
