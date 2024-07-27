@@ -36,13 +36,7 @@ internal class AccessControlRepositoryImpl @Inject constructor(
             if (accessControl != null) return accessControl.accessControl
 
             Timber.tag(TAG).i("Saving access control response...")
-            return httpClient.get(BASE_URL) {
-                url {
-                    // TODO: Figure out why this is necessary. Without it, the request is
-                    //  made to a different host than the updated BASE URL.
-                    Timber.tag(TAG).i("save: %s == %s", it, BASE_URL)
-                }
-            }.body<AccessControl>().also {
+            return httpClient.get(BASE_URL).body<AccessControl>().also {
                 accessControlDao
                     .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
             }
