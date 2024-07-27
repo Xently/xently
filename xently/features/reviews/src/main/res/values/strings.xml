@@ -77,6 +77,7 @@
     <string name="headline_public_star_agent">Tap a star to rate publicly</string>
     <string name="text_field_placeholder_description">Optional description…</string>
     <string name="message_default_review_question_prefix">"How do you rate the "</string>
+    <string name="action_submit">Submit</string>
     <plurals name="star_rating">
         <item quantity="one">%d-star</item>
         <item quantity="other">%d-stars</item>
