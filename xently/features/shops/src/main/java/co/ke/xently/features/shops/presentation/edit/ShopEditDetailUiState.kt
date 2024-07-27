@@ -31,6 +31,7 @@ data class ShopEditDetailUiState(
     val isLoading: Boolean = false,
     val disableFields: Boolean = false,
 ) {
+    val enableSaveButton: Boolean = !isLoading && !disableFields
     val isFormValid: Boolean = nameError == null
             && websiteError == null
             && merchantFirstNameError == null

@@ -39,7 +39,9 @@
     <string name="text_field_label_merchant_first_name">First name</string>
     <string name="text_field_label_merchant_last_name">Last name</string>
     <string name="text_field_label_merchant_email">Email address</string>
-    <string name="action_submit_shop_details">Save Details</string>
+    <string name="action_save">Save</string>
+    <string name="action_save_and_add_another">Save &amp; Add Another</string>
+    <string name="message_shop_saved">Shop saved successfully.</string>
     <string name="content_desc_upload_image">Upload image</string>
     <string name="action_remove">Remove</string>
     <string name="action_add_shop">Add Shop</string>

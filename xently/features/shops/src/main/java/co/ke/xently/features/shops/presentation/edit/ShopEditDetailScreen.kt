@@ -3,6 +3,8 @@ package co.ke.xently.features.shops.presentation.edit
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +15,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -28,6 +32,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,9 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -47,7 +50,6 @@ import co.ke.xently.features.merchant.data.presentation.utils.asUiText
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.presentation.utils.asUiText
-import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -71,7 +73,20 @@ fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit)
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
-                ShopEditDetailEvent.Success -> onClickBack()
+                is ShopEditDetailEvent.Success -> {
+                    when (event.action) {
+                        ShopEditDetailAction.ClickSave -> onClickBack()
+                        ShopEditDetailAction.ClickSaveAndAddAnother -> {
+                            viewModel.onAction(ShopEditDetailAction.ClearFieldsForNewShop)
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.message_shop_saved),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+
+                        else -> throw NotImplementedError()
+                    }
+                }
                 is ShopEditDetailEvent.Error -> {
                     snackbarHostState.showSnackbar(
                         event.error.asString(context = context),
@@ -258,16 +273,26 @@ internal fun ShopEditDetailScreen(
                 },
             )
 
-            PrimaryButton(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                enabled = !state.disableFields,
-                label = stringResource(R.string.action_submit_shop_details)
-                    .toUpperCase(Locale.current),
-                onClick = { onAction(ShopEditDetailAction.ClickSaveDetails) },
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(
+                    enabled = state.enableSaveButton,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onAction(ShopEditDetailAction.ClickSave) },
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                ) { Text(text = stringResource(R.string.action_save)) }
+                Button(
+                    enabled = state.enableSaveButton,
+                    onClick = { onAction(ShopEditDetailAction.ClickSaveAndAddAnother) },
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                ) { Text(text = stringResource(R.string.action_save_and_add_another)) }
+            }
         }
     }
 }
