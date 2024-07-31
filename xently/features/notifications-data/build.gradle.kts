@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "co.ke.xently.features.auth.data"
+    namespace = "co.ke.xently.features.notifications.data"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
