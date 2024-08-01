@@ -9,4 +9,9 @@ data class CurrentUser(
     val emailVerified: Boolean = false,
     val name: String? = null,
     val profilePicUrl: String? = null,
-)
+) {
+    val firstName: String?
+        get() = name?.split(" ")?.firstOrNull()
+    val lastName: String?
+        get() = name?.split(" ")?.lastOrNull()
+}

@@ -52,6 +52,7 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
@@ -201,9 +202,12 @@ internal fun ShopEditDetailScreen(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
+            val authenticationState by LocalAuthenticationState.current
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantFirstName,
+                value = state.merchantFirstName.ifBlank {
+                    authenticationState.currentUser?.firstName ?: ""
+                },
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantFirstName(it))
@@ -227,7 +231,9 @@ internal fun ShopEditDetailScreen(
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantLastName,
+                value = state.merchantLastName.ifBlank {
+                    authenticationState.currentUser?.lastName ?: ""
+                },
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantLastName(it))
@@ -251,7 +257,9 @@ internal fun ShopEditDetailScreen(
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantEmailAddress,
+                value = state.merchantEmailAddress.ifBlank {
+                    authenticationState.currentUser?.email ?: ""
+                },
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantEmailAddress(it))
