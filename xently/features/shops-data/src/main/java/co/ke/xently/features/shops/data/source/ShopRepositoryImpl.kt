@@ -78,12 +78,23 @@ internal class ShopRepositoryImpl @Inject constructor(
     override suspend fun getShops(url: String?, filters: ShopFilters): PagedResponse<Shop> {
         val urlString =
             url ?: accessControlRepository.getAccessControl().shopsAssociatedWithMyAccountUrl
-        return httpClient.get(urlString = urlString)
-            .body<PagedResponse<Shop>>().let { pagedResponse ->
-                val shops = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
-                coroutineScope {
-                    launch {
+        return httpClient.get(urlString = urlString) {
+            url {
+                parameters.run {
+                    if (!filters.query.isNullOrBlank()) {
+                        set("query", filters.query)
+                    }
+                }
+            }
+        }.body<PagedResponse<Shop>>().let { pagedResponse ->
+            val shops = pagedResponse.embedded.values.firstOrNull() ?: emptyList()
+            coroutineScope {
+                launch {
+                    database.withTransactionFacade {
                         val activatedShop = shopDao.getActivated()
+                        if (url == null) {
+                            shopDao.deleteAllExceptActivated()
+                        }
                         shopDao.save(
                             shops.map {
                                 ShopEntity(it, isActivated = it.id == activatedShop?.id)
@@ -91,8 +102,9 @@ internal class ShopRepositoryImpl @Inject constructor(
                         )
                     }
                 }
-                pagedResponse.copy(embedded = mapOf("views" to shops))
             }
+            pagedResponse.copy(embedded = mapOf("views" to shops))
+        }
     }
 
     override suspend fun deleteShop(shop: Shop): Result<Unit, Error> {
