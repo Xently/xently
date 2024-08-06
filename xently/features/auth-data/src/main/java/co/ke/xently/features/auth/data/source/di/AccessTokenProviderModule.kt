@@ -32,7 +32,8 @@ object AccessTokenProviderModule {
             }
 
             override suspend fun getFreshAccessToken(httpClient: HttpClient): String? {
-                val refreshToken = database.userDao().first()?.refreshToken
+                val userDao = database.userDao()
+                val refreshToken = userDao.first()?.refreshToken
                     ?: return null
 
                 return try {
@@ -45,15 +46,23 @@ object AccessTokenProviderModule {
                         setBody(mapOf("refreshToken" to refreshToken))
                         contentType(ContentType.Application.Json)
                     }.body<UserEntity>().run {
-                        withContext(NonCancellable + Dispatchers.IO) {
-                            database.userDao().deleteAll()
-                            database.userDao().save(this@run)
+                        database.withTransactionFacade {
+                            withContext(NonCancellable + Dispatchers.IO) {
+                                userDao.deleteAll()
+                                userDao.save(this@run)
+                            }
                         }
                         accessToken
                     }
                 } catch (ex: Exception) {
                     if (ex is CancellationException) throw ex
                     null
+                }.also { token ->
+                    if (token == null) {
+                        withContext(NonCancellable + Dispatchers.IO) {
+                            userDao.deleteAll()
+                        }
+                    }
                 }
             }
         }
