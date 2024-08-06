@@ -20,6 +20,9 @@ interface ShopDao {
     @Query("DELETE FROM shops")
     suspend fun deleteAll()
 
+    @Query("DELETE FROM shops WHERE isActivated = 0")
+    suspend fun deleteAllExceptActivated()
+
     @Query("SELECT * FROM shops WHERE isActivated = 1 LIMIT 1")
     suspend fun getActivated(): ShopEntity?
 

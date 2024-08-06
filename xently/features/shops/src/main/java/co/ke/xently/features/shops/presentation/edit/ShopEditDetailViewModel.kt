@@ -37,6 +37,17 @@ internal class ShopEditDetailViewModel @Inject constructor(
 
     fun onAction(action: ShopEditDetailAction) {
         when (action) {
+            is ShopEditDetailAction.ClearFieldsForNewShop -> {
+                onAction(ShopEditDetailAction.ChangeShopName(""))
+                onAction(ShopEditDetailAction.ChangeShopWebsite(""))
+                _uiState.update {
+                    it.copy(
+                        nameError = null,
+                        websiteError = null,
+                    )
+                }
+            }
+
             is ShopEditDetailAction.ChangeMerchantFirstName -> {
                 _uiState.update {
                     it.copy(merchantFirstName = action.merchantFirstName)
@@ -67,7 +78,7 @@ internal class ShopEditDetailViewModel @Inject constructor(
                 }
             }
 
-            ShopEditDetailAction.ClickSaveDetails -> {
+            ShopEditDetailAction.ClickSave, ShopEditDetailAction.ClickSaveAndAddAnother -> {
                 viewModelScope.launch {
                     val state = _uiState.updateAndGet {
                         it.copy(
@@ -94,7 +105,7 @@ internal class ShopEditDetailViewModel @Inject constructor(
                             }
 
                             is ShopResult.Success -> {
-                                _event.send(ShopEditDetailEvent.Success)
+                                _event.send(ShopEditDetailEvent.Success(action))
                             }
                         }
                     }

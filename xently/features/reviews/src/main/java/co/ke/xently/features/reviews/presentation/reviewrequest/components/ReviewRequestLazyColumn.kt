@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -32,6 +34,7 @@ import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAct
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestUiState
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.reviews.data.domain.error.DataError as ReviewDataError
@@ -41,6 +44,7 @@ internal fun ReviewRequestLazyColumn(
     state: ReviewRequestUiState,
     reviewCategories: LazyPagingItems<ReviewCategory>,
     modifier: Modifier = Modifier,
+    onClickSubmit: () -> Unit,
     onAction: (ReviewRequestAction) -> Unit,
 ) {
     LazyColumn(
@@ -164,6 +168,15 @@ internal fun ReviewRequestLazyColumn(
                     )
                 }
             }
+        }
+
+        item(key = "Submit button") {
+            PrimaryButton(
+                onClick = onClickSubmit,
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(R.string.action_submit)
+                    .toUpperCase(Locale.current),
+            )
         }
     }
 }

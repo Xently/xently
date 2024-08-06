@@ -156,6 +156,7 @@ internal fun ReviewRequestScreen(
                         onAction = onAction,
                         reviewCategories = reviewCategories,
                         modifier = Modifier.matchParentSize(),
+                        onClickSubmit = onClickBack,
                     )
                 }
             }
