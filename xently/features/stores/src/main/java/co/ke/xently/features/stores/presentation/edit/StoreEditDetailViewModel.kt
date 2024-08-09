@@ -159,7 +159,6 @@ internal class StoreEditDetailViewModel @Inject constructor(
             is StoreEditDetailAction.ChangeLocation -> {
                 _uiState.update {
                     it.copy(
-                        location = action.location,
                         locationString = action.location.takeIf(Location::isUsable)
                             ?.coordinatesString() ?: "",
                     )
@@ -168,15 +167,20 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
             is StoreEditDetailAction.ChangeLocationString -> {
                 when (val result = dataValidator.validatedLocation(action.location)) {
-                    is Result.Failure -> _uiState.update { it.copy(locationError = listOf(result.error)) }
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                locationError = null,
-                                location = result.data,
-                                locationString = action.location,
-                            )
-                        }
+                    is Result.Failure -> _uiState.update {
+                        it.copy(
+                            location = Location(),
+                            locationString = action.location,
+                            locationError = listOf(result.error),
+                        )
+                    }
+
+                    is Result.Success -> _uiState.update {
+                        it.copy(
+                            locationError = null,
+                            location = result.data,
+                            locationString = action.location,
+                        )
                     }
                 }
             }
