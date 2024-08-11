@@ -2,6 +2,7 @@ package co.ke.xently.features.auth.presentation.utils
 
 import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.data.domain.error.DataError
+import co.ke.xently.features.auth.data.domain.error.DuplicateUserAccountError
 import co.ke.xently.features.auth.data.domain.error.Error
 import co.ke.xently.features.auth.data.domain.error.FieldError
 import co.ke.xently.features.auth.data.domain.error.GoogleAuthenticationError
@@ -10,6 +11,7 @@ import co.ke.xently.features.auth.data.domain.error.UnknownError
 
 private fun DataError.asUiText(): UiText {
     return when (this) {
+        DuplicateUserAccountError -> UiText.StringResource(R.string.error_duplicate_user_account)
         DataError.Network.Retryable.RequestTimeout -> UiText.StringResource(R.string.the_request_timed_out)
         DataError.Network.TooManyRequests -> UiText.StringResource(R.string.youve_hit_your_rate_limit)
         DataError.Network.Retryable.NoInternet -> UiText.StringResource(R.string.no_internet)

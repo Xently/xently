@@ -34,6 +34,10 @@ private fun ApiErrorResponse.toError(): Error? {
             DataError.Network.InvalidCredentials
         }
 
+        "USER_EXISTS" -> {
+            DuplicateUserAccountError
+        }
+
         else -> null
     }
 }

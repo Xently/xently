@@ -52,4 +52,5 @@
     <string name="error_google_sign_in_unrecongised_credential_type">Unrecognised credential type.</string>
     <string name="error_google_sign_in_invalid_google_id_response">Invalid Google ID.</string>
     <string name="error_google_sign_in_failed">Google sign-in failed.</string>
+    <string name="error_duplicate_user_account">User already registered with the email address.</string>
 </resources>
