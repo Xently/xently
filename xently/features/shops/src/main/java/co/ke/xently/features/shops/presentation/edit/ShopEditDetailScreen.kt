@@ -203,11 +203,16 @@ internal fun ShopEditDetailScreen(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             val authenticationState by LocalAuthenticationState.current
+            LaunchedEffect(authenticationState.currentUser) {
+                authenticationState.currentUser?.also {
+                    onAction(ShopEditDetailAction.ChangeMerchantFirstName(it.firstName ?: ""))
+                    onAction(ShopEditDetailAction.ChangeMerchantLastName(it.lastName ?: ""))
+                    onAction(ShopEditDetailAction.ChangeMerchantEmailAddress(it.email ?: ""))
+                }
+            }
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantFirstName.ifBlank {
-                    authenticationState.currentUser?.firstName ?: ""
-                },
+                value = state.merchantFirstName,
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantFirstName(it))
@@ -231,9 +236,7 @@ internal fun ShopEditDetailScreen(
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantLastName.ifBlank {
-                    authenticationState.currentUser?.lastName ?: ""
-                },
+                value = state.merchantLastName,
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantLastName(it))
@@ -257,9 +260,7 @@ internal fun ShopEditDetailScreen(
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.merchantEmailAddress.ifBlank {
-                    authenticationState.currentUser?.email ?: ""
-                },
+                value = state.merchantEmailAddress,
                 enabled = !state.disableFields,
                 onValueChange = {
                     onAction(ShopEditDetailAction.ChangeMerchantEmailAddress(it))
