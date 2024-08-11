@@ -36,6 +36,7 @@ fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
     verticalArrangement: Arrangement.HorizontalOrVertical,
     modifier: Modifier = Modifier,
+    emptyMessage: String = stringResource(R.string.message_no_stores_found),
     contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
@@ -52,7 +53,7 @@ fun StoreListScreenContent(
             stores.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
                 StoreListEmptyState(
                     modifier = Modifier.matchParentSize(),
-                    message = stringResource(R.string.message_no_stores_found),
+                    message = emptyMessage,
                     onClickRetry = stores::refresh,
                 )
             }

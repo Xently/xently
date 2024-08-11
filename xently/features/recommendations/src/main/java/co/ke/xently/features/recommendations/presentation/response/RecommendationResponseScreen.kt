@@ -118,6 +118,7 @@ internal fun RecommendationResponseScreen(
             stores = stores,
             modifier = Modifier.padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            emptyMessage = stringResource(R.string.message_no_recommendation_found),
         ) { store ->
             if (store != null) {
                 StoreListItem(

@@ -12,6 +12,7 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
 import co.ke.xently.features.recommendations.data.domain.RecommendationResponse
+import co.ke.xently.features.recommendations.data.domain.ShoppingListItem
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
@@ -46,6 +47,8 @@ class RecommendationViewModel @Inject constructor(
     private val productCategoryRepository: ProductCategoryRepository,
 ) : ViewModel() {
     private companion object {
+        private val SHOPPING_LIST_KEY =
+            RecommendationViewModel::class.java.name.plus("SHOPPING_LIST_CATEGORIES")
         private val STORE_CAT_KEY =
             RecommendationViewModel::class.java.name.plus("SELECTED_STORE_CATEGORIES")
         private val PRODUCT_CAT_KEY =
@@ -90,6 +93,8 @@ class RecommendationViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         )
 
+//    val shoppingList = savedStateHandle.getStateFlow(SHOPPING_LIST_KEY, emptyList<String>())
+
     val recommendations: Flow<PagingData<Store>> = uiState.mapLatest { state ->
         RecommendationRequest(
             location = state.location,
@@ -99,6 +104,7 @@ class RecommendationViewModel @Inject constructor(
             productCategories = emptyList(),
             maximumPrice = state.maximumPrice?.toDoubleOrNull(),
             minimumPrice = state.minimumPrice?.toDoubleOrNull(),
+            shoppingList = state.shoppingList.map { ShoppingListItem(it) }.toSet(),
         )
     }.distinctUntilChanged()
         .combine(_selectedProductCategories) { request, productCategories ->
@@ -123,6 +129,33 @@ class RecommendationViewModel @Inject constructor(
 
     internal fun onAction(action: RecommendationAction) {
         when (action) {
+            is RecommendationAction.ChangeProductName -> {
+                _uiState.update { it.copy(productName = action.name) }
+            }
+
+            is RecommendationAction.AddProductName -> {
+                val shoppingList =
+                    (savedStateHandle.get<List<String>>(SHOPPING_LIST_KEY) ?: emptyList())
+                savedStateHandle[SHOPPING_LIST_KEY] = shoppingList - _uiState.value.productName
+
+                _uiState.update {
+                    it.copy(
+                        shoppingList = it.shoppingList + it.productName,
+                        productName = "",
+                    )
+                }
+            }
+
+            is RecommendationAction.RemoveProductName -> {
+                val shoppingList =
+                    (savedStateHandle.get<List<String>>(SHOPPING_LIST_KEY) ?: emptyList())
+                savedStateHandle[SHOPPING_LIST_KEY] = shoppingList - action.name
+
+                _uiState.update {
+                    it.copy(shoppingList = it.shoppingList - action.name)
+                }
+            }
+
             is RecommendationAction.ChangeLocationQuery -> {
                 _uiState.update { it.copy(query = action.query) }
             }
