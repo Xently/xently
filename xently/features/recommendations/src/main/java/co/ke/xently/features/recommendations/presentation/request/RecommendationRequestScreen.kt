@@ -21,12 +21,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -47,9 +49,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -180,6 +186,66 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            OutlinedTextField(
+                value = state.productName,
+                enabled = !state.disableFields,
+                onValueChange = { onAction(RecommendationAction.ChangeProductName(it)) },
+                label = { Text(text = stringResource(R.string.text_field_label_product_name)) },
+                singleLine = true,
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Sentences,
+                ),
+                trailingIcon = {
+                    IconButton(
+                        enabled = remember(state.productName) {
+                            derivedStateOf { state.productName.isNotBlank() }
+                        }.value,
+                        onClick = { onAction(RecommendationAction.AddProductName) },
+                    ) {
+                        Icon(
+                            Icons.Default.PostAdd,
+                            contentDescription = stringResource(R.string.content_desc_add_to_shopping_list),
+                        )
+                    }
+                }
+            )
+
+            if (remember(state.shoppingList) { derivedStateOf { state.shoppingList.isNotEmpty() } }.value) {
+                Column {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        fontWeight = FontWeight.Bold,
+                        text = stringResource(R.string.headline_shopping_list)
+                            .toUpperCase(Locale.current),
+                    )
+                    for (name in state.shoppingList) {
+                        ListItem(
+                            headlineContent = { Text(text = name) },
+                            trailingContent = {
+                                IconButton(
+                                    onClick = {
+                                        onAction(RecommendationAction.RemoveProductName(name))
+                                    },
+                                ) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = stringResource(
+                                            R.string.content_desc_remove_from_shopping_list,
+                                            name
+                                        )
+                                    )
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -359,6 +425,17 @@ private class RecommendationUiStateParameterProvider :
         get() = sequenceOf(
             RecommendationRequestScreenUiState(state = RecommendationUiState()),
             RecommendationRequestScreenUiState(state = RecommendationUiState(isLoading = true)),
+            RecommendationRequestScreenUiState(
+                state = RecommendationUiState(
+                    shoppingList = List(3) { "Product $it" },
+                ),
+            ),
+            RecommendationRequestScreenUiState(
+                state = RecommendationUiState(
+                    isLoading = true,
+                    shoppingList = List(3) { "Product $it" },
+                ),
+            ),
         )
 }
 
@@ -375,8 +452,8 @@ private fun RecommendationRequestScreenPreview(
             storeCategories = state.storeCategories,
             productCategories = state.productCategories,
             onClickBack = {},
-            onAction = {},
             onClickSearch = {},
+            onAction = {},
         )
     }
 }
