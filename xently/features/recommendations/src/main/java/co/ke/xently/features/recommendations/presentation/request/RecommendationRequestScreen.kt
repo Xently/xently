@@ -186,6 +186,8 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            val focusManager = LocalFocusManager.current
+
             OutlinedTextField(
                 value = state.productName,
                 enabled = !state.disableFields,
@@ -200,6 +202,9 @@ internal fun RecommendationRequestScreen(
                     imeAction = ImeAction.Done,
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
+                keyboardActions = KeyboardActions {
+                    focusManager.clearFocus()
+                },
                 trailingIcon = {
                     IconButton(
                         enabled = remember(state.productName) {
@@ -252,7 +257,10 @@ internal fun RecommendationRequestScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Icon(Icons.Default.Sell, contentDescription = null)
-                Text(text = stringResource(R.string.headline_price_range))
+                Text(
+                    text = stringResource(R.string.headline_price_range),
+                    fontWeight = FontWeight.Bold,
+                )
             }
 
             Row(
@@ -260,7 +268,6 @@ internal fun RecommendationRequestScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) {
-                val focusManager = LocalFocusManager.current
                 val minimumPrice = remember(state.minimumPrice) {
                     state.minimumPrice?.removeSuffix(".0") ?: ""
                 }
@@ -346,6 +353,7 @@ internal fun RecommendationRequestScreen(
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.headline_product_categories),
+                    fontWeight = FontWeight.Bold,
                 )
 
                 FlowRow(
@@ -369,7 +377,8 @@ internal fun RecommendationRequestScreen(
             if (storeCategories.isNotEmpty()) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.headline_store_categories)
+                    text = stringResource(R.string.headline_store_categories),
+                    fontWeight = FontWeight.Bold,
                 )
 
                 FlowRow(
