@@ -68,7 +68,11 @@ internal fun StoreImagesBox(modifier: Modifier = Modifier, images: List<UploadRe
             .height(270.dp)
             .then(modifier),
     ) {
-        HorizontalPager(state = pagerState, key = { images[it].url() }) { index ->
+        HorizontalPager(
+            state = pagerState,
+            key = { images[it].url() },
+            beyondViewportPageCount = 1,
+        ) { index ->
             XentlyImage(
                 data = images[index],
                 modifier = Modifier

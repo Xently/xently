@@ -30,8 +30,8 @@
     <string name="error_message_request_header_too_large">Request header fields too large</string>
     <string name="error_price_invalid">Invalid price.</string>
     <string name="error_price_zero_or_less">Price must be more than zero.</string>
-    <string name="headline_product_categories">MEAL TYPE</string>
-    <string name="headline_store_categories">CHOOSE HOTEL CATEGORY</string>
+    <string name="headline_product_categories">CHOOSE PRODUCT TYPE</string>
+    <string name="headline_store_categories">CHOOSE PLACE TYPE</string>
     <string name="headline_price_range">PRICE RANGE</string>
     <string name="text_field_label_min_price">Min. Price</string>
     <string name="text_field_label_max_price">Max. Price</string>
@@ -47,4 +47,5 @@
     <string name="content_desc_remove_from_shopping_list">Remove \'%1$s\' from list of products</string>
     <string name="headline_shopping_list">Products</string>
     <string name="message_no_recommendation_found">Sorry, no recommendations matched the search parameters.</string>
+    <string name="headline_full_catalogue">Full catalogue</string>
 </resources>
