@@ -8,7 +8,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.toUpperCase
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -93,9 +95,11 @@ fun NavGraphBuilder.recommendationNavigation(
                                 ListItem(
                                     headlineContent = {
                                         Text(
-                                            text = stringResource(R.string.headline_matched_products),
+                                            text = stringResource(R.string.headline_matched_products).toUpperCase(
+                                                Locale.current
+                                            ),
                                             textDecoration = TextDecoration.Underline,
-                                            style = MaterialTheme.typography.labelLarge,
+                                            style = MaterialTheme.typography.titleMedium,
                                         )
                                     },
                                 )
@@ -116,9 +120,11 @@ fun NavGraphBuilder.recommendationNavigation(
                                 ListItem(
                                     headlineContent = {
                                         Text(
-                                            text = stringResource(R.string.headline_missed_products),
+                                            text = stringResource(R.string.headline_missed_products).toUpperCase(
+                                                Locale.current
+                                            ),
                                             textDecoration = TextDecoration.Underline,
-                                            style = MaterialTheme.typography.labelLarge,
+                                            style = MaterialTheme.typography.titleMedium,
                                         )
                                     },
                                 )
@@ -130,6 +136,23 @@ fun NavGraphBuilder.recommendationNavigation(
                             key = { it.value },
                             contentType = { "missed-products" },
                         ) { ListItem(headlineContent = { Text(text = it.value) }) }
+
+                        item(
+                            key = "full-catalogue-headline",
+                            contentType = { "full-catalogue-headline" },
+                        ) {
+                            ListItem(
+                                headlineContent = {
+                                    Text(
+                                        text = stringResource(R.string.headline_full_catalogue).toUpperCase(
+                                            Locale.current
+                                        ),
+                                        textDecoration = TextDecoration.Underline,
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
