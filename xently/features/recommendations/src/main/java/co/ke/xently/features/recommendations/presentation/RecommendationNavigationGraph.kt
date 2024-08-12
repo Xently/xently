@@ -108,7 +108,7 @@ fun NavGraphBuilder.recommendationNavigation(
 
                         items(
                             recommendationResponse.hit.items,
-                            key = { it.bestMatched.id },
+                            key = { "best-matched-products-${it.bestMatched.id}" },
                             contentType = { "best-matched-products" },
                         ) { ProductListItem(product = it.bestMatched) }
 
@@ -133,7 +133,7 @@ fun NavGraphBuilder.recommendationNavigation(
 
                         items(
                             recommendationResponse.miss.items,
-                            key = { it.value },
+                            key = { "missed-products${it.value}" },
                             contentType = { "missed-products" },
                         ) { ListItem(headlineContent = { Text(text = it.value) }) }
 
