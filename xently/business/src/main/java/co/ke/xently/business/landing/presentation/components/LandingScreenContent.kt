@@ -47,6 +47,7 @@ internal fun LandingScreenContent(
     onClickAddStore: () -> Unit,
     navigationIcon: @Composable () -> Unit,
     onClickEditProduct: (Product) -> Unit,
+    onClickCloneProducts: () -> Unit,
     onClickAddProduct: () -> Unit,
     onClickViewComments: (ReviewCategory) -> Unit,
     onClickAddNewReviewCategory: () -> Unit,
@@ -125,6 +126,7 @@ internal fun LandingScreenContent(
         AppDestination.PRODUCTS -> ActiveStoreProductListScreen(
             onClickAddProduct = onClickAddProduct,
             onClickEditProduct = onClickEditProduct,
+            onClickCloneProducts = onClickCloneProducts,
         ) {
             CenterAlignedTopAppBar(
                 navigationIcon = navigationIcon,

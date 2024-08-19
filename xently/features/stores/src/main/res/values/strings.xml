@@ -97,4 +97,5 @@
     <string name="action_login">Login</string>
     <string name="search_stores_placeholder">Search hotel, product, location…</string>
     <string name="content_desc_filter_stores">Filter to find a more appropriate place</string>
+    <string name="content_desc_activated_store">Activated store</string>
 </resources>

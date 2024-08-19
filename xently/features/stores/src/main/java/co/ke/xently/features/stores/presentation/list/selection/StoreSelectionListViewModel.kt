@@ -161,25 +161,49 @@ internal class StoreSelectionListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isLoading = true)
                     }
-                    when (val result = repository.selectStore(store = action.store)) {
-                        is Result.Failure -> {
-                            _event.send(
-                                StoreSelectionListEvent.Error(
-                                    result.error.asUiText(),
-                                    result.error
-                                )
-                            )
-                        }
-
-                        is Result.Success -> {
-                            _event.send(StoreSelectionListEvent.Success(action))
-                        }
+                    when (savedStateHandle.get<Operation>("operation")) {
+                        Operation.CloneProducts -> cloneProducts(action)
+                        else -> selectStore(action)
                     }
                 }.invokeOnCompletion {
                     _uiState.update {
                         it.copy(isLoading = false)
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun cloneProducts(action: StoreSelectionListAction.SelectStore) {
+        when (val result = repository.cloneProducts(store = action.store)) {
+            is Result.Failure -> {
+                _event.send(
+                    StoreSelectionListEvent.Error(
+                        result.error.asUiText(),
+                        result.error
+                    )
+                )
+            }
+
+            is Result.Success -> {
+                _event.send(StoreSelectionListEvent.Success(action))
+            }
+        }
+    }
+
+    private suspend fun selectStore(action: StoreSelectionListAction.SelectStore) {
+        when (val result = repository.selectStore(store = action.store)) {
+            is Result.Failure -> {
+                _event.send(
+                    StoreSelectionListEvent.Error(
+                        result.error.asUiText(),
+                        result.error
+                    )
+                )
+            }
+
+            is Result.Success -> {
+                _event.send(StoreSelectionListEvent.Success(action))
             }
         }
     }

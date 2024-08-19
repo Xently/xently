@@ -59,4 +59,5 @@
     <string name="content_desc_more_options_for_product">More options for product \"%1$s\".</string>
     <string name="content_desc_remove_from_selected_categories">Remove %1$s from selected categories</string>
     <string name="search_products_placeholder">Search Product or Category</string>
+    <string name="action_copy_product">Clone Products</string>
 </resources>

@@ -10,9 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import co.ke.xently.business.domain.EditProductScreen
 import co.ke.xently.business.domain.EditStoreReviewCategoryScreen
 import co.ke.xently.business.domain.EditStoreScreen
@@ -35,6 +37,7 @@ import co.ke.xently.features.shops.domain.ShopNavGraph
 import co.ke.xently.features.shops.presentation.edit.ShopEditDetailScreen
 import co.ke.xently.features.shops.presentation.list.ShopListScreen
 import co.ke.xently.features.stores.presentation.edit.StoreEditDetailScreen
+import co.ke.xently.features.stores.presentation.list.selection.Operation
 import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
@@ -43,6 +46,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     override fun requestStoreSelection(shop: Any?) {
-                        navController.navigate(SelectStoreScreen)
+                        navController.navigate(SelectStoreScreen())
                     }
                 }
             }
@@ -103,6 +107,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onClickEditProduct = {
                                     navController.navigate(EditProductScreen(productId = it.id))
+                                },
+                                onClickCloneProducts = {
+                                    navController.navigate(SelectStoreScreen(operation = Operation.CloneProducts))
                                 },
                                 onClickAddNewReviewCategory = {
                                     navController.navigate(EditStoreReviewCategoryScreen)
@@ -142,7 +149,12 @@ class MainActivity : ComponentActivity() {
                                 },
                             )
                         }
-                        composable<SelectStoreScreen> {
+                        composable<SelectStoreScreen>(
+                            typeMap = mapOf(
+                                typeOf<Operation>() to NavType.EnumType(Operation::class.java),
+                            ),
+                        ) { navBackStackEntry ->
+                            val route = navBackStackEntry.toRoute<SelectStoreScreen>()
                             StoreSelectionListScreen(
                                 onClickBack = navController::navigateUp,
                                 onClickAddStore = {
@@ -151,8 +163,19 @@ class MainActivity : ComponentActivity() {
                                 onClickEditStore = {
                                     navController.navigate(EditStoreScreen(storeId = it.id))
                                 },
-                                onStoreSelected = {
-                                    navController.popBackStack(LandingScreen, inclusive = false)
+                                onStoreSelectionSuccess = {
+                                    when (route.operation) {
+                                        Operation.Default -> {
+                                            navController.popBackStack(
+                                                LandingScreen,
+                                                inclusive = false
+                                            )
+                                        }
+
+                                        Operation.CloneProducts -> {
+                                            navController.navigateUp()
+                                        }
+                                    }
                                 },
                             )
                         }

@@ -62,7 +62,7 @@ fun StoreSelectionListScreen(
     onClickBack: () -> Unit,
     onClickAddStore: () -> Unit,
     onClickEditStore: (Store) -> Unit,
-    onStoreSelected: (Store) -> Unit,
+    onStoreSelectionSuccess: (Store) -> Unit,
 ) {
     val viewModel = hiltViewModel<StoreSelectionListViewModel>()
 
@@ -94,7 +94,7 @@ fun StoreSelectionListScreen(
                         }
 
                         is StoreSelectionListAction.SelectStore -> {
-                            onStoreSelected(event.action.store)
+                            onStoreSelectionSuccess(event.action.store)
                         }
 
                         else -> throw NotImplementedError()
@@ -197,11 +197,7 @@ internal fun StoreSelectionListScreen(
                     onClickUpdate = { onClickEditStore(store) },
                     onClickConfirmDelete = { onAction(StoreSelectionListAction.DeleteStore(store)) },
                     modifier = Modifier.clickable {
-                        onAction(
-                            StoreSelectionListAction.SelectStore(
-                                store
-                            )
-                        )
+                        onAction(StoreSelectionListAction.SelectStore(store))
                     },
                 )
             } else {
