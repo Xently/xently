@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.secrets)
     id("kotlin-parcelize")
 }
 
@@ -21,13 +22,6 @@ android {
         buildConfig = true
     }
     buildTypes {
-        debug {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                """"https://6503-105-163-0-87.ngrok-free.app/api/v1"""",
-            )
-        }
         release {
             isMinifyEnabled = false
             buildConfigField(
