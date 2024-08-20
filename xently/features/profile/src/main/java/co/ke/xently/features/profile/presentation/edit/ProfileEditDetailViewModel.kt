@@ -5,15 +5,12 @@ import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.profile.data.domain.ProfileDataValidator
 import co.ke.xently.features.profile.data.domain.ProfileStatistic
 import co.ke.xently.features.profile.data.domain.error.Result
-import co.ke.xently.features.profile.data.source.ProfileStatisticRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
@@ -22,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class ProfileEditDetailViewModel @Inject constructor(
-    private val repository: ProfileStatisticRepository,
     private val dataValidator: ProfileDataValidator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileEditDetailUiState())
@@ -31,36 +27,23 @@ internal class ProfileEditDetailViewModel @Inject constructor(
     private val _event = Channel<ProfileEditDetailEvent>()
     val event: Flow<ProfileEditDetailEvent> = _event.receiveAsFlow()
 
-    init {
-        viewModelScope.launch {
-            repository.findStatisticById()
-                .onStart { _uiState.update { it.copy(isLoading = true, disableFields = true) } }
-                .onCompletion {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            disableFields = false
-                        )
-                    }
-                }
-                .collect { result ->
-                    _uiState.update {
-                        when (result) {
-                            is Result.Failure -> ProfileEditDetailUiState()
-                            is Result.Success -> {
-                                ProfileEditDetailUiState(profileStatistic = result.data)
-                            }
-                        }
-                    }
-                }
-        }
-    }
-
     fun onAction(action: ProfileEditDetailAction) {
         when (action) {
-            is ProfileEditDetailAction.ChangeName -> {
+            is ProfileEditDetailAction.ChangeFirstName -> {
                 _uiState.update {
-                    it.copy(name = action.name)
+                    it.copy(firstName = action.name)
+                }
+            }
+
+            is ProfileEditDetailAction.ChangeLastName -> {
+                _uiState.update {
+                    it.copy(lastName = action.name)
+                }
+            }
+
+            is ProfileEditDetailAction.ChangeEmail -> {
+                _uiState.update {
+                    it.copy(email = action.email)
                 }
             }
 
@@ -69,7 +52,7 @@ internal class ProfileEditDetailViewModel @Inject constructor(
                     val state = _uiState.updateAndGet {
                         it.copy(
                             isLoading = true,
-                            nameError = null,
+                            firstNameError = null,
                         )
                     }
                     val profile = validatedProfile(state)
@@ -89,10 +72,22 @@ internal class ProfileEditDetailViewModel @Inject constructor(
     private fun validatedProfile(state: ProfileEditDetailUiState): ProfileStatistic {
         val profile = state.profileStatistic
 
-        when (val result = dataValidator.validatedName(state.name)) {
-            is Result.Failure -> _uiState.update { it.copy(nameError = listOf(result.error)) }
+        when (val result = dataValidator.validatedName(state.firstName)) {
+            is Result.Failure -> _uiState.update { it.copy(firstNameError = listOf(result.error)) }
             is Result.Success -> {
-                _uiState.update { it.copy(nameError = null) }
+                _uiState.update { it.copy(firstNameError = null) }
+            }
+        }
+        when (val result = dataValidator.validatedName(state.lastName)) {
+            is Result.Failure -> _uiState.update { it.copy(lastNameError = listOf(result.error)) }
+            is Result.Success -> {
+                _uiState.update { it.copy(lastNameError = null) }
+            }
+        }
+        when (val result = dataValidator.validatedEmail(state.email)) {
+            is Result.Failure -> _uiState.update { it.copy(emailError = listOf(result.error)) }
+            is Result.Success -> {
+                _uiState.update { it.copy(emailError = null) }
             }
         }
 
