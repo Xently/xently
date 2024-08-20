@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import co.ke.xently.features.profile.R
 import co.ke.xently.features.profile.data.domain.error.DataError
+import co.ke.xently.features.profile.data.domain.error.EmailError
 import co.ke.xently.features.profile.data.domain.error.Error
 import co.ke.xently.features.profile.data.domain.error.FieldError
 import co.ke.xently.features.profile.data.domain.error.LocalFieldError
@@ -49,6 +50,7 @@ private fun DataError.asUiText(): UiText {
 private fun FieldError.asUiText(): UiText {
     return when (this) {
         NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
+        EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)
 
         is UnclassifiedFieldError -> UiText.DynamicString(message)
         is RemoteFieldError -> UiText.StringResource(R.string.error_message_bad_request)

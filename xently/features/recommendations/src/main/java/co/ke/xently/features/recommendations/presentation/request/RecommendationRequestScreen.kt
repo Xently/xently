@@ -146,16 +146,18 @@ internal fun RecommendationRequestScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(
-                modifier = Modifier
-                    .windowInsetsPadding(TopAppBarDefaults.windowInsets),
+                modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets),
             ) {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
-                    title = { Text(text = stringResource(R.string.topbar_title_recommendation_request)) },
-                )
-                AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                var initSearch by rememberSaveable { mutableStateOf(false) }
+                if (!initSearch) {
+                    CenterAlignedTopAppBar(
+                        windowInsets = WindowInsets.waterfall,
+                        navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
+                        title = { Text(text = stringResource(R.string.topbar_title_recommendation_request)) },
+                    )
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
                 SearchBar(
                     query = state.query,
@@ -163,6 +165,7 @@ internal fun RecommendationRequestScreen(
                     clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     placeholder = stringResource(R.string.search_placeholder_location),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onExpandedChange = { initSearch = it },
                     onQueryChange = { onAction(RecommendationAction.ChangeLocationQuery(it)) },
                     onSearch = { onAction(RecommendationAction.SearchLocation(it)) },
                     blankQueryIcon = {
@@ -188,8 +191,7 @@ internal fun RecommendationRequestScreen(
         ) {
             val focusManager = LocalFocusManager.current
 
-            OutlinedTextField(
-                value = state.productName,
+            OutlinedTextField(value = state.productName,
                 enabled = !state.disableFields,
                 onValueChange = { onAction(RecommendationAction.ChangeProductName(it)) },
                 label = { Text(text = stringResource(R.string.text_field_label_product_name)) },
@@ -217,16 +219,14 @@ internal fun RecommendationRequestScreen(
                             contentDescription = stringResource(R.string.content_desc_add_to_shopping_list),
                         )
                     }
-                }
-            )
+                })
 
             if (remember(state.shoppingList) { derivedStateOf { state.shoppingList.isNotEmpty() } }.value) {
                 Column {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         fontWeight = FontWeight.Bold,
-                        text = stringResource(R.string.headline_shopping_list)
-                            .toUpperCase(Locale.current),
+                        text = stringResource(R.string.headline_shopping_list).toUpperCase(Locale.current),
                     )
                     for (name in state.shoppingList) {
                         ListItem(
@@ -238,10 +238,8 @@ internal fun RecommendationRequestScreen(
                                     },
                                 ) {
                                     Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = stringResource(
-                                            R.string.content_desc_remove_from_shopping_list,
-                                            name
+                                        Icons.Default.Close, contentDescription = stringResource(
+                                            R.string.content_desc_remove_from_shopping_list, name
                                         )
                                     )
                                 }
@@ -452,8 +450,7 @@ private class RecommendationUiStateParameterProvider :
 @XentlyPreview
 @Composable
 private fun RecommendationRequestScreenPreview(
-    @PreviewParameter(RecommendationUiStateParameterProvider::class)
-    state: RecommendationRequestScreenUiState,
+    @PreviewParameter(RecommendationUiStateParameterProvider::class) state: RecommendationRequestScreenUiState,
 ) {
     XentlyTheme {
         RecommendationRequestScreen(

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -116,19 +118,28 @@ fun StoreListItem(
         modifier = modifier,
         trailingContent = trailingContent,
         leadingContent = {
-            Card(
-                modifier = Modifier
-                    .size(size = 60.dp)
-                    .shimmer(isLoading),
-            ) {
-                var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
-                XentlyImage(
-                    data = store.images.getOrNull(index),
-                    modifier = Modifier.fillMaxSize(),
-                    onError = {
-                        if (index != store.images.lastIndex) index += 1
-                    },
-                )
+            Box {
+                Card(
+                    modifier = Modifier
+                        .size(size = 60.dp)
+                        .shimmer(isLoading),
+                ) {
+                    var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
+                    XentlyImage(
+                        data = store.images.getOrNull(index),
+                        modifier = Modifier.fillMaxSize(),
+                        onError = {
+                            if (index != store.images.lastIndex) index += 1
+                        },
+                    )
+                }
+                if (store.isActivated) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = stringResource(R.string.content_desc_activated_store),
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                    )
+                }
             }
         },
         supportingContent = {
@@ -178,6 +189,13 @@ private class StoreListItemParameterProvider : PreviewParameterProvider<StoreLis
             ),
             StoreListItemParameter(
                 Store.DEFAULT,
+                isLoading = true,
+            ),
+            StoreListItemParameter(
+                Store.DEFAULT.copy(isActivated = true),
+            ),
+            StoreListItemParameter(
+                Store.DEFAULT.copy(isActivated = true),
                 isLoading = true,
             ),
         )

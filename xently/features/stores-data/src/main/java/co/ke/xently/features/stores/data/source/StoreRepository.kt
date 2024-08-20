@@ -19,6 +19,7 @@ interface StoreRepository {
     suspend fun getStores(url: String?, filters: StoreFilters): PagedResponse<Store>
     suspend fun deleteStore(store: Store): Result<Unit, Error>
     suspend fun selectStore(store: Store): Result<Unit, DataError.Local>
+    suspend fun cloneProducts(store: Store): Result<Unit, Error>
     suspend fun uploadNewImage(
         uploadUrl: String,
         newImage: UploadRequest,

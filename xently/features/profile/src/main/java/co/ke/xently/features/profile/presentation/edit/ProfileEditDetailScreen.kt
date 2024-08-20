@@ -34,6 +34,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import co.ke.xently.features.profile.data.domain.ProfileStatistic
 import co.ke.xently.features.profile.data.domain.error.NameError
 import co.ke.xently.features.profile.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
@@ -117,6 +121,14 @@ internal fun ProfileEditDetailScreen(
         },
     ) { paddingValues ->
         val scrollState = rememberScrollState()
+        val authenticationState by LocalAuthenticationState.current
+        LaunchedEffect(authenticationState.currentUser) {
+            authenticationState.currentUser?.also {
+                onAction(ProfileEditDetailAction.ChangeFirstName(it.firstName ?: ""))
+                onAction(ProfileEditDetailAction.ChangeLastName(it.lastName ?: ""))
+                onAction(ProfileEditDetailAction.ChangeEmail(it.email ?: ""))
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -127,10 +139,10 @@ internal fun ProfileEditDetailScreen(
         ) {
             OutlinedTextField(
                 shape = CardDefaults.shape,
-                value = state.name,
+                value = state.firstName,
                 enabled = !state.disableFields,
-                onValueChange = { onAction(ProfileEditDetailAction.ChangeName(it)) },
-                label = { Text(text = stringResource(R.string.text_field_label_profile_name)) },
+                onValueChange = { onAction(ProfileEditDetailAction.ChangeFirstName(it)) },
+                label = { Text(text = stringResource(R.string.text_field_label_profile_first_name)) },
                 singleLine = true,
                 maxLines = 1,
                 modifier = Modifier
@@ -140,21 +152,60 @@ internal fun ProfileEditDetailScreen(
                     imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Sentences,
                 ),
-                isError = !state.nameError.isNullOrEmpty(),
-                supportingText = state.nameError?.let {
+                isError = !state.firstNameError.isNullOrEmpty(),
+                supportingText = state.firstNameError?.let {
+                    { Text(text = it.toUiText()) }
+                },
+            )
+            OutlinedTextField(
+                shape = CardDefaults.shape,
+                value = state.lastName,
+                enabled = !state.disableFields,
+                onValueChange = { onAction(ProfileEditDetailAction.ChangeLastName(it)) },
+                label = { Text(text = stringResource(R.string.text_field_label_profile_last_name)) },
+                singleLine = true,
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Sentences,
+                ),
+                isError = !state.lastNameError.isNullOrEmpty(),
+                supportingText = state.lastNameError?.let {
+                    { Text(text = it.toUiText()) }
+                },
+            )
+            OutlinedTextField(
+                shape = CardDefaults.shape,
+                value = state.email,
+                enabled = !state.disableFields,
+                onValueChange = { onAction(ProfileEditDetailAction.ChangeEmail(it)) },
+                label = { Text(text = stringResource(R.string.text_field_label_profile_email)) },
+                singleLine = true,
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                   keyboardType = KeyboardType.Email,
+                ),
+                isError = !state.emailError.isNullOrEmpty(),
+                supportingText = state.emailError?.let {
                     { Text(text = it.toUiText()) }
                 },
             )
 
             Button(
-                enabled = state.enableSaveButton,
+                enabled = false, // TODO: Replace with `state.enableSaveButton`
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
                 onClick = { onAction(ProfileEditDetailAction.ClickSave) },
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-            ) { Text(text = stringResource(R.string.action_save)) }
+            ) { Text(text = stringResource(R.string.action_save).toUpperCase(Locale.current)) }
         }
     }
 }
@@ -171,7 +222,7 @@ private class ProfileEditDetailUiStateParameterProvider :
             ProfileEditDetailScreenUiState(state = ProfileEditDetailUiState()),
             ProfileEditDetailScreenUiState(
                 state = ProfileEditDetailUiState(
-                    nameError = listOf(NameError.entries.random()),
+                    firstNameError = listOf(NameError.entries.random()),
                 ),
             ),
             ProfileEditDetailScreenUiState(state = ProfileEditDetailUiState(profileStatistic = profileStatistic)),

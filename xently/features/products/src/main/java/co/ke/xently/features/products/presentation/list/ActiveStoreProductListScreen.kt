@@ -1,17 +1,20 @@
 package co.ke.xently.features.products.presentation.list
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -21,11 +24,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
@@ -48,6 +56,7 @@ import kotlinx.coroutines.flow.flowOf
 fun ActiveStoreProductListScreen(
     modifier: Modifier = Modifier,
     onClickAddProduct: () -> Unit,
+    onClickCloneProducts: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
@@ -94,6 +103,7 @@ fun ActiveStoreProductListScreen(
         categories = categories,
         modifier = modifier,
         onClickAddProduct = onClickAddProduct,
+        onClickCloneProducts = onClickCloneProducts,
         onClickEditProduct = onClickEditProduct,
         onAction = viewModel::onAction,
         topBar = topBar,
@@ -109,6 +119,7 @@ internal fun ActiveStoreProductListScreen(
     categories: List<ProductCategory>,
     modifier: Modifier = Modifier,
     onClickAddProduct: () -> Unit,
+    onClickCloneProducts: () -> Unit,
     onClickEditProduct: (Product) -> Unit,
     onAction: (ProductListAction) -> Unit,
     topBar: @Composable () -> Unit = {},
@@ -118,13 +129,17 @@ internal fun ActiveStoreProductListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                topBar()
-                AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                var initSearch by rememberSaveable { mutableStateOf(false) }
+                if (!initSearch) {
+                    topBar()
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
 
                 SearchBar(
                     query = state.query,
+                    onExpandedChange = { initSearch = it },
                     onSearch = { onAction(ProductListAction.Search(it)) },
                     onQueryChange = { onAction(ProductListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_products_placeholder),
@@ -140,16 +155,33 @@ internal fun ActiveStoreProductListScreen(
             }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onClickAddProduct,
-                text = { Text(text = stringResource(R.string.action_add_product)) },
-                icon = {
-                    Icon(
-                        Icons.Default.PostAdd,
-                        contentDescription = stringResource(R.string.action_add_product),
-                    )
-                },
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                ExtendedFloatingActionButton(
+                    onClick = onClickAddProduct,
+                    text = { Text(text = stringResource(R.string.action_add_product)) },
+                    icon = {
+                        Icon(
+                            Icons.Default.PostAdd,
+                            contentDescription = stringResource(R.string.action_add_product),
+                        )
+                    },
+                )
+                ExtendedFloatingActionButton(
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = onClickCloneProducts,
+                    text = { Text(text = stringResource(R.string.action_copy_product)) },
+                    icon = {
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = stringResource(R.string.action_copy_product),
+                        )
+                    },
+                )
+            }
         },
     ) { paddingValues ->
         val eventHandler = LocalEventHandler.current
@@ -224,6 +256,7 @@ private fun ProductListScreenPreview(
             categories = state.categories,
             modifier = Modifier.fillMaxSize(),
             onClickAddProduct = {},
+            onClickCloneProducts = {},
             onClickEditProduct = {},
             onAction = {},
         )

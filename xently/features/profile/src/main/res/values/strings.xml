@@ -31,7 +31,10 @@
     <string name="error_message_fcm_device_registration_required">Device registration required.</string>
     <string name="top_bar_title_edit_profile_details">Edit Profile</string>
     <string name="action_save">Save</string>
-    <string name="text_field_label_profile_name">Name</string>
+    <string name="text_field_label_profile_first_name">First name</string>
+    <string name="text_field_label_profile_last_name">Last name</string>
     <string name="action_edit_profile">Edit profile</string>
     <string name="error_name_missing">Required</string>
+    <string name="text_field_label_profile_email">Email</string>
+    <string name="error_email_invalid_format">Invalid email address format</string>
 </resources>

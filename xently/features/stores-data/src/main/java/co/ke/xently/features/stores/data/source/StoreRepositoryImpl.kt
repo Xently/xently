@@ -256,6 +256,20 @@ internal class StoreRepositoryImpl @Inject constructor(
         return Result.Success(Unit)
     }
 
+    override suspend fun cloneProducts(store: Store): Result<Unit, Error> {
+        return try {
+            httpClient.post(urlString = store.links["clone-products"]!!.href) {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("storeId" to storeDao.getActivated()!!.id))
+            }
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
+            Timber.e(ex)
+            Result.Failure(ex.toError())
+        }
+    }
+
     override suspend fun uploadNewImage(
         uploadUrl: String,
         newImage: UploadRequest,

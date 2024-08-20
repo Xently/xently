@@ -31,6 +31,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -62,7 +65,7 @@ fun StoreSelectionListScreen(
     onClickBack: () -> Unit,
     onClickAddStore: () -> Unit,
     onClickEditStore: (Store) -> Unit,
-    onStoreSelected: (Store) -> Unit,
+    onStoreSelectionSuccess: (Store) -> Unit,
 ) {
     val viewModel = hiltViewModel<StoreSelectionListViewModel>()
 
@@ -94,7 +97,7 @@ fun StoreSelectionListScreen(
                         }
 
                         is StoreSelectionListAction.SelectStore -> {
-                            onStoreSelected(event.action.store)
+                            onStoreSelectionSuccess(event.action.store)
                         }
 
                         else -> throw NotImplementedError()
@@ -135,19 +138,22 @@ internal fun StoreSelectionListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    title = { Text(text = stringResource(R.string.top_bar_title_select_store)) },
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
-                )
-                AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                var initSearch by rememberSaveable { mutableStateOf(false) }
+                if (!initSearch) {
+                    CenterAlignedTopAppBar(
+                        windowInsets = WindowInsets.waterfall,
+                        title = { Text(text = stringResource(R.string.top_bar_title_select_store)) },
+                        navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
+                    )
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
-
                 SearchBar(
                     query = state.query,
                     exitSearchIcon = Icons.Default.Close,
                     clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
+                    onExpandedChange = { initSearch = it },
                     onSearch = { onAction(StoreSelectionListAction.Search(it)) },
                     onQueryChange = { onAction(StoreSelectionListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_stores_placeholder),
@@ -197,11 +203,7 @@ internal fun StoreSelectionListScreen(
                     onClickUpdate = { onClickEditStore(store) },
                     onClickConfirmDelete = { onAction(StoreSelectionListAction.DeleteStore(store)) },
                     modifier = Modifier.clickable {
-                        onAction(
-                            StoreSelectionListAction.SelectStore(
-                                store
-                            )
-                        )
+                        onAction(StoreSelectionListAction.SelectStore(store))
                     },
                 )
             } else {
