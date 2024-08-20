@@ -13,8 +13,8 @@
 #}
 
 #Doc https://developer.android.com/build/shrink-code#keep-code
-#-printusage ../../.kotlin/customer/usage.txt
-#-printseeds ../../.kotlin/customer/seeds.txt
+-printusage ../../.kotlin/customer/usage.txt
+-printseeds ../../.kotlin/customer/seeds.txt
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
@@ -27,6 +27,9 @@
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn org.slf4j.impl.StaticMDCBinder
 -dontwarn org.slf4j.impl.StaticMarkerBinder
+-keepnames enum * {
+    public *;
+}
 
 #######################################
 # Kotlinx serialization
