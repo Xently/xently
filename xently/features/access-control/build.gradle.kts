@@ -24,11 +24,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                """"https://api.xently.co.ke/api/v1"""",
-            )
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
