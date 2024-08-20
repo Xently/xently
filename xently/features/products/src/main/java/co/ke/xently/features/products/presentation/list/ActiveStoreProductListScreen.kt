@@ -24,6 +24,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -126,13 +129,17 @@ internal fun ActiveStoreProductListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                topBar()
-                AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                var initSearch by rememberSaveable { mutableStateOf(false) }
+                if (!initSearch) {
+                    topBar()
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
 
                 SearchBar(
                     query = state.query,
+                    onExpandedChange = { initSearch = it },
                     onSearch = { onAction(ProductListAction.Search(it)) },
                     onQueryChange = { onAction(ProductListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_products_placeholder),

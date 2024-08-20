@@ -20,6 +20,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,10 +51,14 @@ fun SearchBar(
     suggestions: List<String> = emptyList(),
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
+    onExpandedChange: (Boolean) -> Unit = {},
     blankQueryIcon: @Composable (() -> Unit)? = null,
 ) {
     val isQueryBlank by remember(query) { derivedStateOf { query.isBlank() } }
     var expanded by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(expanded) {
+        onExpandedChange(expanded)
+    }
     SearchBar(
         modifier = Modifier
             .run {

@@ -31,7 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -140,19 +143,23 @@ internal fun ShopListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
-                CenterAlignedTopAppBar(
-                    windowInsets = WindowInsets.waterfall,
-                    title = { Text(text = stringResource(R.string.top_bar_title_select_shop)) },
-                    navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
-                )
-                AnimatedVisibility(state.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                var initSearch by rememberSaveable { mutableStateOf(false) }
+                if (!initSearch) {
+                    CenterAlignedTopAppBar(
+                        windowInsets = WindowInsets.waterfall,
+                        title = { Text(text = stringResource(R.string.top_bar_title_select_shop)) },
+                        navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
+                    )
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
                 }
 
                 SearchBar(
                     query = state.query,
                     exitSearchIcon = Icons.Default.Close,
                     clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
+                    onExpandedChange = { initSearch = it },
                     onSearch = { onAction(ShopListAction.Search(it)) },
                     onQueryChange = { onAction(ShopListAction.ChangeQuery(it)) },
                     placeholder = stringResource(R.string.search_shops_placeholder),
@@ -175,8 +182,7 @@ internal fun ShopListScreen(
         val refreshLoadState = shops.loadState.refresh
         val isRefreshing by remember(refreshLoadState, shops.itemCount) {
             derivedStateOf {
-                refreshLoadState == LoadState.Loading
-                        && shops.itemCount > 0
+                refreshLoadState == LoadState.Loading && shops.itemCount > 0
             }
         }
         PullRefreshBox(
@@ -254,8 +260,7 @@ private class ShopListScreenUiState(
     ),
 )
 
-private class ShopListUiStateParameterProvider :
-    PreviewParameterProvider<ShopListScreenUiState> {
+private class ShopListUiStateParameterProvider : PreviewParameterProvider<ShopListScreenUiState> {
     override val values: Sequence<ShopListScreenUiState>
         get() = sequenceOf(
             ShopListScreenUiState(state = ShopListUiState()),
@@ -266,8 +271,7 @@ private class ShopListUiStateParameterProvider :
 @XentlyPreview
 @Composable
 private fun ShopListScreenPreview(
-    @PreviewParameter(ShopListUiStateParameterProvider::class)
-    state: ShopListScreenUiState,
+    @PreviewParameter(ShopListUiStateParameterProvider::class) state: ShopListScreenUiState,
 ) {
     val shops = flowOf(state.shops).collectAsLazyPagingItems()
     XentlyTheme {
