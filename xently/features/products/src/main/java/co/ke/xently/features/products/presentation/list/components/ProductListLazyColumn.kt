@@ -37,13 +37,16 @@ import co.ke.xently.features.products.data.domain.error.DataError as ProductData
 internal fun ProductListLazyColumn(
     products: LazyPagingItems<Product>,
     modifier: Modifier = Modifier,
-    extraPrependContent: LazyListScope.() -> Unit,
+    preRefreshContent: LazyListScope.() -> Unit,
+    postPrependContent: LazyListScope.() -> Unit,
     productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        preRefreshContent()
+
         when (val loadState = products.loadState.refresh) {
             is LoadState.NotLoading -> Unit
             LoadState.Loading -> {
@@ -107,7 +110,7 @@ internal fun ProductListLazyColumn(
             }
         }
 
-        extraPrependContent()
+        postPrependContent()
 
         items(
             count = products.itemCount,

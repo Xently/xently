@@ -1,5 +1,7 @@
 package co.ke.xently.features.products.presentation.list.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,7 +37,9 @@ internal fun ProductListContent(
     modifier: Modifier = Modifier,
     onClickSelectShop: () -> Unit,
     onClickSelectStore: () -> Unit,
-    extraPrependContent: LazyListScope.() -> Unit = {},
+    preRefreshContent: LazyListScope.() -> Unit = {},
+    postPrependContent: LazyListScope.() -> Unit = {},
+    preProductsContent: (@Composable () -> Unit)? = null,
     productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
     val refreshLoadState = products.loadState.refresh
@@ -52,56 +56,67 @@ internal fun ProductListContent(
     ) {
         when {
             products.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
-                ProductListEmptyState(
-                    modifier = Modifier.matchParentSize(),
-                    message = stringResource(R.string.message_no_products_found),
-                    onClickRetry = products::refresh,
-                )
+                Column(modifier = Modifier.matchParentSize()) {
+                    preProductsContent?.invoke()
+                    ProductListEmptyState(
+                        modifier = Modifier.weight(1f),
+                        message = stringResource(R.string.message_no_products_found),
+                        onClickRetry = products::refresh,
+                    )
+                }
             }
 
             products.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                val error = remember(refreshLoadState) {
-                    runBlocking { refreshLoadState.error.toError() }
-                }
-                ProductListEmptyState(
-                    modifier = Modifier.matchParentSize(),
-                    message = error.asUiText().asString(),
-                    canRetry = error is DataError.Network.Retryable || error is UnknownError,
-                    onClickRetry = products::retry,
-                ) {
-                    when (error) {
-                        ConfigurationError.ShopSelectionRequired -> {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = onClickSelectShop) {
-                                Text(text = stringResource(R.string.action_select_shop))
+                Column(modifier = Modifier.matchParentSize()) {
+                    preProductsContent?.invoke()
+                    val error = remember(refreshLoadState) {
+                        runBlocking { refreshLoadState.error.toError() }
+                    }
+                    ProductListEmptyState(
+                        modifier = Modifier.weight(1f),
+                        message = error.asUiText().asString(),
+                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
+                        onClickRetry = products::retry,
+                    ) {
+                        when (error) {
+                            ConfigurationError.ShopSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = onClickSelectShop) {
+                                    Text(text = stringResource(R.string.action_select_shop))
+                                }
                             }
-                        }
 
-                        ConfigurationError.StoreSelectionRequired -> {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = onClickSelectStore) {
-                                Text(text = stringResource(R.string.action_select_store))
+                            ConfigurationError.StoreSelectionRequired -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = onClickSelectStore) {
+                                    Text(text = stringResource(R.string.action_select_store))
+                                }
                             }
+
+                            DataError.Network.Unauthorized -> {
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                LoginAndRetryButtonsRow(onRetry = products::retry)
+                            }
+
+                            else -> Unit
                         }
-
-                        DataError.Network.Unauthorized -> {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            LoginAndRetryButtonsRow(onRetry = products::retry)
-                        }
-
-                        else -> Unit
                     }
                 }
             }
 
             products.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center)
-                        .wrapContentWidth(Alignment.CenterHorizontally),
-                )
+                Column(modifier = Modifier.matchParentSize()) {
+                    preProductsContent?.invoke()
+                    Box(modifier = Modifier.weight(1f)) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                                .wrapContentWidth(Alignment.CenterHorizontally),
+                        )
+                    }
+                }
             }
 
             else -> {
@@ -109,7 +124,8 @@ internal fun ProductListContent(
                     products = products,
                     modifier = Modifier.matchParentSize(),
                     productListItem = productListItem,
-                    extraPrependContent = extraPrependContent,
+                    preRefreshContent = preRefreshContent,
+                    postPrependContent = postPrependContent,
                 )
             }
         }
