@@ -1,6 +1,7 @@
 package co.ke.xently.features.recommendations.presentation.request
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -49,7 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -189,6 +192,20 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            AnimatedVisibility(state.location.isUsable()) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clickable { showLocationPicker = true },
+                    text = AnnotatedString.fromHtml(
+                        stringResource(
+                            R.string.selected_location_help_text,
+                            state.location,
+                        ),
+                    )
+                )
+            }
+
             val focusManager = LocalFocusManager.current
 
             OutlinedTextField(value = state.productName,
@@ -404,7 +421,7 @@ internal fun RecommendationRequestScreen(
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 16.dp),
-                label = stringResource(R.string.action_label_search_place),
+                label = stringResource(state.searchButtonLabel),
             )
         }
     }

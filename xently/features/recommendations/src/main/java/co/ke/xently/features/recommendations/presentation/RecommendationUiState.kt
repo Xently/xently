@@ -1,6 +1,8 @@
 package co.ke.xently.features.recommendations.presentation
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
+import co.ke.xently.features.recommendations.R
 import co.ke.xently.features.recommendations.data.domain.error.LocalFieldError
 import co.ke.xently.libraries.location.tracker.domain.Location
 
@@ -20,4 +22,10 @@ data class RecommendationUiState(
     val enableSearchButton: Boolean = location.isUsable()
             && !isLoading
             && !disableFields
+
+    @StringRes
+    val searchButtonLabel: Int = when {
+        location.isUsable() -> R.string.action_label_search_place
+        else -> R.string.action_label_pick_location
+    }
 }
