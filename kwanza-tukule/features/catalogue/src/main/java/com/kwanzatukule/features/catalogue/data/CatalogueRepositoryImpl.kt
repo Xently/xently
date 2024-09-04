@@ -147,7 +147,7 @@ While some contexts were considered better for some carousel designs, all design
         }
         return httpClient.get(url ?: "https://localhost") {
             url {
-                parameters.run {
+                encodedParameters.run {
                     if (filters.category != null) {
                         appendMissing("category", listOf(filters.category.name))
                     }

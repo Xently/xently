@@ -189,7 +189,7 @@ internal fun ProfileEditDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                   keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Email,
                 ),
                 isError = !state.emailError.isNullOrEmpty(),
                 supportingText = state.emailError?.let {

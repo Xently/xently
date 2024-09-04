@@ -42,10 +42,11 @@
     <string name="topbar_title_recommendation_response">Recommendations</string>
     <string name="headline_missed_products">Missed products</string>
     <string name="headline_matched_products">Matched products</string>
-    <string name="text_field_label_product_name">Product name</string>
+    <string name="text_field_label_product_name">Which product do you want to buy?</string>
     <string name="content_desc_add_to_shopping_list">Add to list of products</string>
     <string name="content_desc_remove_from_shopping_list">Remove \'%1$s\' from list of products</string>
-    <string name="headline_shopping_list">Products</string>
+    <string name="headline_shopping_list">Products you want to buy</string>
     <string name="message_no_recommendation_found">Sorry, no recommendations matched the search parameters.</string>
     <string name="headline_full_catalogue">Full catalogue</string>
+    <string name="selected_location_help_text">Selected location: &lt;b>%1$s&lt;/b></string>
 </resources>

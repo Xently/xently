@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -175,6 +176,7 @@ private fun SignInScreen(
         SignInScreen(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(paddingValues),
             state = state,
             onAction = onAction,
@@ -194,12 +196,7 @@ private fun SignInScreen(
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(modifier),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.align(Alignment.Center)) {
             /*Image(
                 Icons.Default.Business,

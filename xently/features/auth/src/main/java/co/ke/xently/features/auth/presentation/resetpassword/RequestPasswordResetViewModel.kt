@@ -2,6 +2,8 @@ package co.ke.xently.features.auth.presentation.resetpassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.ke.xently.features.auth.data.domain.UserDataValidator
+import co.ke.xently.features.auth.data.domain.error.RemoteFieldError
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.presentation.utils.asUiText
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class RequestPasswordResetViewModel @Inject constructor(
     private val repository: UserRepository,
+    private val dataValidator: UserDataValidator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RequestPasswordResetUiState())
     val uiState: StateFlow<RequestPasswordResetUiState> = _uiState.asStateFlow()
@@ -35,14 +38,26 @@ internal class RequestPasswordResetViewModel @Inject constructor(
                     val state = _uiState.updateAndGet {
                         it.copy(isLoading = true)
                     }
-                    when (val result = repository.requestPasswordReset(email = state.email)) {
+
+                    val email = validatedEmail(state)
+                    if (!_uiState.value.isFormValid) return@launch
+
+                    when (val result = repository.requestPasswordReset(email = email)) {
                         is Result.Failure -> {
-                            _event.send(
-                                RequestPasswordResetEvent.Error(
-                                    result.error.asUiText(),
-                                    result.error
+                            when (val error = result.error) {
+                                is RemoteFieldError -> {
+                                    _uiState.update {
+                                        it.copy(emailError = error.errors["email"] ?: emptyList())
+                                    }
+                                }
+
+                                else -> _event.send(
+                                    RequestPasswordResetEvent.Error(
+                                        result.error.asUiText(),
+                                        result.error
+                                    )
                                 )
-                            )
+                            }
                         }
 
                         is Result.Success -> {
@@ -56,5 +71,17 @@ internal class RequestPasswordResetViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun validatedEmail(state: RequestPasswordResetUiState): String {
+        var email = state.email
+        when (val result = dataValidator.validatedEmail(email)) {
+            is Result.Failure -> _uiState.update { it.copy(emailError = listOf(result.error)) }
+            is Result.Success -> {
+                _uiState.update { it.copy(emailError = null) }
+                email = result.data
+            }
+        }
+        return email
     }
 }
