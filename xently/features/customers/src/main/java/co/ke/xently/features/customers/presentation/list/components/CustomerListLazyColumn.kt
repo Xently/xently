@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +34,7 @@ import co.ke.xently.features.customers.data.domain.error.Error
 import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.customers.data.domain.error.DataError as CustomerDataError
@@ -44,7 +46,12 @@ internal fun CustomerListLazyColumn(
     customers: LazyPagingItems<Customer>,
     modifier: Modifier = Modifier,
 ) {
+    val state = rememberLazyListState()
+
+    ScrollToTheTopEffectIfNecessary(state = state)
+
     LazyColumn(
+        state = state,
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {

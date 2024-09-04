@@ -17,6 +17,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,9 @@ import co.ke.xently.customer.landing.presentation.components.LandingModalDrawerS
 import co.ke.xently.customer.landing.presentation.components.LandingScreenContent
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.LocalScrollToTheTop
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -144,6 +147,8 @@ internal fun LandingScreen(
             }
         }
 
+        var scrollToTheTop by rememberSaveable { mutableStateOf(false) }
+
         NavigationSuiteScaffold(
             modifier = Modifier.fillMaxSize(),
             layoutType = customNavSuiteType,
@@ -164,6 +169,14 @@ internal fun LandingScreen(
                         },
                         selected = destination == currentDestination,
                         onClick = {
+                            scrollToTheTop = currentDestination == destination && !scrollToTheTop
+                            if (scrollToTheTop) {
+                                // Allow repeat scroll to the top of the screen
+                                scope.launch {
+                                    delay(100)
+                                    scrollToTheTop = false
+                                }
+                            }
                             currentDestination = destination
                             selectedMenu = Menu.valueOf(destination.name)
                         },
@@ -188,14 +201,16 @@ internal fun LandingScreen(
                 }
             }
 
-            LandingScreenContent(
-                currentDestination = currentDestination,
-                navigationIcon = navigationIcon,
-                onClickSettingsMenu = onClickSettings,
-                onClickStore = onClickStore,
-                onClickEditProfile = onClickEditProfile,
-                onClickFilterStores = onClickFilterStores,
-            )
+            CompositionLocalProvider(LocalScrollToTheTop provides scrollToTheTop) {
+                LandingScreenContent(
+                    currentDestination = currentDestination,
+                    navigationIcon = navigationIcon,
+                    onClickSettingsMenu = onClickSettings,
+                    onClickStore = onClickStore,
+                    onClickEditProfile = onClickEditProfile,
+                    onClickFilterStores = onClickFilterStores,
+                )
+            }
         }
     }
 }
