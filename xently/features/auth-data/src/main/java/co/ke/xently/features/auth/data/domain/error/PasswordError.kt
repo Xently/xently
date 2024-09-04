@@ -1,7 +1,7 @@
 package co.ke.xently.features.auth.data.domain.error
 
-enum class PasswordError : FieldError {
-    TOO_SHORT,
-    NO_UPPERCASE,
-    NO_DIGIT
+sealed interface PasswordError : LocalFieldError {
+    class TooShort(val minimumLength: Int) : PasswordError
+    data object NoUpperCase : PasswordError
+    data object NoDigit : PasswordError
 }

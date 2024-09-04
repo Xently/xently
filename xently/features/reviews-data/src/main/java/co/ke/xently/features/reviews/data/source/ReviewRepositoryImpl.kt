@@ -168,7 +168,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
                 val urlString = category.links["statistics"]!!.hrefWithoutQueryParamTemplates()
                 val statistics = httpClient.get(urlString = urlString) {
                     url {
-                        parameters.run {
+                        encodedParameters.run {
                             if (filters.year != null) {
                                 set("year", filters.year.toString())
                             }
@@ -190,7 +190,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
     override suspend fun getReviews(url: String, filters: ReviewFilters): PagedResponse<Review> {
         return httpClient.get(urlString = url) {
             url {
-                parameters.run {
+                encodedParameters.run {
                     set("hasComments", filters.hasComments.toString())
                     if (filters.starRating != null) {
                         set("starRating", filters.starRating.toString())

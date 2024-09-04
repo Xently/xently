@@ -29,7 +29,8 @@
     <string name="error_message_too_early">Too early</string>
     <string name="error_message_upgrade_required">Upgrade required</string>
     <string name="error_message_request_header_too_large">Request header fields too large</string>
-    <string name="error_password_too_short">The password is too short</string>
+    <string name="error_password_too_short">Must be at least %d characters</string>
+    <string name="error_email_invalid_format">Invalid email address format</string>
     <string name="action_register">Create an account</string>
     <string name="or">Or</string>
     <string name="action_label_forgot_password">Forgot Password?</string>
@@ -42,15 +43,17 @@
     <string name="action_sign_up">Sign Up</string>
     <string name="field_label_name">Name</string>
     <string name="action_request_password_reset">Request Password Reset</string>
-    <string name="error_password_no_digit">User at least 1 number.</string>
-    <string name="error_password_no_uppercase">User at least 1 capital letter.</string>
-    <string name="error_google_sign_in_unexpected_error">Something unexepected went wrong. Please try again.</string>
+    <string name="error_password_no_digit">Use at least 1 number.</string>
+    <string name="error_password_no_uppercase">Use at least 1 capital letter.</string>
+    <string name="error_google_sign_in_unexpected_error">Something unexpected went wrong. Please try again.</string>
     <string name="error_google_sign_in_no_credentials_found">No credentials found.</string>
     <string name="error_google_sign_in_unsupported_provider">Google Sign-In is not supported. Please use other alternatives.</string>
     <string name="error_google_sign_in_interrupted">Authentication interrupted.</string>
     <string name="error_google_sign_in_cancelled">Authentication cancelled.</string>
-    <string name="error_google_sign_in_unrecongised_credential_type">Unrecognised credential type.</string>
+    <string name="error_google_sign_in_unrecognised_credential_type">Unrecognised credential type.</string>
     <string name="error_google_sign_in_invalid_google_id_response">Invalid Google ID.</string>
     <string name="error_google_sign_in_failed">Google sign-in failed.</string>
     <string name="error_duplicate_user_account">User already registered with the email address.</string>
+    <string name="error_name_missing">Required! Cannot be blank</string>
+    <string name="error_last_name_missing">Missing last name(s)</string>
 </resources>

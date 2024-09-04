@@ -20,8 +20,10 @@ fun NavGraphBuilder.authenticationNavigation(navController: NavHostController) {
         }
         composable<AuthenticationNavGraph.SignUp> {
             SignUpScreen(
-                onClickBack = navController::navigateUp,
                 onClickSignIn = navController::navigateUp,
+                onClickBack = {
+                    navController.popBackStack<AuthenticationNavGraph.SignIn>(inclusive = true)
+                },
             )
         }
         composable<AuthenticationNavGraph.RequestPasswordReset> {

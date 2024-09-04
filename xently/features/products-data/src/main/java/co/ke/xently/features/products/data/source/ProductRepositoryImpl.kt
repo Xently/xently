@@ -155,7 +155,7 @@ internal class ProductRepositoryImpl @Inject constructor(
     ): PagedResponse<Product> {
         return httpClient.get(urlString = url) {
             url {
-                parameters.run {
+                encodedParameters.run {
                     if (!filters.categories.isNullOrEmpty()) {
                         appendMissing("category", filters.categories.map { it.name })
                     }

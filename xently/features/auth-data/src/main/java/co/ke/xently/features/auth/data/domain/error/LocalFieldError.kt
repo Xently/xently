@@ -1,3 +1,3 @@
 package co.ke.xently.features.auth.data.domain.error
 
-data object DuplicateUserAccountError : DataError
+sealed interface LocalFieldError : FieldError

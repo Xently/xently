@@ -88,6 +88,7 @@ fun ShopEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Unit)
                         else -> throw NotImplementedError()
                     }
                 }
+
                 is ShopEditDetailEvent.Error -> {
                     snackbarHostState.showSnackbar(
                         event.error.asString(context = context),
