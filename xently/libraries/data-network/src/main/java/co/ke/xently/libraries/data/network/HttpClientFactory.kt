@@ -49,7 +49,7 @@ fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String? = null): URLBuilder
 class HttpClientFactory private constructor(
     private val context: Context,
     private val json: Json,
-    private val accessTokenProvider: AccessTokenProvider,
+    private val accessTokenManager: AccessTokenManager,
     private val baseURL: BaseURL,
 ) {
     init {
@@ -153,7 +153,7 @@ class HttpClientFactory private constructor(
             } else if (authenticationCredentials == null) {
                 Timber.tag(TAG)
                     .i("Configuring authentication credentials...")
-                val accessToken = accessTokenProvider.getAccessToken()
+                val accessToken = accessTokenManager.getAccessToken()
                 if (!accessToken.isNullOrBlank()) {
                     Timber.tag(TAG)
                         .i("Successfully configured authentication credentials...")
@@ -166,15 +166,22 @@ class HttpClientFactory private constructor(
             if (originalCall.response.status.value == HttpStatusCode.Unauthorized.value) {
                 Timber.tag(TAG)
                     .i("Unauthorized. Attempting to re-authenticate using refresh token...")
-                val accessToken = accessTokenProvider.getFreshAccessToken(this@withPlugins)
+                val accessToken = accessTokenManager.getFreshAccessToken(this@withPlugins)
                 if (accessToken.isNullOrBlank()) {
+                    accessTokenManager.clearUserSession()
                     Timber.tag(TAG)
                         .w("Failed to configure authentication credentials from refresh token")
                     originalCall
                 } else {
                     Timber.tag(TAG).i("Successfully configured authentication credentials...")
                     request.headers[HttpHeaders.Authorization] = "Bearer $accessToken"
-                    execute(request)
+                    execute(request).also {
+                        if (it.response.status.value == HttpStatusCode.Unauthorized.value) {
+                            accessTokenManager.clearUserSession()
+                            Timber.tag(TAG)
+                                .w("Cleared user session. Failed to configure authentication credentials from refresh token")
+                        }
+                    }
                 }
             } else {
                 originalCall
@@ -188,13 +195,13 @@ class HttpClientFactory private constructor(
         operator fun invoke(
             context: Context,
             json: Json,
-            accessTokenProvider: AccessTokenProvider,
+            accessTokenManager: AccessTokenManager,
             baseURL: BaseURL,
         ): HttpClient {
             return HttpClientFactory(
                 context = context,
                 json = json,
-                accessTokenProvider = accessTokenProvider,
+                accessTokenManager = accessTokenManager,
                 baseURL = baseURL,
             ).httpClient
         }
