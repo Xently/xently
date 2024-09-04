@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.products.data.domain.error.DataError as ProductDataError
@@ -40,7 +42,12 @@ internal fun ProductListLazyColumn(
     extraPrependContent: LazyListScope.() -> Unit,
     productListItem: @Composable LazyItemScope.(Product?) -> Unit,
 ) {
+    val state = rememberLazyListState()
+
+    ScrollToTheTopEffectIfNecessary(state = state)
+
     LazyColumn(
+        state = state,
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {

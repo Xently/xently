@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -28,8 +30,13 @@ import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.features.ui.core.presentation.LocalScrollToTheTop
+import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataError
 
 @Composable
@@ -40,7 +47,12 @@ internal fun StoreListLazyColumn(
     contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
+    val state = rememberLazyListState()
+
+    ScrollToTheTopEffectIfNecessary(state = state)
+
     LazyColumn(
+        state = state,
         modifier = modifier,
         contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
