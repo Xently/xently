@@ -38,6 +38,21 @@ private fun ApiErrorResponse.toError(): Error? {
             DuplicateUserAccountError
         }
 
+        "VALIDATION_ERROR" -> {
+            if (fieldErrors.isNullOrEmpty()) {
+                DataError.Network.BadRequest
+            } else {
+                val errors = fieldErrors!!.mapValues { entry ->
+                    entry.value.mapNotNull { fieldError ->
+                        fieldError.message?.let {
+                            UnclassifiedFieldError(it)
+                        }
+                    }
+                }
+                RemoteFieldError(errors = errors)
+            }
+        }
+
         else -> null
     }
 }

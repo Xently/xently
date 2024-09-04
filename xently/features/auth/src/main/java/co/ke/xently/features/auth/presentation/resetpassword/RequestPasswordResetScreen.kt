@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
+import co.ke.xently.features.auth.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
@@ -100,6 +102,7 @@ private fun RequestPasswordResetScreen(
             state = state,
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(paddingValues),
             onAction = onAction,
             onClickSignIn = onClickSignIn,
@@ -115,12 +118,7 @@ private fun RequestPasswordResetScreen(
     onClickSignIn: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(modifier),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.align(Alignment.Center)) {
             /*Image(
                 Icons.Default.Business,
@@ -161,7 +159,7 @@ private fun RequestPasswordResetScreen(
                     value = state.email,
                     onValueChange = { onAction(RequestPasswordResetAction.ChangeEmail(it)) },
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Next,
+                        imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Email,
                     ),
                     placeholder = {
@@ -174,6 +172,10 @@ private fun RequestPasswordResetScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    isError = !state.emailError.isNullOrEmpty(),
+                    supportingText = state.emailError?.let {
+                        { Text(text = it.toUiText()) }
+                    },
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(

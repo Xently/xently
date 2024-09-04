@@ -15,6 +15,6 @@ internal sealed interface RecommendationAction {
     class ProductSelectCategory(val category: ProductCategory) : RecommendationAction
     class ProductRemoveCategory(val category: ProductCategory) : RecommendationAction
     class ChangeProductName(val name: String) : RecommendationAction
-    data object AddProductName: RecommendationAction
+    data object AddProductName : RecommendationAction
     class RemoveProductName(val name: String) : RecommendationAction
 }

@@ -1,12 +1,18 @@
 package co.ke.xently.features.auth.presentation.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.data.domain.error.DataError
 import co.ke.xently.features.auth.data.domain.error.DuplicateUserAccountError
+import co.ke.xently.features.auth.data.domain.error.EmailError
 import co.ke.xently.features.auth.data.domain.error.Error
 import co.ke.xently.features.auth.data.domain.error.FieldError
 import co.ke.xently.features.auth.data.domain.error.GoogleAuthenticationError
+import co.ke.xently.features.auth.data.domain.error.NameError
 import co.ke.xently.features.auth.data.domain.error.PasswordError
+import co.ke.xently.features.auth.data.domain.error.RemoteFieldError
+import co.ke.xently.features.auth.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.auth.data.domain.error.UnknownError
 
 private fun DataError.asUiText(): UiText {
@@ -46,9 +52,26 @@ private fun DataError.asUiText(): UiText {
 
 private fun FieldError.asUiText(): UiText {
     return when (this) {
-        PasswordError.TOO_SHORT -> UiText.StringResource(R.string.error_password_too_short)
-        PasswordError.NO_UPPERCASE -> UiText.StringResource(R.string.error_password_no_uppercase)
-        PasswordError.NO_DIGIT -> UiText.StringResource(R.string.error_password_no_digit)
+        is PasswordError.TooShort -> UiText.StringResource(
+            R.string.error_password_too_short,
+            arrayOf(minimumLength),
+        )
+
+        PasswordError.NoUpperCase -> UiText.StringResource(R.string.error_password_no_uppercase)
+        PasswordError.NoDigit -> UiText.StringResource(R.string.error_password_no_digit)
+        EmailError.INVALID_FORMAT -> UiText.StringResource(R.string.error_email_invalid_format)
+        NameError.MISSING -> UiText.StringResource(R.string.error_name_missing)
+        NameError.MISSING_LAST_NAME -> UiText.StringResource(R.string.error_last_name_missing)
+        is RemoteFieldError -> UiText.StringResource(R.string.error_message_bad_request)
+        is UnclassifiedFieldError -> UiText.DynamicString(message)
+    }
+}
+
+@Composable
+fun List<FieldError>.toUiText(): String {
+    val context = LocalContext.current
+    return joinToString("\n") {
+        "• ${it.asUiText().asString(context = context)}"
     }
 }
 
@@ -59,7 +82,7 @@ fun Error.asUiText(): UiText {
         is UnknownError -> UiText.StringResource(R.string.error_message_default)
 
         GoogleAuthenticationError.INVALID_GOOGLE_ID_RESPONSE -> UiText.StringResource(R.string.error_google_sign_in_invalid_google_id_response)
-        GoogleAuthenticationError.UNRECOGNISED_CREDENTIAL_TYPE -> UiText.StringResource(R.string.error_google_sign_in_unrecongised_credential_type)
+        GoogleAuthenticationError.UNRECOGNISED_CREDENTIAL_TYPE -> UiText.StringResource(R.string.error_google_sign_in_unrecognised_credential_type)
         GoogleAuthenticationError.CANCELLED -> UiText.StringResource(R.string.error_google_sign_in_cancelled)
         GoogleAuthenticationError.INTERRUPTED -> UiText.StringResource(R.string.error_google_sign_in_interrupted)
         GoogleAuthenticationError.UNSUPPORTED_PROVIDER -> UiText.StringResource(R.string.error_google_sign_in_unsupported_provider)

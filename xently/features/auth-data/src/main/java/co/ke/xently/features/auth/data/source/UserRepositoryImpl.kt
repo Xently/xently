@@ -4,7 +4,7 @@ import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.auth.data.domain.EmailAndPasswordAuthRequest
 import co.ke.xently.features.auth.data.domain.GoogleAuthRequest
 import co.ke.xently.features.auth.data.domain.GoogleUser
-import co.ke.xently.features.auth.data.domain.SignUpReset
+import co.ke.xently.features.auth.data.domain.SignUpRequest
 import co.ke.xently.features.auth.data.domain.error.Error
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.domain.error.toError
@@ -51,20 +51,9 @@ internal class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(
-        name: String,
-        email: String,
-        password: String,
-    ): Result<Unit, Error> {
-        val names = name.split("\\s+".toRegex(), limit = 1)
-        val body = SignUpReset(
-            emailAddress = email,
-            password = password,
-            firstName = names.firstOrNull()?.takeIf(String::isNotBlank),
-            lastName = if (names.size > 1) names.lastOrNull()?.takeIf(String::isNotBlank) else null,
-        )
+    override suspend fun signUp(request: SignUpRequest): Result<Unit, Error> {
         val accessControl = accessControlRepository.getAccessControl()
-        return authenticate(urlString = accessControl.emailPasswordSignUpUrl, body = body)
+        return authenticate(urlString = accessControl.emailPasswordSignUpUrl, body = request)
     }
 
     override suspend fun signInWithGoogle(user: GoogleUser): Result<Unit, Error> {
