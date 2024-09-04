@@ -11,9 +11,11 @@ import co.ke.xently.features.auth.data.domain.error.toError
 import co.ke.xently.libraries.data.auth.CurrentUser
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -90,11 +92,7 @@ internal class UserRepositoryImpl @Inject constructor(
     ): Result<Unit, Error> {
         return getResult {
             httpClient.post(urlString) {
-                url {
-                    parameters.run {
-                        set("noauth", "0")
-                    }
-                }
+                headers[HttpHeaders.Authorization] = ""
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }.body<UserEntity>().let {

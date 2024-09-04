@@ -145,11 +145,12 @@ class HttpClientFactory private constructor(
             request.url {
                 takeFrom(urlWithSchemaMatchingBaseURL())
             }
+            val authenticationCredentials = request.headers[HttpHeaders.Authorization]
 
-            val shouldConfigureAuth = !request.url.parameters.contains("noauth")
-                    && !request.headers.contains(HttpHeaders.Authorization)
-
-            if (shouldConfigureAuth) {
+            if (authenticationCredentials == "") {
+                // Signals authentication is not required
+                request.headers.remove(HttpHeaders.Authorization)
+            } else if (authenticationCredentials == null) {
                 Timber.tag(TAG)
                     .i("Configuring authentication credentials...")
                 val accessToken = accessTokenProvider.getAccessToken()

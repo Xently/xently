@@ -13,6 +13,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -38,11 +39,7 @@ object AccessTokenProviderModule {
 
                 return try {
                     httpClient.post("$BASE_URL/auth/refresh") {
-                        url {
-                            parameters.run {
-                                set("noauth", "0")
-                            }
-                        }
+                        headers[HttpHeaders.Authorization] = ""
                         setBody(mapOf("refreshToken" to refreshToken))
                         contentType(ContentType.Application.Json)
                     }.body<UserEntity>().run {

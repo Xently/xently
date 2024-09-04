@@ -28,6 +28,7 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.discardRemaining
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
@@ -184,8 +185,9 @@ internal class StoreRepositoryImpl @Inject constructor(
         val location = filters.location?.takeIf { it.isUsable() }
             ?: currentLocation
         return httpClient.get(urlString = urlString) {
+            headers[HttpHeaders.Authorization] = ""
             url {
-                parameters.run {
+                encodedParameters.run {
                     if (!filters.query.isNullOrBlank()) set("q", filters.query)
                     if (location != null) {
                         set("latitude", location.latitude.toString())

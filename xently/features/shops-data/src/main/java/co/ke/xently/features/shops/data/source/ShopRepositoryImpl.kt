@@ -80,7 +80,7 @@ internal class ShopRepositoryImpl @Inject constructor(
             url ?: accessControlRepository.getAccessControl().shopsAssociatedWithMyAccountUrl
         return httpClient.get(urlString = urlString) {
             url {
-                parameters.run {
+                encodedParameters.run {
                     if (!filters.query.isNullOrBlank()) {
                         set("query", filters.query)
                     }
