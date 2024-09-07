@@ -1,9 +1,7 @@
 package co.ke.xently.features.ui.core.presentation
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import co.ke.xently.libraries.ui.core.AuthenticationEventHandler
 

@@ -37,6 +37,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -49,7 +50,7 @@ import kotlin.Exception
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.let
 import kotlin.random.Random
 import kotlin.run
@@ -122,7 +123,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -244,7 +245,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             delay(duration)
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -266,7 +267,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -285,7 +286,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -304,7 +305,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -317,7 +318,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }

@@ -21,13 +21,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -60,7 +61,7 @@ internal class ShopRepositoryImpl @Inject constructor(
             }.body<Shop>()
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -113,7 +114,7 @@ internal class ShopRepositoryImpl @Inject constructor(
             delay(duration)
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }

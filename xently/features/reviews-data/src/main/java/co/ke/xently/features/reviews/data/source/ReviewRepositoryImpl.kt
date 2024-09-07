@@ -26,6 +26,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -37,7 +38,7 @@ import kotlin.Exception
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.run
 import kotlin.to
 import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
@@ -99,7 +100,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -123,7 +124,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
                             }
                         Result.Success(response)
                     } catch (ex: Exception) {
-                        if (ex is CancellationException) throw ex
+                        coroutineContext.ensureActive()
                         Timber.e(ex)
                         Result.Failure(ex.toError())
                     }
@@ -150,7 +151,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
                             }
                         Result.Success(response)
                     } catch (ex: Exception) {
-                        if (ex is CancellationException) throw ex
+                        coroutineContext.ensureActive()
                         Timber.e(ex)
                         Result.Failure(ex.toError())
                     }
@@ -180,7 +181,7 @@ internal class ReviewRepositoryImpl @Inject constructor(
                 }.body<ReviewCategory.Statistics>()
                 Result.Success(statistics)
             } catch (ex: Exception) {
-                if (ex is CancellationException) throw ex
+                coroutineContext.ensureActive()
                 Result.Failure(ex.toError())
             }
             emit(result)
