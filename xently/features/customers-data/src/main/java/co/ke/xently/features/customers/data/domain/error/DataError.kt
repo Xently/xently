@@ -14,25 +14,25 @@ sealed interface DataError : Error {
         }
 
         data object InvalidCredentials : Network
-        data object ResourceNotFound : Network
+        data object ResourceNotFound : Retryable
         data object Unauthorized : Network
-        data object ResourceMoved : Network
-        data object BadRequest : Network
-        data object MethodNotAllowed : Network
-        data object NotAcceptable : Network
-        data object LengthRequired : Network
-        data object RequestURITooLong : Network
-        data object UnsupportedMediaType : Network
-        data object RequestedRangeNotSatisfiable : Network
-        data object ExpectationFailed : Network
-        data object UnprocessableEntity : Network
-        data object PreconditionFailed : Network
-        data object UpgradeRequired : Network
-        data object RequestHeaderFieldTooLarge : Network
-        data object FailedDependency : Network
-        data object TooManyRequests : Network
-        data object PayloadTooLarge : Network
-        data object Serialization : Network
+        data object ResourceMoved : Retryable
+        data object BadRequest : Retryable
+        data object MethodNotAllowed : Retryable
+        data object NotAcceptable : Retryable
+        data object LengthRequired : Retryable
+        data object RequestURITooLong : Retryable
+        data object UnsupportedMediaType : Retryable
+        data object RequestedRangeNotSatisfiable : Retryable
+        data object ExpectationFailed : Retryable
+        data object UnprocessableEntity : Retryable
+        data object PreconditionFailed : Retryable
+        data object UpgradeRequired : Retryable
+        data object RequestHeaderFieldTooLarge : Retryable
+        data object FailedDependency : Retryable
+        data object TooManyRequests : Retryable
+        data object PayloadTooLarge : Retryable
+        data object Serialization : Retryable
     }
 
     enum class Local : DataError {
