@@ -1,16 +1,24 @@
 package co.ke.xently.features.stores.presentation.detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonDefaults.ContentPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -45,6 +53,7 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.presentation.detail.components.QrCodeCard
 import co.ke.xently.features.stores.presentation.detail.components.StoreDetailListItem
 import co.ke.xently.features.stores.presentation.detail.components.StoreImagesBox
+import co.ke.xently.features.stores.presentation.detail.components.rememberUrlOpener
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.domain.error.LocationRequestError
 import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
@@ -211,21 +220,51 @@ internal fun StoreDetailScreen(
                             snackbarHostState = snackbarHostState,
                         )
 
-                        TextButton(
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(bottom = 12.dp),
-                            onClick = { state.store?.let(onClickMoreDetails) },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onBackground,
-                            ),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .shimmer(state.isLoading),
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
-                            Text(
-                                text = stringResource(R.string.action_more_details),
-                                textDecoration = TextDecoration.Underline,
-                            )
+                            TextButton(
+                                shape = RectangleShape,
+                                contentPadding = PaddingValues(
+                                    top = ContentPadding.calculateTopPadding(),
+                                    bottom = ContentPadding.calculateBottomPadding()
+                                ),
+                                onClick = { state.store?.let(onClickMoreDetails) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onBackground,
+                                ),
+                                modifier = Modifier.shimmer(state.isLoading),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.action_more_details),
+                                    textDecoration = TextDecoration.Underline,
+                                )
+                            }
+
+                            state.store?.shop?.onlineShopUrl?.takeIf { it.isNotBlank() }
+                                ?.let { url ->
+                                    val urlOpener = rememberUrlOpener(url)
+                                    TextButton(
+                                        shape = RectangleShape,
+                                        contentPadding = PaddingValues(
+                                            top = ContentPadding.calculateTopPadding(),
+                                            bottom = ContentPadding.calculateBottomPadding()
+                                        ),
+                                        onClick = urlOpener::open,
+                                        colors = ButtonDefaults.textButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.onBackground,
+                                        ),
+                                        modifier = Modifier.shimmer(state.isLoading),
+                                    ) {
+                                        Icon(Icons.Default.Link, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Text(
+                                            text = stringResource(R.string.action_visit_website),
+                                            textDecoration = TextDecoration.Underline,
+                                        )
+                                    }
+                                }
                         }
                     }
 

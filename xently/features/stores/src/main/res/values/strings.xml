@@ -98,4 +98,5 @@
     <string name="search_stores_placeholder">Search hotel, product, location…</string>
     <string name="content_desc_filter_stores">Filter to find a more appropriate place</string>
     <string name="content_desc_activated_store">Activated store</string>
+    <string name="action_visit_website">Visit website</string>
 </resources>
