@@ -72,7 +72,7 @@ class CustomerRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Result.Failure(DataError.Network.UNKNOWN)
         }
     }

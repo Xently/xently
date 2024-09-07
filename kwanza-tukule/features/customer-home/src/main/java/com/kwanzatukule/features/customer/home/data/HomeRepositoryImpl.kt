@@ -24,7 +24,7 @@ class HomeRepositoryImpl @Inject constructor(
                 httpClient.get("https://localhost")
                     .body<Advert>()
             } catch (ex: Exception) {
-                if (ex is CancellationException) throw ex
+                coroutineContext.ensureActive()
                 Advert(
                     title = "Today's Deal",
                     subtitle = "20% off on all products",

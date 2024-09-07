@@ -18,6 +18,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import kotlin.Exception
 import kotlin.String
 import kotlin.Unit
 import kotlin.also
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.run
 import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
@@ -63,7 +64,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -106,7 +107,7 @@ internal class ReviewCategoryRepositoryImpl @Inject constructor(
                             }
                         Result.Success(response)
                     } catch (ex: Exception) {
-                        if (ex is CancellationException) throw ex
+                        coroutineContext.ensureActive()
                         Timber.e(ex)
                         Result.Failure(ex.toError())
                     }

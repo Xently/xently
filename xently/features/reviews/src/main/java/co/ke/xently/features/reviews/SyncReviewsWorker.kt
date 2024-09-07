@@ -13,8 +13,9 @@ import androidx.work.WorkerParameters
 import co.ke.xently.features.reviews.data.source.ReviewRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext as kotlinCoroutineContext
 
 @HiltWorker
 class SyncReviewsWorker @AssistedInject constructor(
@@ -27,7 +28,7 @@ class SyncReviewsWorker @AssistedInject constructor(
             repository.syncWithServer()
             Result.success()
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            kotlinCoroutineContext.ensureActive()
             Result.retry()
         }
     }
