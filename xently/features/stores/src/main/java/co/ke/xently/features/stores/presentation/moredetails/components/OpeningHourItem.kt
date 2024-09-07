@@ -16,13 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
+import co.ke.xently.features.stores.domain.isOpenToday
 import co.ke.xently.libraries.ui.core.components.shimmer
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.days
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,33 +60,17 @@ internal fun OpeningHourItem(
 private fun getOpeningHourColor(openingHour: OpeningHour, dateTimeToday: LocalDateTime): Color {
     if (openingHour.dayOfWeek != dateTimeToday.dayOfWeek) return Color.Unspecified
 
-    val isCurrentlyOpen by remember(dateTimeToday, openingHour) {
+    val isCurrentlyOpen by remember(openingHour) {
         derivedStateOf {
-            val openTimeMinutes = (openingHour.openTime.hour * 60) + openingHour.openTime.minute
-            val closeTimeMinutes = (openingHour.closeTime.hour * 60) + openingHour.closeTime.minute
-
-            val closeDateTime = LocalDateTime(
-                dateTimeToday.date,
-                LocalTime(openingHour.closeTime.hour, openingHour.closeTime.minute),
-            ).run {
-                if (openTimeMinutes < closeTimeMinutes) {
-                    this
-                } else {
-                    val timeZone = TimeZone.currentSystemDefault()
-                    toInstant(timeZone)
-                        .plus(1.days)
-                        .toLocalDateTime(timeZone)
-                }
-            }
-            dateTimeToday in LocalDateTime(
-                dateTimeToday.date,
-                LocalTime(openingHour.openTime.hour, openingHour.openTime.minute),
-            )..closeDateTime
+            openingHour.open && isOpenToday(
+                openTime = openingHour.openTime,
+                closeTime = openingHour.closeTime,
+            )
         }
     }
 
     return if (isCurrentlyOpen) {
-        MaterialTheme.colorScheme.secondary
+        Color.Green
     } else {
         MaterialTheme.colorScheme.error
     }
