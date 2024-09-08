@@ -73,42 +73,35 @@ fun StoreItemCard(
                     )
                 },
                 supportingContent = {
-                    /*val supportingText = remember(store.name, store.categories) {
-                        buildString {
-                            store.categories.firstOrNull()?.name?.let { category ->
-                                append(category)
-                                append(" | ")
-                            }
-                            append(store.name)
-                        }
-                    }*/
                     Text(
                         text = store.name,
                         modifier = Modifier.shimmer(isLoading),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 },
-                trailingContent = {
-                    var expanded by rememberSaveable {
-                        mutableStateOf(false)
-                    }
+                trailingContent = if (dropDownMenu == null) null else {
+                    {
+                        var expanded by rememberSaveable {
+                            mutableStateOf(false)
+                        }
 
-                    Box {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = stringResource(
-                                R.string.content_desc_more_options_for_store,
-                                store.name,
-                                store.shop.name,
-                            ),
-                            modifier = Modifier.clickable(
-                                role = Role.Checkbox,
-                                indication = ripple(bounded = false),
-                                interactionSource = remember { MutableInteractionSource() },
-                            ) { expanded = !isLoading },
-                        )
+                        Box {
+                            Icon(
+                                Icons.Default.MoreVert,
+                                contentDescription = stringResource(
+                                    R.string.content_desc_more_options_for_store,
+                                    store.name,
+                                    store.shop.name,
+                                ),
+                                modifier = Modifier.clickable(
+                                    role = Role.Checkbox,
+                                    indication = ripple(bounded = false),
+                                    interactionSource = remember { MutableInteractionSource() },
+                                ) { expanded = !isLoading },
+                            )
 
-                        dropDownMenu?.invoke(expanded) { expanded = false }
+                            dropDownMenu(expanded) { expanded = false }
+                        }
                     }
                 },
             )
