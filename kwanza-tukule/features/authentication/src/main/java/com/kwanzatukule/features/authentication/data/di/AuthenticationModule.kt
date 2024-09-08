@@ -1,6 +1,6 @@
 package com.kwanzatukule.features.authentication.data.di
 
-import co.ke.xently.libraries.data.network.AccessTokenProvider
+import co.ke.xently.libraries.data.network.AccessTokenManager
 import com.kwanzatukule.features.authentication.data.AuthenticationDatabase
 import dagger.Module
 import dagger.Provides
@@ -14,8 +14,12 @@ import javax.inject.Singleton
 object AuthenticationModule {
     @Provides
     @Singleton
-    fun provideAccessTokenProvider(database: AuthenticationDatabase): AccessTokenProvider {
-        return object : AccessTokenProvider {
+    fun provideAccessTokenProvider(database: AuthenticationDatabase): AccessTokenManager {
+        return object : AccessTokenManager {
+            override suspend fun clearUserSession() {
+                TODO("Not yet implemented")
+            }
+
             override suspend fun getAccessToken(): String? {
                 return database.userDao().first()?.accessToken
             }

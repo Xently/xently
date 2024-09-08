@@ -11,6 +11,7 @@ import com.kwanzatukule.features.catalogue.domain.Category
 import com.kwanzatukule.features.catalogue.domain.Product
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +25,7 @@ class HomeComponentImpl(
     component: HomeComponent,
     private val repository: com.kwanzatukule.features.customer.home.data.HomeRepository,
 ) : HomeComponent by component, ComponentContext by context {
-    private val componentScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val componentScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     override val advert: StateFlow<com.kwanzatukule.features.customer.home.data.Advert?> =
         repository.getAdvert().stateIn(
             scope = componentScope,

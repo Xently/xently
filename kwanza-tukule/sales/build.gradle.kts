@@ -4,6 +4,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -122,6 +123,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.contentNegotiation)
+    implementation(libs.date.time)
 
     implementation(project(":kwanza-tukule:features:authentication"))
     implementation(project(":kwanza-tukule:features:shopping-cart"))

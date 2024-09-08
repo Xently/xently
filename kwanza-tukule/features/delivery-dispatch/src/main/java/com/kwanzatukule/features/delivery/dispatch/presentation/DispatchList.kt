@@ -70,7 +70,7 @@ fun DispatchList(component: DispatchListComponent, modifier: Modifier = Modifier
         }
     }
     Column(modifier = modifier) {
-        val authenticationState = LocalAuthenticationState.current
+        val authenticationState by LocalAuthenticationState.current
 
         AnimatedVisibility(visible = state.isLoading || authenticationState.isSignOutInProgress) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
