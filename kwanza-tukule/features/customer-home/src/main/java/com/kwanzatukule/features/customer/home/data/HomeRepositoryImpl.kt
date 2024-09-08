@@ -5,11 +5,12 @@ import com.kwanzatukule.features.catalogue.data.CatalogueRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 class HomeRepositoryImpl @Inject constructor(

@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Kwanza Tukule"
-/*include(":kwanza-tukule:customer")
+include(":kwanza-tukule:customer")
 include(":kwanza-tukule:delivery")
 include(":kwanza-tukule:sales")
 include(":kwanza-tukule:features:ui-core")
@@ -43,7 +43,7 @@ include(":kwanza-tukule:features:order")
 include(":kwanza-tukule:features:delivery-dispatch")
 include(":kwanza-tukule:features:delivery-route")
 include(":kwanza-tukule:features:delivery-profile")
-include(":kwanza-tukule:features:delivery-home")*/
+include(":kwanza-tukule:features:delivery-home")
 
 include(":xently:business")
 include(":xently:customer")

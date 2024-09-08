@@ -44,7 +44,6 @@ import co.ke.xently.libraries.ui.core.domain.formatPrice
 import com.kwanzatukule.features.catalogue.domain.Product
 import com.kwanzatukule.features.core.presentation.theme.KwanzaTukuleTheme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductCard(
     modifier: Modifier = Modifier,

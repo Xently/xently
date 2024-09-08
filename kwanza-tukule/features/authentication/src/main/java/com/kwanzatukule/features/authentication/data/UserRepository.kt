@@ -7,6 +7,7 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -14,7 +15,7 @@ import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 

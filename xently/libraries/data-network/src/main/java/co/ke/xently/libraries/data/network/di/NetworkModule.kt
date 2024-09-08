@@ -31,13 +31,13 @@ object NetworkModule {
         @ApplicationContext
         context: Context,
         json: Json,
-        baseURL: BaseURL,
+//        baseURL: BaseURL,
         accessTokenManager: AccessTokenManager,
     ): HttpClient {
         return HttpClientFactory(
             context = context,
             json = json,
-            baseURL = baseURL,
+            baseURL = BaseURL { "https://jsonplaceholder.typicode.com" },
             accessTokenManager = accessTokenManager,
         )
     }

@@ -98,7 +98,7 @@ fun ShoppingListScreen(component: ShoppingListComponent, modifier: Modifier = Mo
         ) {
             val authenticationState = LocalAuthenticationState.current
 
-            AnimatedVisibility(visible = state.isLoading || authenticationState.isSignOutInProgress) {
+            AnimatedVisibility(visible = state.isLoading || authenticationState.value.isSignOutInProgress) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             val shoppingList = component.shoppingList.collectAsLazyPagingItems()

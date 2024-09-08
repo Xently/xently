@@ -16,6 +16,7 @@ import com.kwanzatukule.features.delivery.home.data.HomeRepository
 import com.kwanzatukule.features.delivery.home.presentation.HomeComponent.Child
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.serializer
 
@@ -25,7 +26,7 @@ class HomeComponentImpl(
     component: HomeComponent,
     private val repository: HomeRepository,
 ) : HomeComponent by component, ComponentContext by context {
-    private val componentScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val componentScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
         lifecycle.doOnDestroy(componentScope::cancel)

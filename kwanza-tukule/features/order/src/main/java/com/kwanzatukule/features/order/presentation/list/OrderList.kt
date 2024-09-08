@@ -75,7 +75,7 @@ fun OrderList(component: OrderListComponent, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         val authenticationState = LocalAuthenticationState.current
 
-        AnimatedVisibility(visible = state.isLoading || authenticationState.isSignOutInProgress) {
+        AnimatedVisibility(visible = state.isLoading || authenticationState.value.isSignOutInProgress) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         val orders = component.orders.collectAsLazyPagingItems()

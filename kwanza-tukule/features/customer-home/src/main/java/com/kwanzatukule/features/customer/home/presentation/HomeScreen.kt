@@ -52,7 +52,7 @@ fun HomeScreen(component: HomeComponent, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         val authenticationState = LocalAuthenticationState.current
-        AnimatedVisibility(visible = authenticationState.isSignOutInProgress) {
+        AnimatedVisibility(visible = authenticationState.value.isSignOutInProgress) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         val categories = component.paginatedCategories.collectAsLazyPagingItems()

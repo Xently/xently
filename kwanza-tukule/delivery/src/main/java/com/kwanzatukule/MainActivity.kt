@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             App {
-                val authenticationState by root.authenticationState.collectAsState(
+                val authenticationState = root.authenticationState.collectAsState(
                     AuthenticationState()
                 )
                 CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {

@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,7 @@ fun ProfileScreen(
                 .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            val authenticationState = LocalAuthenticationState.current
+            val authenticationState by LocalAuthenticationState.current
             AnimatedVisibility(visible = authenticationState.isSignOutInProgress) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }

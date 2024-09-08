@@ -95,7 +95,6 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductDetailScreen(
     component: ProductDetailComponent,

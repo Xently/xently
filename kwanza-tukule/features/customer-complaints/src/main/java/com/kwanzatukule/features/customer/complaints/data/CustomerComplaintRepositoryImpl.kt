@@ -7,10 +7,11 @@ import com.kwanzatukule.features.customer.complaints.domain.error.Result
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.random.Random
 
 @Singleton
