@@ -11,10 +11,11 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.ensureActive
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 internal class QrCodeRepositoryImpl @Inject constructor(
@@ -31,7 +32,7 @@ internal class QrCodeRepositoryImpl @Inject constructor(
             }.body<QrCodeResponse>()
             Result.Success(response)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }

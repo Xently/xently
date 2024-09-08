@@ -11,18 +11,18 @@ import co.ke.xently.features.auth.data.domain.error.toError
 import co.ke.xently.libraries.data.auth.CurrentUser
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 internal class UserRepositoryImpl @Inject constructor(
@@ -109,7 +109,7 @@ internal class UserRepositoryImpl @Inject constructor(
             execute()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }

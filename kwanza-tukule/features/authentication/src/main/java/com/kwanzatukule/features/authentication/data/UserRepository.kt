@@ -59,7 +59,7 @@ class UserRepository @Inject constructor(
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(DataError.Network.entries.random())
         }

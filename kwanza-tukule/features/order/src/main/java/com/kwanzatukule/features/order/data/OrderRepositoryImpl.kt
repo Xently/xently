@@ -44,7 +44,7 @@ class OrderRepositoryImpl @Inject constructor(
                 }
             }
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Result.Failure(DataError.Network.UNKNOWN)
         }
     }

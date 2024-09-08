@@ -31,6 +31,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ import kotlin.Exception
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.let
 import kotlin.random.Random
 import kotlin.run
@@ -91,7 +92,7 @@ internal class ProductRepositoryImpl @Inject constructor(
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -180,7 +181,7 @@ internal class ProductRepositoryImpl @Inject constructor(
             delay(duration)
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            if (ex is CancellationException) throw ex
+            coroutineContext.ensureActive()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }

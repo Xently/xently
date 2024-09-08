@@ -10,6 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -19,7 +20,7 @@ import kotlinx.datetime.Clock
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.minutes
 
 @Singleton
@@ -47,7 +48,7 @@ internal class ProfileStatisticRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                if (ex is CancellationException) throw ex
+                coroutineContext.ensureActive()
                 Timber.tag(TAG).e(ex, "Failed to get my statistics")
                 ProfileStatistic()
             }
