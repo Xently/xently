@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -46,6 +45,7 @@ internal fun StoreListItem(
     store: Store,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
+    onClick: () -> Unit = {},
     onClickUpdate: () -> Unit,
     onClickConfirmDelete: () -> Unit,
 ) {
@@ -70,40 +70,22 @@ internal fun StoreListItem(
         )
     }
 
-    StoreListItem(
+    StoreItemCard(
         store = store,
         modifier = modifier,
         isLoading = isLoading,
-        trailingHeadlineContent = {
-            var expanded by rememberSaveable { mutableStateOf(false) }
-
-            Box(modifier = Modifier.shimmer(isLoading)) {
-                Icon(
-                    Icons.Default.MoreVert,
-                    contentDescription = stringResource(
-                        R.string.content_desc_more_options_for_store,
-                        store.name,
-                        store.shop.name,
-                    ),
-                    modifier = Modifier.clickable(
-                        role = Role.Checkbox,
-                        indication = ripple(bounded = false),
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) { expanded = !isLoading },
-                )
-
-                DropdownMenuWithUpdateAndDelete(
-                    expanded = expanded,
-                    onExpandChanged = { expanded = it },
-                    onClickUpdate = { onClickUpdate(); expanded = false },
-                    onClickDelete = {
-                        showDeleteDialog = true
-                        expanded = false
-                    },
-                )
-            }
-        },
-    )
+        onClick = onClick,
+    ) { expanded, onClose ->
+        DropdownMenuWithUpdateAndDelete(
+            expanded = expanded,
+            onExpandChanged = { onClose() },
+            onClickUpdate = { onClickUpdate(); onClose() },
+            onClickDelete = {
+                showDeleteDialog = true
+                onClose()
+            },
+        )
+    }
 }
 
 @Composable
