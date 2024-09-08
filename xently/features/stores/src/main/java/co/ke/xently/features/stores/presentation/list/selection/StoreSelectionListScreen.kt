@@ -1,7 +1,6 @@
 package co.ke.xently.features.stores.presentation.list.selection
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -195,14 +194,15 @@ internal fun StoreSelectionListScreen(
         StoreListScreenContent(
             stores = stores,
             modifier = Modifier.padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
         ) { store ->
             if (store != null) {
                 StoreListItem(
                     store = store,
                     onClickUpdate = { onClickEditStore(store) },
                     onClickConfirmDelete = { onAction(StoreSelectionListAction.DeleteStore(store)) },
-                    modifier = Modifier.clickable {
+                    onClick = {
                         onAction(StoreSelectionListAction.SelectStore(store))
                     },
                 )

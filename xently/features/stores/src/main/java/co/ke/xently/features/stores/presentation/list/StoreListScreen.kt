@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkAdd
+import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,7 +46,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.presentation.list.components.StoreListItemCard
+import co.ke.xently.features.stores.presentation.list.components.StoreItemCard
 import co.ke.xently.features.stores.presentation.list.components.StoreListScreenContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
@@ -146,18 +150,42 @@ internal fun StoreListScreen(
             contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
         ) { store ->
             if (store != null) {
-                StoreListItemCard(
+                StoreItemCard(
                     store = store,
                     isLoading = false,
                     onClick = { onClickStore(store) },
-                    onClickToggleBookmark = { onAction(StoreListAction.ToggleBookmark(store)) },
-                )
+                ) { expanded, onClose ->
+                    DropdownMenu(expanded = expanded, onDismissRequest = onClose) {
+                        if (store.links.containsKey("add-bookmark")) {
+                            DropdownMenuItem(
+                                onClick = { onAction(StoreListAction.ToggleBookmark(store)); onClose() },
+                                text = { Text(text = stringResource(R.string.action_add_bookmark)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.BookmarkAdd,
+                                        contentDescription = stringResource(R.string.action_add_bookmark),
+                                    )
+                                },
+                            )
+                        } else if (store.links.containsKey("remove-bookmark")) {
+                            DropdownMenuItem(
+                                onClick = { onAction(StoreListAction.ToggleBookmark(store)); onClose() },
+                                text = { Text(text = stringResource(R.string.action_remove_bookmark)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.BookmarkRemove,
+                                        contentDescription = stringResource(R.string.action_remove_bookmark),
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
             } else {
-                StoreListItemCard(
+                StoreItemCard(
                     store = Store.DEFAULT,
                     isLoading = true,
                     onClick = {},
-                    onClickToggleBookmark = {},
                 )
             }
         }

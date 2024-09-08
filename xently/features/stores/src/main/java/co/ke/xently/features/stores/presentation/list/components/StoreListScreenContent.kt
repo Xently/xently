@@ -105,7 +105,7 @@ fun StoreListScreenContent(
             }
 
             else -> {
-                StoreListLazyColumn(
+                StoreListLazyVerticalGrid(
                     stores = stores,
                     modifier = Modifier.matchParentSize(),
                     storeListItem = storeListItem,

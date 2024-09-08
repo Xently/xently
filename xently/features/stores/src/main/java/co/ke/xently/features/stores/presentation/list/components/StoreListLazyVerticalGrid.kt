@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -35,22 +36,24 @@ import kotlinx.coroutines.runBlocking
 import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataError
 
 @Composable
-internal fun StoreListLazyColumn(
+internal fun StoreListLazyVerticalGrid(
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.HorizontalOrVertical,
     contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
-    val state = rememberLazyListState()
+    val state = rememberLazyGridState()
 
     ScrollToTheTopEffectIfNecessary(state = state)
 
-    LazyColumn(
+    LazyVerticalGrid(
         state = state,
         modifier = modifier,
         contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        columns = GridCells.Adaptive(160.dp),
     ) {
         when (val loadState = stores.loadState.refresh) {
             is LoadState.NotLoading -> Unit

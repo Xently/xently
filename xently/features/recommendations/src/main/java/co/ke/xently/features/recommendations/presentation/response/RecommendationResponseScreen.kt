@@ -2,19 +2,16 @@ package co.ke.xently.features.recommendations.presentation.response
 
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -41,7 +38,7 @@ import co.ke.xently.features.recommendations.presentation.RecommendationEvent
 import co.ke.xently.features.recommendations.presentation.RecommendationUiState
 import co.ke.xently.features.recommendations.presentation.RecommendationViewModel
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.presentation.list.components.StoreListItem
+import co.ke.xently.features.stores.presentation.list.components.StoreItemCard
 import co.ke.xently.features.stores.presentation.list.components.StoreListScreenContent
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
@@ -117,32 +114,21 @@ internal fun RecommendationResponseScreen(
         StoreListScreenContent(
             stores = stores,
             modifier = Modifier.padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
             emptyMessage = stringResource(R.string.message_no_recommendation_found),
         ) { store ->
             if (store != null) {
-                StoreListItem(
+                StoreItemCard(
                     store = store,
-                    trailingContent = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                        )
-                    },
-                    modifier = Modifier.clickable {
-                        onClickStore(store)
-                    },
+                    isLoading = false,
+                    onClick = { onClickStore(store) },
                 )
             } else {
-                StoreListItem(
+                StoreItemCard(
                     store = Store.DEFAULT,
                     isLoading = true,
-                    trailingContent = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                        )
-                    },
+                    onClick = {},
                 )
             }
         }
