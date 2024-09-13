@@ -41,8 +41,9 @@ fun OpeningHour.isCurrentlyOpen(
 }
 
 typealias IsOpen = Boolean
+typealias IsCurrentlyOpen = Triple<DayOfWeek, IsOpen, List<Pair<OpeningHour, IsOpen>>>
 
-suspend fun List<OpeningHour>.isCurrentlyOpen(): Triple<DayOfWeek, IsOpen, List<Pair<OpeningHour, IsOpen>>> {
+suspend fun List<OpeningHour>.isCurrentlyOpen(): IsCurrentlyOpen {
     return withContext(Dispatchers.Default) {
         val instant = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()

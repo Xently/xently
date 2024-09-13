@@ -49,7 +49,10 @@ import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 typealias Expanded = Boolean
 typealias OnClose = () -> Unit
@@ -170,15 +173,27 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
         store.openingHours,
         is24hour,
     ) {
-        val deferredDistance = async {
-            store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
-        }
-        val deferredIsCurrentlyOpen = async {
-            store.openingHours.isCurrentlyOpen()
-        }
-        launch(Dispatchers.Default) {
-            val distance = deferredDistance.await()
-            val (dayOfWeek, isOpen, operationHours) = deferredIsCurrentlyOpen.await()
+        flow {
+            while (true) {
+                val deferredDistance = async {
+                    store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
+                }
+                val deferredIsCurrentlyOpen = async {
+                    store.openingHours.isCurrentlyOpen()
+                }
+                emit(deferredDistance.await() to deferredIsCurrentlyOpen.await())
+                delay(1_000)
+            }
+        }.distinctUntilChanged { a, b ->
+            val (_, isCurrentlyOpenA) = a
+            val (_, isCurrentlyOpenB) = b
+            val (dayOfWeekA, isOpenA, _) = isCurrentlyOpenA
+            val (dayOfWeekB, isOpenB, _) = isCurrentlyOpenB
+
+            dayOfWeekA == dayOfWeekB
+                    && isOpenA == isOpenB
+        }.flowOn(Dispatchers.Default).collect { (distance, isCurrentlyOpen) ->
+            val (dayOfWeek, isOpen, operationHours) = isCurrentlyOpen
 
             val formattedOperationTime =
                 operationHours.joinToString(separator = " • ") { (hour, _) ->
