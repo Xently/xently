@@ -43,6 +43,7 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -148,7 +149,7 @@ private fun overlineTextState(store: Store): State<String> {
         val deferredIsCurrentlyOpen = async {
             store.openingHours.isCurrentlyOpen()
         }
-        launch {
+        launch(Dispatchers.Default) {
             val distance = deferredDistance.await()
             val isCurrentlyOpen = deferredIsCurrentlyOpen.await()
 
