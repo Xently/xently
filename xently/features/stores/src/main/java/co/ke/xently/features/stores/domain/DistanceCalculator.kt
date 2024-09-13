@@ -1,6 +1,8 @@
 package co.ke.xently.features.stores.domain
 
 import co.ke.xently.libraries.ui.core.domain.coolFormat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 typealias DistanceInMeters = Number
 
@@ -16,16 +18,17 @@ data class SmallestDistanceUnit(val distance: String, val unit: DistanceUnit) {
     }
 }
 
-fun DistanceInMeters.toSmallestDistanceUnit(): SmallestDistanceUnit {
-
-    val distanceDouble = toDouble()
-    val distance = distanceDouble.coolFormat().replace(
-        "[a-z]".toRegex(RegexOption.IGNORE_CASE),
-        "",
-    )
-    val distanceUnit = when {
-        distanceDouble < 1000 -> SmallestDistanceUnit.DistanceUnit.m
-        else -> SmallestDistanceUnit.DistanceUnit.km
+suspend fun DistanceInMeters.toSmallestDistanceUnit(): SmallestDistanceUnit {
+    return withContext(Dispatchers.Default) {
+        val distanceDouble = toDouble()
+        val distance = distanceDouble.coolFormat().replace(
+            "[a-z]".toRegex(RegexOption.IGNORE_CASE),
+            "",
+        )
+        val distanceUnit = when {
+            distanceDouble < 1000 -> SmallestDistanceUnit.DistanceUnit.m
+            else -> SmallestDistanceUnit.DistanceUnit.km
+        }
+        SmallestDistanceUnit(distance = distance, unit = distanceUnit)
     }
-    return SmallestDistanceUnit(distance = distance, unit = distanceUnit)
 }

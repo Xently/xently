@@ -197,7 +197,7 @@ internal fun MoreDetailsScreen(
 }
 
 @Composable
-fun rememberDayOfWeekToday() = remember {
+private fun rememberDayOfWeekToday() = remember {
     Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek
 }

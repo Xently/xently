@@ -74,15 +74,3 @@ fun rememberIsCurrentlyOpen(openingHour: OpeningHour, dayOfWeekToday: DayOfWeek)
 
     return isCurrentlyOpen
 }
-
-@Composable
-fun rememberIsCurrentlyOpen(
-    openingHours: List<OpeningHour>,
-    dayOfWeekToday: DayOfWeek,
-): Pair<OpeningHour, Boolean?>? {
-    val isCurrentlyOpen by remember(openingHours, dayOfWeekToday) {
-        derivedStateOf { openingHours.isCurrentlyOpen(dayOfWeekToday) }
-    }
-
-    return isCurrentlyOpen
-}

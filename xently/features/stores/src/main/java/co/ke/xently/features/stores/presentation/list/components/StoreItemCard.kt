@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,12 +39,11 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
-import co.ke.xently.features.stores.presentation.moredetails.components.rememberIsCurrentlyOpen
-import co.ke.xently.features.stores.presentation.moredetails.rememberDayOfWeekToday
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 typealias Expanded = Boolean
@@ -78,10 +78,13 @@ fun StoreItemCard(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 colors = ListItemDefaults.colors(containerColor = containerColor),
                 overlineContent = {
-                    Text(
-                        text = rememberOverlineText(store),
-                        modifier = Modifier.shimmer(isLoading),
-                    )
+                    val overlineText by overlineTextState(store)
+                    androidx.compose.animation.AnimatedVisibility(overlineText.isNotBlank()) {
+                        Text(
+                            text = overlineText,
+                            modifier = Modifier.shimmer(isLoading),
+                        )
+                    }
                 },
                 headlineContent = {
                     Row(
@@ -134,46 +137,44 @@ fun StoreItemCard(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun rememberOverlineText(store: Store): String {
-    val text = produceState("", store.distance) {
-        launch {
-            value = ""
-        }
-    }
-    val dayOfWeekToday = rememberDayOfWeekToday()
-    val isCurrentlyOpen = rememberIsCurrentlyOpen(
-        openingHours = store.openingHours,
-        dayOfWeekToday = dayOfWeekToday,
-    )
-    val distance = rememberSaveable(store.distance) {
-        store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
-    }
+private fun overlineTextState(store: Store): State<String> {
     val timePickerState = rememberTimePickerState()
-    val formattedOperationTime = remember( timePickerState) {
-        buildString {
-            if (isCurrentlyOpen != null) {
-                val (openingHour, isOpen) = isCurrentlyOpen
-                append(openingHour.openTime.toString(timePickerState.is24hour))
-                append(" - ")
-                append(openingHour.closeTime.toString(timePickerState.is24hour))
-                append(" | ")
-                append(
-                    openingHour.dayOfWeek.name.lowercase()
-                        .replaceFirstChar { it.uppercase() })
-            }
-        }
-    }
 
-    return remember(distance, formattedOperationTime) {
-        buildString {
-            var separator = ""
-            if (distance.isNotBlank()) {
-                append(distance)
-                separator = " | "
+    val is24hour = timePickerState.is24hour
+    return produceState("", store.distance, store.openingHours, is24hour) {
+        val deferredDistance = async {
+            store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
+        }
+        val deferredIsCurrentlyOpen = async {
+            store.openingHours.isCurrentlyOpen()
+        }
+        launch {
+            val distance = deferredDistance.await()
+            val isCurrentlyOpen = deferredIsCurrentlyOpen.await()
+
+            val formattedOperationTime = buildString {
+                if (isCurrentlyOpen != null) {
+                    val (openingHour, isOpen) = isCurrentlyOpen
+                    append(openingHour.openTime.toString(is24hour))
+                    append(" - ")
+                    append(openingHour.closeTime.toString(is24hour))
+                    append(" | ")
+                    append(
+                        openingHour.dayOfWeek.name.lowercase()
+                            .replaceFirstChar { it.uppercase() })
+                }
             }
-            if (formattedOperationTime.isNotBlank()) {
-                append(separator)
-                append(formattedOperationTime)
+
+            value = buildString {
+                var separator = ""
+                if (distance.isNotBlank()) {
+                    append(distance)
+                    separator = " | "
+                }
+                if (formattedOperationTime.isNotBlank()) {
+                    append(separator)
+                    append(formattedOperationTime)
+                }
             }
         }
     }
