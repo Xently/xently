@@ -72,9 +72,7 @@ fun StoreItemCard(
                     if (index != store.images.lastIndex) index += 1
                 },
             )
-            val containerColor = MaterialTheme.colorScheme.background.copy(
-                0.5f
-            )
+            val containerColor = MaterialTheme.colorScheme.background.copy(0.5f)
             ListItem(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 colors = ListItemDefaults.colors(containerColor = containerColor),
@@ -88,16 +86,24 @@ fun StoreItemCard(
                     }
                 },
                 headlineContent = {
+                    Text(
+                        text = store.shop.name,
+                        modifier = Modifier.shimmer(isLoading),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
+                supportingContent = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = store.shop.name,
+                            text = store.name,
                             modifier = Modifier
                                 .weight(1f)
                                 .shimmer(isLoading),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                         )
                         if (dropDownMenu != null) {
                             var expanded by rememberSaveable {
@@ -123,13 +129,6 @@ fun StoreItemCard(
                             }
                         }
                     }
-                },
-                supportingContent = {
-                    Text(
-                        text = store.name,
-                        modifier = Modifier.shimmer(isLoading),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
                 },
             )
         }
