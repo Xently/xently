@@ -3,11 +3,13 @@ package co.ke.xently.features.stores.domain
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.libraries.data.core.Time
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.offsetAt
 import kotlinx.datetime.toLocalDateTime
 
 fun isOpenToday(openTime: Time, closeTime: Time, currentTime: Time = Time.now()): Boolean {
@@ -23,38 +25,50 @@ fun isOpenToday(openTime: Time, closeTime: Time, currentTime: Time = Time.now())
     return currentTimeMinutes in openTimeMinutes..closeTimeMinutes
 }
 
-fun OpeningHour.isCurrentlyOpen(dayOfWeekToday: DayOfWeek): Boolean? {
+fun OpeningHour.isCurrentlyOpen(
+    dayOfWeekToday: DayOfWeek,
+    currentTime: Time = Time.now(),
+): Boolean? {
     return if (dayOfWeek != dayOfWeekToday) {
         null
     } else {
         open && isOpenToday(
             openTime = openTime,
             closeTime = closeTime,
+            currentTime = currentTime,
         )
     }
 }
 
-suspend fun List<OpeningHour>.isCurrentlyOpen(): Pair<OpeningHour, Boolean>? {
+typealias IsOpen = Boolean
+
+suspend fun List<OpeningHour>.isCurrentlyOpen(): Pair<DayOfWeek, List<Pair<OpeningHour, IsOpen>>> {
     return withContext(Dispatchers.Default) {
-        var isCurrentlyOpen: Boolean? = null
-        var openingHour: OpeningHour? = null
-        val dayOfWeekToday = Clock.System.now()
-            .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek
-        for (hour in this@isCurrentlyOpen) {
-            yield()
-            when (hour.isCurrentlyOpen(dayOfWeekToday)) {
-                null -> continue
-                true -> return@withContext hour to true
-                false -> {
-                    openingHour = hour
-                    isCurrentlyOpen = false
+        val instant = Clock.System.now()
+        val timeZone = TimeZone.currentSystemDefault()
+        val currentDateTime = instant.toLocalDateTime(timeZone)
+        val dayOfWeekToday = currentDateTime.dayOfWeek
+        val currentTime = Time(
+            hour = currentDateTime.hour,
+            minute = currentDateTime.minute,
+            utcOffset = timeZone.offsetAt(instant),
+        )
+
+        val hours = map {
+            async {
+                val isCurrentlyOpen = it.isCurrentlyOpen(
+                    dayOfWeekToday = dayOfWeekToday,
+                    currentTime = currentTime,
+                )
+                if (isCurrentlyOpen == null) {
+                    null
+                } else {
+                    it to isCurrentlyOpen
                 }
             }
-        }
-        if (isCurrentlyOpen == null || openingHour == null) {
-            null
-        } else {
-            openingHour to isCurrentlyOpen
-        }
+        }.awaitAll().filterNotNull()
+            .sortedBy { it.first.openTime }
+
+        dayOfWeekToday to hours
     }
 }

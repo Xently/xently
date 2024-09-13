@@ -150,20 +150,16 @@ private fun overlineTextState(store: Store): State<String> {
         }
         launch(Dispatchers.Default) {
             val distance = deferredDistance.await()
-            val isCurrentlyOpen = deferredIsCurrentlyOpen.await()
+            val (dayOfWeek, operationHours) = deferredIsCurrentlyOpen.await()
 
-            val formattedOperationTime = buildString {
-                if (isCurrentlyOpen != null) {
-                    val (openingHour, isOpen) = isCurrentlyOpen
-                    append(openingHour.openTime.toString(is24hour))
-                    append(" - ")
-                    append(openingHour.closeTime.toString(is24hour))
-                    append(" | ")
-                    append(
-                        openingHour.dayOfWeek.name.lowercase()
-                            .replaceFirstChar { it.uppercase() })
+            val formattedOperationTime =
+                operationHours.joinToString(separator = " • ") { (hour, _) ->
+                    buildString {
+                        append(hour.openTime.toString(is24hour))
+                        append(" - ")
+                        append(hour.closeTime.toString(is24hour))
+                    }
                 }
-            }
 
             value = buildString {
                 var separator = ""
@@ -174,6 +170,8 @@ private fun overlineTextState(store: Store): State<String> {
                 if (formattedOperationTime.isNotBlank()) {
                     append(separator)
                     append(formattedOperationTime)
+                    append(" | ")
+                    append(dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() })
                 }
             }
         }
