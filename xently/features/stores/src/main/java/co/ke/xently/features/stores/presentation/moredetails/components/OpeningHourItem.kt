@@ -16,21 +16,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
-import co.ke.xently.features.stores.domain.isOpenToday
+import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.libraries.ui.core.components.shimmer
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.DayOfWeek
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun OpeningHourItem(
     openingHour: OpeningHour,
-    dateTimeToday: LocalDateTime,
+    dayOfWeekToday: DayOfWeek,
     timePickerState: TimePickerState,
     isLoading: Boolean = false,
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        val color = getOpeningHourColor(openingHour, dateTimeToday)
+        val isCurrentlyOpen = rememberIsCurrentlyOpen(
+            openingHour = openingHour,
+            dayOfWeekToday = dayOfWeekToday,
+        )
+        val color = when (isCurrentlyOpen) {
+            true -> Color.Green
+            false -> MaterialTheme.colorScheme.error
+            null -> Color.Unspecified
+        }
         Text(
             color = color,
             modifier = Modifier.shimmer(isLoading),
@@ -47,31 +55,34 @@ internal fun OpeningHourItem(
         Text(
             color = color,
             modifier = Modifier.shimmer(isLoading),
-            text = buildString {
-                append(openingHour.openTime.toString(timePickerState.is24hour))
-                append(" - ")
-                append(openingHour.closeTime.toString(timePickerState.is24hour))
+            text = remember(openingHour.openTime, openingHour.closeTime, timePickerState) {
+                buildString {
+                    append(openingHour.openTime.toString(timePickerState.is24hour))
+                    append(" - ")
+                    append(openingHour.closeTime.toString(timePickerState.is24hour))
+                }
             },
         )
     }
 }
 
 @Composable
-private fun getOpeningHourColor(openingHour: OpeningHour, dateTimeToday: LocalDateTime): Color {
-    if (openingHour.dayOfWeek != dateTimeToday.dayOfWeek) return Color.Unspecified
-
-    val isCurrentlyOpen by remember(openingHour) {
-        derivedStateOf {
-            openingHour.open && isOpenToday(
-                openTime = openingHour.openTime,
-                closeTime = openingHour.closeTime,
-            )
-        }
+fun rememberIsCurrentlyOpen(openingHour: OpeningHour, dayOfWeekToday: DayOfWeek): Boolean? {
+    val isCurrentlyOpen by remember(openingHour, dayOfWeekToday) {
+        derivedStateOf { openingHour.isCurrentlyOpen(dayOfWeekToday) }
     }
 
-    return if (isCurrentlyOpen) {
-        Color.Green
-    } else {
-        MaterialTheme.colorScheme.error
+    return isCurrentlyOpen
+}
+
+@Composable
+fun rememberIsCurrentlyOpen(
+    openingHours: List<OpeningHour>,
+    dayOfWeekToday: DayOfWeek,
+): Pair<OpeningHour, Boolean?>? {
+    val isCurrentlyOpen by remember(openingHours, dayOfWeekToday) {
+        derivedStateOf { openingHours.isCurrentlyOpen(dayOfWeekToday) }
     }
+
+    return isCurrentlyOpen
 }

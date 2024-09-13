@@ -75,7 +75,7 @@ internal fun StoreListItem(
         modifier = modifier,
         isLoading = isLoading,
         onClick = onClick,
-    ) { expanded, onClose ->
+    ) { (expanded, onClose) ->
         DropdownMenuWithUpdateAndDelete(
             expanded = expanded,
             onExpandChanged = { onClose() },

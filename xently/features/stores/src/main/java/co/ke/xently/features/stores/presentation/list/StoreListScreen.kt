@@ -154,7 +154,7 @@ internal fun StoreListScreen(
                     store = store,
                     isLoading = false,
                     onClick = { onClickStore(store) },
-                ) { expanded, onClose ->
+                ) { (expanded, onClose) ->
                     DropdownMenu(expanded = expanded, onDismissRequest = onClose) {
                         if (store.links.containsKey("add-bookmark")) {
                             DropdownMenuItem(

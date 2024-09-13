@@ -179,16 +179,13 @@ internal fun MoreDetailsScreen(
                     if (store.openingHours.isEmpty()) {
                         Text(text = "-", modifier = Modifier.shimmer(state.isLoading))
                     } else {
-                        val dateTimeToday = remember {
-                            Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                        }
+                        val dayOfWeekToday = rememberDayOfWeekToday()
                         val timePickerState = rememberTimePickerState()
                         for (openingHour in store.openingHours) {
                             OpeningHourItem(
                                 isLoading = state.isLoading,
                                 openingHour = openingHour,
-                                dateTimeToday = dateTimeToday,
+                                dayOfWeekToday = dayOfWeekToday,
                                 timePickerState = timePickerState,
                             )
                         }
@@ -197,6 +194,12 @@ internal fun MoreDetailsScreen(
             }
         }
     }
+}
+
+@Composable
+fun rememberDayOfWeekToday() = remember {
+    Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek
 }
 
 internal class MoreDetailsUiStateParameterProvider : PreviewParameterProvider<MoreDetailsUiState> {
