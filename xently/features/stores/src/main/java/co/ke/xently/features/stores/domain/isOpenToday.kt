@@ -42,7 +42,7 @@ fun OpeningHour.isCurrentlyOpen(
 
 typealias IsOpen = Boolean
 
-suspend fun List<OpeningHour>.isCurrentlyOpen(): Pair<DayOfWeek, List<Pair<OpeningHour, IsOpen>>> {
+suspend fun List<OpeningHour>.isCurrentlyOpen(): Triple<DayOfWeek, IsOpen, List<Pair<OpeningHour, IsOpen>>> {
     return withContext(Dispatchers.Default) {
         val instant = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()
@@ -69,6 +69,6 @@ suspend fun List<OpeningHour>.isCurrentlyOpen(): Pair<DayOfWeek, List<Pair<Openi
         }.awaitAll().filterNotNull()
             .sortedBy { it.first.openTime }
 
-        dayOfWeekToday to hours
+        Triple(dayOfWeekToday, hours.any { it.second }, hours)
     }
 }

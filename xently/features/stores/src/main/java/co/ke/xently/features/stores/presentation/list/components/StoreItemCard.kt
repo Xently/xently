@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -37,6 +40,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.domain.IsOpen
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
@@ -72,12 +76,31 @@ fun StoreItemCard(
                     if (index != store.images.lastIndex) index += 1
                 },
             )
+            val isOpenAndOverlineText by overlineTextState(store)
+            val (isOpen, overlineText) = isOpenAndOverlineText
+
+            androidx.compose.animation.AnimatedContent(
+                isOpen,
+                label = "store-operational-status",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+            ) {
+                when (it) {
+                    null -> Unit
+                    false -> Badge { Text(stringResource(R.string.closed)) }
+                    true -> Badge(
+                        contentColor = Color.Black,
+                        containerColor = Color.Green.copy(alpha = 0.5f),
+                    ) { Text(stringResource(R.string.open)) }
+                }
+            }
+
             val containerColor = MaterialTheme.colorScheme.background.copy(0.5f)
             ListItem(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 colors = ListItemDefaults.colors(containerColor = containerColor),
                 overlineContent = {
-                    val overlineText by overlineTextState(store)
                     androidx.compose.animation.AnimatedVisibility(overlineText.isNotBlank()) {
                         Text(
                             text = overlineText,
@@ -137,11 +160,16 @@ fun StoreItemCard(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun overlineTextState(store: Store): State<String> {
+private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
     val timePickerState = rememberTimePickerState()
 
     val is24hour = timePickerState.is24hour
-    return produceState("", store.distance, store.openingHours, is24hour) {
+    return produceState<Pair<IsOpen?, String>>(
+        null to "",
+        store.distance,
+        store.openingHours,
+        is24hour,
+    ) {
         val deferredDistance = async {
             store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
         }
@@ -150,7 +178,7 @@ private fun overlineTextState(store: Store): State<String> {
         }
         launch(Dispatchers.Default) {
             val distance = deferredDistance.await()
-            val (dayOfWeek, operationHours) = deferredIsCurrentlyOpen.await()
+            val (dayOfWeek, isOpen, operationHours) = deferredIsCurrentlyOpen.await()
 
             val formattedOperationTime =
                 operationHours.joinToString(separator = " • ") { (hour, _) ->
@@ -161,7 +189,7 @@ private fun overlineTextState(store: Store): State<String> {
                     }
                 }
 
-            value = buildString {
+            value = isOpen to buildString {
                 var separator = ""
                 if (distance.isNotBlank()) {
                     append(distance)
