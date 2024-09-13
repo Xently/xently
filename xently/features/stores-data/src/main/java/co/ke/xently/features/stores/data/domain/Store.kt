@@ -17,7 +17,6 @@ import kotlinx.serialization.Transient
 @Serializable
 data class Store(
     val categories: List<StoreCategory> = emptyList(),
-    val isOpen: Boolean? = null,
     val distance: Double? = null,
     val email: String? = null,
     val id: Long = -1,
