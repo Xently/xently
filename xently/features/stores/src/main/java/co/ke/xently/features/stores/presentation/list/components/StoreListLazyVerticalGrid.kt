@@ -64,12 +64,7 @@ internal fun StoreListLazyVerticalGrid(
                     contentType = "Refresh Loading",
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    Text(
-                        text = "Waiting for items to load from the backend",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
+                    // Ignore loading state for refresh...
                 }
             }
 

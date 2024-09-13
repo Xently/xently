@@ -56,12 +56,7 @@ internal fun NotificationListLazyColumn(
                     key = "Refresh Loading",
                     contentType = "Refresh Loading",
                 ) {
-                    Text(
-                        text = "Waiting for items to load from the backend",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
+                    // Ignore loading state for refresh...
                 }
             }
 
