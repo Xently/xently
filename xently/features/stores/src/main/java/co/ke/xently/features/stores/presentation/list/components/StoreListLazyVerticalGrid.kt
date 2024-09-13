@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
@@ -61,6 +62,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Refresh Loading",
                     contentType = "Refresh Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     Text(
                         text = "Waiting for items to load from the backend",
@@ -75,6 +77,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Refresh Error",
                     contentType = "Refresh Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
@@ -93,6 +96,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Prepend Loading",
                     contentType = "Prepend Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -106,6 +110,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Prepend Error",
                     contentType = "Prepend Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
@@ -134,6 +139,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Append Loading",
                     contentType = "Append Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -147,6 +153,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Append Error",
                     contentType = "Append Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
