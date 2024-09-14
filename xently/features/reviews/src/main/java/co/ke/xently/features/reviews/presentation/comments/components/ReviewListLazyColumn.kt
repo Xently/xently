@@ -28,9 +28,10 @@ import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
+import co.ke.xently.libraries.data.core.AuthorisationError
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
-import co.ke.xently.features.reviews.data.domain.error.DataError as ReviewDataError
 
 @Composable
 internal fun ReviewListLazyColumn(
@@ -160,11 +161,11 @@ private fun ReviewListErrorContent(error: Error, onClickRetry: () -> Unit) {
             text = error.asUiText().asString(),
             modifier = Modifier.weight(1f),
         )
-        if (error is ReviewDataError.Network.Retryable) {
+        if (error is RetryableError) {
             Button(onClick = onClickRetry) {
                 Text(text = stringResource(R.string.action_retry))
             }
-        } else if (error is ReviewDataError.Network.Unauthorized) {
+        } else if (error is AuthorisationError) {
             val eventHandler = LocalEventHandler.current
             val authenticationState by LocalAuthenticationState.current
 

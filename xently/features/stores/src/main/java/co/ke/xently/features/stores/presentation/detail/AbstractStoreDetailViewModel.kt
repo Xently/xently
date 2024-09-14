@@ -13,7 +13,8 @@ import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
-import co.ke.xently.libraries.location.tracker.domain.error.Result.*
+import co.ke.xently.libraries.location.tracker.domain.error.Result.Failure
+import co.ke.xently.libraries.location.tracker.domain.error.Result.Success
 import co.ke.xently.libraries.location.tracker.presentation.utils.asUiText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel

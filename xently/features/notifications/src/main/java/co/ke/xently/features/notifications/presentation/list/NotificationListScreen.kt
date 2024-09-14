@@ -44,6 +44,7 @@ import co.ke.xently.features.notifications.presentation.list.components.Notifica
 import co.ke.xently.features.notifications.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -147,7 +148,7 @@ internal fun NotificationListScreen(
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
+                        canRetry = error is RetryableError,
                         onClickRetry = notifications::retry,
                     ) {
                         when (error) {

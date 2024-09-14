@@ -1,38 +1,38 @@
 package co.ke.xently.features.openinghours.data.domain.error
 
+import co.ke.xently.libraries.data.core.AuthorisationError
+import co.ke.xently.libraries.data.core.RetryableError
+
 sealed interface DataError : Error {
     sealed interface Network : DataError {
-        sealed interface Retryable : Network {
-            data object RequestTimeout : Retryable
-            data object NoInternet : Retryable
-            data object TooEarly : Retryable
-            data object Locked : Retryable
-            data object Conflict : Retryable
-            data object Permission : Retryable
-            data object ServerError : Retryable
-            data object Unknown : Network
-        }
+        data object RequestTimeout : Network, RetryableError
+        data object NoInternet : Network, RetryableError
+        data object TooEarly : Network, RetryableError
+        data object Locked : Network, RetryableError
+        data object Conflict : Network, RetryableError
+        data object Permission : Network, RetryableError
+        data object ServerError : Network, RetryableError
 
         data object InvalidCredentials : Network
-        data object ResourceNotFound : Retryable
-        data object Unauthorized : Network
-        data object ResourceMoved : Retryable
-        data object BadRequest : Retryable
-        data object MethodNotAllowed : Retryable
-        data object NotAcceptable : Retryable
-        data object LengthRequired : Retryable
-        data object RequestURITooLong : Retryable
-        data object UnsupportedMediaType : Retryable
-        data object RequestedRangeNotSatisfiable : Retryable
-        data object ExpectationFailed : Retryable
-        data object UnprocessableEntity : Retryable
-        data object PreconditionFailed : Retryable
-        data object UpgradeRequired : Retryable
-        data object RequestHeaderFieldTooLarge : Retryable
-        data object FailedDependency : Retryable
-        data object TooManyRequests : Retryable
-        data object PayloadTooLarge : Retryable
-        data object Serialization : Retryable
+        data object ResourceNotFound : Network, RetryableError
+        data object Unauthorized : Network, AuthorisationError
+        data object ResourceMoved : Network, RetryableError
+        data object BadRequest : Network, RetryableError
+        data object MethodNotAllowed : Network, RetryableError
+        data object NotAcceptable : Network, RetryableError
+        data object LengthRequired : Network, RetryableError
+        data object RequestURITooLong : Network, RetryableError
+        data object UnsupportedMediaType : Network, RetryableError
+        data object RequestedRangeNotSatisfiable : Network, RetryableError
+        data object ExpectationFailed : Network, RetryableError
+        data object UnprocessableEntity : Network, RetryableError
+        data object PreconditionFailed : Network, RetryableError
+        data object UpgradeRequired : Network, RetryableError
+        data object RequestHeaderFieldTooLarge : Network, RetryableError
+        data object FailedDependency : Network, RetryableError
+        data object TooManyRequests : Network, RetryableError
+        data object PayloadTooLarge : Network, RetryableError
+        data object Serialization : Network, RetryableError
     }
 
     enum class Local : DataError {

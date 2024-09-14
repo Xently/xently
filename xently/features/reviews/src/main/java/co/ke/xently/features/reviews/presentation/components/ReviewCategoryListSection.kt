@@ -160,7 +160,7 @@ private class ReviewCategoryListSectionPreviewParameterProvider :
             ReviewCategoriesResponse.Loading,
             ReviewCategoriesResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
-                type = Network.Retryable.Unknown,
+                type = co.ke.xently.features.reviewcategory.data.domain.error.UnknownError,
             ),
             ReviewCategoriesResponse.Success.Empty,
             ReviewCategoriesResponse.Success.NonEmpty(

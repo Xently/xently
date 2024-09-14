@@ -26,6 +26,7 @@ import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviews.data.domain.error.DataError.Network
+import co.ke.xently.features.reviews.data.domain.error.UnknownError
 import co.ke.xently.features.reviews.presentation.reviews.ReviewSummaryResponse
 import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
@@ -179,7 +180,7 @@ private class ReviewSummaryResponsePreviewParameterProvider :
             ReviewSummaryResponse.Loading,
             ReviewSummaryResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
-                type = Network.Retryable.Unknown,
+                type = UnknownError,
             ),
             ReviewSummaryResponse.Failure(
                 error = UiText.DynamicString("Sample error message"),
