@@ -165,10 +165,16 @@ fun StoreItemCard(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
     val timePickerState = rememberTimePickerState()
+    var isOpenCache by rememberSaveable(store.id) {
+        mutableStateOf<IsOpen?>(null)
+    }
+    var overlineTextCache by rememberSaveable(store.id) {
+        mutableStateOf("")
+    }
 
     val is24hour = timePickerState.is24hour
-    return produceState<Pair<IsOpen?, String>>(
-        null to "",
+    return produceState(
+        isOpenCache to overlineTextCache,
         store.distance,
         store.openingHours,
         is24hour,
@@ -204,7 +210,7 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
                     }
                 }
 
-            value = isOpen to buildString {
+            val text = buildString {
                 var separator = ""
                 if (distance.isNotBlank()) {
                     append(distance)
@@ -217,6 +223,10 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
                     append(dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() })
                 }
             }
+
+            isOpenCache = isOpen
+            overlineTextCache = text
+            value = isOpen to text
         }
     }
 }
