@@ -23,15 +23,12 @@ import com.google.android.gms.location.LocationResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,6 +44,10 @@ class LocationTrackerImpl @Inject constructor(
 ) : LocationTracker {
     private val locationManager by lazy { context.getSystemService<LocationManager>()!! }
     private var currentLocation by LocationSettingDelegate(null)
+
+    companion object {
+        private val TAG = LocationTracker::class.java.simpleName
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCurrentLocation(): Result<Location, Error> {
@@ -66,7 +67,7 @@ class LocationTrackerImpl @Inject constructor(
             return Result.Failure(PermissionError.PERMISSION_DENIED)
         }
 
-        Timber.i("Getting current device location...")
+        Timber.tag(TAG).i("Getting current device location...")
         return suspendCancellableCoroutine { continuation ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 continuation.getBelowRLocation()
@@ -90,73 +91,71 @@ class LocationTrackerImpl @Inject constructor(
         interval: Duration?,
         priority: LocationPriority,
         permissionBehaviour: MissingPermissionBehaviour,
-    ): Flow<Location> {
-        return callbackFlow {
-            while (!isGPSEnabled()) {
-                val duration = 3.seconds
-                Timber.d("GPS not enabled, waiting %s before rechecking...", duration)
-                delay(duration)
-            }
+    ) = callbackFlow {
+        while (!isGPSEnabled()) {
+            val duration = 3.seconds
+            Timber.tag(TAG).d("GPS not enabled, waiting %s before rechecking...", duration)
+            delay(duration)
+        }
 
-            var hasFineLocationPermission = ActivityCompat.checkSelfPermission(
+        var hasFineLocationPermission = ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        var hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        while (!(hasFineLocationPermission || hasCoarseLocationPermission) && permissionBehaviour == MissingPermissionBehaviour.REPEAT_CHECK) {
+            hasFineLocationPermission = ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-            var hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
+            hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
+            val duration = 3.seconds
+            Timber.tag(TAG)
+                .d("Permissions not granted, waiting %s before rechecking...", duration)
+            delay(duration)
+        }
 
-            while (!(hasFineLocationPermission || hasCoarseLocationPermission) && permissionBehaviour == MissingPermissionBehaviour.REPEAT_CHECK) {
-                hasFineLocationPermission = ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-                hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-                val duration = 3.seconds
-                Timber.d("Permissions not granted, waiting %s before rechecking...", duration)
-                delay(duration)
+        if (!hasFineLocationPermission || !hasCoarseLocationPermission) {
+            close()
+        } else {
+            Timber.tag(TAG).d("All set for location tracking! Adding location observers...")
+
+            currentLocation?.let {
+                send(it)
             }
 
-            if (!hasFineLocationPermission || !hasCoarseLocationPermission) {
-                close()
-            } else {
-                Timber.d("All set for location tracking! Adding location observers...")
+            val request = LocationRequest.Builder(
+                priority.value,
+                (interval ?: priority.interval).inWholeMilliseconds,
+            ).build()
 
-                withContext(Dispatchers.IO) {
-                    currentLocation?.let {
-                        send(it)
-                    }
-                }
+            val callback = object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    super.onLocationResult(result)
+                    result.locations.lastOrNull()?.let {
+                        val location = it.toXentlyLocation()
 
-                val request = LocationRequest.Builder(
-                    priority.value,
-                    (interval ?: priority.interval).inWholeMilliseconds,
-                ).build()
-
-                val callback = object : LocationCallback() {
-                    override fun onLocationResult(result: LocationResult) {
-                        super.onLocationResult(result)
-                        result.locations.lastOrNull()?.let {
-                            val location = it.toXentlyLocation()
-
-                            CoroutineScope(coroutineContext + dispatchersProvider.io).launch {
-                                currentLocation = location
-                            }
-                            trySend(location)
+                        Timber.tag(TAG).d("Current location: %s", location)
+                        CoroutineScope(coroutineContext + dispatchersProvider.io).launch {
+                            currentLocation = location
                         }
+                        trySend(location)
                     }
                 }
+            }
 
-                client.requestLocationUpdates(request, callback, context.mainLooper)
+            client.requestLocationUpdates(request, callback, context.mainLooper)
 
-                awaitClose {
-                    Timber.d("Removing location observers...")
-                    client.removeLocationUpdates(callback)
-                }
+            awaitClose {
+                Timber.tag(TAG).d("Removing location observers...")
+                client.removeLocationUpdates(callback)
             }
         }
     }
@@ -173,10 +172,10 @@ class LocationTrackerImpl @Inject constructor(
             resume(it.toLocationResult()) {}
         }.addOnFailureListener {
             val error = if (it is SecurityException) {
-                Timber.e(it, "Security exception")
+                Timber.tag(TAG).e(it, "Security exception")
                 PermissionError.PERMISSION_DENIED
             } else {
-                Timber.e(it, "Unexpected error")
+                Timber.tag(TAG).e(it, "Unexpected error")
                 LocationRequestError.UNKNOWN
             }
             resume(Result.Failure(error)) {}

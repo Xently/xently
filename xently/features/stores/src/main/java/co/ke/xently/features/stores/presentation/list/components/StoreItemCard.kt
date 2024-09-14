@@ -44,6 +44,8 @@ import co.ke.xently.features.stores.domain.IsOpen
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
+import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
@@ -53,6 +55,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 typealias Expanded = Boolean
 typealias OnClose = () -> Unit
@@ -173,6 +176,7 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
     }
 
     val is24hour = timePickerState.is24hour
+    val currentLocation by LocalLocationState.current
     return produceState(
         isOpenCache to overlineTextCache,
         store.distance,
@@ -182,7 +186,11 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
         flow {
             while (true) {
                 val deferredDistance = async {
-                    store.distance?.toSmallestDistanceUnit()?.toString() ?: ""
+                    val distanceMeters = withContext(Dispatchers.Default) {
+                        currentLocation?.toAndroidLocation()
+                            ?.distanceTo(store.location.toAndroidLocation())
+                    } ?: store.distance
+                    distanceMeters?.toSmallestDistanceUnit()?.toString() ?: ""
                 }
                 val deferredIsCurrentlyOpen = async {
                     store.openingHours.isCurrentlyOpen()

@@ -81,3 +81,10 @@ fun android.location.Location.toXentlyLocation(): Location {
         longitude = longitude,
     )
 }
+
+fun Location.toAndroidLocation(): android.location.Location {
+    return android.location.Location(null).apply {
+        this.latitude = this@toAndroidLocation.latitude
+        this.longitude = this@toAndroidLocation.longitude
+    }
+}

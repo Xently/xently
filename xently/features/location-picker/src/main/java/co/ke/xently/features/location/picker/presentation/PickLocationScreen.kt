@@ -31,7 +31,7 @@ import co.ke.xently.features.location.picker.R
 import co.ke.xently.features.location.picker.presentation.components.PickLocationBottomBarCard
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.domain.Location
-import co.ke.xently.libraries.location.tracker.presentation.ForegroundLocationTracker
+import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.location.tracker.presentation.LocationPickerMap
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -114,8 +114,9 @@ internal fun PickLocationScreen(
         locationPermissionGranted = it
     }
 
-    if (shouldTrackLocation && locationPermissionGranted) {
-        ForegroundLocationTracker(onLocationUpdates = onLocationChange)
+    val currentLocation by LocalLocationState.current
+    LaunchedEffect(currentLocation, shouldTrackLocation, locationPermissionGranted) {
+        currentLocation?.also(onLocationChange)
     }
 
     Scaffold(
