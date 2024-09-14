@@ -50,13 +50,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Review
-import co.ke.xently.features.reviews.data.domain.error.DataError
 import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.comments.components.ReviewListEmptyState
 import co.ke.xently.features.reviews.presentation.comments.components.ReviewListLazyColumn
 import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
@@ -211,7 +211,7 @@ internal fun ReviewCommentListScreen(
                     ReviewListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
+                        canRetry = error is RetryableError,
                         onClickRetry = reviews::retry,
                     )
                 }

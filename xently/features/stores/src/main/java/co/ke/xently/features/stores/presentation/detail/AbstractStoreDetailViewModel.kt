@@ -13,6 +13,8 @@ import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
+import co.ke.xently.libraries.location.tracker.domain.error.Result.Failure
+import co.ke.xently.libraries.location.tracker.domain.error.Result.Success
 import co.ke.xently.libraries.location.tracker.presentation.utils.asUiText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -95,7 +97,7 @@ abstract class AbstractStoreDetailViewModel(
             is StoreDetailAction.GetPointsAndReview -> {
                 viewModelScope.launch {
                     when (val result = locationTracker.getCurrentLocation()) {
-                        is co.ke.xently.libraries.location.tracker.domain.error.Result.Success -> {
+                        is Success -> {
                             _isProcessingQrCode.send(true)
                             val pointsUrl = _uiState.value.store!!
                                 .links["qr-code"]!!
@@ -106,7 +108,7 @@ abstract class AbstractStoreDetailViewModel(
                             )
                         }
 
-                        is co.ke.xently.libraries.location.tracker.domain.error.Result.Failure -> {
+                        is Failure -> {
                             _event.send(
                                 StoreDetailEvent.Error.LocationTracker(
                                     error = result.error.asUiText(),

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
@@ -31,9 +32,10 @@ import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
+import co.ke.xently.libraries.data.core.AuthorisationError
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
-import co.ke.xently.features.stores.data.domain.error.DataError as StoreDataError
 
 @Composable
 internal fun StoreListLazyVerticalGrid(
@@ -61,13 +63,9 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Refresh Loading",
                     contentType = "Refresh Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    Text(
-                        text = "Waiting for items to load from the backend",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
+                    // Ignore loading state for refresh...
                 }
             }
 
@@ -75,6 +73,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Refresh Error",
                     contentType = "Refresh Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
@@ -93,6 +92,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Prepend Loading",
                     contentType = "Prepend Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -106,6 +106,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Prepend Error",
                     contentType = "Prepend Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
@@ -134,6 +135,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Append Loading",
                     contentType = "Append Loading",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -147,6 +149,7 @@ internal fun StoreListLazyVerticalGrid(
                 item(
                     key = "Append Error",
                     contentType = "Append Error",
+                    span = { GridItemSpan(maxLineSpan) },
                 ) {
                     val error = remember(loadState.error) {
                         runBlocking { loadState.error.toError() }
@@ -172,11 +175,11 @@ private fun StoreListErrorContent(error: Error, onClickRetry: () -> Unit) {
             text = error.asUiText().asString(),
             modifier = Modifier.weight(1f),
         )
-        if (error is StoreDataError.Network.Retryable) {
+        if (error is RetryableError) {
             Button(onClick = onClickRetry) {
                 Text(text = stringResource(R.string.action_retry))
             }
-        } else if (error is StoreDataError.Network.Unauthorized) {
+        } else if (error is AuthorisationError) {
             val eventHandler = LocalEventHandler.current
             val authenticationState by LocalAuthenticationState.current
 

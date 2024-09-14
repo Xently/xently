@@ -19,6 +19,7 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.data.domain.error.DataError
+import co.ke.xently.features.reviews.data.domain.error.UnknownError
 import co.ke.xently.features.reviews.presentation.reviews.BarGraphData
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
@@ -142,7 +143,7 @@ private class ReviewContentPreviewProvider : PreviewParameterProvider<ReviewCont
             ReviewContentState(
                 response = StatisticsResponse.Failure(
                     error = UiText.DynamicString("Example error message"),
-                    type = DataError.Network.Retryable.Unknown,
+                    type = UnknownError,
                 ),
             ),
         )

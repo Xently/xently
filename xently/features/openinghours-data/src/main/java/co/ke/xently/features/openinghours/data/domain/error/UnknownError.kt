@@ -1,3 +1,5 @@
 package co.ke.xently.features.openinghours.data.domain.error
 
-data object UnknownError : Error
+import co.ke.xently.libraries.data.core.RetryableError
+
+data object UnknownError : Error, RetryableError

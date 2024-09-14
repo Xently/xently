@@ -27,7 +27,7 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
-import co.ke.xently.features.reviews.data.domain.error.DataError
+import co.ke.xently.features.reviews.data.domain.error.UnknownError
 import co.ke.xently.features.reviews.presentation.components.GeneralReviewSummary
 import co.ke.xently.features.reviews.presentation.components.ReviewCategoryListSection
 import co.ke.xently.features.reviews.presentation.components.ReviewContent
@@ -261,7 +261,7 @@ private class ReviewsUiStateProvider : PreviewParameterProvider<ReviewsAndFeedba
                     selectedCategory = selectedCategory,
                     statisticsResponse = StatisticsResponse.Failure(
                         error = UiText.DynamicString("Example error message"),
-                        type = DataError.Network.Retryable.Unknown,
+                        type = UnknownError,
                     ),
                     selectedFilters = selectedFilters,
                 ),

@@ -16,29 +16,18 @@ import kotlinx.serialization.Transient
 
 @Serializable
 data class Store(
-    @SerialName("categories")
     val categories: List<StoreCategory> = emptyList(),
-    @SerialName("distance")
     val distance: Double? = null,
-    @SerialName("email")
     val email: String? = null,
-    @SerialName("id")
     val id: Long = -1,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
-    @SerialName("location")
     val location: Location = Location(Double.NaN, Double.NaN),
-    @SerialName("name")
     val name: String = "",
-    @SerialName("services")
     val services: List<StoreService> = emptyList(),
-    @SerialName("images")
     val images: List<UploadResponse> = emptyList(),
-    @SerialName("description")
     val description: String? = null,
-    @SerialName("slug")
     val slug: String = "",
-    @SerialName("telephone")
     val telephone: String? = null,
     val shop: Shop = Shop(name = ""),
     val openingHours: List<OpeningHour> = emptyList(),

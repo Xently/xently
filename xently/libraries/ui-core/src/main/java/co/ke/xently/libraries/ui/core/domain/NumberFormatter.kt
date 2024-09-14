@@ -29,8 +29,11 @@ fun Number.coolFormat(iteration: Int = 0): String {
     //this decides whether to trim the decimals
     // (int) d * 10 / 10 drops the decimal
     return if (d < 1000) //this determines the class, i.e. 'k', 'm' etc
-        (if (isRound || d > 9.99) //this decides whether to trim the decimals
-            d.toInt() * 10 / 10 else d.toString() + "" // (int) d * 10 / 10 drops the decimal
-                ).toString() + "" + charArrayOf('k', 'm', 'b', 't')[iteration]
+        if (isRound || d > 9.99) {
+            //this decides whether to trim the decimals
+            d.toInt() * 10 / 10
+        } else {
+            d.toString() + "" // (int) d * 10 / 10 drops the decimal
+        }.toString() + "" + charArrayOf('k', 'm', 'b', 't')[iteration]
     else d.coolFormat(iteration + 1)
 }

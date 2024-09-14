@@ -31,9 +31,10 @@ import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
+import co.ke.xently.libraries.data.core.AuthorisationError
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import kotlinx.coroutines.runBlocking
-import co.ke.xently.features.products.data.domain.error.DataError as ProductDataError
 
 @Composable
 internal fun ProductListLazyColumn(
@@ -58,12 +59,7 @@ internal fun ProductListLazyColumn(
                     key = "Refresh Loading",
                     contentType = "Refresh Loading",
                 ) {
-                    Text(
-                        text = "Waiting for items to load from the backend",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
+                    // Ignore loading state for refresh...
                 }
             }
 
@@ -170,11 +166,11 @@ private fun ProductListErrorContent(error: Error, onClickRetry: () -> Unit) {
             text = error.asUiText().asString(),
             modifier = Modifier.weight(1f),
         )
-        if (error is ProductDataError.Network.Retryable) {
+        if (error is RetryableError) {
             Button(onClick = onClickRetry) {
                 Text(text = stringResource(R.string.action_retry))
             }
-        } else if (error is ProductDataError.Network.Unauthorized) {
+        } else if (error is AuthorisationError) {
             val eventHandler = LocalEventHandler.current
             val authenticationState by LocalAuthenticationState.current
 

@@ -20,7 +20,11 @@ data class Time(
     val minute: Int,
     val utcOffset: UtcOffset = TimeZone.currentSystemDefault()
         .offsetAt(Clock.System.now()),
-) {
+) : Comparable<Time> {
+    override fun compareTo(other: Time): Int {
+        return (hour * 60 + minute).compareTo(other.hour * 60 - other.minute)
+    }
+
     fun toLocalTime(): Time {
         val (date, time) = Clock.System.now()
             .toString()

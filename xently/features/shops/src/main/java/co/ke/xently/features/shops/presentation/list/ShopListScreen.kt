@@ -50,7 +50,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
-import co.ke.xently.features.shops.data.domain.error.DataError
 import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.presentation.list.components.ShopListEmptyState
 import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
@@ -58,7 +57,9 @@ import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.Link
+import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.SearchBar
@@ -208,10 +209,10 @@ internal fun ShopListScreen(
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = error.asUiText().asString(),
-                        canRetry = error is DataError.Network.Retryable || error is UnknownError,
+                        canRetry = error is RetryableError,
                         onClickRetry = shops::retry,
                     ) {
-                        if (error is DataError.Network.Unauthorized) {
+                        if (error is AuthorisationError) {
                             Spacer(modifier = Modifier.height(16.dp))
 
                             LoginAndRetryButtonsRow(onRetry = shops::retry)

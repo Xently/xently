@@ -8,6 +8,8 @@ import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
 import co.ke.xently.features.auth.presentation.utils.asUiText
 import co.ke.xently.libraries.data.auth.AuthenticationState
+import co.ke.xently.libraries.location.tracker.domain.LocationTracker
+import co.ke.xently.libraries.location.tracker.domain.MissingPermissionBehaviour
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
+    locationTracker: LocationTracker,
     private val userRepository: UserRepository,
     private val accessControlRepository: AccessControlRepository,
     private val googleAuthenticationHandler: GoogleAuthenticationHandler,
@@ -36,6 +40,14 @@ internal class MainViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = AuthenticationState(),
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+    )
+
+    val currentLocation = locationTracker.observeLocation(
+        permissionBehaviour = MissingPermissionBehaviour.REPEAT_CHECK,
+    ).shareIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+        replay = 1,
     )
 
     private val _event = Channel<MainEvent>()

@@ -1,33 +1,28 @@
 package co.ke.xently.libraries.data.network
 
-import android.content.Context
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
+import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import okhttp3.Cache
-import okhttp3.CacheControl
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 fun interface BaseURL {
     fun get(): String
@@ -47,7 +42,6 @@ fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String? = null): URLBuilder
 
 
 class HttpClientFactory private constructor(
-    private val context: Context,
     private val json: Json,
     private val accessTokenManager: AccessTokenManager,
     private val baseURL: BaseURL,
@@ -62,83 +56,44 @@ class HttpClientFactory private constructor(
     }
 
     private val httpClient: HttpClient
-        get() {
-            val loggingInterceptor = HttpLoggingInterceptor().apply {
+        get() = HttpClient(OkHttp) {
+            expectSuccess = true
+            install(HttpRedirect) {
+                checkHttpMethod = false
+            }
+            install(HttpRequestRetry) {
+                retryIf(maxRetries = 3) { _, response ->
+                    response.status == HttpStatusCode.RequestTimeout
+                            || response.status.value in 500..599
+                }
+                delayMillis { retry ->
+                    (3.seconds * retry).inWholeMilliseconds
+                }
+            }
+            install(ContentNegotiation) {
+                json(json = this@HttpClientFactory.json)
+            }
+            defaultRequest {
+                contentType(ContentType.Application.Json)
+            }
+            install(Logging) {
+                logger = Logger.ANDROID
                 level = if (BuildConfig.DEBUG) {
-                    HttpLoggingInterceptor.Level.valueOf(BuildConfig.HTTP_LOG_LEVEL)
+                    LogLevel.ALL
                 } else {
-                    redactHeader(HttpHeaders.Authorization)
-                    redactHeader(HttpHeaders.Cookie)
-                    HttpLoggingInterceptor.Level.NONE
+                    LogLevel.NONE
+                }
+                sanitizeHeader { header ->
+                    header == HttpHeaders.Authorization
                 }
             }
-            val cacheInterceptor = Interceptor { chain ->
-                val request = chain.request()
-                var response = chain.proceed(
-                    request.newBuilder()
-                        .cacheControl(CacheControl.parse(request.headers)).build()
-                )
-                if (response.code == 504 && response.request.cacheControl.onlyIfCached) {
-                    // See, https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#other
-                    response = chain.proceed(
-                        response.request.newBuilder()
-                            .cacheControl(CacheControl.FORCE_NETWORK).build()
-                    )
-                }
-                return@Interceptor response
+            install(HttpTimeout) {
+                val timeout = 30000L
+                connectTimeoutMillis = timeout
+                requestTimeoutMillis = timeout
+                socketTimeoutMillis = timeout
             }
-            val cache = Cache(context.cacheDir, (5 * 1024 * 1024).toLong())
-            val okHttpClient = OkHttpClient.Builder()
-                .cache(cache)
-                .addInterceptor(cacheInterceptor) // maintain order - cache may depend on the headers
-                .addInterceptor(loggingInterceptor)
-                .connectTimeout(60L, TimeUnit.SECONDS)
-                .readTimeout(30L, TimeUnit.SECONDS)
-                .writeTimeout(15L, TimeUnit.SECONDS)
-                .build()
-            return HttpClient(OkHttp) {
-                engine {
-                    preconfigured = okHttpClient
-                }
-                configurePlugins()
-            }.withPlugins()
-        }
-
-    private fun <T : HttpClientEngineConfig> HttpClientConfig<T>.configurePlugins() {
-        expectSuccess = true
-        install(HttpRedirect) {
-            checkHttpMethod = false
-        }
-        install(HttpRequestRetry) {
-            retryIf(maxRetries = 3) { _, response ->
-                // Automatically retry server errors
-                response.status.value.toString().startsWith("5")
-            }
-            delayMillis { retry ->
-                retry * 3000L
-            }
-        }
-        install(ContentNegotiation) {
-            json(json = this@HttpClientFactory.json)
-        }
-        install(Logging) {
-            level = LogLevel.INFO
-            logger = Logger.DEFAULT
-            level = LogLevel.HEADERS
-            filter { request ->
-                request.url.host.contains("ktor.io")
-            }
-            sanitizeHeader { header ->
-                header == HttpHeaders.Authorization
-            }
-        }
-        install(HttpTimeout) {
-            val timeout = 30000L
-            connectTimeoutMillis = timeout
-            requestTimeoutMillis = timeout
-            socketTimeoutMillis = timeout
-        }
-    }
+        }.withPlugins()
 
     private fun HttpClient.withPlugins(): HttpClient {
         plugin(HttpSend).intercept { request ->
@@ -193,13 +148,11 @@ class HttpClientFactory private constructor(
     companion object {
         private const val TAG = "HttpClientFactory"
         operator fun invoke(
-            context: Context,
             json: Json,
             accessTokenManager: AccessTokenManager,
             baseURL: BaseURL,
         ): HttpClient {
             return HttpClientFactory(
-                context = context,
                 json = json,
                 accessTokenManager = accessTokenManager,
                 baseURL = baseURL,
