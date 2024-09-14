@@ -74,3 +74,10 @@ data class Location(
         }
     }
 }
+
+fun android.location.Location.toXentlyLocation(): Location {
+    return Location(
+        latitude = latitude,
+        longitude = longitude,
+    )
+}

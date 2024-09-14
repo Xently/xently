@@ -7,28 +7,45 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
 import androidx.annotation.RequiresPermission
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.location.tracker.data.LocationSettingDelegate
 import co.ke.xently.libraries.location.tracker.domain.error.Error
 import co.ke.xently.libraries.location.tracker.domain.error.LocationRequestError
 import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
 import co.ke.xently.libraries.location.tracker.domain.error.Result
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class LocationTrackerImpl @Inject constructor(
     @ApplicationContext
     private val context: Context,
+    private val dispatchersProvider: DispatchersProvider,
     private val client: FusedLocationProviderClient,
 ) : LocationTracker {
+    private val locationManager by lazy { context.getSystemService<LocationManager>()!! }
     private var currentLocation by LocationSettingDelegate(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,14 +68,12 @@ class LocationTrackerImpl @Inject constructor(
 
         Timber.i("Getting current device location...")
         return suspendCancellableCoroutine { continuation ->
-            val cancellationSignal = CancellationSignal()
-
-            continuation.invokeOnCancellation { cancellationSignal.cancel() }
-
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 continuation.getBelowRLocation()
             } else {
-                val locationManager = context.getSystemService<LocationManager>()!!
+                val cancellationSignal = CancellationSignal()
+
+                continuation.invokeOnCancellation { cancellationSignal.cancel() }
 
                 locationManager.getCurrentLocation(
                     LocationManager.NETWORK_PROVIDER,
@@ -71,11 +86,84 @@ class LocationTrackerImpl @Inject constructor(
         }
     }
 
-    private fun isGPSEnabled(): Boolean {
-        return (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager).run {
-            isProviderEnabled(LocationManager.GPS_PROVIDER)
-                    || isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    override fun observeLocation(
+        interval: Duration?,
+        priority: LocationPriority,
+        permissionBehaviour: MissingPermissionBehaviour,
+    ): Flow<Location> {
+        return callbackFlow {
+            while (!isGPSEnabled()) {
+                val duration = 3.seconds
+                Timber.d("GPS not enabled, waiting %s before rechecking...", duration)
+                delay(duration)
+            }
+
+            var hasFineLocationPermission = ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            var hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            while (!(hasFineLocationPermission || hasCoarseLocationPermission) && permissionBehaviour == MissingPermissionBehaviour.REPEAT_CHECK) {
+                hasFineLocationPermission = ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                val duration = 3.seconds
+                Timber.d("Permissions not granted, waiting %s before rechecking...", duration)
+                delay(duration)
+            }
+
+            if (!hasFineLocationPermission || !hasCoarseLocationPermission) {
+                close()
+            } else {
+                Timber.d("All set for location tracking! Adding location observers...")
+
+                withContext(Dispatchers.IO) {
+                    currentLocation?.let {
+                        send(it)
+                    }
+                }
+
+                val request = LocationRequest.Builder(
+                    priority.value,
+                    (interval ?: priority.interval).inWholeMilliseconds,
+                ).build()
+
+                val callback = object : LocationCallback() {
+                    override fun onLocationResult(result: LocationResult) {
+                        super.onLocationResult(result)
+                        result.locations.lastOrNull()?.let {
+                            val location = it.toXentlyLocation()
+
+                            CoroutineScope(coroutineContext + dispatchersProvider.io).launch {
+                                currentLocation = location
+                            }
+                            trySend(location)
+                        }
+                    }
+                }
+
+                client.requestLocationUpdates(request, callback, context.mainLooper)
+
+                awaitClose {
+                    Timber.d("Removing location observers...")
+                    client.removeLocationUpdates(callback)
+                }
+            }
         }
+    }
+
+    private fun isGPSEnabled(): Boolean {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -98,11 +186,10 @@ class LocationTrackerImpl @Inject constructor(
     }
 
     private fun android.location.Location.toLocationResult(): Result<Location, Error> {
-        val location = Location(
-            latitude = latitude,
-            longitude = longitude,
-        )
-        currentLocation = location
+        val location = toXentlyLocation()
+        CoroutineScope(dispatchersProvider.io).launch {
+            currentLocation = location
+        }
         return Result.Success(location)
     }
 }

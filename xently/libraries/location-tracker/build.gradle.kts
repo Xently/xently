@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
+    implementation(project(":xently:libraries:data-core"))
     ksp(libs.hilt.compiler)
     api(libs.bundles.map)
 }
