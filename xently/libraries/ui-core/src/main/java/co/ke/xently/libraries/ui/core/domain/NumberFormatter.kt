@@ -2,26 +2,23 @@ package co.ke.xently.libraries.ui.core.domain
 
 import java.text.DecimalFormat
 
-fun Number.formatNumber(includeDecimal: Boolean = true): String {
-    val pattern = if (includeDecimal) "#,###.##" else "#,###"
+fun Number.formatNumber(decimalPlaces: Int = 2): String {
+    val pattern = if (decimalPlaces > 0) "#,###.".plus("#".repeat(decimalPlaces)) else "#,###"
     return DecimalFormat(pattern).format(this)
 }
 
-fun Number.formatPrice(currency: String? = null, includeDecimal: Boolean = true): String {
+fun Number.formatPrice(currency: String? = null, decimalPlaces: Int = 2): String {
     return if (currency.isNullOrBlank()) {
-        formatNumber(includeDecimal = includeDecimal)
+        formatNumber(decimalPlaces = decimalPlaces)
     } else {
-        "$currency. ${formatNumber(includeDecimal = includeDecimal)}"
+        "$currency. ${formatNumber(decimalPlaces = decimalPlaces)}"
     }
 }
 
-fun Number.coolFormat(iteration: Int = 0): String {
-    if (this.toDouble() < 1000) return toString()
-        .replace(".0", "")
-        .reversed()
-        .chunked(3)
-        .joinToString(",")
-        .reversed()
+fun Number.coolFormat(iteration: Int = 0, decimalPlaces: Int = 2): String {
+    if (this.toDouble() < 1000) {
+        return formatNumber(decimalPlaces = decimalPlaces)
+    }
     val d = (toLong() / 100) / 10.0
     val isRound =
         (d * 10) % 10 == 0.0 //true if the decimal part is equal to 0 (then it's trimmed anyway)

@@ -21,8 +21,9 @@ data class SmallestDistanceUnit(val distance: String, val unit: DistanceUnit) {
 suspend fun DistanceInMeters.toSmallestDistanceUnit(): SmallestDistanceUnit {
     return withContext(Dispatchers.Default) {
         val distanceDouble = toDouble()
-        val distance = distanceDouble.coolFormat().replace(
-            "[a-z]".toRegex(RegexOption.IGNORE_CASE),
+        val formattedDistance = distanceDouble.coolFormat()
+        val distance = formattedDistance.replace(
+            "[a-z]+\\s*$".toRegex(RegexOption.IGNORE_CASE),
             "",
         )
         val distanceUnit = when {
