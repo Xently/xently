@@ -7,6 +7,21 @@ import org.junit.Test
 
 class DistanceCalculatorTest {
     @Test
+    fun `should return smallest distance unit when less than 1000 with floating points`() {
+        val distance = 99.8949494949495
+
+        val actual = runBlocking { distance.toSmallestDistanceUnit() }
+
+        assertEquals(
+            SmallestDistanceUnit(
+                "99.89",
+                SmallestDistanceUnit.DistanceUnit.m,
+            ),
+            actual,
+        )
+    }
+
+    @Test
     fun `should return smallest distance unit when less than 1000`() {
         val distance = 999
 

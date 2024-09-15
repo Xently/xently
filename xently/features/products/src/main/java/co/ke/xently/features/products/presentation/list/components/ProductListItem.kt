@@ -70,7 +70,7 @@ fun ProductListItem(
                     style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
-                    text = product.unitPrice.formatPrice("KES", false),
+                    text = product.unitPrice.formatPrice("KES", 0),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.shimmer(isLoading),
                 )
