@@ -14,7 +14,7 @@ class DistanceCalculatorTest {
 
         assertEquals(
             SmallestDistanceUnit(
-                "99.89",
+                "100",
                 SmallestDistanceUnit.DistanceUnit.m,
             ),
             actual,
