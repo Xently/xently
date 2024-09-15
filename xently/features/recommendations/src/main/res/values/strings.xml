@@ -48,5 +48,4 @@
     <string name="headline_shopping_list">Products you want to buy</string>
     <string name="message_no_recommendation_found">Sorry, no recommendations matched the search parameters.</string>
     <string name="headline_full_catalogue">Full catalogue</string>
-    <string name="selected_location_help_text">Selected location: &lt;b>%1$s&lt;/b></string>
 </resources>

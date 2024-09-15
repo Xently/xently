@@ -1,7 +1,6 @@
 package co.ke.xently.features.recommendations.presentation.request
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,12 +31,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -50,9 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,6 +78,7 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.SearchBar
@@ -135,6 +138,9 @@ internal fun RecommendationRequestScreen(
 ) {
     var showLocationPicker by rememberSaveable { mutableStateOf(false) }
 
+    val isLocationUsable by remember(state.location) {
+        derivedStateOf { state.location.isUsable() }
+    }
     if (showLocationPicker) {
         PickLocationDialog(
             location = state.location,
@@ -142,6 +148,14 @@ internal fun RecommendationRequestScreen(
             onDismissRequest = { showLocationPicker = false },
             onLocationChange = { onAction(RecommendationAction.ChangeLocation(it)) },
         )
+    } else if (!isLocationUsable) {
+        // Will use previously saved location...
+        val currentLocation by LocalLocationState.current
+        LaunchedEffect(currentLocation) {
+            currentLocation?.also {
+                onAction(RecommendationAction.ChangeLocation(it))
+            }
+        }
     }
 
     Scaffold(
@@ -157,13 +171,33 @@ internal fun RecommendationRequestScreen(
                         windowInsets = WindowInsets.waterfall,
                         navigationIcon = { NavigateBackIconButton(onClick = onClickBack) },
                         title = { Text(text = stringResource(R.string.topbar_title_recommendation_request)) },
+                        actions = {
+                            androidx.compose.animation.AnimatedVisibility(state.locationQuery.isNotBlank()) {
+                                TooltipBox(
+                                    state = rememberTooltipState(),
+                                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                                    tooltip = {
+                                        PlainTooltip {
+                                            Text(text = stringResource(R.string.action_label_pick_location))
+                                        }
+                                    },
+                                ) {
+                                    IconButton(onClick = { showLocationPicker = true }) {
+                                        Icon(
+                                            Icons.Default.LocationOn,
+                                            contentDescription = stringResource(R.string.action_label_pick_location),
+                                        )
+                                    }
+                                }
+                            }
+                        },
                     )
                     AnimatedVisibility(state.isLoading) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
                 }
                 SearchBar(
-                    query = state.query,
+                    query = state.locationQuery,
                     exitSearchIcon = Icons.Default.Close,
                     clearSearchQueryIcon = Icons.AutoMirrored.Filled.Backspace,
                     placeholder = stringResource(R.string.search_placeholder_location),
@@ -192,20 +226,6 @@ internal fun RecommendationRequestScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            AnimatedVisibility(state.location.isUsable()) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clickable { showLocationPicker = true },
-                    text = AnnotatedString.fromHtml(
-                        stringResource(
-                            R.string.selected_location_help_text,
-                            state.location,
-                        ),
-                    )
-                )
-            }
-
             val focusManager = LocalFocusManager.current
 
             OutlinedTextField(value = state.productName,

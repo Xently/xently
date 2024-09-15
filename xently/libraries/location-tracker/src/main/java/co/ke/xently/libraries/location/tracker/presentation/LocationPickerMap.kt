@@ -32,12 +32,13 @@ fun LocationPickerMap(
     positionMarkerAtTheCentre: Boolean,
     enableMyLocation: Boolean,
     contentDescription: String? = null,
+    onPositionMarkerAtTheCentreChange: (Boolean) -> Unit,
     onMarkerPositionChange: (Location) -> Unit,
 ) {
     val markerState = rememberMarkerState()
     val cameraPositionState: CameraPositionState = rememberCameraPositionState()
 
-    LaunchedEffect(location, positionMarkerAtTheCentre) {
+    LaunchedEffect(location) {
         if (location != null) {
             LatLng(location.latitude, location.longitude).let {
                 markerState.position = it
@@ -48,6 +49,13 @@ fun LocationPickerMap(
 
     LaunchedEffect(markerState.isDragging) {
         onMarkerPositionChange(markerState.position.toXentlyLocation())
+    }
+
+    if (positionMarkerAtTheCentre) {
+        LaunchedEffect(Unit) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(markerState.position, 18f)
+            onPositionMarkerAtTheCentreChange(false)
+        }
     }
 
     Box(modifier = modifier) {

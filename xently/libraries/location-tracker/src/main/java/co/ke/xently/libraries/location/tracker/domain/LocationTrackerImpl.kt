@@ -92,6 +92,10 @@ class LocationTrackerImpl @Inject constructor(
         priority: LocationPriority,
         permissionBehaviour: MissingPermissionBehaviour,
     ) = callbackFlow {
+        currentLocation?.let {
+            send(it)
+        }
+
         while (!isGPSEnabled()) {
             val duration = 3.seconds
             Timber.tag(TAG).d("GPS not enabled, waiting %s before rechecking...", duration)

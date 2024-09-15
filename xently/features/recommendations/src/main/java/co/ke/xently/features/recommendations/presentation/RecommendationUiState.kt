@@ -8,7 +8,7 @@ import co.ke.xently.libraries.location.tracker.domain.Location
 
 @Stable
 data class RecommendationUiState(
-    val query: String = "",
+    val locationQuery: String = "",
     val isLoading: Boolean = false,
     val location: Location = Location(),
     val productName: String = "",

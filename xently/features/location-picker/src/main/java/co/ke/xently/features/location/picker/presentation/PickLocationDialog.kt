@@ -28,7 +28,7 @@ fun PickLocationDialog(
     onDismissRequest: () -> Unit,
     onLocationChange: (Location) -> Unit,
 ) {
-    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
+    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(false) }
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
@@ -42,6 +42,7 @@ fun PickLocationDialog(
             positionMarkerAtTheCentre = positionMarkerAtTheCentre,
             onClickConfirmSelection = onDismissRequest,
             onLocationChange = onLocationChange,
+            onPositionMarkerAtTheCentreChange = { positionMarkerAtTheCentre = it },
         ) {
             TopAppBar(
                 title = {
