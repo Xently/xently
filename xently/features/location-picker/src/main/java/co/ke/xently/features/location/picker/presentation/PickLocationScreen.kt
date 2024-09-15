@@ -47,7 +47,7 @@ fun PickLocationScreen(
 ) {
     val viewModel = hiltViewModel<PickLocationViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(true) }
+    var positionMarkerAtTheCentre by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
@@ -61,6 +61,7 @@ fun PickLocationScreen(
         modifier = modifier,
         location = state.location,
         positionMarkerAtTheCentre = positionMarkerAtTheCentre,
+        onPositionMarkerAtTheCentreChange = { positionMarkerAtTheCentre = it },
         onLocationChange = { viewModel.onAction(PickLocationAction.UpdateLocation(it)) },
         onClickConfirmSelection = { viewModel.onAction(PickLocationAction.ConfirmSelection) },
     ) {
@@ -93,10 +94,11 @@ fun PickLocationScreen(
 internal fun PickLocationScreen(
     location: Location?,
     modifier: Modifier = Modifier,
-    positionMarkerAtTheCentre: Boolean = true,
+    positionMarkerAtTheCentre: Boolean = false,
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     onClickConfirmSelection: () -> Unit,
     onLocationChange: (Location) -> Unit,
+    onPositionMarkerAtTheCentreChange: (Boolean) -> Unit,
     topBar: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = rememberSnackbarHostState()
@@ -107,16 +109,19 @@ internal fun PickLocationScreen(
         mutableStateOf(false)
     }
 
-    var shouldTrackLocation by remember {
+    var shouldTrackLocation by rememberSaveable {
         mutableStateOf(false)
     }
     val locationPermissionLauncher = rememberLocationPermissionLauncher {
         locationPermissionGranted = it
     }
 
-    val currentLocation by LocalLocationState.current
-    LaunchedEffect(currentLocation, shouldTrackLocation, locationPermissionGranted) {
-        currentLocation?.also(onLocationChange)
+    if (shouldTrackLocation && locationPermissionGranted) {
+        val currentLocation by LocalLocationState.current
+        LaunchedEffect(currentLocation) {
+            currentLocation?.also(onLocationChange)
+            shouldTrackLocation = false
+        }
     }
 
     Scaffold(
@@ -147,6 +152,7 @@ internal fun PickLocationScreen(
             positionMarkerAtTheCentre = positionMarkerAtTheCentre,
             enableMyLocation = locationPermissionGranted,
             onMarkerPositionChange = onLocationChange,
+            onPositionMarkerAtTheCentreChange = onPositionMarkerAtTheCentreChange,
         )
     }
 }
@@ -172,6 +178,7 @@ private fun PickLocationScreenPreview(
             modifier = Modifier.fillMaxSize(),
             onClickConfirmSelection = {},
             onLocationChange = {},
+            onPositionMarkerAtTheCentreChange = {},
         )
     }
 }

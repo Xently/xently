@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.libraries.location.tracker.domain.Location
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -22,24 +21,40 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
 
+private fun LatLng.toXentlyLocation(): Location {
+    return Location(latitude = latitude, longitude = longitude)
+}
+
 @Composable
-inline fun LocationPickerMap(
+fun LocationPickerMap(
     modifier: Modifier,
     location: Location?,
     positionMarkerAtTheCentre: Boolean,
     enableMyLocation: Boolean,
     contentDescription: String? = null,
-    crossinline onMarkerPositionChange: (Location) -> Unit,
+    onPositionMarkerAtTheCentreChange: (Boolean) -> Unit,
+    onMarkerPositionChange: (Location) -> Unit,
 ) {
     val markerState = rememberMarkerState()
     val cameraPositionState: CameraPositionState = rememberCameraPositionState()
 
-    LaunchedEffect(location, positionMarkerAtTheCentre) {
+    LaunchedEffect(location) {
         if (location != null) {
             LatLng(location.latitude, location.longitude).let {
                 markerState.position = it
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 18f)
             }
+        }
+    }
+
+    LaunchedEffect(markerState.isDragging) {
+        onMarkerPositionChange(markerState.position.toXentlyLocation())
+    }
+
+    if (positionMarkerAtTheCentre) {
+        LaunchedEffect(Unit) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(markerState.position, 18f)
+            onPositionMarkerAtTheCentreChange(false)
         }
     }
 
@@ -57,33 +72,18 @@ inline fun LocationPickerMap(
             cameraPositionState = cameraPositionState,
             contentDescription = contentDescription,
             onMapClick = {
-                Location(
-                    latitude = it.latitude,
-                    longitude = it.longitude,
-                ).let(onMarkerPositionChange)
+                onMarkerPositionChange(it.toXentlyLocation())
             },
-            onPOIClick = { poi: PointOfInterest ->
-                // TODO: Consider if store name should be overridden if already provided
-                //  like we currently do
-                val name = poi.name.split("\n").joinToString {
-                    it.trim()
-                }
-
-                Location(
-                    name = name,
-                    latitude = poi.latLng.latitude,
-                    longitude = poi.latLng.longitude,
-                ).let(onMarkerPositionChange)
+            onPOIClick = {
+                onMarkerPositionChange(it.latLng.toXentlyLocation())
             },
         ) {
             Marker(
                 state = markerState,
+                draggable = true,
                 visible = location != null,
                 onClick = {
-                    Location(
-                        latitude = it.position.latitude,
-                        longitude = it.position.longitude,
-                    ).let(onMarkerPositionChange)
+                    onMarkerPositionChange(it.position.toXentlyLocation())
                     true
                 },
             )

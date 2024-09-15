@@ -157,11 +157,12 @@ class RecommendationViewModel @Inject constructor(
             }
 
             is RecommendationAction.ChangeLocationQuery -> {
-                _uiState.update { it.copy(query = action.query) }
+                _uiState.update { it.copy(locationQuery = action.query) }
             }
 
             is RecommendationAction.ChangeLocation -> {
                 _uiState.update { it.copy(location = action.location) }
+                onAction(RecommendationAction.ChangeLocationQuery(action.location.coordinatesString()))
             }
 
             is RecommendationAction.ChangeMaximumPrice -> {
