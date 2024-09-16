@@ -62,7 +62,7 @@ fun PickLocationDialog(
                 actions = {
                     TextButton(
                         content = { Text(text = stringResource(R.string.action_center_marker)) },
-                        onClick = { positionMarkerAtTheCentre = !positionMarkerAtTheCentre },
+                        onClick = { positionMarkerAtTheCentre = true },
                     )
                 },
             )

@@ -22,7 +22,8 @@ data class Location(
     val longitude: Double = Double.NaN,
     @Transient
     val name: String? = null,
-    val averageCoordinates: Double = ((latitude + longitude) / 2),
+    @Transient
+    val isCached: Boolean = false
 ) : Parcelable {
     fun isUsable() = (!latitude.isNaN()
             || !longitude.isNaN())

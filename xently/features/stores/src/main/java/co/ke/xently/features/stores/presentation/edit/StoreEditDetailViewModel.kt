@@ -159,6 +159,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
             is StoreEditDetailAction.ChangeLocation -> {
                 _uiState.update {
                     it.copy(
+                        location = action.location,
                         locationString = action.location.takeIf(Location::isUsable)
                             ?.coordinatesString() ?: "",
                     )
