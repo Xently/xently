@@ -40,7 +40,7 @@ class LocationSettingDelegate(
             Timber.w("""Unexpected error was encountered when retrieving '$KEY' from settings...""")
             null
         } else {
-            Location(latitude, longitude)
+            Location(latitude, longitude, isCached = true)
         }
     }
 

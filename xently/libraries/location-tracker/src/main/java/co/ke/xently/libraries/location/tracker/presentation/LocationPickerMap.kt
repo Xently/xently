@@ -1,7 +1,6 @@
 package co.ke.xently.libraries.location.tracker.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,14 +46,17 @@ fun LocationPickerMap(
         }
     }
 
-    LaunchedEffect(markerState.isDragging) {
-        onMarkerPositionChange(markerState.position.toXentlyLocation())
+    if (markerState.isDragging) {
+        LaunchedEffect(markerState.position) {
+            onMarkerPositionChange(markerState.position.toXentlyLocation())
+            onPositionMarkerAtTheCentreChange(true)
+        }
     }
 
     if (positionMarkerAtTheCentre) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(markerState.position) {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(markerState.position, 18f)
-            onPositionMarkerAtTheCentreChange(false)
+//            onPositionMarkerAtTheCentreChange(false)
         }
     }
 
@@ -66,26 +68,24 @@ fun LocationPickerMap(
             MapUiSettings(myLocationButtonEnabled = enableMyLocation)
         }
         GoogleMap(
-            modifier = Modifier.fillMaxSize(),
             properties = properties,
             uiSettings = uiSettings,
-            cameraPositionState = cameraPositionState,
             contentDescription = contentDescription,
+            cameraPositionState = cameraPositionState,
+            modifier = Modifier.matchParentSize(),
             onMapClick = {
                 onMarkerPositionChange(it.toXentlyLocation())
+                onPositionMarkerAtTheCentreChange(true)
             },
             onPOIClick = {
                 onMarkerPositionChange(it.latLng.toXentlyLocation())
+                onPositionMarkerAtTheCentreChange(true)
             },
         ) {
             Marker(
-                state = markerState,
                 draggable = true,
+                state = markerState,
                 visible = location != null,
-                onClick = {
-                    onMarkerPositionChange(it.position.toXentlyLocation())
-                    true
-                },
             )
         }
 

@@ -27,6 +27,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
@@ -131,10 +132,6 @@ class LocationTrackerImpl @Inject constructor(
         } else {
             Timber.tag(TAG).d("All set for location tracking! Adding location observers...")
 
-            currentLocation?.let {
-                send(it)
-            }
-
             val request = LocationRequest.Builder(
                 priority.value,
                 (interval ?: priority.interval).inWholeMilliseconds,
@@ -162,7 +159,7 @@ class LocationTrackerImpl @Inject constructor(
                 client.removeLocationUpdates(callback)
             }
         }
-    }
+    }.distinctUntilChanged()
 
     private fun isGPSEnabled(): Boolean {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)

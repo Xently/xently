@@ -41,6 +41,7 @@ import co.ke.xently.features.stores.presentation.list.selection.Operation
 import co.ke.xently.features.stores.presentation.list.selection.StoreSelectionListScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
+import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -66,6 +67,8 @@ class MainActivity : ComponentActivity() {
             val mainViewModel = hiltViewModel<MainViewModel>()
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val themeSetting by settingsViewModel.currentThemeSetting.collectAsStateWithLifecycle()
+            val currentLocationState =
+                mainViewModel.currentLocation.collectAsStateWithLifecycle(null)
             val navController = rememberNavController()
             val eventHandler = remember {
                 object : EventHandler {
@@ -86,7 +89,10 @@ class MainActivity : ComponentActivity() {
                 val authenticationState =
                     mainViewModel.authenticationState.collectAsStateWithLifecycle()
 
-                CompositionLocalProvider(LocalAuthenticationState provides authenticationState) {
+                CompositionLocalProvider(
+                    LocalLocationState provides currentLocationState,
+                    LocalAuthenticationState provides authenticationState,
+                ) {
                     NavHost(navController = navController, startDestination = LandingScreen) {
                         composable<LandingScreen> {
                             LandingScreen(

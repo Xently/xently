@@ -199,13 +199,14 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
                 delay(1_000)
             }
         }.distinctUntilChanged { a, b ->
-            val (_, isCurrentlyOpenA) = a
-            val (_, isCurrentlyOpenB) = b
+            val (distanceA, isCurrentlyOpenA) = a
+            val (distanceB, isCurrentlyOpenB) = b
             val (dayOfWeekA, isOpenA, _) = isCurrentlyOpenA
             val (dayOfWeekB, isOpenB, _) = isCurrentlyOpenB
 
             dayOfWeekA == dayOfWeekB
                     && isOpenA == isOpenB
+                    && distanceA == distanceB
         }.flowOn(Dispatchers.Default).collect { (distance, isCurrentlyOpen) ->
             val (dayOfWeek, isOpen, operationHours) = isCurrentlyOpen
 

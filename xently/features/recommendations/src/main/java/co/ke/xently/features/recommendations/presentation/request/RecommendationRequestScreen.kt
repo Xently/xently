@@ -19,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
-import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PostAdd
@@ -208,7 +207,7 @@ internal fun RecommendationRequestScreen(
                     blankQueryIcon = {
                         IconButton(onClick = { showLocationPicker = true }) {
                             Icon(
-                                Icons.Default.AddLocationAlt,
+                                Icons.Default.LocationOn,
                                 contentDescription = stringResource(R.string.action_label_pick_location),
                             )
                         }

@@ -120,7 +120,8 @@ internal fun PickLocationScreen(
         val currentLocation by LocalLocationState.current
         LaunchedEffect(currentLocation) {
             currentLocation?.also(onLocationChange)
-            shouldTrackLocation = false
+            // We want to keep tracking the location until the user confirms the selection
+            shouldTrackLocation = currentLocation?.isCached == false
         }
     }
 
