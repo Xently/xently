@@ -18,7 +18,7 @@ fun isOpenToday(openTime: Time, closeTime: Time, currentTime: Time = Time.now())
     val currentTimeMinutes = currentTime.hour * 60 + currentTime.minute
 
     if (openTimeMinutes > closeTimeMinutes) {
-        return currentTimeMinutes in openTimeMinutes..(23 * 60 + 59)
+        return currentTimeMinutes in openTimeMinutes..(24 * 60)
                 || currentTimeMinutes in 0..closeTimeMinutes
     }
 
