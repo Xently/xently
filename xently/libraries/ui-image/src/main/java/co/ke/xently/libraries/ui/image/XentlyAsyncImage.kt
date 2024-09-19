@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
-import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
 import coil3.Extras
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -30,7 +29,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import com.valentinilk.shimmer.shimmer
-import io.ktor.http.URLBuilder
 import timber.log.Timber
 
 
@@ -59,8 +57,7 @@ fun XentlyImage(
             is UploadResponse -> {
                 val url by remember {
                     derivedStateOf {
-                        URLBuilder(it.url()).urlWithSchemaMatchingBaseURL()
-                            .buildString()
+                        it.url()
                     }
                 }
                 XentlyAsyncImage(

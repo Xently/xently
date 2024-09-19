@@ -16,45 +16,18 @@ import io.ktor.client.plugins.plugin
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
 import io.ktor.http.contentType
-import io.ktor.http.takeFrom
+import io.ktor.http.set
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
-fun interface BaseURL {
-    fun get(): String
-}
-
-private var cachedBaseURL: String? = null
-
-fun URLBuilder.urlWithSchemaMatchingBaseURL(baseURL: String? = null): URLBuilder {
-    val urlString = baseURL ?: cachedBaseURL ?: return this
-    val baseURlBuilder = URLBuilder(urlString)
-    return apply {
-        if (baseURlBuilder.host == host && baseURlBuilder.protocol.name != protocol.name) {
-            protocol = baseURlBuilder.protocol
-        }
-    }
-}
-
 
 class HttpClientFactory private constructor(
     private val json: Json,
     private val accessTokenManager: AccessTokenManager,
-    private val baseURL: BaseURL,
 ) {
-    init {
-        synchronized(Unit) {
-            if (cachedBaseURL == null) {
-                Timber.tag(TAG).i("Caching base URL...")
-                cachedBaseURL = baseURL.get()
-            }
-        }
-    }
-
     private val httpClient: HttpClient
         get() = HttpClient(OkHttp) {
             expectSuccess = true
@@ -74,7 +47,7 @@ class HttpClientFactory private constructor(
                 json(json = this@HttpClientFactory.json)
             }
             defaultRequest {
-                url(scheme = "https", host = BuildConfig.BASE_HOST)
+                url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
                 contentType(ContentType.Application.Json)
             }
             install(Logging) {
@@ -99,7 +72,9 @@ class HttpClientFactory private constructor(
     private fun HttpClient.withPlugins(): HttpClient {
         plugin(HttpSend).intercept { request ->
             request.url {
-                takeFrom(urlWithSchemaMatchingBaseURL())
+                if (it.host == BuildConfig.BASE_HOST) {
+                    set(scheme = DEFAULT_SCHEME)
+                }
             }
             val authenticationCredentials = request.headers[HttpHeaders.Authorization]
 
@@ -148,15 +123,14 @@ class HttpClientFactory private constructor(
 
     companion object {
         private const val TAG = "HttpClientFactory"
+        private const val DEFAULT_SCHEME = "https"
         operator fun invoke(
             json: Json,
             accessTokenManager: AccessTokenManager,
-            baseURL: BaseURL,
         ): HttpClient {
             return HttpClientFactory(
                 json = json,
                 accessTokenManager = accessTokenManager,
-                baseURL = baseURL,
             ).httpClient
         }
     }
