@@ -3,12 +3,12 @@ package co.ke.xently.features.auth.domain
 import android.accounts.Account
 import android.content.Context
 import android.os.CancellationSignal
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
@@ -18,7 +18,11 @@ fun interface GoogleAuthorizationHandler {
     suspend fun handleAuthorization(): AuthorizationResult
 
     companion object {
-        fun create(context: Context, accountId: String?): GoogleAuthorizationHandler {
+        fun create(
+            context: Context,
+            accountId: String?,
+            dispatchersProvider: DispatchersProvider,
+        ): GoogleAuthorizationHandler {
             return GoogleAuthorizationHandler {
                 val requestedScopes = listOf(Scopes.EMAIL, Scopes.PROFILE, Scopes.OPEN_ID)
                     .map(::Scope)
@@ -28,7 +32,7 @@ fun interface GoogleAuthorizationHandler {
                     .setAccount(Account(accountId, "com.google"))
                     .build()
 
-                withContext(Dispatchers.IO) {
+                withContext(dispatchersProvider.io) {
                     suspendCancellableCoroutine { continuation ->
                         val cancellationSignal = CancellationSignal()
 

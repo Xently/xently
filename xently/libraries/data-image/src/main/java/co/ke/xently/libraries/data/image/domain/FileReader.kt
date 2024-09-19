@@ -1,25 +1,25 @@
 package co.ke.xently.libraries.data.image.domain
 
 import android.content.ContentResolver
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ensureActive
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import java.io.ByteArrayOutputStream
-import kotlin.coroutines.CoroutineContext
 
 class FileReader(
     private val resolver: ContentResolver,
-    private val ioDispatcher: CoroutineContext = Dispatchers.IO,
+    private val dispatchersProvider: DispatchersProvider,
 ) {
     suspend fun readUri(uri: android.net.Uri): ByteArray? {
-        return withContext(ioDispatcher) {
+        return withContext(dispatchersProvider.io) {
             resolver.openInputStream(uri)?.use { inputStream ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val buffer = ByteArray(4_096)
                 var bytesRead: Int
 
+                yield()
                 while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    ensureActive()
+                    yield()
                     byteArrayOutputStream.write(buffer, 0, bytesRead)
                 }
 

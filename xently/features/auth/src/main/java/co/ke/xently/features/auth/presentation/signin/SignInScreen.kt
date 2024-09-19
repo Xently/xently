@@ -63,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
 import co.ke.xently.features.auth.domain.GoogleAuthorizationHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
@@ -102,6 +103,7 @@ internal fun SignInScreen(
             }
         }
 
+    val dispatchersProvider = LocalDispatchersProvider.current
     LaunchedEffect(viewModel) {
         viewModel.event.collect { event ->
             when (event) {
@@ -117,6 +119,7 @@ internal fun SignInScreen(
                     val authorizationHandler = GoogleAuthorizationHandler.create(
                         context = context,
                         accountId = event.user.id,
+                        dispatchersProvider = dispatchersProvider,
                     )
                     val result = authorizationHandler.handleAuthorization()
                     if (!result.hasResolution()) {

@@ -38,23 +38,29 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.domain.IsCurrentlyOpen
 import co.ke.xently.features.stores.domain.IsOpen
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
+import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 typealias Expanded = Boolean
@@ -177,68 +183,104 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
 
     val is24hour = timePickerState.is24hour
     val currentLocation by LocalLocationState.current
+    val dispatcher = LocalDispatchersProvider.current
     return produceState(
         isOpenCache to overlineTextCache,
         store.distance,
         store.openingHours,
         is24hour,
     ) {
-        flow {
-            while (true) {
-                val deferredDistance = async {
-                    val distanceMeters = withContext(Dispatchers.Default) {
-                        currentLocation?.toAndroidLocation()
-                            ?.distanceTo(store.location.toAndroidLocation())
-                    } ?: store.distance
-                    distanceMeters?.toSmallestDistanceUnit()?.toString() ?: ""
-                }
-                val deferredIsCurrentlyOpen = async {
-                    store.openingHours.isCurrentlyOpen()
-                }
-                emit(deferredDistance.await() to deferredIsCurrentlyOpen.await())
-                delay(1_000)
-            }
-        }.distinctUntilChanged { a, b ->
-            val (distanceA, isCurrentlyOpenA) = a
-            val (distanceB, isCurrentlyOpenB) = b
-            val (dayOfWeekA, isOpenA, _) = isCurrentlyOpenA
-            val (dayOfWeekB, isOpenB, _) = isCurrentlyOpenB
-
-            dayOfWeekA == dayOfWeekB
-                    && isOpenA == isOpenB
-                    && distanceA == distanceB
-        }.flowOn(Dispatchers.Default).collect { (distance, isCurrentlyOpen) ->
-            val (dayOfWeek, isOpen, operationHours) = isCurrentlyOpen
-
-            val formattedOperationTime =
-                operationHours.joinToString(separator = " • ") { (hour, _) ->
-                    buildString {
-                        append(hour.openTime.toString(is24hour))
-                        append(" - ")
-                        append(hour.closeTime.toString(is24hour))
-                    }
-                }
-
-            val text = buildString {
-                var separator = ""
-                if (distance.isNotBlank()) {
-                    append(distance)
-                    separator = " | "
-                }
-                if (formattedOperationTime.isNotBlank()) {
-                    append(separator)
-                    append(formattedOperationTime)
-                    append(" | ")
-                    append(dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() })
-                }
-            }
-
+        flowOfDistanceAndCurrentlyOpen(
+            currentLocation = currentLocation,
+            is24hour = is24hour,
+            location = store.location,
+            fallbackDistanceMeters = store.distance,
+            openingHours = store.openingHours,
+            dispatcher = dispatcher,
+        ).collectLatest { (isOpen, text) ->
             isOpenCache = isOpen
             overlineTextCache = text
             value = isOpen to text
         }
     }
 }
+
+private suspend fun getDistanceAndIsCurrentlyOpen(
+    currentLocation: Location?,
+    location: Location,
+    fallbackDistanceMeters: Double?,
+    openingHours: List<OpeningHour>,
+    dispatcher: DispatchersProvider,
+): Pair<String, IsCurrentlyOpen> = withContext(dispatcher.default) {
+    val deferredDistance = async {
+        val distanceMeters = currentLocation?.toAndroidLocation()
+            ?.distanceTo(location.toAndroidLocation())
+            ?: fallbackDistanceMeters
+        distanceMeters?.toSmallestDistanceUnit(dispatchersProvider = dispatcher)?.toString() ?: ""
+    }
+    val deferredIsCurrentlyOpen = async {
+        openingHours.isCurrentlyOpen(dispatchersProvider = dispatcher)
+    }
+    deferredDistance.await() to deferredIsCurrentlyOpen.await()
+}
+
+private fun flowOfDistanceAndCurrentlyOpen(
+    currentLocation: Location?,
+    is24hour: Boolean,
+    location: Location,
+    fallbackDistanceMeters: Double?,
+    openingHours: List<OpeningHour>,
+    dispatcher: DispatchersProvider,
+) = flow {
+    while (true) {
+        emit(
+            getDistanceAndIsCurrentlyOpen(
+                location = location,
+                dispatcher = dispatcher,
+                openingHours = openingHours,
+                currentLocation = currentLocation,
+                fallbackDistanceMeters = fallbackDistanceMeters,
+            )
+        )
+        delay(1_000)
+    }
+}.distinctUntilChanged { a, b ->
+    val (distanceA, isCurrentlyOpenA) = a
+    val (distanceB, isCurrentlyOpenB) = b
+    val (dayOfWeekA, isOpenA, _) = isCurrentlyOpenA
+    val (dayOfWeekB, isOpenB, _) = isCurrentlyOpenB
+
+    dayOfWeekA == dayOfWeekB
+            && isOpenA == isOpenB
+            && distanceA == distanceB
+}.map { (distance, isCurrentlyOpen) ->
+    val (dayOfWeek, isOpen, operationHours) = isCurrentlyOpen
+
+    val formattedOperationTime =
+        operationHours.joinToString(separator = " • ") { (hour, _) ->
+            buildString {
+                append(hour.openTime.toString(is24hour))
+                append(" - ")
+                append(hour.closeTime.toString(is24hour))
+            }
+        }
+
+    val text = buildString {
+        var separator = ""
+        if (distance.isNotBlank()) {
+            append(distance)
+            separator = " | "
+        }
+        if (formattedOperationTime.isNotBlank()) {
+            append(separator)
+            append(formattedOperationTime)
+            append(" | ")
+            append(dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() })
+        }
+    }
+
+    isOpen to text
+}.flowOn(dispatcher.default)
 
 private data class StoreCardParameter(
     val store: Store,

@@ -3,6 +3,7 @@ package co.ke.xently.features.auth.data.source.di
 import co.ke.xently.features.access.control.BuildConfig.BASE_URL
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.auth.data.source.UserEntity
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.data.network.AccessTokenManager
 import dagger.Binds
 import dagger.Module
@@ -26,10 +27,11 @@ import kotlin.coroutines.coroutineContext
 @Singleton
 class AccessTokenManagerImpl @Inject constructor(
     private val database: AuthenticationDatabase,
+    private val dispatchersProvider: DispatchersProvider,
 ) : AccessTokenManager {
     private val userDao = database.userDao()
     override suspend fun clearUserSession() {
-        withContext(NonCancellable + Dispatchers.IO) {
+        withContext(NonCancellable + dispatchersProvider.io) {
             userDao.deleteAll()
         }
     }
@@ -49,7 +51,7 @@ class AccessTokenManagerImpl @Inject constructor(
                 contentType(ContentType.Application.Json)
             }.body<UserEntity>().run {
                 database.withTransactionFacade {
-                    withContext(NonCancellable + Dispatchers.IO) {
+                    withContext(NonCancellable + dispatchersProvider.io) {
                         userDao.deleteAll()
                         userDao.save(this@run)
                     }

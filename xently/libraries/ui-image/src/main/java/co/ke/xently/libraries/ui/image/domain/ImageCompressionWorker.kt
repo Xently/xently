@@ -7,6 +7,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.data.image.domain.File
 import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
@@ -20,6 +21,7 @@ import dagger.assisted.AssistedInject
 class ImageCompressionWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted private val params: WorkerParameters,
+    private val dispatchersProvider: DispatchersProvider,
 ) : CoroutineWorker(appContext, params) {
     /*override suspend fun getForegroundInfo(): ForegroundInfo {
         val channelName =
@@ -79,6 +81,7 @@ class ImageCompressionWorker @AssistedInject constructor(
             compressionThresholdInBytes = compressionThresholdInBytes,
             ensureCompressedNotLargerThanInBytes = ensureCompressedNotLargerThanInBytes,
             compressFormat = compressFormat,
+            dispatchersProvider = dispatchersProvider,
         )
 
         return when (upload) {
