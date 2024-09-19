@@ -46,18 +46,20 @@ import co.ke.xently.features.stores.domain.IsOpen
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
+import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -181,6 +183,7 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
 
     val is24hour = timePickerState.is24hour
     val currentLocation by LocalLocationState.current
+    val dispatcher = LocalDispatchersProvider.current
     return produceState(
         isOpenCache to overlineTextCache,
         store.distance,
@@ -193,6 +196,7 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
             location = store.location,
             fallbackDistanceMeters = store.distance,
             openingHours = store.openingHours,
+            dispatcher = dispatcher,
         ).collectLatest { (isOpen, text) ->
             isOpenCache = isOpen
             overlineTextCache = text
@@ -206,16 +210,16 @@ private suspend fun getDistanceAndIsCurrentlyOpen(
     location: Location,
     fallbackDistanceMeters: Double?,
     openingHours: List<OpeningHour>,
-): Pair<String, IsCurrentlyOpen> = withContext(Dispatchers.IO) {
+    dispatcher: DispatchersProvider,
+): Pair<String, IsCurrentlyOpen> = withContext(dispatcher.default) {
     val deferredDistance = async {
-        val distanceMeters = withContext(Dispatchers.Default) {
-            currentLocation?.toAndroidLocation()
-                ?.distanceTo(location.toAndroidLocation())
-        } ?: fallbackDistanceMeters
-        distanceMeters?.toSmallestDistanceUnit()?.toString() ?: ""
+        val distanceMeters = currentLocation?.toAndroidLocation()
+            ?.distanceTo(location.toAndroidLocation())
+            ?: fallbackDistanceMeters
+        distanceMeters?.toSmallestDistanceUnit(dispatchersProvider = dispatcher)?.toString() ?: ""
     }
     val deferredIsCurrentlyOpen = async {
-        openingHours.isCurrentlyOpen()
+        openingHours.isCurrentlyOpen(dispatchersProvider = dispatcher)
     }
     deferredDistance.await() to deferredIsCurrentlyOpen.await()
 }
@@ -226,15 +230,18 @@ private fun flowOfDistanceAndCurrentlyOpen(
     location: Location,
     fallbackDistanceMeters: Double?,
     openingHours: List<OpeningHour>,
+    dispatcher: DispatchersProvider,
 ) = flow {
     while (true) {
-        val r = getDistanceAndIsCurrentlyOpen(
-            currentLocation = currentLocation,
-            location = location,
-            fallbackDistanceMeters = fallbackDistanceMeters,
-            openingHours = openingHours,
+        emit(
+            getDistanceAndIsCurrentlyOpen(
+                location = location,
+                dispatcher = dispatcher,
+                openingHours = openingHours,
+                currentLocation = currentLocation,
+                fallbackDistanceMeters = fallbackDistanceMeters,
+            )
         )
-        emit(r)
         delay(1_000)
     }
 }.distinctUntilChanged { a, b ->
@@ -273,7 +280,7 @@ private fun flowOfDistanceAndCurrentlyOpen(
     }
 
     isOpen to text
-}
+}.flowOn(dispatcher.default)
 
 private data class StoreCardParameter(
     val store: Store,

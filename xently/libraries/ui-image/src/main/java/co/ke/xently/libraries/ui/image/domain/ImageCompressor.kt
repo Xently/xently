@@ -2,19 +2,18 @@ package co.ke.xently.libraries.ui.image.domain
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import kotlinx.coroutines.Dispatchers
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 
 class ImageCompressor(
     private val compressionThresholdInBytes: Long,
+    private val dispatchersProvider: DispatchersProvider,
     private val compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-    private val ioDispatcher: CoroutineContext = Dispatchers.IO,
 ) {
     suspend fun getCompressedByteArray(bytes: ByteArray): ByteArray {
-        return withContext(ioDispatcher) {
+        return withContext(dispatchersProvider.io) {
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             var outputBytes: ByteArray = bytes
             var quality = 100

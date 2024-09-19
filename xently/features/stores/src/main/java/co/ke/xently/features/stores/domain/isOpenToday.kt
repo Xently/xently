@@ -1,8 +1,8 @@
 package co.ke.xently.features.stores.domain
 
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.data.core.Time
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -43,8 +43,8 @@ fun OpeningHour.isCurrentlyOpen(
 typealias IsOpen = Boolean
 typealias IsCurrentlyOpen = Triple<DayOfWeek, IsOpen, List<Pair<OpeningHour, IsOpen>>>
 
-suspend fun List<OpeningHour>.isCurrentlyOpen(): IsCurrentlyOpen {
-    return withContext(Dispatchers.Default) {
+suspend fun List<OpeningHour>.isCurrentlyOpen(dispatchersProvider: DispatchersProvider): IsCurrentlyOpen {
+    return withContext(dispatchersProvider.default) {
         val instant = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()
         val currentDateTime = instant.toLocalDateTime(timeZone)
