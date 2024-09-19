@@ -1,6 +1,5 @@
 package co.ke.xently.features.auth.data.source.di
 
-import co.ke.xently.features.access.control.BuildConfig.BASE_URL
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.auth.data.source.UserEntity
 import co.ke.xently.libraries.data.core.DispatchersProvider
@@ -16,7 +15,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -45,7 +43,7 @@ class AccessTokenManagerImpl @Inject constructor(
             ?: return null
 
         return try {
-            httpClient.post("$BASE_URL/auth/refresh") {
+            httpClient.post("/api/v1/auth/refresh") {
                 headers[HttpHeaders.Authorization] = ""
                 setBody(mapOf("refreshToken" to refreshToken))
                 contentType(ContentType.Application.Json)

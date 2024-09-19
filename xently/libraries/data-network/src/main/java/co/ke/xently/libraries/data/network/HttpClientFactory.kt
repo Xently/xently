@@ -74,12 +74,13 @@ class HttpClientFactory private constructor(
                 json(json = this@HttpClientFactory.json)
             }
             defaultRequest {
+                url(scheme = "https", host = BuildConfig.BASE_HOST)
                 contentType(ContentType.Application.Json)
             }
             install(Logging) {
                 logger = Logger.ANDROID
                 level = if (BuildConfig.DEBUG) {
-                    LogLevel.ALL
+                    LogLevel.INFO
                 } else {
                     LogLevel.NONE
                 }

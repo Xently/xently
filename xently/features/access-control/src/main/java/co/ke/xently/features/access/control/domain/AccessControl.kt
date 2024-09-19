@@ -1,27 +1,26 @@
 package co.ke.xently.features.access.control.domain
 
-import co.ke.xently.features.access.control.BuildConfig.BASE_URL
 import co.ke.xently.libraries.data.core.Link
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 private fun baseURLs(): Map<String, Link> {
     return mapOf(
-        "product-categories" to Link(href = "$BASE_URL/categories/products"),
-        "my-notifications" to Link(href = "$BASE_URL/notifications"),
-        "remove-fcm-device-id" to Link(href = "$BASE_URL/firebase-devices"),
-        "shops-associated-with-my-account" to Link(href = "$BASE_URL/shops/associated-with-me"),
-        "store-categories" to Link(href = "$BASE_URL/categories/stores"),
-        "upsert-fcm-device-id" to Link(href = "$BASE_URL/firebase-devices"),
-        "google-sign-in" to Link(href = "$BASE_URL/auth/google"),
-        "email-password-sign-in" to Link(href = "$BASE_URL/auth/sign-in"),
-        "email-password-sign-up" to Link(href = "$BASE_URL/auth/sign-up"),
-        "request-password-reset" to Link(href = "$BASE_URL/auth/request-password-reset"),
-        "stores" to Link(href = "$BASE_URL/stores"),
-        "rankings-statistics" to Link(href = "$BASE_URL/statistics/rankings"),
-        "my-ranking-statistics" to Link(href = "$BASE_URL/statistics/my-rankings"),
-        "my-profile-statistics" to Link(href = "$BASE_URL/statistics/my-profile"),
-        "recommendations" to Link(href = "$BASE_URL/store/recommendations"),
+        "product-categories" to Link(href = "/api/v1/categories/products"),
+        "my-notifications" to Link(href = "/api/v1/notifications"),
+        "remove-fcm-device-id" to Link(href = "/api/v1/firebase-devices"),
+        "shops-associated-with-my-account" to Link(href = "/api/v1/shops/associated-with-me"),
+        "store-categories" to Link(href = "/api/v1/categories/stores"),
+        "upsert-fcm-device-id" to Link(href = "/api/v1/firebase-devices"),
+        "google-sign-in" to Link(href = "/api/v1/auth/google"),
+        "email-password-sign-in" to Link(href = "/api/v1/auth/sign-in"),
+        "email-password-sign-up" to Link(href = "/api/v1/auth/sign-up"),
+        "request-password-reset" to Link(href = "/api/v1/auth/request-password-reset"),
+        "stores" to Link(href = "/api/v1/stores"),
+        "rankings-statistics" to Link(href = "/api/v1/statistics/rankings"),
+        "my-ranking-statistics" to Link(href = "/api/v1/statistics/my-rankings"),
+        "my-profile-statistics" to Link(href = "/api/v1/statistics/my-profile"),
+        "recommendations" to Link(href = "/api/v1/store/recommendations"),
     )
 }
 
