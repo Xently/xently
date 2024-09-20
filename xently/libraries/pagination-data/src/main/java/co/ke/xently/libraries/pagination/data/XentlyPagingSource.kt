@@ -2,7 +2,7 @@ package co.ke.xently.libraries.pagination.data
 
 import androidx.paging.PagingState
 import io.ktor.http.Url
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.yield
 import androidx.paging.PagingSource as AndroidPagingSource
 
 
@@ -36,17 +36,14 @@ class XentlyPagingSource<T : Any>(
         val response = try {
             apiCall(params.key)
         } catch (ex: Exception) {
-            if (ex is CancellationException) {
-                throw ex
-            }
-
+            yield()
             return LoadResult.Error(throwable = ex)
         }
         return LoadResult.Page(
             data = response.getNullable(dataLookupKey)
                 ?: emptyList(),
-            prevKey = response.links["prev"]?.href,
-            nextKey = response.links["next"]?.href,
+            prevKey = response.links.prev?.href,
+            nextKey = response.links.next?.href,
         )
     }
 }

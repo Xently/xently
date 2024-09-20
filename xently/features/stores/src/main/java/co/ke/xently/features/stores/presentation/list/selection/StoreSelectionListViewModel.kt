@@ -3,10 +3,7 @@ package co.ke.xently.features.stores.presentation.list.selection
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
@@ -17,8 +14,6 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.ShopSelectionRequiredException
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.stores.presentation.utils.asUiText
-import co.ke.xently.libraries.pagination.data.PagedResponse
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -28,12 +23,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 
@@ -78,13 +75,16 @@ internal class StoreSelectionListViewModel @Inject constructor(
         shopRepository.findActivatedShop().flatMapLatest { result ->
             when (result) {
                 is ShopResult.Failure -> {
-                    pager {
-                        when (result.error) {
-                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
-                        }
-                    }.flow
+                    if (result.error == ConfigurationError.ShopSelectionRequired) {
+                        throw ShopSelectionRequiredException()
+                    } else {
+                        Timber.e(
+                            "An unexpected error (%s) was encountered while fetching stores.",
+                            result.error,
+                        )
+                        emptyFlow()
+                    }
                 }
-
                 is ShopResult.Success -> {
                     _selectedCategories.combine(_filters) { categories, filters ->
                         filters.copy(
@@ -93,21 +93,13 @@ internal class StoreSelectionListViewModel @Inject constructor(
                             }.toSet(),
                         )
                     }.flatMapLatest { filters ->
-                        pager { url ->
-                            repository.getStores(
-                                filters = filters,
-                                url = url
-                                    ?: result.data.links["stores"]!!.hrefWithoutQueryParamTemplates(),
-                            )
-                        }.flow
+                        repository.getStores(
+                            filters = filters,
+                            url = result.data.links["stores"]!!.hrefWithoutQueryParamTemplates(),
+                        )
                     }
                 }
             }
-        }.cachedIn(viewModelScope)
-
-    private fun pager(call: suspend (String?) -> PagedResponse<Store>) =
-        Pager(PagingConfig(pageSize = 20)) {
-            XentlyPagingSource(apiCall = call)
         }
 
     fun onAction(action: StoreSelectionListAction) {

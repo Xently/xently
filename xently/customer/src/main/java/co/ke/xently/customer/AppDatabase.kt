@@ -1,5 +1,6 @@
 package co.ke.xently.customer
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -49,15 +50,18 @@ import co.ke.xently.features.stores.data.source.local.StoreEntity
 import co.ke.xently.features.storeservice.data.source.local.RoomTypeConverters.StoreServiceConverter
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceDatabase
 import co.ke.xently.features.storeservice.data.source.local.StoreServiceEntity
+import co.ke.xently.libraries.data.core.RoomTypeConverters.LinkConverter
 import co.ke.xently.libraries.data.local.InstantConverter
 import co.ke.xently.libraries.data.local.ServerResponseCache
+import co.ke.xently.libraries.pagination.data.RemoteKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
 @Database(
-    version = 5,
+    version = 6,
     entities = [
+        RemoteKey::class,
         RecommendationEntity::class,
         ReviewRequestEntity::class,
         ProfileStatisticEntity::class,
@@ -76,8 +80,12 @@ import kotlinx.coroutines.withContext
         NotificationEntity::class,
         NotificationTopicEntity::class,
     ],
+    autoMigrations = [
+        AutoMigration(from = 5, to = 6),
+    ],
 )
 @TypeConverters(
+    LinkConverter::class,
     RecommendationConverter::class,
     ProfileStatisticConverter::class,
     InstantConverter::class,
