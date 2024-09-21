@@ -4,6 +4,8 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import co.ke.xently.libraries.data.core.DispatchersProvider
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.datetime.Clock
 import timber.log.Timber
@@ -14,12 +16,17 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
     private val database: RemoteKeyDatabase,
     private val keyManager: LookupKeyManager,
     private val dataManager: DataManager<Data>,
+    private val dispatchersProvider: DispatchersProvider,
     private val dataLookupKey: String? = null,
 ) : RemoteMediator<Key, Value>() {
     private val remoteKeyDao = database.remoteKeyDao()
 
+    private suspend fun getLookupKey(): String = withContext(dispatchersProvider.default) {
+        keyManager.getLookupKey()
+    }
+
     override suspend fun initialize(): InitializeAction {
-        val lookupKey = keyManager.getLookupKey()
+        val lookupKey = getLookupKey()
         val remoteKey = remoteKeyDao.remoteKeyByLookupKey(lookupKey = lookupKey)
             ?: return super.initialize().also {
                 Timber.tag(TAG)
@@ -42,7 +49,7 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
     }
 
     override suspend fun load(loadType: LoadType, state: PagingState<Key, Value>): MediatorResult {
-        val lookupKey = keyManager.getLookupKey()
+        val lookupKey = getLookupKey()
         return try {
             // The network load method takes an optional String
             // parameter. For every page after the first, pass the String
@@ -67,9 +74,10 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
                     // In this example, you never need to prepend, since REFRESH
                     // will always load the first page in the list. Immediately
                     // return, reporting end of pagination.
-                    Timber.tag(TAG)
-                        .d("%s(%s): Reached end of pagination.", loadType, lookupKey)
-                    return MediatorResult.Success(endOfPaginationReached = true)
+                    return MediatorResult.Success(endOfPaginationReached = true).also {
+                        Timber.tag(TAG)
+                            .d("%s(%s): Reached end of pagination.", loadType, lookupKey)
+                    }
                 }
 
                 LoadType.APPEND -> {
@@ -83,10 +91,9 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
                     // reached the end of pagination and there are no more
                     // items to load.
                     remoteKey?.links?.next?.hrefWithoutQueryParamTemplates()
-                        ?: return run {
+                        ?: return MediatorResult.Success(endOfPaginationReached = true).also {
                             Timber.tag(TAG)
                                 .d("%s(%s): Reached end of pagination.", loadType, lookupKey)
-                            MediatorResult.Success(endOfPaginationReached = true)
                         }
                 }
             }

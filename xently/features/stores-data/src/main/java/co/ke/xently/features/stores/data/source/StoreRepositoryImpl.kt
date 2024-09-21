@@ -18,6 +18,7 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
+import co.ke.xently.libraries.data.core.DispatchersProvider
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.domain.UriToByteArrayConverter
@@ -51,7 +52,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -80,6 +80,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private val shopRepository: ShopRepository,
     private val converter: UriToByteArrayConverter,
     private val openingHourRepository: OpeningHourRepository,
+    private val dispatchersProvider: DispatchersProvider,
 ) : StoreRepository {
     private val storeDao = database.storeDao()
     private val currentLocation by LocationSettingDelegate(null)
@@ -271,10 +272,11 @@ internal class StoreRepositoryImpl @Inject constructor(
                 database = database,
                 keyManager = keyManager,
                 dataManager = dataManager,
+                dispatchersProvider = dispatchersProvider,
             ),
         ) {
             storeDao.getStoresByLookupKey(lookupKey = keyManager.getLookupKey())
-        }.flow.mapLatest { pagingData ->
+        }.flow.map { pagingData ->
             pagingData.map {
                 it.store
             }
