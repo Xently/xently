@@ -26,7 +26,7 @@ import co.ke.xently.libraries.location.tracker.data.LocationSettingDelegate
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse
-import co.ke.xently.libraries.pagination.data.XentlyRemoteMediator
+import co.ke.xently.libraries.pagination.data.RemoteMediator
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -42,17 +42,16 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.fullPath
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,7 +61,6 @@ import kotlin.OptIn
 import kotlin.String
 import kotlin.Unit
 import kotlin.apply
-import kotlin.coroutines.coroutineContext
 import kotlin.let
 import kotlin.random.Random
 import kotlin.run
@@ -136,7 +134,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -145,7 +143,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private suspend fun saveOpeningHours(
         storeOpeningHoursUrl: String,
         openingHours: List<OpeningHour>,
-    ): List<OpeningHour?> = coroutineScope {
+    ): List<OpeningHour?> = supervisorScope {
         openingHours.map {
             val selfHref = URLBuilder(storeOpeningHoursUrl)
                 .appendPathSegments(it.dayOfWeek.name.lowercase())
@@ -198,7 +196,7 @@ internal class StoreRepositoryImpl @Inject constructor(
         return accessControlRepository.getAccessControl().storesUrl
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalPagingApi::class)
+    @OptIn(ExperimentalPagingApi::class)
     override fun getStores(url: String, filters: StoreFilters): Flow<PagingData<Store>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
@@ -242,7 +240,6 @@ internal class StoreRepositoryImpl @Inject constructor(
         val keyManager = LookupKeyManager.URL(url = urlString)
 
         val dataManager = object : DataManager<Store> {
-
             override suspend fun insertAll(lookupKey: String, data: List<Store>) {
                 val activated = storeDao.getActivated()
                 storeDao.save(
@@ -266,16 +263,17 @@ internal class StoreRepositoryImpl @Inject constructor(
                 }.body<PagedResponse<Store>>()
             }
         }
+        val lookupKey = keyManager.getLookupKey()
         return Pager(
             config = pagingConfig,
-            remoteMediator = XentlyRemoteMediator(
+            remoteMediator = RemoteMediator(
                 database = database,
                 keyManager = keyManager,
                 dataManager = dataManager,
                 dispatchersProvider = dispatchersProvider,
             ),
         ) {
-            storeDao.getStoresByLookupKey(lookupKey = keyManager.getLookupKey())
+            storeDao.getStoresByLookupKey(lookupKey = lookupKey)
         }.flow.map { pagingData ->
             pagingData.map {
                 it.store
@@ -289,7 +287,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             delay(duration)
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -311,7 +309,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -330,7 +328,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -349,7 +347,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -362,7 +360,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }

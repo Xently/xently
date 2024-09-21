@@ -1,5 +1,10 @@
 package co.ke.xently.features.reviews.data.source
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.data.domain.Rating
 import co.ke.xently.features.reviews.data.domain.Review
@@ -11,10 +16,15 @@ import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.data.source.local.ReviewDatabase
+import co.ke.xently.features.reviews.data.source.local.ReviewEntity
 import co.ke.xently.features.reviews.data.source.local.ReviewRequestEntity
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.pagination.data.DataManager
+import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse
+import co.ke.xently.libraries.pagination.data.RemoteMediator
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -25,6 +35,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import io.ktor.http.fullPath
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
@@ -36,11 +47,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.Exception
 import kotlin.Long
+import kotlin.OptIn
 import kotlin.String
 import kotlin.Unit
+import kotlin.apply
 import kotlin.coroutines.coroutineContext
 import kotlin.run
-import kotlin.to
 import co.ke.xently.features.shops.data.domain.error.Result as ShopResult
 import co.ke.xently.features.stores.data.domain.error.Result as StoreResult
 
@@ -50,7 +62,9 @@ internal class ReviewRepositoryImpl @Inject constructor(
     private val database: ReviewDatabase,
     private val shopRepository: ShopRepository,
     private val storeRepository: StoreRepository,
+    private val dispatchersProvider: DispatchersProvider,
 ) : ReviewRepository {
+    private val reviewDao = database.reviewDao()
     private val reviewRequestDao = database.reviewRequestDao()
 
     override suspend fun postRating(url: String, message: String?): Result<Unit, Error> {
@@ -188,18 +202,61 @@ internal class ReviewRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getReviews(url: String, filters: ReviewFilters): PagedResponse<Review> {
-        return httpClient.get(urlString = url) {
-            url {
-                encodedParameters.run {
-                    set("hasComments", filters.hasComments.toString())
-                    if (filters.starRating != null) {
-                        set("starRating", filters.starRating.toString())
-                    }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getReviews(url: String, filters: ReviewFilters): Flow<PagingData<Review>> {
+        val pagingConfig = PagingConfig(
+            pageSize = 20,
+            initialLoadSize = 20,
+            prefetchDistance = 0,
+        )
+
+        val urlString = URLBuilder(url).apply {
+            encodedParameters.run {
+                set("size", pagingConfig.pageSize.toString())
+                set("hasComments", filters.hasComments.toString())
+                if (filters.starRating != null) {
+                    set("starRating", filters.starRating.toString())
                 }
             }
-        }.body<PagedResponse<Review>>().run {
-            copy(embedded = mapOf("views" to (embedded.values.firstOrNull() ?: emptyList())))
+        }.build().fullPath
+        val keyManager = LookupKeyManager.URL(url = urlString)
+
+        val dataManager = object : DataManager<Review> {
+            override suspend fun insertAll(lookupKey: String, data: List<Review>) {
+                reviewDao.save(
+                    data.map { review ->
+                        ReviewEntity(
+                            review = review,
+                            lookupKey = lookupKey,
+                        )
+                    },
+                )
+            }
+
+            override suspend fun deleteByLookupKey(lookupKey: String) {
+                reviewDao.deleteByLookupKey(lookupKey)
+            }
+
+            override suspend fun fetchData(url: String?): PagedResponse<Review> {
+                return httpClient.get(urlString = url ?: urlString)
+                    .body<PagedResponse<Review>>()
+            }
+        }
+        val lookupKey = keyManager.getLookupKey()
+        return Pager(
+            config = pagingConfig,
+            remoteMediator = RemoteMediator(
+                database = database,
+                keyManager = keyManager,
+                dataManager = dataManager,
+                dispatchersProvider = dispatchersProvider,
+            ),
+        ) {
+            reviewDao.getReviewsByLookupKey(lookupKey = lookupKey)
+        }.flow.map { pagingData ->
+            pagingData.map {
+                it.review
+            }
         }
     }
 }

@@ -59,7 +59,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
 @Database(
-    version = 6,
+    version = 7,
     entities = [
         RemoteKey::class,
         RecommendationEntity::class,
@@ -82,6 +82,7 @@ import kotlinx.coroutines.withContext
     ],
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
     ],
 )
 @TypeConverters(

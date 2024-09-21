@@ -85,6 +85,7 @@ internal class StoreSelectionListViewModel @Inject constructor(
                         emptyFlow()
                     }
                 }
+
                 is ShopResult.Success -> {
                     _selectedCategories.combine(_filters) { categories, filters ->
                         filters.copy(

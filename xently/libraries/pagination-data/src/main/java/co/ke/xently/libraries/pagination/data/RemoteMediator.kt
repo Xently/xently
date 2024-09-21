@@ -12,7 +12,7 @@ import timber.log.Timber
 import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalPagingApi::class)
-class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
+class RemoteMediator<Key : Any, Value : Any, Data>(
     private val database: RemoteKeyDatabase,
     private val keyManager: LookupKeyManager,
     private val dataManager: DataManager<Data>,
@@ -98,12 +98,8 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
                 }
             }
 
-            Timber.tag(TAG).d("%s(%s): Fetching data from %s", loadType, lookupKey, url)
+            Timber.tag(TAG).d("%s(%s): Fetching data from [%s]", loadType, lookupKey, url)
 
-            // Suspending network load via Retrofit. This doesn't need to
-            // be wrapped in a withContext(Dispatcher.IO) { ... } block
-            // since Retrofit's Coroutine CallAdapter dispatches on a
-            // worker thread.
             val response = dataManager.fetchData(url = url)
 
             // Store loaded data, and next key in transaction, so that
@@ -123,7 +119,7 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
                     )
                 )
 
-                // Insert new users into database, which invalidates the
+                // Insert new data into database, which invalidates the
                 // current PagingData, allowing Paging to present the updates
                 // in the DB.
                 val data = response.getNullable(lookupKey = dataLookupKey)
@@ -131,13 +127,14 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
                 dataManager.insertAll(lookupKey = lookupKey, data = data)
             }
 
-            Timber.tag(TAG).d(
-                "%s(%s): Successfully fetched data. Is end of pagination? %s",
-                loadType,
-                lookupKey,
-                response.links.next == null
-            )
-            MediatorResult.Success(endOfPaginationReached = response.links.next == null)
+            MediatorResult.Success(endOfPaginationReached = response.links.next == null).also {
+                Timber.tag(TAG).d(
+                    "%s(%s): Successfully fetched data. Is end of pagination? %s",
+                    loadType,
+                    lookupKey,
+                    it.endOfPaginationReached,
+                )
+            }
         } catch (e: Exception) {
             yield()
             Timber.tag(TAG).d(e, "%s(%s): Error fetching data", loadType, lookupKey)
@@ -146,6 +143,6 @@ class XentlyRemoteMediator<Key : Any, Value : Any, Data>(
     }
 
     companion object {
-        private const val TAG = "XentlyRemoteMediator"
+        private val TAG = RemoteMediator::class.java.simpleName
     }
 }

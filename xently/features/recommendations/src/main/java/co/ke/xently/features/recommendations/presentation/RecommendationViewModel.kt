@@ -3,22 +3,16 @@ package co.ke.xently.features.recommendations.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import androidx.paging.map
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
-import co.ke.xently.features.recommendations.data.domain.RecommendationResponse
 import co.ke.xently.features.recommendations.data.domain.ShoppingListItem
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.libraries.pagination.data.PagedResponse
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -112,19 +106,10 @@ class RecommendationViewModel @Inject constructor(
         }.combine(_selectedStoreCategories) { request, storeCategories ->
             request.copy(productCategories = storeCategories.toList())
         }.flatMapLatest { request ->
-            pager { url ->
-                repository.getRecommendations(
-                    url = url,
-                    request = request,
-                )
-            }.flow
+            val url = repository.getRecommendationsUrl()
+            repository.getRecommendations(url = url, request = request)
         }.map { data ->
             data.map { it.store }
-        }.cachedIn(viewModelScope)
-
-    private fun pager(call: suspend (String?) -> PagedResponse<RecommendationResponse>) =
-        Pager(PagingConfig(pageSize = 20)) {
-            XentlyPagingSource(apiCall = call)
         }
 
     internal fun onAction(action: RecommendationAction) {

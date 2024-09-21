@@ -13,9 +13,6 @@ interface ReviewRequestDao {
     @Query("SELECT * FROM review_requests")
     suspend fun findAll(): List<ReviewRequestEntity>
 
-    @Query("DELETE FROM review_requests")
-    suspend fun deleteAll()
-
     @Query("DELETE FROM review_requests WHERE baseUrl = :baseUrl AND star = :star")
     suspend fun deleteByBaseUrlAndStar(baseUrl: String, star: Int)
 }

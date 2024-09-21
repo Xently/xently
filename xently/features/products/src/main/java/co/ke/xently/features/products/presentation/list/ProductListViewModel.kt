@@ -3,8 +3,6 @@ package co.ke.xently.features.products.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
@@ -13,8 +11,6 @@ import co.ke.xently.features.products.data.domain.ProductFilters
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.features.products.presentation.utils.asUiText
-import co.ke.xently.libraries.pagination.data.PagedResponse
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -80,19 +76,9 @@ open class ProductListViewModel @Inject constructor(
                 }.toSet(),
             )
         }.flatMapLatest { filters ->
-            pager { url ->
-                repository.getProducts(
-                    filters = filters,
-                    url = url ?: productsUrl,
-                )
-            }.flow
+            repository.getProducts(url = productsUrl, filters = filters)
         }
     }
-
-    protected fun pager(call: suspend (String?) -> PagedResponse<Product>) =
-        Pager(PagingConfig(pageSize = 20)) {
-            XentlyPagingSource(apiCall = call)
-        }
 
     internal fun onAction(action: ProductListAction) {
         when (action) {

@@ -37,9 +37,9 @@ internal class AccessControlRepositoryImpl @Inject constructor(
             Timber.tag(TAG).i("Saving access control response...")
             return httpClient.get("/api/v1")
                 .body<AccessControl>().also {
-                accessControlDao
-                    .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
-            }
+                    accessControlDao
+                        .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
+                }
         }
         return accessControlDao.findFirst()
             .map { it?.accessControl ?: save() }

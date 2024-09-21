@@ -1,5 +1,10 @@
 package co.ke.xently.features.recommendations.data.source
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
 import co.ke.xently.features.recommendations.data.domain.RecommendationResponse
@@ -8,17 +13,21 @@ import co.ke.xently.features.recommendations.data.domain.error.Result
 import co.ke.xently.features.recommendations.data.source.local.RecommendationDatabase
 import co.ke.xently.features.recommendations.data.source.local.RecommendationEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
+import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.pagination.data.DataManager
+import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse
+import co.ke.xently.libraries.pagination.data.RemoteMediator
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
 import io.ktor.http.contentType
-import kotlinx.coroutines.coroutineScope
+import io.ktor.http.fullPath
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,6 +37,7 @@ internal class RecommendationRepositoryImpl @Inject constructor(
     private val database: RecommendationDatabase,
     private val storeRepository: StoreRepository,
     private val accessControlRepository: AccessControlRepository,
+    private val dispatchersProvider: DispatchersProvider,
 ) : RecommendationRepository, StoreRepository by storeRepository {
     private val recommendationDao = database.recommendationDao()
     override fun findRecommendationById(id: Long): Flow<Result<RecommendationResponse, DataError.Local>> {
@@ -40,27 +50,66 @@ internal class RecommendationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendations(
-        url: String?,
+    override suspend fun getRecommendationsUrl(): String {
+        return accessControlRepository.getAccessControl().recommendationsUrl
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getRecommendations(
+        url: String,
         request: RecommendationRequest,
-    ): PagedResponse<RecommendationResponse> {
-        val urlString = url ?: accessControlRepository.getAccessControl().recommendationsUrl
-        return httpClient.post(urlString = urlString) {
-            url {
+    ): Flow<PagingData<RecommendationResponse>> {
+        val pagingConfig = PagingConfig(
+            pageSize = 20,
+            initialLoadSize = 20,
+            prefetchDistance = 0,
+        )
+
+        val urlString = URLBuilder(url).apply {
+            encodedParameters.run {
+                set("size", pagingConfig.pageSize.toString())
                 parameters.appendMissing("sort", listOf("score,desc", "distance,asc"))
             }
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body<PagedResponse<RecommendationResponse>>().run {
-            (embedded.values.firstOrNull() ?: emptyList()).let { recommendations ->
-                coroutineScope {
-                    launch {
-                        recommendationDao.save(recommendations.map {
-                            RecommendationEntity(recommendation = it)
-                        })
-                    }
-                }
-                copy(embedded = mapOf("views" to recommendations))
+        }.build().fullPath
+        val keyManager = LookupKeyManager.URL(url = urlString)
+
+        val dataManager = object : DataManager<RecommendationResponse> {
+            override suspend fun insertAll(lookupKey: String, data: List<RecommendationResponse>) {
+                recommendationDao.save(
+                    data.map { recommendation ->
+                        RecommendationEntity(
+                            recommendation = recommendation,
+                            lookupKey = lookupKey,
+                        )
+                    },
+                )
+            }
+
+            override suspend fun deleteByLookupKey(lookupKey: String) {
+                recommendationDao.deleteByLookupKey(lookupKey)
+            }
+
+            override suspend fun fetchData(url: String?): PagedResponse<RecommendationResponse> {
+                return httpClient.post(urlString = url ?: urlString) {
+                    contentType(ContentType.Application.Json)
+                    setBody(request)
+                }.body<PagedResponse<RecommendationResponse>>()
+            }
+        }
+        val lookupKey = keyManager.getLookupKey()
+        return Pager(
+            config = pagingConfig,
+            remoteMediator = RemoteMediator(
+                database = database,
+                keyManager = keyManager,
+                dataManager = dataManager,
+                dispatchersProvider = dispatchersProvider,
+            ),
+        ) {
+            recommendationDao.getRecommendationsByLookupKey(lookupKey = lookupKey)
+        }.flow.map { pagingData ->
+            pagingData.map {
+                it.recommendation
             }
         }
     }

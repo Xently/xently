@@ -3,16 +3,12 @@ package co.ke.xently.features.reviews.presentation.reviewrequest
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
 import co.ke.xently.features.reviews.presentation.utils.asUiText
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -43,14 +39,8 @@ internal class ReviewRequestViewModel @Inject constructor(
         key = "reviewCategoriesUrl",
         initialValue = "",
     ).flatMapLatest { reviewCategoriesUrl ->
-        Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
-            XentlyPagingSource(dataLookupKey = "myReviewCategoryRatingApiResponses") { url ->
-                reviewCategoryRepository.findReviewCategories(
-                    url = url ?: reviewCategoriesUrl,
-                )
-            }
-        }.flow
-    }.cachedIn(viewModelScope)
+        reviewCategoryRepository.findReviewCategories(url = reviewCategoriesUrl)
+    }
 
     fun onAction(action: ReviewRequestAction) {
         when (action) {

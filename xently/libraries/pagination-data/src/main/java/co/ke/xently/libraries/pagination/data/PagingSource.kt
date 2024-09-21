@@ -6,7 +6,7 @@ import kotlinx.coroutines.yield
 import androidx.paging.PagingSource as AndroidPagingSource
 
 
-class XentlyPagingSource<T : Any>(
+class PagingSource<T : Any>(
     private val dataLookupKey: String? = null,
     private val apiCall: suspend (initialKey: String?) -> PagedResponse<T>,
 ) : AndroidPagingSource<String, T>() {

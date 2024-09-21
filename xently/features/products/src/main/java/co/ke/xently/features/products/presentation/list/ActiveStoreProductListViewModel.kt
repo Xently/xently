@@ -1,9 +1,7 @@
 package co.ke.xently.features.products.presentation.list
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.ShopSelectionRequiredException
@@ -34,12 +32,10 @@ internal class ActiveStoreProductListViewModel @Inject constructor(
         .flatMapLatest { result ->
             when (result) {
                 is Result.Failure -> {
-                    pager {
-                        when (result.error) {
-                            ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
-                            ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
-                        }
-                    }.flow
+                    when (result.error) {
+                        ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
+                        ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
+                    }
                 }
 
                 is Result.Success -> {
@@ -47,5 +43,5 @@ internal class ActiveStoreProductListViewModel @Inject constructor(
                     getProductPagingDataFlow(productsUrl = url)
                 }
             }
-        }.cachedIn(viewModelScope)
+        }
 }

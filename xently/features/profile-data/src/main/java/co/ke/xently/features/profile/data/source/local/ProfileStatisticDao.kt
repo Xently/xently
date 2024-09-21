@@ -14,9 +14,6 @@ interface ProfileStatisticDao {
     @Query("SELECT * FROM profile_statistics WHERE id = 1")
     fun find(): Flow<ProfileStatisticEntity?>
 
-    @Query("DELETE FROM profile_statistics")
-    suspend fun deleteAll()
-
     @Query("SELECT * FROM profile_statistics WHERE id = 1")
     suspend fun get(): ProfileStatisticEntity?
 }

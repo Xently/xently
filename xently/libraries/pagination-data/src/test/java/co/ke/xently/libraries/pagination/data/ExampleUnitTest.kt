@@ -1,6 +1,6 @@
 package co.ke.xently.libraries.pagination.data
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
