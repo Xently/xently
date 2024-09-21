@@ -66,6 +66,10 @@ import kotlinx.coroutines.withContext
 typealias Expanded = Boolean
 typealias OnClose = () -> Unit
 
+private val containerModifier = Modifier
+    .fillMaxWidth()
+    .height(300.dp)
+
 @Composable
 fun StoreItemCard(
     store: Store,
@@ -74,12 +78,29 @@ fun StoreItemCard(
     onClick: () -> Unit,
     dropDownMenu: (@Composable (Pair<Expanded, OnClose>) -> Unit)? = null,
 ) {
+    if (isLoading) {
+        ElevatedCard(modifier = modifier, shape = MaterialTheme.shapes.large) {
+            Box(modifier = containerModifier.shimmer(true)) {}
+        }
+    } else {
+        StoreItemCard(
+            store = store,
+            modifier = modifier,
+            onClick = onClick,
+            dropDownMenu = dropDownMenu,
+        )
+    }
+}
+
+@Composable
+private fun StoreItemCard(
+    store: Store,
+    modifier: Modifier,
+    onClick: () -> Unit,
+    dropDownMenu: @Composable ((Pair<Expanded, OnClose>) -> Unit)? = null,
+) {
     ElevatedCard(modifier = modifier, onClick = onClick, shape = MaterialTheme.shapes.large) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-        ) {
+        Box(modifier = containerModifier) {
             var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
             XentlyImage(
                 data = store.images.getOrNull(index),
@@ -114,16 +135,12 @@ fun StoreItemCard(
                 colors = ListItemDefaults.colors(containerColor = containerColor),
                 overlineContent = {
                     androidx.compose.animation.AnimatedVisibility(overlineText.isNotBlank()) {
-                        Text(
-                            text = overlineText,
-                            modifier = Modifier.shimmer(isLoading),
-                        )
+                        Text(text = overlineText)
                     }
                 },
                 headlineContent = {
                     Text(
                         text = store.shop.name,
-                        modifier = Modifier.shimmer(isLoading),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },
@@ -135,9 +152,7 @@ fun StoreItemCard(
                     ) {
                         Text(
                             text = store.name,
-                            modifier = Modifier
-                                .weight(1f)
-                                .shimmer(isLoading),
+                            modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.bodySmall,
                         )
                         if (dropDownMenu != null) {
@@ -157,7 +172,7 @@ fun StoreItemCard(
                                         role = Role.Checkbox,
                                         indication = ripple(bounded = false),
                                         interactionSource = remember { MutableInteractionSource() },
-                                    ) { expanded = !isLoading },
+                                    ) { expanded = !expanded },
                                 )
 
                                 dropDownMenu(expanded to { expanded = false })
