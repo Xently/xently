@@ -90,6 +90,7 @@ class LocationTrackerImpl @Inject constructor(
 
     override fun observeLocation(
         interval: Duration?,
+        minimumEmissionDistanceMeters: Int?,
         priority: LocationPriority,
         permissionBehaviour: MissingPermissionBehaviour,
     ) = callbackFlow {
@@ -128,6 +129,7 @@ class LocationTrackerImpl @Inject constructor(
         }
 
         if (!hasFineLocationPermission || !hasCoarseLocationPermission) {
+            Timber.tag(TAG).d("Closing location tracking. Missing required permissions.")
             close()
         } else {
             Timber.tag(TAG).d("All set for location tracking! Adding location observers...")
@@ -141,6 +143,17 @@ class LocationTrackerImpl @Inject constructor(
                 override fun onLocationResult(result: LocationResult) {
                     super.onLocationResult(result)
                     result.locations.lastOrNull()?.let {
+                        val distanceFromPreviousLocation =
+                            currentLocation?.toAndroidLocation()?.distanceTo(it)?.toInt()
+                        if (minimumEmissionDistanceMeters != null && distanceFromPreviousLocation != null && distanceFromPreviousLocation < minimumEmissionDistanceMeters) {
+                            Timber.tag(TAG).d(
+                                "Skipping location update. Distance too small - %sm < %sm.",
+                                distanceFromPreviousLocation,
+                                minimumEmissionDistanceMeters,
+                            )
+
+                            return@let
+                        }
                         val location = it.toXentlyLocation()
 
                         Timber.tag(TAG).d("Current location: %s", location)

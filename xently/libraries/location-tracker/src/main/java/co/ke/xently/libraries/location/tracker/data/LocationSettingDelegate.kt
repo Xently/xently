@@ -22,13 +22,17 @@ class LocationSettingDelegate(
         val periodSinceLastUpdate = Clock.System.now().toEpochMilliseconds() - lastUpdateTime
         val acceptableSettingValidityPeriod = 24.hours
         if (periodSinceLastUpdate.milliseconds > acceptableSettingValidityPeriod) {
-            Timber.i("""Removing '$KEY' from settings. Period since last update has exceeded $acceptableSettingValidityPeriod""")
+            Timber.i(
+                """Removing '%s' from settings. Period since last update has exceeded %s""",
+                KEY,
+                acceptableSettingValidityPeriod,
+            )
 
             settings.remove("${key}_lat")
             settings.remove("${key}_lon")
             settings.remove("${key}_last_update_time")
 
-            Timber.i("""Successfully removed '$KEY' from settings.""")
+            Timber.i("""Successfully removed '%s' from settings.""", KEY)
 
             return null
         }
@@ -37,7 +41,10 @@ class LocationSettingDelegate(
         val longitude = settings.getDoubleOrNull("${key}_lon") ?: defaultValue?.longitude
 
         return if (latitude == null || longitude == null) {
-            Timber.w("""Unexpected error was encountered when retrieving '$KEY' from settings...""")
+            Timber.w(
+                """Unexpected error was encountered when retrieving '%s' from settings...""",
+                KEY,
+            )
             null
         } else {
             Location(latitude, longitude, isCached = true)
@@ -46,11 +53,11 @@ class LocationSettingDelegate(
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: Location?) {
         if (value == null) return
-        Timber.i("""Saving '$value' to '$KEY'...""")
+        Timber.i("""Saving '%s' to '%s'...""", value, KEY)
         settings.putDouble("${key}_lat", value.latitude)
         settings.putDouble("${key}_lon", value.longitude)
         settings.putLong("${key}_last_update_time", Clock.System.now().toEpochMilliseconds())
-        Timber.i("""Successfully saved '$value' to '$KEY'""")
+        Timber.i("""Successfully saved '%s' to '%s'""", value, KEY)
     }
 
     private companion object {

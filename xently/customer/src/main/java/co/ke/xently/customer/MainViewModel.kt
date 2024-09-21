@@ -43,6 +43,7 @@ internal class MainViewModel @Inject constructor(
     )
 
     val currentLocation = locationTracker.observeLocation(
+        minimumEmissionDistanceMeters = 100,
         permissionBehaviour = MissingPermissionBehaviour.REPEAT_CHECK,
     ).shareIn(
         viewModelScope,
