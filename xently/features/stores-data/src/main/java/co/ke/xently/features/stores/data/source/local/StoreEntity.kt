@@ -13,10 +13,11 @@ import kotlinx.datetime.Instant
 )
 data class StoreEntity(
     val store: Store,
+    @ColumnInfo(index = true)
     val id: Long = store.id,
     val isActivated: Boolean = false,
-    @ColumnInfo(defaultValue = LookupKeyManager.DEFAULT_KEY)
+    @ColumnInfo(defaultValue = LookupKeyManager.DEFAULT_KEY, index = true)
     val lookupKey: String = LookupKeyManager.DEFAULT_KEY,
-    @ColumnInfo(defaultValue = "32400000")
+    @ColumnInfo(defaultValue = "32400000", index = true)
     val dateSaved: Instant = Clock.System.now(),
 )
