@@ -27,8 +27,9 @@ import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.asString
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.pagination.asListState
 
 @Composable
 internal fun ProductListContent(
@@ -51,8 +52,9 @@ internal fun ProductListContent(
         isRefreshing = isRefreshing,
         onRefresh = products::refresh,
     ) {
-        when {
-            products.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+        when (val listState =
+            refreshLoadState.asListState(products.itemCount, Throwable::toError)) {
+            ListState.Empty -> {
                 ProductListEmptyState(
                     modifier = Modifier.matchParentSize(),
                     message = stringResource(R.string.message_no_products_found),
@@ -60,17 +62,32 @@ internal fun ProductListContent(
                 )
             }
 
-            products.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                val error = remember(refreshLoadState) {
-                    runBlocking { refreshLoadState.error.toError() }
-                }
+            ListState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                        .wrapContentWidth(Alignment.CenterHorizontally),
+                )
+            }
+
+            ListState.NotLoading -> {
+                ProductListLazyColumn(
+                    products = products,
+                    modifier = Modifier.matchParentSize(),
+                    productListItem = productListItem,
+                    extraPrependContent = extraPrependContent,
+                )
+            }
+
+            is ListState.Error -> {
                 ProductListEmptyState(
                     modifier = Modifier.matchParentSize(),
-                    message = error.asString(),
-                    canRetry = error is RetryableError,
+                    message = listState.error.asString(),
+                    canRetry = listState.error is RetryableError,
                     onClickRetry = products::retry,
                 ) {
-                    when (error) {
+                    when (listState.error) {
                         ConfigurationError.ShopSelectionRequired -> {
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = onClickSelectShop) {
@@ -94,24 +111,6 @@ internal fun ProductListContent(
                         else -> Unit
                     }
                 }
-            }
-
-            products.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center)
-                        .wrapContentWidth(Alignment.CenterHorizontally),
-                )
-            }
-
-            else -> {
-                ProductListLazyColumn(
-                    products = products,
-                    modifier = Modifier.matchParentSize(),
-                    productListItem = productListItem,
-                    extraPrependContent = extraPrependContent,
-                )
             }
         }
     }

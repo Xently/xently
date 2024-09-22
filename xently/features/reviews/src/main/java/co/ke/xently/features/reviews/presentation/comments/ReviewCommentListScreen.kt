@@ -60,9 +60,10 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
+import co.ke.xently.libraries.ui.pagination.asListState
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 @Composable
@@ -195,28 +196,16 @@ internal fun ReviewCommentListScreen(
             isRefreshing = isRefreshing,
             onRefresh = reviews::refresh,
         ) {
-            when {
-                reviews.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(reviews.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     ReviewListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_reviews_found),
                         onClickRetry = reviews::refresh,
                     )
                 }
-
-                reviews.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    ReviewListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asString(),
-                        canRetry = error is RetryableError,
-                        onClickRetry = reviews::retry,
-                    )
-                }
-
-                reviews.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -224,11 +213,18 @@ internal fun ReviewCommentListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
-
-                else -> {
+                ListState.NotLoading -> {
                     ReviewListLazyColumn(
                         reviews = reviews,
                         modifier = Modifier.matchParentSize(),
+                    )
+                }
+                is ListState.Error -> {
+                    ReviewListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
+                        onClickRetry = reviews::retry,
                     )
                 }
             }

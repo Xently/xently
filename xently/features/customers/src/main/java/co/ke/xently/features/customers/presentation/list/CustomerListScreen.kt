@@ -56,9 +56,10 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
+import co.ke.xently.libraries.ui.pagination.asListState
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 import kotlin.random.Random
 
@@ -177,26 +178,38 @@ internal fun CustomerListScreen(
             isRefreshing = isRefreshing,
             onRefresh = customers::refresh,
         ) {
-            when {
-                customers.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(customers.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_customers_found),
                         onClickRetry = customers::refresh,
                     )
                 }
-
-                customers.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
+                ListState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+                ListState.NotLoading -> {
+                    CustomerListLazyColumn(
+                        customers = customers,
+                        modifier = Modifier.matchParentSize(),
+                        currentUserRanking = state.currentUserRanking,
+                    )
+                }
+                is ListState.Error -> {
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),
-                        message = error.asString(),
-                        canRetry = error is RetryableError,
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
                         onClickRetry = customers::retry,
                     ) {
-                        when (error) {
+                        when (listState.error) {
                             ConfigurationError.ShopSelectionRequired -> {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Button(onClick = eventHandler::requestShopSelection) {
@@ -220,23 +233,6 @@ internal fun CustomerListScreen(
                             else -> Unit
                         }
                     }
-                }
-
-                customers.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-
-                else -> {
-                    CustomerListLazyColumn(
-                        customers = customers,
-                        modifier = Modifier.matchParentSize(),
-                        currentUserRanking = state.currentUserRanking,
-                    )
                 }
             }
         }

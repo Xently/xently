@@ -40,8 +40,9 @@ import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.pagination.asListState
 
 @Composable
 fun ReviewRequestScreen(
@@ -115,8 +116,9 @@ internal fun ReviewRequestScreen(
             isRefreshing = isRefreshing,
             onRefresh = reviewCategories::refresh,
         ) {
-            when {
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(reviewCategories.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     ReviewRequestEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_review_categories_found),
@@ -124,25 +126,7 @@ internal fun ReviewRequestScreen(
                     )
                 }
 
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    ReviewRequestEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asString(),
-                        canRetry = error is RetryableError,
-                        onClickRetry = reviewCategories::retry,
-                    ) {
-                        if (error is AuthorisationError) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            LoginAndRetryButtonsRow(onRetry = reviewCategories::retry)
-                        }
-                    }
-                }
-
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -151,7 +135,7 @@ internal fun ReviewRequestScreen(
                     )
                 }
 
-                else -> {
+                ListState.NotLoading -> {
                     ReviewRequestLazyColumn(
                         state = state,
                         onAction = onAction,
@@ -159,6 +143,21 @@ internal fun ReviewRequestScreen(
                         modifier = Modifier.matchParentSize(),
                         onClickSubmit = onClickBack,
                     )
+                }
+
+                is ListState.Error -> {
+                    ReviewRequestEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
+                        onClickRetry = reviewCategories::retry,
+                    ) {
+                        if (listState.error is AuthorisationError) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LoginAndRetryButtonsRow(onRetry = reviewCategories::retry)
+                        }
+                    }
                 }
             }
         }

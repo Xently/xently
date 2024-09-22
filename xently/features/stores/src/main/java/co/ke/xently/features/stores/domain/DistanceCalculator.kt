@@ -18,7 +18,7 @@ data class SmallestDistanceUnit(val distance: String, val unit: DistanceUnit) {
     }
 }
 
-suspend fun DistanceInMeters.toSmallestDistanceUnit(dispatchersProvider: DispatchersProvider): SmallestDistanceUnit {
+suspend fun DistanceInMeters.toSmallestDistanceUnit(dispatchersProvider: DispatchersProvider = DispatchersProvider.Default): SmallestDistanceUnit {
     return withContext(dispatchersProvider.default) {
         val distanceDouble = toDouble()
         val formattedDistance = distanceDouble.coolFormat(decimalPlaces = 0)
