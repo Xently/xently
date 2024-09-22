@@ -1,6 +1,6 @@
 package co.ke.xently.features.reviewcategory.presentation.edit
 
-import co.ke.xently.features.reviewcategory.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface ReviewCategoryEditDetailEvent {

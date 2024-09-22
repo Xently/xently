@@ -7,7 +7,7 @@ enum class PhoneError : LocalFieldError {
     INVALID_FORMAT;
 
     override suspend fun toUiText(): UiText {
-        return when(this){
+        return when (this) {
             INVALID_FORMAT -> UiText.StringResource(R.string.error_phone_invalid_format)
         }
     }

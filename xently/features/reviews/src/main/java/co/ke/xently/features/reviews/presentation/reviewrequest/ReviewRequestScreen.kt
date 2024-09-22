@@ -31,13 +31,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.toError
-import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestEmptyState
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestLazyColumn
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -130,7 +130,7 @@ internal fun ReviewRequestScreen(
                     }
                     ReviewRequestEmptyState(
                         modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
+                        message = error.asString(),
                         canRetry = error is RetryableError,
                         onClickRetry = reviewCategories::retry,
                     ) {

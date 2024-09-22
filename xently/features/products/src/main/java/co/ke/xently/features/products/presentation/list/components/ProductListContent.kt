@@ -24,9 +24,9 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.ConfigurationError
 import co.ke.xently.features.products.data.domain.error.DataError
 import co.ke.xently.features.products.data.domain.error.toError
-import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.runBlocking
 
@@ -66,7 +66,7 @@ internal fun ProductListContent(
                 }
                 ProductListEmptyState(
                     modifier = Modifier.matchParentSize(),
-                    message = error.asUiText().asString(),
+                    message = error.asString(),
                     canRetry = error is RetryableError,
                     onClickRetry = products::retry,
                 ) {

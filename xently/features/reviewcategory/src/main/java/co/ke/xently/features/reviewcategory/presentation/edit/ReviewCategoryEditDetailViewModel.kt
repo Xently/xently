@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.Result
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
-import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -68,7 +67,7 @@ internal class ReviewCategoryEditDetailViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ReviewCategoryEditDetailEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error,
                                 )
                             )

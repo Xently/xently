@@ -47,13 +47,13 @@ import co.ke.xently.features.customers.data.domain.error.DataError
 import co.ke.xently.features.customers.data.domain.error.toError
 import co.ke.xently.features.customers.presentation.list.components.CustomerListEmptyState
 import co.ke.xently.features.customers.presentation.list.components.CustomerListLazyColumn
-import co.ke.xently.features.customers.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
@@ -192,7 +192,7 @@ internal fun CustomerListScreen(
                     }
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
+                        message = error.asString(),
                         canRetry = error is RetryableError,
                         onClickRetry = customers::retry,
                     ) {

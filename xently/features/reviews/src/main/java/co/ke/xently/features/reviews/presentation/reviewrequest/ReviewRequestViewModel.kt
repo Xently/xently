@@ -7,7 +7,6 @@ import androidx.paging.cachedIn
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
-import co.ke.xently.features.reviews.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -74,7 +73,7 @@ internal class ReviewRequestViewModel @Inject constructor(
                             _uiState.update {
                                 val categorySubStates =
                                     it.getUpdatedSubCategoryState(action.categoryName) {
-                                        copy(isPosting = false, error = result.error.asUiText())
+                                        copy(isPosting = false, error = result.error.toUiText())
                                     }
                                 it.copy(categorySubStates = categorySubStates)
                             }

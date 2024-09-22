@@ -3,7 +3,6 @@ package co.ke.xently.features.reviews.presentation.reviews
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
-import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
@@ -17,7 +16,6 @@ import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackActi
 import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.SelectReviewCategory
 import co.ke.xently.features.reviews.presentation.reviews.ReviewsAndFeedbackAction.SelectYear
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
-import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.model.BarParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -115,7 +113,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                         .collect { result ->
                             val response = when (result) {
                                 is Result.Failure -> StatisticsResponse.Failure(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
 
@@ -183,7 +181,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                         .collect { result ->
                             val response = when (result) {
                                 is Result.Failure -> ReviewSummaryResponse.Failure(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
 
@@ -204,7 +202,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                         .collect { result ->
                             val response = when (result) {
                                 is Result.Failure -> ReviewSummaryResponse.Failure(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
 
@@ -225,7 +223,7 @@ internal class ReviewsAndFeedbackViewModel @Inject constructor(
                         .collect { result ->
                             val response = when (result) {
                                 is ReviewCategoryResult.Failure -> ReviewCategoriesResponse.Failure(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
 

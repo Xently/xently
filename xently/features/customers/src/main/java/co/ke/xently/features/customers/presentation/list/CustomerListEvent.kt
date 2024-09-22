@@ -1,6 +1,6 @@
 package co.ke.xently.features.customers.presentation.list
 
-import co.ke.xently.features.customers.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface CustomerListEvent {

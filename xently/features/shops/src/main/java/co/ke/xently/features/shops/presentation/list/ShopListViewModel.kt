@@ -6,7 +6,6 @@ import androidx.paging.cachedIn
 import co.ke.xently.features.shops.data.domain.ShopFilters
 import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.source.ShopRepository
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -58,7 +57,7 @@ internal class ShopListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ShopListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )
@@ -84,7 +83,7 @@ internal class ShopListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ShopListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )

@@ -28,12 +28,12 @@ import co.ke.xently.features.products.R
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.error.Error
 import co.ke.xently.features.products.data.domain.error.toError
-import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.asString
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -163,7 +163,7 @@ private fun ProductListErrorContent(error: Error, onClickRetry: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

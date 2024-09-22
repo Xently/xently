@@ -1,6 +1,6 @@
 package co.ke.xently.features.shops.presentation.list
 
-import co.ke.xently.features.shops.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface ShopListEvent {

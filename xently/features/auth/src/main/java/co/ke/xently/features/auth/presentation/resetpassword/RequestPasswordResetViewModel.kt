@@ -6,7 +6,6 @@ import co.ke.xently.features.auth.data.domain.UserDataValidator
 import co.ke.xently.features.auth.data.domain.error.RemoteFieldError
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
-import co.ke.xently.features.auth.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +52,7 @@ internal class RequestPasswordResetViewModel @Inject constructor(
 
                                 else -> _event.send(
                                     RequestPasswordResetEvent.Error(
-                                        result.error.asUiText(),
+                                        result.error.toUiText(),
                                         result.error
                                     )
                                 )

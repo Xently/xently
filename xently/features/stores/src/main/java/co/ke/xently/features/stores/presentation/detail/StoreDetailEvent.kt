@@ -2,10 +2,8 @@ package co.ke.xently.features.stores.presentation.detail
 
 import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.features.qrcode.data.domain.error.Error as QrCodeError
-import co.ke.xently.features.qrcode.presentation.utils.UiText as QrCodeUiText
 import co.ke.xently.features.stores.data.domain.error.Error as StoreError
 import co.ke.xently.libraries.location.tracker.domain.error.Error as LocationTrackerError
-import co.ke.xently.libraries.location.tracker.presentation.utils.UiText as LocationTrackerUiText
 
 
 internal sealed interface StoreDetailEvent {
@@ -20,13 +18,13 @@ internal sealed interface StoreDetailEvent {
         ) : Error<UiText, StoreError>
 
         data class QrCode(
-            override val error: QrCodeUiText,
+            override val error: UiText,
             override val type: QrCodeError,
-        ) : Error<QrCodeUiText, QrCodeError>
+        ) : Error<UiText, QrCodeError>
 
         data class LocationTracker(
-            override val error: LocationTrackerUiText,
+            override val error: UiText,
             override val type: LocationTrackerError,
-        ) : Error<LocationTrackerUiText, LocationTrackerError>
+        ) : Error<UiText, LocationTrackerError>
     }
 }

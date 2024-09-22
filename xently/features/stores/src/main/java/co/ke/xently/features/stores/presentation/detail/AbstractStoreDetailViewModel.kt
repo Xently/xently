@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.qrcode.data.source.QrCodeRepository
-import co.ke.xently.features.qrcode.presentation.utils.asUiText
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Result
@@ -14,7 +13,6 @@ import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
 import co.ke.xently.libraries.location.tracker.domain.error.Result.Failure
 import co.ke.xently.libraries.location.tracker.domain.error.Result.Success
-import co.ke.xently.libraries.location.tracker.presentation.utils.asUiText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -110,7 +108,7 @@ abstract class AbstractStoreDetailViewModel(
                         is Failure -> {
                             _event.send(
                                 StoreDetailEvent.Error.LocationTracker(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
                             )
@@ -132,7 +130,7 @@ abstract class AbstractStoreDetailViewModel(
             is co.ke.xently.features.qrcode.data.domain.error.Result.Failure -> {
                 _event.send(
                     StoreDetailEvent.Error.QrCode(
-                        error = result.error.asUiText(),
+                        error = result.error.toUiText(),
                         type = result.error,
                     )
                 )

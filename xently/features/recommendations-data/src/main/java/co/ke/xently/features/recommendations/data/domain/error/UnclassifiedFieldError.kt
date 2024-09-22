@@ -1,3 +1,9 @@
 package co.ke.xently.features.recommendations.data.domain.error
 
-data class UnclassifiedFieldError(val message: String) : LocalFieldError
+import co.ke.xently.libraries.data.core.UiText
+
+data class UnclassifiedFieldError(val message: String) : LocalFieldError {
+    override suspend fun toUiText(): UiText {
+        return UiText.DynamicString(message)
+    }
+}

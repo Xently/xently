@@ -10,7 +10,6 @@ import co.ke.xently.features.products.data.domain.ProductDataValidator
 import co.ke.xently.features.products.data.domain.error.RemoteFieldError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
-import co.ke.xently.features.products.presentation.utils.asUiText
 import co.ke.xently.libraries.data.image.domain.Upload
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -204,7 +203,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
 
                                     else -> _event.send(
                                         ProductEditDetailEvent.Error(
-                                            error = error.asUiText(),
+                                            error = error.toUiText(),
                                             type = error,
                                         )
                                     )

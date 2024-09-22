@@ -1,7 +1,7 @@
 package co.ke.xently.features.reviews.presentation.reviews
 
 import co.ke.xently.features.reviews.data.domain.Rating
-import co.ke.xently.features.reviews.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 internal sealed interface ReviewSummaryResponse {
     data object Loading : ReviewSummaryResponse

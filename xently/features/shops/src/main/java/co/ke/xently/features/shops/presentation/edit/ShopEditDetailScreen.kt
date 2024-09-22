@@ -46,14 +46,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import co.ke.xently.features.merchant.data.presentation.utils.asUiText
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.features.merchant.data.domain.error.EmailError as MerchantEmailError
@@ -117,7 +116,6 @@ internal fun ShopEditDetailScreen(
     onClickBack: () -> Unit,
     onAction: (ShopEditDetailAction) -> Unit,
 ) {
-    val context = LocalContext.current
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -171,7 +169,7 @@ internal fun ShopEditDetailScreen(
                 ),
                 isError = state.nameError != null,
                 supportingText = state.nameError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -193,7 +191,7 @@ internal fun ShopEditDetailScreen(
                 ),
                 isError = state.websiteError != null,
                 supportingText = state.websiteError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.asString()) }
                 },
             )
             Text(
@@ -232,7 +230,7 @@ internal fun ShopEditDetailScreen(
                 ),
                 isError = state.merchantFirstNameError != null,
                 supportingText = state.merchantFirstNameError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -256,7 +254,7 @@ internal fun ShopEditDetailScreen(
                 ),
                 isError = state.merchantLastNameError != null,
                 supportingText = state.merchantLastNameError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -279,7 +277,7 @@ internal fun ShopEditDetailScreen(
                 ),
                 isError = state.merchantEmailAddressError != null,
                 supportingText = state.merchantEmailAddressError?.let {
-                    { Text(text = it.asUiText().asString(context = context)) }
+                    { Text(text = it.asString()) }
                 },
             )
 

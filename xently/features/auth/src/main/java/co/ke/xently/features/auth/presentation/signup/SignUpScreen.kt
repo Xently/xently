@@ -56,9 +56,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.auth.R
-import co.ke.xently.features.auth.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable
@@ -185,7 +185,7 @@ private fun SignUpScreen(
                         .padding(horizontal = 16.dp),
                     isError = !state.nameError.isNullOrEmpty(),
                     supportingText = state.nameError?.let {
-                        { Text(text = it.toUiText()) }
+                        { Text(text = it.asString()) }
                     },
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -213,7 +213,7 @@ private fun SignUpScreen(
                         .padding(horizontal = 16.dp),
                     isError = !state.emailError.isNullOrEmpty(),
                     supportingText = state.emailError?.let {
-                        { Text(text = it.toUiText()) }
+                        { Text(text = it.asString()) }
                     },
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -265,7 +265,7 @@ private fun SignUpScreen(
                         .padding(horizontal = 16.dp),
                     isError = !state.passwordError.isNullOrEmpty(),
                     supportingText = state.passwordError?.let {
-                        { Text(text = it.toUiText()) }
+                        { Text(text = it.asString()) }
                     },
                 )
                 Spacer(modifier = Modifier.height(16.dp))

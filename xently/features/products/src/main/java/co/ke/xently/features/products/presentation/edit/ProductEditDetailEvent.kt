@@ -1,6 +1,6 @@
 package co.ke.xently.features.products.presentation.edit
 
-import co.ke.xently.features.products.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface ProductEditDetailEvent {

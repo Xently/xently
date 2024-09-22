@@ -1,6 +1,6 @@
 package co.ke.xently.features.recommendations.presentation
 
-import co.ke.xently.features.recommendations.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface RecommendationEvent {

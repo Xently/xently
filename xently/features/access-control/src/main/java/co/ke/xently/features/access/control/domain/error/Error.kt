@@ -1,3 +1,5 @@
 package co.ke.xently.features.access.control.domain.error
 
-sealed interface Error
+import co.ke.xently.libraries.data.core.UiTextError
+
+sealed interface Error : UiTextError

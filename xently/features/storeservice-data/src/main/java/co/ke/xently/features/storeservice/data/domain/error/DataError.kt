@@ -1,17 +1,16 @@
 package co.ke.xently.features.storeservice.data.domain.error
 
-sealed interface DataError : Error {
-    enum class Network : DataError {
-        REQUEST_TIMEOUT,
-        TOO_MANY_REQUESTS,
-        NO_INTERNET,
-        PAYLOAD_TOO_LARGE,
-        SERVER_ERROR,
-        SERIALIZATION,
-        UNKNOWN
-    }
+import co.ke.xently.features.storeservice.data.R
+import co.ke.xently.libraries.data.core.UiText
 
+sealed interface DataError : Error {
     enum class Local : DataError {
-        DISK_FULL
+        DISK_FULL;
+
+        override suspend fun toUiText(): UiText {
+            return when (this) {
+                DISK_FULL -> UiText.StringResource(R.string.error_disk_full)
+            }
+        }
     }
 }

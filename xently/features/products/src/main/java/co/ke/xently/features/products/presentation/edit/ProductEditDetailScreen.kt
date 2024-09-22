@@ -58,10 +58,10 @@ import co.ke.xently.features.products.data.domain.error.PriceError
 import co.ke.xently.features.products.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
-import co.ke.xently.features.products.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlin.random.Random
@@ -199,7 +199,7 @@ internal fun ProductEditDetailScreen(
                 ),
                 isError = !state.nameError.isNullOrEmpty(),
                 supportingText = state.nameError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -221,7 +221,7 @@ internal fun ProductEditDetailScreen(
                 ),
                 isError = !state.unitPriceError.isNullOrEmpty(),
                 supportingText = state.unitPriceError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -244,7 +244,7 @@ internal fun ProductEditDetailScreen(
                 ),
                 isError = !state.descriptionError.isNullOrEmpty(),
                 supportingText = state.descriptionError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
                 keyboardActions = KeyboardActions { focusManager.clearFocus() },
             )

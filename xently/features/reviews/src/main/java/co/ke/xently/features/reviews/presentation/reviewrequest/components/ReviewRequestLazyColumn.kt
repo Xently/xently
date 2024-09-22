@@ -32,12 +32,12 @@ import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.components.UnderlinedHeadline
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestUiState
-import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.asString
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -185,7 +185,7 @@ private fun ReviewRequestErrorContent(error: Error, onClickRetry: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

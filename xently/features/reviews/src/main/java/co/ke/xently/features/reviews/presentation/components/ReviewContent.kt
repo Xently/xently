@@ -23,10 +23,11 @@ import co.ke.xently.features.reviews.data.domain.error.UnknownError
 import co.ke.xently.features.reviews.presentation.reviews.BarGraphData
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
-import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
+import co.ke.xently.libraries.ui.core.asString
 import com.aay.compose.barChart.model.BarParameters
 import kotlinx.datetime.Month
 import kotlin.random.Random

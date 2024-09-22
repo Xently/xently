@@ -1,8 +1,5 @@
 package co.ke.xently.business
 
-import co.ke.xently.features.auth.presentation.utils.UiText as AuthUiText
-import co.ke.xently.features.shops.presentation.utils.UiText as ShopUiText
-
 
 sealed interface MainEvent {
     data class Error(

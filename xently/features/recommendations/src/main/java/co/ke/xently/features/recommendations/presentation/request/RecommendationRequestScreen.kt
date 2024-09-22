@@ -72,13 +72,13 @@ import co.ke.xently.features.recommendations.presentation.RecommendationAction
 import co.ke.xently.features.recommendations.presentation.RecommendationEvent
 import co.ke.xently.features.recommendations.presentation.RecommendationUiState
 import co.ke.xently.features.recommendations.presentation.RecommendationViewModel
-import co.ke.xently.features.recommendations.presentation.utils.toUiText
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
@@ -313,7 +313,7 @@ internal fun RecommendationRequestScreen(
                     modifier = Modifier.weight(1f),
                     isError = !state.minimumPriceError.isNullOrEmpty(),
                     supportingText = state.minimumPriceError?.let {
-                        { Text(text = it.toUiText()) }
+                        { Text(text = it.asString()) }
                     },
                     label = {
                         Text(
@@ -353,7 +353,7 @@ internal fun RecommendationRequestScreen(
                     modifier = Modifier.weight(1f),
                     isError = !state.maximumPriceError.isNullOrEmpty(),
                     supportingText = state.maximumPriceError?.let {
-                        { Text(text = it.toUiText()) }
+                        { Text(text = it.asString()) }
                     },
                     label = {
                         Text(

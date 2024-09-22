@@ -7,7 +7,6 @@ import co.ke.xently.features.merchant.data.domain.MerchantDataValidator
 import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.ShopDataValidator
 import co.ke.xently.features.shops.data.source.ShopRepository
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -98,7 +97,7 @@ internal class ShopEditDetailViewModel @Inject constructor(
                             is ShopResult.Failure -> {
                                 _event.send(
                                     ShopEditDetailEvent.Error(
-                                        result.error.asUiText(),
+                                        result.error.toUiText(),
                                         result.error,
                                     )
                                 )

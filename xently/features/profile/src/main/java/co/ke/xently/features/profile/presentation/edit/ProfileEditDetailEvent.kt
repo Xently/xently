@@ -1,6 +1,6 @@
 package co.ke.xently.features.profile.presentation.edit
 
-import co.ke.xently.features.profile.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface ProfileEditDetailEvent {

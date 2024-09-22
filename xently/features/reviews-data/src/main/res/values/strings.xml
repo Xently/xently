@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_sign_in">Sign In</string>
+    <string name="the_request_timed_out">The request timed out</string>
+    <string name="youve_hit_your_rate_limit">You\'ve hit your rate limit</string>
+    <string name="no_internet">Couldn\'t reach server. Check your internet connection.</string>
+    <string name="file_too_large">The file you tried to upload was too large.</string>
+    <string name="server_error">Oops, something went wrong. Please try again.</string>
+    <string name="unknown_error">An unknown error occurred</string>
+    <string name="error_disk_full">Failed to save the item because your device\'s disk is full</string>
+    <string name="error_serialization">Oops, couldn\'t parse data.</string>
+    <string name="error_message_default">Sorry, something went wrong.</string>
+    <string name="error_message_invalid_auth_credentials">Mismatched or invalid credentials.</string>
+    <string name="error_message_authentication_required">We need to confirm it is you. Please sign in.</string>
+    <string name="error_message_authorisation_required">Sorry, you need elevated privileges to perform this action.</string>
+    <string name="error_message_missing_resource">We couldn\'t find what you\'re looking for. Please try again or check back later.</string>
+    <string name="error_message_missing_resource_moved">We couldn\'t find what you\'re looking for. Please try again or check back later.</string>
+    <string name="error_message_bad_request">Looks like something got lost in translation. Please double-check your input and try again.</string>
+    <string name="error_message_not_acceptable">We weren\'t expecting that. Mind checking your input and trying again?</string>
+    <string name="error_message_conflict">This action would cause some information to clash. Can you double-check and adjust your request?</string>
+    <string name="error_message_length_required">Length required</string>
+    <string name="error_message_precondition_failed">Hmm, something in your information isn\'t quite right. Please check it again and try.</string>
+    <string name="error_message_unsupported_media_type">Unsupported media type</string>
+    <string name="error_message_range_not_satisfiable">Requested range not satisfiable</string>
+    <string name="error_message_expectation_failed">Expectation failed</string>
+    <string name="error_message_unprocessable_entity">Unprocessable entity</string>
+    <string name="error_message_locked">Locked</string>
+    <string name="error_message_failed_dependency">Failed dependency</string>
+    <string name="error_message_too_early">Too early</string>
+    <string name="error_message_upgrade_required">Upgrade required</string>
+    <string name="error_message_request_header_too_large">Request header fields too large</string>
+    <string name="error_message_fcm_device_registration_required">Device registration required.</string>
+    <string name="message_no_reviews_found">No reviews found.</string>
+    <string name="error_password_too_short">The password is too short</string>
+
+    <string name="button_label_view_comments">View Comments</string>
+
+    <string name="message_no_graph_data">There weren\'t any items that fit your exact search. Maybe try adjusting the filters slightly?.
+    </string>
+    <string name="button_label_adjust_filters">Adjust filters</string>
+
+    <string name="button_label_filter_by_date">Filter by Date</string>
+    <string name="button_label_apply_filters">APPLY FILTERS</string>
+    <string name="year_filter_headline">Select Year</string>
+    <string name="month_filter_headline">Select Month</string>
+
+    <string name="reviews_statistics_title">Statistics</string>
+    <string name="reviews_statistics_total_reviews_title">Total review received</string>
+    <string name="reviews_statistics_general_sentiments_title">General Sentiment</string>
+    <string name="reviews_statistics_percentage_satisfaction_title">Percentage satisfaction</string>
+    <string name="reviews_statistics_average_rating_title">Average rating</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_add_review_category">Add Category</string>
+    <string name="section_title_review_category">Categories</string>
+    <string name="section_title_shop_review_summary">Shop Performance Analysis</string>
+    <string name="section_title_store_review_summary">Branch Performance Analysis</string>
+    <string name="message_no_review_categories">No categories. Click the + button above to begin surveying.</string>
+    <string name="top_bar_title_review_comments">Comments</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="action_label_numbered_star">%1$s-star</string>
+    <string name="content_desc_unselect_numbered_star">Unselect %1$s-star</string>
+    <string name="error_shop_not_selected">Shop not selected.</string>
+    <string name="error_store_not_selected">Branch not selected.</string>
+    <string name="chart_legend_star">%1$d Star (%2$s)</string>
+    <string name="error_message_review_category_not_found">Review category not found.</string>
+    <string name="summary_review_total">Total - %1$s</string>
+    <string name="action_login">Login</string>
+    <string name="action_select_shop">Select Shop</string>
+    <string name="action_select_store">Select Branch</string>
+    <string name="star">%1$s - star</string>
+    <string name="content_desc_unselect_month">Unselect month - %1$s</string>
+    <string name="message_no_review_categories_found">No review categories.</string>
+    <string name="topbar_title_review_request">Share Your Experience</string>
+    <string name="review_request_headline">On a scale of 1 to 5, with 1 being the worst and 5 being the best.</string>
+    <string name="content_desc_send_review">Send review description for %1$s</string>
+    <string name="content_desc_edit_review">Edit review description for %1$s</string>
+    <string name="headline_public_star_agent">Tap a star to rate publicly</string>
+    <string name="text_field_placeholder_description">Optional description…</string>
+    <string name="message_default_review_question_prefix">"How do you rate the "</string>
+    <string name="action_submit">Submit</string>
+    <plurals name="star_rating">
+        <item quantity="one">%d-star</item>
+        <item quantity="other">%d-stars</item>
+    </plurals>
+</resources>

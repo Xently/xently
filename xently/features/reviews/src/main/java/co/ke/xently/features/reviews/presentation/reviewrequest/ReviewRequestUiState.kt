@@ -1,7 +1,7 @@
 package co.ke.xently.features.reviews.presentation.reviewrequest
 
 import androidx.compose.runtime.Stable
-import co.ke.xently.features.reviews.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 @Stable
 data class ReviewRequestUiState(

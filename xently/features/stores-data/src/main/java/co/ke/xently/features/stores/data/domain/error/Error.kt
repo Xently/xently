@@ -11,7 +11,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import timber.log.Timber
 
-sealed interface Error: UiTextError
+sealed interface Error : UiTextError
 
 suspend fun Throwable.toError(): Error {
     return when (this) {

@@ -41,11 +41,11 @@ import co.ke.xently.features.notifications.data.domain.error.DataError
 import co.ke.xently.features.notifications.data.domain.error.toError
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListEmptyState
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListLazyColumn
-import co.ke.xently.features.notifications.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import kotlinx.coroutines.flow.flowOf
@@ -147,7 +147,7 @@ internal fun NotificationListScreen(
                     }
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
+                        message = error.asString(),
                         canRetry = error is RetryableError,
                         onClickRetry = notifications::retry,
                     ) {

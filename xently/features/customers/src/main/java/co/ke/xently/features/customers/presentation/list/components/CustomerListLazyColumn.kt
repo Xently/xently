@@ -32,12 +32,12 @@ import co.ke.xently.features.customers.R
 import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.error.Error
 import co.ke.xently.features.customers.data.domain.error.toError
-import co.ke.xently.features.customers.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.asString
 import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -205,7 +205,7 @@ private fun CustomerListErrorContent(error: Error, onClickRetry: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

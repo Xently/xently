@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
-import co.ke.xently.features.auth.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +43,7 @@ internal class SignInViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 SignInEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error,
                                 )
                             )
@@ -74,7 +73,7 @@ internal class SignInViewModel @Inject constructor(
                         }
 
                         is Result.Failure -> {
-                            _event.send(SignInEvent.Error(result.error.asUiText(), result.error))
+                            _event.send(SignInEvent.Error(result.error.toUiText(), result.error))
                         }
                     }
                 }
@@ -91,7 +90,7 @@ internal class SignInViewModel @Inject constructor(
                             password = state.password
                         )) {
                         is Result.Failure -> {
-                            _event.send(SignInEvent.Error(result.error.asUiText(), result.error))
+                            _event.send(SignInEvent.Error(result.error.toUiText(), result.error))
                         }
 
                         is Result.Success -> {

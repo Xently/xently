@@ -48,6 +48,7 @@ import co.ke.xently.features.products.presentation.list.components.ProductListCo
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf

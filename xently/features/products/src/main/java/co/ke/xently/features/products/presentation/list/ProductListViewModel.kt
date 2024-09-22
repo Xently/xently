@@ -11,7 +11,6 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductFilters
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
-import co.ke.xently.features.products.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -111,7 +110,7 @@ open class ProductListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ProductListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )

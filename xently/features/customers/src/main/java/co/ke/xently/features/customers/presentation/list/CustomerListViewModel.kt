@@ -21,18 +21,18 @@ internal class CustomerListViewModel @Inject constructor(
     storeRepository: StoreRepository,
 ) : CustomerScoreboardListViewModel(repository = repository) {
     override val customers = storeRepository.findActiveStore().flatMapLatest { result ->
-            when (result) {
-                is Result.Failure -> {
-                    when (result.error) {
-                        ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
-                        ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
-                    }
-                }
-
-                is Result.Success -> {
-                    val dataUrl = result.data.links["rankings"]!!.hrefWithoutQueryParamTemplates()
-                    getCustomerPagingDataFlow(dataUrl = dataUrl)
+        when (result) {
+            is Result.Failure -> {
+                when (result.error) {
+                    ConfigurationError.ShopSelectionRequired -> throw ShopSelectionRequiredException()
+                    ConfigurationError.StoreSelectionRequired -> throw StoreSelectionRequiredException()
                 }
             }
+
+            is Result.Success -> {
+                val dataUrl = result.data.links["rankings"]!!.hrefWithoutQueryParamTemplates()
+                getCustomerPagingDataFlow(dataUrl = dataUrl)
+            }
+        }
     }.cachedIn(viewModelScope)
 }
