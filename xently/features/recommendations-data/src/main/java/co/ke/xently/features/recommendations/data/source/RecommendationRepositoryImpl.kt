@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
 
 @Singleton
 internal class RecommendationRepositoryImpl @Inject constructor(
@@ -104,6 +105,7 @@ internal class RecommendationRepositoryImpl @Inject constructor(
                 keyManager = keyManager,
                 dataManager = dataManager,
                 dispatchersProvider = dispatchersProvider,
+                initialRefreshSkipDuration = Duration.ZERO,
             ),
         ) {
             recommendationDao.getRecommendationsByLookupKey(lookupKey = lookupKey)

@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.datetime.Clock
 import timber.log.Timber
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalPagingApi::class)
@@ -18,6 +19,7 @@ class RemoteMediator<Key : Any, Value : Any, Data>(
     private val dataManager: DataManager<Data>,
     private val dispatchersProvider: DispatchersProvider,
     private val dataLookupKey: String? = null,
+    private val initialRefreshSkipDuration: Duration = 1.hours,
 ) : RemoteMediator<Key, Value>() {
     private val remoteKeyDao = database.remoteKeyDao()
 
@@ -26,6 +28,13 @@ class RemoteMediator<Key : Any, Value : Any, Data>(
     }
 
     override suspend fun initialize(): InitializeAction {
+        if (initialRefreshSkipDuration <= Duration.ZERO) {
+            return super.initialize().also {
+                Timber.tag(TAG)
+                    .d("%s: Initialization.", it)
+            }
+        }
+
         val lookupKey = getLookupKey()
         val remoteKey = remoteKeyDao.remoteKeyByLookupKey(lookupKey = lookupKey)
             ?: return super.initialize().also {
@@ -33,7 +42,7 @@ class RemoteMediator<Key : Any, Value : Any, Data>(
                     .d("%s(%s): Initialization.", it, lookupKey)
             }
 
-        return if ((Clock.System.now() - remoteKey.dateRecorded) < 1.hours) {
+        return if ((Clock.System.now() - remoteKey.dateRecorded) < initialRefreshSkipDuration) {
             // Cached data is up-to-date, so there is no need to re-fetch
             // from the network.
             InitializeAction.SKIP_INITIAL_REFRESH
