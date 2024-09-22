@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,14 +23,14 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import co.ke.xently.features.shops.R
 import co.ke.xently.features.shops.data.domain.Shop
-import co.ke.xently.features.shops.data.domain.error.Error
 import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.UiTextError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.asString
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.core.toUiTextError
 
 @Composable
 internal fun ShopListLazyColumn(
@@ -61,9 +60,7 @@ internal fun ShopListLazyColumn(
                     key = "Refresh Error",
                     contentType = "Refresh Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ShopListErrorContent(
                         error = error,
                         onClickRetry = shops::refresh,
@@ -92,9 +89,7 @@ internal fun ShopListLazyColumn(
                     key = "Prepend Error",
                     contentType = "Prepend Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ShopListErrorContent(
                         error = error,
                         onClickRetry = shops::retry,
@@ -149,9 +144,7 @@ internal fun ShopListLazyColumn(
                     key = "Append Error",
                     contentType = "Append Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ShopListErrorContent(
                         error = error,
                         onClickRetry = shops::retry,
@@ -163,7 +156,7 @@ internal fun ShopListLazyColumn(
 }
 
 @Composable
-private fun ShopListErrorContent(error: Error, onClickRetry: () -> Unit) {
+private fun ShopListErrorContent(error: UiTextError, onClickRetry: () -> Unit) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,

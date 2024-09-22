@@ -13,6 +13,13 @@ import kotlinx.coroutines.awaitAll
 
 
 @Composable
+fun Throwable.toUiTextError(error: suspend (Throwable) -> UiTextError): UiTextError? {
+    return produceState<UiTextError?>(null, this) {
+        value = error(this@toUiTextError)
+    }.value
+}
+
+@Composable
 fun UiTextError.asString(): String {
     val context = LocalContext.current
     return produceState("", this, context) {
