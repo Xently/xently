@@ -3,8 +3,7 @@ package co.ke.xently.features.reviews.presentation.reviewrequest
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
+import androidx.paging.cachedIn
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
 import co.ke.xently.features.reviews.data.domain.error.Result
 import co.ke.xently.features.reviews.data.source.ReviewRepository
@@ -35,12 +34,12 @@ internal class ReviewRequestViewModel @Inject constructor(
     val event: Flow<ReviewRequestEvent> = _event.receiveAsFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val reviewCategories: Flow<PagingData<ReviewCategory>> = savedStateHandle.getStateFlow(
+    val reviewCategories = savedStateHandle.getStateFlow(
         key = "reviewCategoriesUrl",
         initialValue = "",
     ).flatMapLatest { reviewCategoriesUrl ->
         reviewCategoryRepository.findReviewCategories(url = reviewCategoriesUrl)
-    }
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: ReviewRequestAction) {
         when (action) {

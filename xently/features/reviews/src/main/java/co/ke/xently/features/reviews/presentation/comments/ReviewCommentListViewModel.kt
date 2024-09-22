@@ -3,11 +3,9 @@ package co.ke.xently.features.reviews.presentation.comments
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import co.ke.xently.features.reviewcategory.data.domain.error.Result
 import co.ke.xently.features.reviewcategory.data.source.ReviewCategoryRepository
-import co.ke.xently.features.reviews.data.domain.Review
 import co.ke.xently.features.reviews.data.domain.ReviewFilters
 import co.ke.xently.features.reviews.data.domain.error.ReviewCategoryNotFoundException
 import co.ke.xently.features.reviews.data.source.ReviewRepository
@@ -46,23 +44,22 @@ internal class ReviewCommentListViewModel @Inject constructor(
     private val _selectedStar = savedStateHandle.getStateFlow<Int?>(KEY, null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val reviews: Flow<PagingData<Review>> =
-        savedStateHandle.getStateFlow<String?>("categoryName", null)
-            .filterNotNull()
-            .flatMapLatest(categoryRepository::findCategoryByName)
-            .combineTransform(_selectedStar) { result, selectedStar ->
-                emitAll(
-                    when (result) {
-                        is Result.Failure -> throw ReviewCategoryNotFoundException()
-                        is Result.Success -> {
-                            repository.getReviews(
-                                url = result.data.links["reviews"]!!.hrefWithoutQueryParamTemplates(),
-                                filters = ReviewFilters(starRating = selectedStar),
-                            )
-                        }
+    val reviews = savedStateHandle.getStateFlow<String?>("categoryName", null)
+        .filterNotNull()
+        .flatMapLatest(categoryRepository::findCategoryByName)
+        .combineTransform(_selectedStar) { result, selectedStar ->
+            emitAll(
+                when (result) {
+                    is Result.Failure -> throw ReviewCategoryNotFoundException()
+                    is Result.Success -> {
+                        repository.getReviews(
+                            url = result.data.links["reviews"]!!.hrefWithoutQueryParamTemplates(),
+                            filters = ReviewFilters(starRating = selectedStar),
+                        )
                     }
-                )
-            }.cachedIn(viewModelScope)
+                }
+            )
+        }.cachedIn(viewModelScope)
 
     fun onAction(action: ReviewCommentListAction) {
         when (action) {

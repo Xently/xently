@@ -2,8 +2,7 @@ package co.ke.xently.features.shops.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import co.ke.xently.features.shops.data.domain.Shop
+import androidx.paging.cachedIn
 import co.ke.xently.features.shops.data.domain.ShopFilters
 import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.source.ShopRepository
@@ -35,10 +34,10 @@ internal class ShopListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(ShopFilters())
 
-    val shops: Flow<PagingData<Shop>> = _filters.flatMapLatest { filters ->
+    val shops = _filters.flatMapLatest { filters ->
         val url = repository.getShopsUrlAssociatedWithCurrentUser()
         repository.getShops(url = url, filters = filters)
-    }
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: ShopListAction) {
         when (action) {

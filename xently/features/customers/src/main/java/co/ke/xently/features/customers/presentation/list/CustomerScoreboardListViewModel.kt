@@ -1,8 +1,8 @@
 package co.ke.xently.features.customers.presentation.list
 
 import androidx.lifecycle.ViewModel
-import androidx.paging.PagingData
-import co.ke.xently.features.customers.data.domain.Customer
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import co.ke.xently.features.customers.data.domain.CustomerFilters
 import co.ke.xently.features.customers.data.source.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,13 +30,13 @@ internal open class CustomerScoreboardListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(CustomerFilters())
 
-    open val customers: Flow<PagingData<Customer>> = getCustomerPagingDataFlow()
+    open val customers = getCustomerPagingDataFlow()
 
     protected fun getCustomerPagingDataFlow(dataUrl: String? = null) =
         _filters.flatMapLatest { filters ->
             val url = dataUrl ?: repository.getCustomersUrl()
             repository.getCustomers(url = url, filters = filters)
-        }
+        }.cachedIn(viewModelScope)
 
     fun onAction(action: CustomerListAction) {
         when (action) {

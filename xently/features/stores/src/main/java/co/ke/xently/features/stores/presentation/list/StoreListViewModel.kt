@@ -1,8 +1,8 @@
 package co.ke.xently.features.stores.presentation.list
 
 import androidx.lifecycle.ViewModel
-import androidx.paging.PagingData
-import co.ke.xently.features.stores.data.domain.Store
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.source.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,10 +31,10 @@ internal class StoreListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(StoreFilters())
 
-    val stores: Flow<PagingData<Store>> = _filters.flatMapLatest { filters ->
+    val stores = _filters.flatMapLatest { filters ->
         val url = repository.getDefaultStoreFetchUrl()
         repository.getStores(filters = filters, url = url)
-    }
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: StoreListAction) {
         when (action) {

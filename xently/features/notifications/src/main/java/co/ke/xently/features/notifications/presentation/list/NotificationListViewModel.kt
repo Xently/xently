@@ -1,8 +1,8 @@
 package co.ke.xently.features.notifications.presentation.list
 
 import androidx.lifecycle.ViewModel
-import androidx.paging.PagingData
-import co.ke.xently.features.notifications.data.domain.Notification
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import co.ke.xently.features.notifications.data.domain.NotificationFilters
 import co.ke.xently.features.notifications.data.source.NotificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,10 +31,10 @@ internal class NotificationListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(NotificationFilters())
 
-    val notifications: Flow<PagingData<Notification>> = _filters.flatMapLatest { filters ->
+    val notifications = _filters.flatMapLatest { filters ->
         val url = repository.getNotificationsUrl()
         repository.getNotifications(url = url, filters = filters)
-    }
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: NotificationListAction) {
         when (action) {

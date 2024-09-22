@@ -3,12 +3,11 @@ package co.ke.xently.features.stores.presentation.list.selection
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import co.ke.xently.features.shops.data.domain.error.ConfigurationError
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
-import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.ShopSelectionRequiredException
@@ -71,37 +70,36 @@ internal class StoreSelectionListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(StoreFilters())
 
-    val stores: Flow<PagingData<Store>> =
-        shopRepository.findActivatedShop().flatMapLatest { result ->
-            when (result) {
-                is ShopResult.Failure -> {
-                    if (result.error == ConfigurationError.ShopSelectionRequired) {
-                        throw ShopSelectionRequiredException()
-                    } else {
-                        Timber.e(
-                            "An unexpected error (%s) was encountered while fetching stores.",
-                            result.error,
-                        )
-                        emptyFlow()
-                    }
+    val stores = shopRepository.findActivatedShop().flatMapLatest { result ->
+        when (result) {
+            is ShopResult.Failure -> {
+                if (result.error == ConfigurationError.ShopSelectionRequired) {
+                    throw ShopSelectionRequiredException()
+                } else {
+                    Timber.e(
+                        "An unexpected error (%s) was encountered while fetching stores.",
+                        result.error,
+                    )
+                    emptyFlow()
                 }
+            }
 
-                is ShopResult.Success -> {
-                    _selectedCategories.combine(_filters) { categories, filters ->
-                        filters.copy(
-                            storeCategories = categories.map {
-                                StoreCategory(name = it)
-                            }.toSet(),
-                        )
-                    }.flatMapLatest { filters ->
-                        repository.getStores(
-                            filters = filters,
-                            url = result.data.links["stores"]!!.hrefWithoutQueryParamTemplates(),
-                        )
-                    }
+            is ShopResult.Success -> {
+                _selectedCategories.combine(_filters) { categories, filters ->
+                    filters.copy(
+                        storeCategories = categories.map {
+                            StoreCategory(name = it)
+                        }.toSet(),
+                    )
+                }.flatMapLatest { filters ->
+                    repository.getStores(
+                        filters = filters,
+                        url = result.data.links["stores"]!!.hrefWithoutQueryParamTemplates(),
+                    )
                 }
             }
         }
+    }.cachedIn(viewModelScope)
 
     fun onAction(action: StoreSelectionListAction) {
         when (action) {

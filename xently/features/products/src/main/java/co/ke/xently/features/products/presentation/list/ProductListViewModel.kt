@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
@@ -63,10 +64,11 @@ open class ProductListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(ProductFilters())
 
-    open val products: Flow<PagingData<Product>> = savedStateHandle.getStateFlow(
+    open val products = savedStateHandle.getStateFlow(
         key = "productsUrl",
         initialValue = "",
     ).flatMapLatest(::getProductPagingDataFlow)
+        .cachedIn(viewModelScope)
 
     protected fun getProductPagingDataFlow(productsUrl: String): Flow<PagingData<Product>> {
         return _selectedCategories.combine(_filters) { categories, filters ->

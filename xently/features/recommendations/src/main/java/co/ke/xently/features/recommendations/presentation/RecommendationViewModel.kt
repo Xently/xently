@@ -3,7 +3,7 @@ package co.ke.xently.features.recommendations.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
@@ -12,7 +12,6 @@ import co.ke.xently.features.recommendations.data.domain.ShoppingListItem
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
-import co.ke.xently.features.stores.data.domain.Store
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -89,7 +88,7 @@ class RecommendationViewModel @Inject constructor(
 
 //    val shoppingList = savedStateHandle.getStateFlow(SHOPPING_LIST_KEY, emptyList<String>())
 
-    val recommendations: Flow<PagingData<Store>> = uiState.mapLatest { state ->
+    val recommendations = uiState.mapLatest { state ->
         RecommendationRequest(
             location = state.location,
             storeDistanceMeters = null,
@@ -110,7 +109,7 @@ class RecommendationViewModel @Inject constructor(
             repository.getRecommendations(url = url, request = request)
         }.map { data ->
             data.map { it.store }
-        }
+        }.cachedIn(viewModelScope)
 
     internal fun onAction(action: RecommendationAction) {
         when (action) {
