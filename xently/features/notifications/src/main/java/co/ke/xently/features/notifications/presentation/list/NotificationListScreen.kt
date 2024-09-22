@@ -150,7 +150,7 @@ internal fun NotificationListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
-                ListState.NotLoading -> {
+                ListState.Ready -> {
                     NotificationListLazyColumn(
                         notifications = notifications,
                         modifier = Modifier.matchParentSize(),

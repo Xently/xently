@@ -70,7 +70,7 @@ fun StoreListScreenContent(
                 )
             }
 
-            ListState.NotLoading -> {
+            ListState.Ready -> {
                 StoreListLazyVerticalGrid(
                     stores = stores,
                     modifier = Modifier.matchParentSize(),

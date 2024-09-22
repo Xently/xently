@@ -135,7 +135,7 @@ internal fun ReviewRequestScreen(
                     )
                 }
 
-                ListState.NotLoading -> {
+                ListState.Ready -> {
                     ReviewRequestLazyColumn(
                         state = state,
                         onAction = onAction,

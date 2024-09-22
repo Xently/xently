@@ -12,8 +12,8 @@ import kotlinx.coroutines.async
 sealed interface ListState {
     data object Empty : ListState
     data object Loading : ListState
-    data object NotLoading : ListState
-    data class Error(val error: UiTextError) : ListState
+    data object Ready : ListState
+    class Error(val error: UiTextError) : ListState
 }
 
 @Composable
@@ -22,30 +22,23 @@ fun <E : UiTextError> LoadState.asListState(
     errorMapper: suspend (Throwable) -> E,
 ): ListState {
     val dispatchersProvider = LocalDispatchersProvider.current
-    return produceState<ListState>(ListState.Loading, this, itemCount) {
-        when {
-            itemCount == 0 && this@asListState is LoadState.NotLoading -> {
-                if (endOfPaginationReached) {
-                    value = ListState.Empty
-                } else {
-                    if (value !is ListState.Loading) value = ListState.Loading
-                }
-            }
-
+    return produceState<ListState>(ListState.Loading, this, itemCount, endOfPaginationReached) {
+        value = when {
             itemCount == 0 && this@asListState is LoadState.Error -> {
                 val uiText = async(dispatchersProvider.default) {
                     errorMapper(this@asListState.error)
                 }
-                value = ListState.Error(uiText.await())
+                ListState.Error(uiText.await())
             }
 
-            itemCount == 0 && this@asListState is LoadState.Loading -> {
-                if (value !is ListState.Loading) value = ListState.Loading
+            itemCount == 0 && this@asListState is LoadState.NotLoading -> {
+                if (this@asListState.endOfPaginationReached) {
+                    ListState.Empty
+                } else value
             }
 
-            else -> {
-                value = ListState.NotLoading
-            }
+            itemCount == 0 && this@asListState is LoadState.Loading -> ListState.Loading
+            else -> ListState.Ready
         }
     }.value
 }

@@ -71,7 +71,7 @@ internal fun ProductListContent(
                 )
             }
 
-            ListState.NotLoading -> {
+            ListState.Ready -> {
                 ProductListLazyColumn(
                     products = products,
                     modifier = Modifier.matchParentSize(),

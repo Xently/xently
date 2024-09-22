@@ -45,6 +45,7 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.LocalScrollToTheTop
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.asString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

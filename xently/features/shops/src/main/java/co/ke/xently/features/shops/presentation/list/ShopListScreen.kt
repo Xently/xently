@@ -211,7 +211,7 @@ internal fun ShopListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
-                ListState.NotLoading -> {
+                ListState.Ready -> {
                     ShopListLazyColumn(
                         modifier = Modifier.matchParentSize(),
                         shops = shops,

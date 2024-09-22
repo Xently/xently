@@ -213,7 +213,7 @@ internal fun ReviewCommentListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
-                ListState.NotLoading -> {
+                ListState.Ready -> {
                     ReviewListLazyColumn(
                         reviews = reviews,
                         modifier = Modifier.matchParentSize(),

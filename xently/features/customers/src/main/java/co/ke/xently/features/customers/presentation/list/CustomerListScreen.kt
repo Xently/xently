@@ -195,7 +195,7 @@ internal fun CustomerListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
-                ListState.NotLoading -> {
+                ListState.Ready -> {
                     CustomerListLazyColumn(
                         customers = customers,
                         modifier = Modifier.matchParentSize(),
