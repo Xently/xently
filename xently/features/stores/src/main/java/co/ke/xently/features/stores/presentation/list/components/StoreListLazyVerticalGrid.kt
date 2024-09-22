@@ -29,12 +29,12 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.toError
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
 import co.ke.xently.libraries.data.core.AuthorisationError
 import co.ke.xently.libraries.data.core.RetryableError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
+import co.ke.xently.libraries.ui.core.asString
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -58,16 +58,7 @@ internal fun StoreListLazyVerticalGrid(
         columns = GridCells.Adaptive(160.dp),
     ) {
         when (val loadState = stores.loadState.refresh) {
-            is LoadState.NotLoading -> Unit
-            LoadState.Loading -> {
-                item(
-                    key = "Refresh Loading",
-                    contentType = "Refresh Loading",
-                    span = { GridItemSpan(maxLineSpan) },
-                ) {
-                    // Ignore loading state for refresh...
-                }
-            }
+            is LoadState.NotLoading, LoadState.Loading -> Unit
 
             is LoadState.Error -> {
                 item(
@@ -172,7 +163,7 @@ private fun StoreListErrorContent(error: Error, onClickRetry: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

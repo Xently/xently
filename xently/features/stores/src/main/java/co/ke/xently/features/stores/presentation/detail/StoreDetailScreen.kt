@@ -60,6 +60,7 @@ import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
 import co.ke.xently.libraries.location.tracker.presentation.rememberEnableLocationGPSLauncher
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState

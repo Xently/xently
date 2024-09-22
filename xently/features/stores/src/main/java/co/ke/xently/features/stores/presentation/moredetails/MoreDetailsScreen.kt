@@ -37,6 +37,7 @@ import co.ke.xently.features.stores.presentation.moredetails.components.MoreDeta
 import co.ke.xently.features.stores.presentation.moredetails.components.OpeningHourItem
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState

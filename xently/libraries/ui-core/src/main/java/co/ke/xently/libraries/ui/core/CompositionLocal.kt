@@ -6,7 +6,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import co.ke.xently.libraries.data.auth.AuthenticationState
-import co.ke.xently.libraries.data.core.DefaultDispatchersProvider
 import co.ke.xently.libraries.data.core.DispatchersProvider
 
 @Immutable
@@ -20,7 +19,7 @@ val LocalAuthenticationEventHandler = staticCompositionLocalOf {
     NoopAuthenticationEventHandler
 }
 val LocalDispatchersProvider = staticCompositionLocalOf<DispatchersProvider> {
-    DefaultDispatchersProvider
+    DispatchersProvider.Default
 }
 
 val LocalAuthenticationState = compositionLocalOf<State<AuthenticationState>> {

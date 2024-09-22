@@ -61,6 +61,8 @@ dependencies {
     api(libs.androidx.paging.compose)
     api(libs.androidx.paging.runtime)
     api(project(":xently:libraries:pagination-data"))
+    implementation(project(":xently:libraries:data-core"))
+    implementation(project(":xently:libraries:ui-core"))
 
     testImplementation(libs.androidx.paging.common)
 }

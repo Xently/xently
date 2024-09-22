@@ -71,12 +71,11 @@ import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
-import co.ke.xently.features.stores.presentation.utils.asUiText
-import co.ke.xently.features.stores.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.dokar.chiptextfield.Chip
@@ -120,7 +119,7 @@ fun StoreEditDetailScreen(
                 is StoreEditDetailEvent.Error -> {
                     if (event.error !is FieldError) {
                         snackbarHostState.showSnackbar(
-                            event.error.asUiText().asString(context = context),
+                            event.error.toUiText().asString(context = context),
                             duration = SnackbarDuration.Long,
                         )
                     }
@@ -232,7 +231,7 @@ internal fun StoreEditDetailScreen(
                 ),
                 isError = !state.nameError.isNullOrEmpty(),
                 supportingText = state.nameError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -252,7 +251,7 @@ internal fun StoreEditDetailScreen(
                 supportingText = {
                     val error = state.locationError
                     if (!error.isNullOrEmpty()) {
-                        Text(text = error.toUiText())
+                        Text(text = error.asString())
                     } else {
                         Text(text = stringResource(R.string.text_field_supporting_text_location))
                     }
@@ -283,7 +282,7 @@ internal fun StoreEditDetailScreen(
                 ),
                 isError = !state.emailError.isNullOrEmpty(),
                 supportingText = state.emailError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -305,7 +304,7 @@ internal fun StoreEditDetailScreen(
                 ),
                 isError = !state.phoneError.isNullOrEmpty(),
                 supportingText = state.phoneError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
 
@@ -374,7 +373,7 @@ internal fun StoreEditDetailScreen(
                 keyboardActions = KeyboardActions { focusManager.clearFocus() },
                 isError = !state.descriptionError.isNullOrEmpty(),
                 supportingText = state.descriptionError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
 

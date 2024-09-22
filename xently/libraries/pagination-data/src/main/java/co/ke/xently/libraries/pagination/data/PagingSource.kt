@@ -1,15 +1,15 @@
 package co.ke.xently.libraries.pagination.data
 
+import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import io.ktor.http.Url
 import kotlinx.coroutines.yield
-import androidx.paging.PagingSource as AndroidPagingSource
 
 
 class PagingSource<T : Any>(
     private val dataLookupKey: String? = null,
     private val apiCall: suspend (initialKey: String?) -> PagedResponse<T>,
-) : AndroidPagingSource<String, T>() {
+) : PagingSource<String, T>() {
     override fun getRefreshKey(state: PagingState<String, T>): String? {
         // Try to find the page key of the closest page to anchorPosition from
         // either the prevKey or the nextKey; you need to handle nullability

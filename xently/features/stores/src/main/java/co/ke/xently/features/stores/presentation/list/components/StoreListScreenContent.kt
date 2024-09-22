@@ -25,12 +25,13 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.toError
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.ui.core.asString
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.pagination.asListState
 
 @Composable
 fun StoreListScreenContent(
@@ -45,13 +46,14 @@ fun StoreListScreenContent(
     val isRefreshing by remember(refreshLoadState, stores.itemCount) {
         derivedStateOf { refreshLoadState == LoadState.Loading && stores.itemCount > 0 }
     }
+
     PullRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = stores::refresh,
         modifier = modifier.fillMaxSize(),
     ) {
-        when {
-            stores.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+        when (val state = refreshLoadState.asListState(stores.itemCount, Throwable::toError)) {
+            ListState.Empty -> {
                 StoreListEmptyState(
                     modifier = Modifier.matchParentSize(),
                     message = emptyMessage,
@@ -59,18 +61,34 @@ fun StoreListScreenContent(
                 )
             }
 
-            stores.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                val error = remember(refreshLoadState) {
-                    runBlocking { refreshLoadState.error.toError() }
-                }
+            ListState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                        .wrapContentWidth(Alignment.CenterHorizontally),
+                )
+            }
+
+            ListState.NotLoading -> {
+                StoreListLazyVerticalGrid(
+                    stores = stores,
+                    modifier = Modifier.matchParentSize(),
+                    storeListItem = storeListItem,
+                    contentPadding = contentPadding,
+                    verticalArrangement = verticalArrangement,
+                )
+            }
+
+            is ListState.Error -> {
                 StoreListEmptyState(
                     modifier = Modifier.matchParentSize(),
-                    message = error.asUiText().asString(),
-                    canRetry = error is RetryableError,
+                    message = state.error.asString(),
+                    canRetry = state.error is RetryableError,
                     onClickRetry = stores::retry,
                 ) {
                     val eventHandler = LocalEventHandler.current
-                    when (error) {
+                    when (state.error) {
                         ConfigurationError.ShopSelectionRequired -> {
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = eventHandler::requestShopSelection) {
@@ -94,25 +112,6 @@ fun StoreListScreenContent(
                         else -> Unit
                     }
                 }
-            }
-
-            stores.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center)
-                        .wrapContentWidth(Alignment.CenterHorizontally),
-                )
-            }
-
-            else -> {
-                StoreListLazyVerticalGrid(
-                    stores = stores,
-                    modifier = Modifier.matchParentSize(),
-                    storeListItem = storeListItem,
-                    contentPadding = contentPadding,
-                    verticalArrangement = verticalArrangement,
-                )
             }
         }
     }

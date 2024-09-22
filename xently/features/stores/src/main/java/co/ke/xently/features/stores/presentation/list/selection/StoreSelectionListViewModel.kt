@@ -12,7 +12,6 @@ import co.ke.xently.features.stores.data.domain.StoreFilters
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.ShopSelectionRequiredException
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -130,7 +129,7 @@ internal class StoreSelectionListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 StoreSelectionListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )
@@ -170,7 +169,7 @@ internal class StoreSelectionListViewModel @Inject constructor(
             is Result.Failure -> {
                 _event.send(
                     StoreSelectionListEvent.Error(
-                        result.error.asUiText(),
+                        result.error.toUiText(),
                         result.error
                     )
                 )
@@ -187,7 +186,7 @@ internal class StoreSelectionListViewModel @Inject constructor(
             is Result.Failure -> {
                 _event.send(
                     StoreSelectionListEvent.Error(
-                        result.error.asUiText(),
+                        result.error.toUiText(),
                         result.error
                     )
                 )

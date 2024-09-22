@@ -10,7 +10,6 @@ import co.ke.xently.features.stores.data.domain.error.DataError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
 import co.ke.xently.libraries.location.tracker.domain.error.Result.Failure
@@ -53,7 +52,7 @@ abstract class AbstractStoreDetailViewModel(
                     val error = throwable.toError()
                     _event.send(
                         StoreDetailEvent.Error.Store(
-                            error = error.asUiText(),
+                            error = error.toUiText(),
                             type = error
                         )
                     )
@@ -65,7 +64,7 @@ abstract class AbstractStoreDetailViewModel(
                             _uiState.update { it.copy(isLoading = false) }
                             _event.send(
                                 StoreDetailEvent.Error.Store(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
                             )

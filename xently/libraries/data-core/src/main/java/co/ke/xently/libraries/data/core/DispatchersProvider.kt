@@ -14,7 +14,7 @@ internal object DispatchersProviderModule {
     @Provides
     @Singleton
     fun provideDispatchersProvider(): DispatchersProvider {
-        return DefaultDispatchersProvider
+        return DispatchersProvider.Default
     }
 }
 
@@ -23,11 +23,11 @@ interface DispatchersProvider {
     val main: CoroutineDispatcher
     val mainImmediate: CoroutineDispatcher
     val default: CoroutineDispatcher
-}
 
-object DefaultDispatchersProvider : DispatchersProvider {
-    override val io: CoroutineDispatcher = Dispatchers.IO
-    override val main: CoroutineDispatcher = Dispatchers.Main
-    override val mainImmediate: CoroutineDispatcher = Dispatchers.Main.immediate
-    override val default: CoroutineDispatcher = Dispatchers.Default
+    object Default : DispatchersProvider {
+        override val io: CoroutineDispatcher = Dispatchers.IO
+        override val main: CoroutineDispatcher = Dispatchers.Main
+        override val mainImmediate: CoroutineDispatcher = Dispatchers.Main.immediate
+        override val default: CoroutineDispatcher = Dispatchers.Default
+    }
 }
