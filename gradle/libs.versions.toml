@@ -54,8 +54,13 @@ room = "2.6.1"
 secrets = "2.0.1"
 timber = "5.0.1"
 work-manager = "2.9.1"
+coroutines = "1.8.1"
+compose = "1.7.2"
 
 [libraries]
+compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
+compose-foundation-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
