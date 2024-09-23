@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress("DEPRECATION")
 package com.google.accompanist.placeholder
 
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -30,7 +28,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -53,13 +51,6 @@ import androidx.compose.ui.unit.LayoutDirection
 /**
  * Contains default values used by [Modifier.placeholder] and [PlaceholderHighlight].
  */
-@Deprecated(
-    """
-accompanist/placeholder is deprecated and the API is no longer maintained. 
-We recommend forking the implementation and customising it to your needs. 
-For more information please visit https://google.github.io/accompanist/placeholder
-"""
-)
 public object PlaceholderDefaults {
     /**
      * The default [InfiniteRepeatableSpec] to use for [fade].
@@ -99,8 +90,6 @@ public object PlaceholderDefaults {
  * [Placeholder UI](https://material.io/design/communication/launch-screen.html#placeholder-ui)
  * guidelines.
  *
- * @sample com.google.accompanist.sample.placeholder.DocSample_Foundation_Placeholder
- *
  * @param visible whether the placeholder should be visible or not.
  * @param color the color used to draw the placeholder UI.
  * @param shape desired shape of the placeholder. Defaults to [RectangleShape].
@@ -110,13 +99,6 @@ public object PlaceholderDefaults {
  * @param contentFadeTransitionSpec The transition spec to use when fading the content
  * on/off screen. The boolean parameter defined for the transition is [visible].
  */
-@Deprecated(
-    """
-accompanist/placeholder is deprecated and the API is no longer maintained. 
-We recommend forking the implementation and customising it to your needs. 
-For more information please visit https://google.github.io/accompanist/placeholder
-"""
-)
 public fun Modifier.placeholder(
     visible: Boolean,
     color: Color,
@@ -140,7 +122,7 @@ public fun Modifier.placeholder(
     val lastOutline = remember { Ref<Outline>() }
 
     // The current highlight animation progress
-    var highlightProgress: Float by remember { mutableStateOf(0f) }
+    var highlightProgress: Float by remember { mutableFloatStateOf(0f) }
 
     // This is our crossfade transition
     val transitionState = remember { MutableTransitionState(visible) }.apply {
