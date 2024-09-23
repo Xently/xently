@@ -34,9 +34,11 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.asString
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlin.random.Random
 
 @Composable
@@ -125,13 +127,19 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 text = rating.average.toString(),
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                ),
             )
             StarRatingRow(
                 isDark = isDark,
                 average = rating.average,
                 maximumStarRating = rating.maxStarRating,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                ),
             )
             Text(
                 text = stringResource(
@@ -140,7 +148,10 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 ),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Light,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                ),
             )
         }
         Column(
@@ -156,7 +167,10 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 ) {
                     Text(
                         text = star.star.toString(),
-                        modifier = Modifier.shimmer(isLoading),
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        ),
                     )
                     val progress = rememberSaveable(star.count, rating.totalReviews) {
                         (star.count / rating.totalReviews.toDouble()).toFloat()
@@ -166,7 +180,10 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                         isDark = isDark,
                         modifier = Modifier
                             .weight(1f)
-                            .shimmer(isLoading),
+                            .placeholder(
+                                visible = isLoading,
+                                highlight = PlaceholderHighlight.shimmer(),
+                            ),
                     )
                 }
             }

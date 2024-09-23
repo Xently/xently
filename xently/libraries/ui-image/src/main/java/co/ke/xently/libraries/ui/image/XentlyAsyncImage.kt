@@ -2,7 +2,6 @@ package co.ke.xently.libraries.ui.image
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material3.MaterialTheme
@@ -14,8 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -28,7 +25,9 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import com.valentinilk.shimmer.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import timber.log.Timber
 
 
@@ -82,15 +81,6 @@ fun XentlyImage(
     }
 }
 
-private fun Modifier.shimmer(shimmer: Boolean, color: Color? = null): Modifier {
-    return composed {
-        if (shimmer) {
-            background(color ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
-                .shimmer()
-        } else Modifier
-    }
-}
-
 @Composable
 private fun XentlyAsyncImage(
     data: Any?,
@@ -113,7 +103,10 @@ private fun XentlyAsyncImage(
         } else if (!LocalInspectionMode.current) {
             var isLoading by rememberSaveable(data) { mutableStateOf(false) }
             AsyncImage(
-                modifier = modifier.shimmer(isLoading),
+                modifier = modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                ),
                 contentScale = contentScale,
                 contentDescription = contentDescription,
                 placeholder = ColorPainter(MaterialTheme.colorScheme.surface),

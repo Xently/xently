@@ -38,7 +38,9 @@ import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpd
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun ShopListItem(
@@ -75,7 +77,7 @@ internal fun ShopListItem(
             Card(
                 modifier = Modifier
                     .size(size = 60.dp)
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
             ) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Icon(
@@ -91,13 +93,21 @@ internal fun ShopListItem(
                     text = shop.toString(),
                     modifier = Modifier
                         .weight(1f)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        ),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                 )
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
-                Box(modifier = Modifier.shimmer(isLoading)) {
+                Box(
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+                ) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = """More options for shop "$shop".""",

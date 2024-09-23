@@ -203,6 +203,7 @@ internal fun ShopListScreen(
                         onClickRetry = shops::refresh,
                     )
                 }
+
                 ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -211,6 +212,7 @@ internal fun ShopListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
+
                 ListState.Ready -> {
                     ShopListLazyColumn(
                         modifier = Modifier.matchParentSize(),
@@ -220,6 +222,7 @@ internal fun ShopListScreen(
                         onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(it)) },
                     )
                 }
+
                 is ListState.Error -> {
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),

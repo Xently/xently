@@ -36,7 +36,9 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.asString
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun ReviewCategoryListSection(
@@ -125,7 +127,10 @@ internal fun ReviewCategoryListSection(
                     }
                     for (category in categories) {
                         ReviewCategoryItem(
-                            modifier = Modifier.shimmer(true),
+                            modifier = Modifier.placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.shimmer(),
+                            ),
                             category = category,
                             selected = selectedCategory?.name == category.name,
                             onClick = { },

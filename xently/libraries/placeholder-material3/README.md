@@ -16,6 +16,7 @@ dependencies {
 }
 ```
 
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap]. These are updated on every commit.
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
+These are updated on every commit.
 
-  [snap]: https://oss.sonatype.org/content/repositories/snapshots/com/google/accompanist/accompanist-placeholder-material3/
+[snap]: https://oss.sonatype.org/content/repositories/snapshots/com/google/accompanist/accompanist-placeholder-material3/

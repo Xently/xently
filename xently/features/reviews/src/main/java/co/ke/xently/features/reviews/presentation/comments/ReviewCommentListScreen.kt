@@ -205,6 +205,7 @@ internal fun ReviewCommentListScreen(
                         onClickRetry = reviews::refresh,
                     )
                 }
+
                 ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -213,12 +214,14 @@ internal fun ReviewCommentListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
+
                 ListState.Ready -> {
                     ReviewListLazyColumn(
                         reviews = reviews,
                         modifier = Modifier.matchParentSize(),
                     )
                 }
+
                 is ListState.Error -> {
                     ReviewListEmptyState(
                         modifier = Modifier.matchParentSize(),

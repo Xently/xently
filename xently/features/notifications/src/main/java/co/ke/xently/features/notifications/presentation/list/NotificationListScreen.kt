@@ -142,6 +142,7 @@ internal fun NotificationListScreen(
                         onClickRetry = notifications::refresh,
                     )
                 }
+
                 ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -150,12 +151,14 @@ internal fun NotificationListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
+
                 ListState.Ready -> {
                     NotificationListLazyColumn(
                         notifications = notifications,
                         modifier = Modifier.matchParentSize(),
                     )
                 }
+
                 is ListState.Error -> {
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),

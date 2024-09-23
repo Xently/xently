@@ -55,8 +55,10 @@ import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.presentation.imageState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun NonNullStoreContent(
@@ -119,7 +121,10 @@ internal fun NonNullStoreContent(
                     isLoading = false,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        ),
                     onClickConfirmDelete = { onClickDeleteImage(index) },
                     onClickUpdate = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
                 )
@@ -154,7 +159,7 @@ private fun StoreDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -167,7 +172,7 @@ private fun StoreDetailContent(
             TextButton(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .shimmer(isLoading),
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
                 onClick = onClickMoreDetails,
                 contentPadding = PaddingValues(vertical = 12.dp),
                 content = {
@@ -189,7 +194,7 @@ private fun StoreDetailContent(
             onClick = onClickUploadImage,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
         ) {
             AnimatedVisibility(isImageUploading) {

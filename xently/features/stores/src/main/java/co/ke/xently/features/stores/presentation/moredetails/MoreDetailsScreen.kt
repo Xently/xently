@@ -39,8 +39,10 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -118,7 +120,10 @@ internal fun MoreDetailsScreen(
                 title = stringResource(R.string.more_details_section_title_location),
             ) {
                 Text(
-                    modifier = Modifier.shimmer(state.isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = state.isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     text = remember(store) {
                         buildString {
                             append(store.shop.name)
@@ -133,7 +138,10 @@ internal fun MoreDetailsScreen(
                 title = stringResource(R.string.more_details_section_title_what_you_get),
             ) {
                 Text(
-                    modifier = Modifier.shimmer(state.isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = state.isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     text = remember(store.services) {
                         store.services.joinToString().ifBlank { "-" }
                     },
@@ -144,7 +152,10 @@ internal fun MoreDetailsScreen(
                 title = stringResource(R.string.more_details_section_title_short_description),
             ) {
                 Text(
-                    modifier = Modifier.shimmer(state.isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = state.isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     text = remember(store.description) {
                         store.description?.ifBlank { "-" } ?: "-"
                     },
@@ -155,7 +166,10 @@ internal fun MoreDetailsScreen(
                 title = stringResource(R.string.more_details_section_title_contact_details)
             ) {
                 Text(
-                    modifier = Modifier.shimmer(state.isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = state.isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     text = remember(store.telephone, store.email) {
                         buildList {
                             store.run {
@@ -178,7 +192,13 @@ internal fun MoreDetailsScreen(
             ) {
                 Column {
                     if (store.openingHours.isEmpty()) {
-                        Text(text = "-", modifier = Modifier.shimmer(state.isLoading))
+                        Text(
+                            text = "-",
+                            modifier = Modifier.placeholder(
+                                visible = state.isLoading,
+                                highlight = PlaceholderHighlight.shimmer(),
+                            )
+                        )
                     } else {
                         val dayOfWeekToday = rememberDayOfWeekToday()
                         val timePickerState = rememberTimePickerState()

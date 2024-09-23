@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun QrCodeCard(
@@ -35,13 +37,19 @@ internal fun QrCodeCard(
                     text = stringResource(R.string.message_click_to_get_review_points),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                 )
             },
             trailingContent = {
                 Button(
                     onClick = onGetPointsAndReviewClick,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     contentPadding = PaddingValues(horizontal = 10.dp),
                 ) {
                     Text(

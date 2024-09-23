@@ -28,9 +28,11 @@ import androidx.compose.ui.unit.dp
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 fun ProductListItem(
@@ -45,7 +47,7 @@ fun ProductListItem(
             Card(
                 modifier = Modifier
                     .size(size = 60.dp)
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
             ) {
                 var index by rememberSaveable(product.id) { mutableIntStateOf(0) }
                 XentlyImage(
@@ -63,7 +65,10 @@ fun ProductListItem(
                     text = product.toString(),
                     modifier = Modifier
                         .weight(1f)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        ),
                     fontWeight = FontWeight.Bold,
                     maxLines = if (product.description.isNullOrBlank()) 3 else 2,
                     overflow = TextOverflow.Ellipsis,
@@ -72,7 +77,10 @@ fun ProductListItem(
                 Text(
                     text = product.unitPrice.formatPrice("KES", 0),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                 )
                 trailingTitleContent()
             }
@@ -87,7 +95,10 @@ fun ProductListItem(
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier
-                        .shimmer(isLoading)
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        )
                         .clickable(
                             role = Role.Checkbox,
                             indication = ripple(radius = 1_000.dp),

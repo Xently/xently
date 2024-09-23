@@ -51,9 +51,11 @@ import co.ke.xently.features.reviews.data.domain.ReviewStatisticsFilters
 import co.ke.xently.features.reviews.presentation.reviews.StatisticsResponse
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import com.aay.compose.barChart.BarChart
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.Month
 
 @Composable
@@ -80,7 +82,10 @@ internal fun StatisticsSuccessContent(
             headline = stringResource(R.string.reviews_statistics_title),
             trailingContent = {
                 TextButton(
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                     enabled = !isLoading,
                     onClick = { onClickViewComments() },
                     content = {
@@ -115,7 +120,10 @@ internal fun StatisticsSuccessContent(
                     text = category.name,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                 )
                 val text = remember(filters) {
                     buildString {
@@ -134,13 +142,19 @@ internal fun StatisticsSuccessContent(
                     Text(
                         text = text,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.shimmer(isLoading),
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        ),
                     )
                 }
             }
             TextButton(
                 enabled = !isLoading,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                ),
                 onClick = {
                     showFilters = !showFilters
                 },
@@ -188,7 +202,7 @@ internal fun StatisticsSuccessContent(
                     .height(400.dp)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp)
-                    .shimmer(isLoading),
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             ) {
                 BarChart(
 //                    yAxisRange = 15,
@@ -246,7 +260,7 @@ private fun StatisticOverviewRow(
             modifier = Modifier
                 .width(cardWidth)
                 .fillMaxHeight()
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             stat = success.data.totalReviews.coolFormat(),
             title = stringResource(R.string.reviews_statistics_total_reviews_title),
             statColor = MaterialTheme.colorScheme.primary,
@@ -256,7 +270,7 @@ private fun StatisticOverviewRow(
             modifier = Modifier
                 .width(cardWidth)
                 .fillMaxHeight()
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             stat = success.data.generalSentiment.text,
             title = stringResource(R.string.reviews_statistics_general_sentiments_title),
             statColor = when (success.data.generalSentiment) {
@@ -269,7 +283,7 @@ private fun StatisticOverviewRow(
             modifier = Modifier
                 .width(cardWidth)
                 .fillMaxHeight()
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             stat = "${success.data.percentageSatisfaction}%",
             title = stringResource(R.string.reviews_statistics_percentage_satisfaction_title),
             statColor = MaterialTheme.colorScheme.primary,
@@ -279,7 +293,7 @@ private fun StatisticOverviewRow(
             modifier = Modifier
                 .width(cardWidth)
                 .fillMaxHeight()
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
             stat = success.data.averageRating.toString(),
             title = stringResource(R.string.reviews_statistics_average_rating_title),
             statColor = MaterialTheme.colorScheme.primary,

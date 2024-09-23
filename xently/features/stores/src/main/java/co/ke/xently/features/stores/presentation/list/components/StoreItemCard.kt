@@ -52,8 +52,10 @@ import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -80,7 +82,12 @@ fun StoreItemCard(
 ) {
     if (isLoading) {
         ElevatedCard(modifier = modifier, shape = MaterialTheme.shapes.large) {
-            Box(modifier = containerModifier.shimmer(true)) {}
+            Box(
+                modifier = containerModifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                )
+            ) {}
         }
     } else {
         StoreItemCard(

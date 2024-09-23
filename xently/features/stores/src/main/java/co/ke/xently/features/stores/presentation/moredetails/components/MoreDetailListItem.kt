@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun MoreDetailListItem(
@@ -26,7 +28,10 @@ internal fun MoreDetailListItem(
                 Text(
                     text = title,
                     fontWeight = FontWeight.Light,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                 )
             },
         )

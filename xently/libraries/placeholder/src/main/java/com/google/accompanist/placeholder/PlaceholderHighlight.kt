@@ -45,7 +45,7 @@ public interface PlaceholderHighlight {
      */
     public fun brush(
         @FloatRange(from = 0.0, to = 1.0) progress: Float,
-        size: Size
+        size: Size,
     ): Brush
 
     /**
@@ -61,8 +61,6 @@ public interface PlaceholderHighlight {
 
 /**
  * Creates a [Fade] brush with the given initial and target colors.
- *
- * @sample com.google.accompanist.sample.placeholder.DocSample_Foundation_PlaceholderFade
  *
  * @param highlightColor the color of the highlight which is faded in/out.
  * @param animationSpec the [AnimationSpec] to configure the animation.
@@ -81,8 +79,6 @@ public fun PlaceholderHighlight.Companion.fade(
  * The highlight starts at the top-start, and then grows to the bottom-end during the animation.
  * During that time it is also faded in, from 0f..progressForMaxAlpha, and then faded out from
  * progressForMaxAlpha..1f.
- *
- * @sample com.google.accompanist.sample.placeholder.DocSample_Foundation_PlaceholderShimmer
  *
  * @param highlightColor the color of the highlight 'shimmer'.
  * @param animationSpec the [AnimationSpec] to configure the animation.

@@ -62,8 +62,10 @@ import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPerm
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.launch
 
 typealias StoreDetailContentScope = BoxScope
@@ -235,7 +237,10 @@ internal fun StoreDetailScreen(
                                 colors = ButtonDefaults.textButtonColors(
                                     contentColor = MaterialTheme.colorScheme.onBackground,
                                 ),
-                                modifier = Modifier.shimmer(state.isLoading),
+                                modifier = Modifier.placeholder(
+                                    visible = state.isLoading,
+                                    highlight = PlaceholderHighlight.shimmer(),
+                                ),
                             ) {
                                 Text(
                                     text = stringResource(R.string.action_more_details),
@@ -256,7 +261,10 @@ internal fun StoreDetailScreen(
                                         colors = ButtonDefaults.textButtonColors(
                                             contentColor = MaterialTheme.colorScheme.onBackground,
                                         ),
-                                        modifier = Modifier.shimmer(state.isLoading),
+                                        modifier = Modifier.placeholder(
+                                            visible = state.isLoading,
+                                            highlight = PlaceholderHighlight.shimmer(),
+                                        ),
                                     ) {
                                         Icon(Icons.Default.Link, contentDescription = null)
                                         Spacer(modifier = Modifier.width(2.dp))

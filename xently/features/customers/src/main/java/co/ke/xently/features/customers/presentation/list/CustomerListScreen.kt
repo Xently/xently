@@ -187,6 +187,7 @@ internal fun CustomerListScreen(
                         onClickRetry = customers::refresh,
                     )
                 }
+
                 ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -195,6 +196,7 @@ internal fun CustomerListScreen(
                             .wrapContentWidth(Alignment.CenterHorizontally),
                     )
                 }
+
                 ListState.Ready -> {
                     CustomerListLazyColumn(
                         customers = customers,
@@ -202,6 +204,7 @@ internal fun CustomerListScreen(
                         currentUserRanking = state.currentUserRanking,
                     )
                 }
+
                 is ListState.Error -> {
                     CustomerListEmptyState(
                         modifier = Modifier.matchParentSize(),

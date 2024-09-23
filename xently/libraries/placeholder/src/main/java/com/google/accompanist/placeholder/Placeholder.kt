@@ -144,11 +144,13 @@ public fun Modifier.placeholder(
     // Run the optional animation spec and update the progress if the placeholder is visible
     val animationSpec = highlight?.animationSpec
     if (animationSpec != null && (visible || placeholderAlpha >= 0.01f)) {
-        val infiniteTransition = rememberInfiniteTransition()
+        val infiniteTransition =
+            rememberInfiniteTransition(label = "infinite_placeholder_transition")
         highlightProgress = infiniteTransition.animateFloat(
             initialValue = 0f,
             targetValue = 1f,
             animationSpec = animationSpec,
+            label = "highlight_progress",
         ).value
     }
 

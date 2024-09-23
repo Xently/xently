@@ -335,7 +335,7 @@ internal class Solid(
     override val animationSpec: InfiniteRepeatableSpec<Float> = infiniteRepeatable(
         animation = tween(delayMillis = 0, durationMillis = 500),
         repeatMode = RepeatMode.Restart
-    )
+    ),
 ) : PlaceholderHighlight {
     override fun alpha(progress: Float): Float = 1f
 
