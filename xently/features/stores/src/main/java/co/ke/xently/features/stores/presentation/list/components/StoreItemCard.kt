@@ -84,7 +84,7 @@ fun StoreItemCard(
         ElevatedCard(modifier = modifier, shape = MaterialTheme.shapes.large) {
             Box(
                 modifier = containerModifier.placeholder(
-                    visible = isLoading,
+                    visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
                 )
             ) {}
