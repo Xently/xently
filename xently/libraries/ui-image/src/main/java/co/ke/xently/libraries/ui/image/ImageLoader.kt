@@ -21,6 +21,24 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import okio.FileSystem
 
+private val HTTP_CLIENT = HttpClient {
+    defaultRequest {
+        url(scheme = "https", host = BuildConfig.BASE_HOST)
+        contentType(ContentType.Application.Json)
+    }
+    install(Logging) {
+        logger = Logger.ANDROID
+        level = if (BuildConfig.DEBUG) {
+            LogLevel.INFO
+        } else {
+            LogLevel.NONE
+        }
+        sanitizeHeader { header ->
+            header == HttpHeaders.Authorization
+        }
+    }
+}
+
 fun newImageLoader(
     context: PlatformContext,
     debug: Boolean,
@@ -32,23 +50,7 @@ fun newImageLoader(
             add(SvgDecoder.Factory())
             add(
                 KtorNetworkFetcherFactory {
-                    HttpClient {
-                        defaultRequest {
-                            url(scheme = "https", host = BuildConfig.BASE_HOST)
-                            contentType(ContentType.Application.Json)
-                        }
-                        install(Logging) {
-                            logger = Logger.ANDROID
-                            level = if (BuildConfig.DEBUG) {
-                                LogLevel.INFO
-                            } else {
-                                LogLevel.NONE
-                            }
-                            sanitizeHeader { header ->
-                                header == HttpHeaders.Authorization
-                            }
-                        }
-                    }
+                    HTTP_CLIENT
                 },
             )
         }
