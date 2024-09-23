@@ -18,6 +18,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 //    id(libs.plugins.jetbrains.dokka.get().pluginId)
 //    id(libs.plugins.gradle.metalava.get().pluginId)
 //    id(libs.plugins.vanniktech.maven.publish.get().pluginId)
@@ -40,8 +41,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.valueOf(libs.versions.android.jvm.compatibility.get())
+        targetCompatibility = JavaVersion.valueOf(libs.versions.android.jvm.compatibility.get())
     }
 
     buildFeatures {
