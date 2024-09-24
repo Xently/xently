@@ -1,6 +1,5 @@
 package co.ke.xently.libraries.ui.image
 
-import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.network.BuildConfig
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -42,10 +41,11 @@ private val HTTP_CLIENT = HttpClient {
 fun newImageLoader(
     context: PlatformContext,
     debug: Boolean,
-    dispatchersProvider: DispatchersProvider,
 ): ImageLoader {
     return ImageLoader.Builder(context)
-        .coroutineContext(dispatchersProvider.io)
+        // TODO: Investigate why this causes images to flicker on
+        //  content refresh or event processing
+//        .coroutineContext(dispatchersProvider.io)
         .components {
             add(SvgDecoder.Factory())
             add(
