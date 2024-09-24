@@ -40,8 +40,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
+import co.ke.xently.features.stores.domain.DurationToOperationStartOrClosure
 import co.ke.xently.features.stores.domain.IsOpen
 import co.ke.xently.features.stores.domain.flowOfDistanceAndCurrentlyOpen
+import co.ke.xently.features.stores.domain.operationStartOrClosureFlow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
@@ -72,40 +74,76 @@ fun StoreItemCard(
             var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
             XentlyImage(
                 data = store.images.getOrNull(index),
-                modifier = Modifier.placeholder(
-                    visible = isLoading,
-                    highlight = PlaceholderHighlight.fade(),
-                ).fillMaxSize(),
+                modifier = Modifier
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.fade(),
+                    )
+                    .fillMaxSize(),
                 onError = {
                     if (index != store.images.lastIndex) index += 1
                 },
             )
+
             val isOpenAndOverlineText by overlineTextState(store)
             val (isOpen, overlineText) = isOpenAndOverlineText
 
-            androidx.compose.animation.AnimatedContent(
-                isOpen,
-                label = "store-operational-status",
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp),
-            ) {
-                when (it) {
-                    null -> Unit
-                    false -> Badge(
-                        modifier = Modifier.placeholder(
-                            visible = isLoading,
-                            highlight = PlaceholderHighlight.fade(),
-                        ),
-                    ) { Text(stringResource(R.string.closed)) }
-                    true -> Badge(
+            when (val operationStartOrClosure = operationStartOrClosureState(store).value) {
+                is DurationToOperationStartOrClosure.DurationToOperationClosure -> {
+                    Badge(
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .placeholder(
+                                visible = isLoading,
+                                highlight = PlaceholderHighlight.fade(),
+                            ),
+                    ) { Text(stringResource(R.string.closes_in, operationStartOrClosure.duration)) }
+                }
+
+                is DurationToOperationStartOrClosure.DurationToOperationStart -> {
+                    Badge(
                         contentColor = Color.Black,
-                        containerColor = Color.Green.copy(alpha = 0.5f),
-                        modifier = Modifier.placeholder(
-                            visible = isLoading,
-                            highlight = PlaceholderHighlight.fade(),
-                        ),
-                    ) { Text(stringResource(R.string.open)) }
+                        containerColor = Color.Yellow.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .placeholder(
+                                visible = isLoading,
+                                highlight = PlaceholderHighlight.fade(),
+                            ),
+                    ) { Text(stringResource(R.string.opens_in, operationStartOrClosure.duration)) }
+                }
+
+                DurationToOperationStartOrClosure.NotOperational, null -> {
+                    androidx.compose.animation.AnimatedContent(
+                        isOpen,
+                        label = "store-operational-status",
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp),
+                    ) {
+                        when (it) {
+                            null -> Unit
+                            false -> Badge(
+                                modifier = Modifier.placeholder(
+                                    visible = isLoading,
+                                    highlight = PlaceholderHighlight.fade(),
+                                ),
+                            ) { Text(stringResource(R.string.closed)) }
+
+                            true -> Badge(
+                                contentColor = Color.Black,
+                                containerColor = Color.Green.copy(alpha = 0.5f),
+                                modifier = Modifier.placeholder(
+                                    visible = isLoading,
+                                    highlight = PlaceholderHighlight.fade(),
+                                ),
+                            ) { Text(stringResource(R.string.open)) }
+                        }
+                    }
                 }
             }
 
@@ -216,6 +254,27 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
             isOpenCache = isOpen
             overlineTextCache = text
             value = isOpen to text
+        }
+    }
+}
+
+@Composable
+private fun operationStartOrClosureState(store: Store): State<DurationToOperationStartOrClosure?> {
+    var operationStartOrClosureCache by remember(store.id) {
+        mutableStateOf<DurationToOperationStartOrClosure?>(null)
+    }
+
+    val dispatcher = LocalDispatchersProvider.current
+    return produceState(
+        operationStartOrClosureCache,
+        store.openingHours,
+    ) {
+        operationStartOrClosureFlow(
+            openingHours = store.openingHours,
+            dispatchersProvider = dispatcher,
+        ).collectLatest { operationStartOrClosure ->
+            operationStartOrClosureCache = operationStartOrClosure
+            value = operationStartOrClosure
         }
     }
 }
