@@ -39,8 +39,8 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun ShopListItem(
@@ -77,7 +77,7 @@ internal fun ShopListItem(
             Card(
                 modifier = Modifier
                     .size(size = 60.dp)
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
             ) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Icon(
@@ -95,7 +95,7 @@ internal fun ShopListItem(
                         .weight(1f)
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
@@ -105,7 +105,7 @@ internal fun ShopListItem(
                 Box(
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     )
                 ) {
                     Icon(

@@ -24,8 +24,8 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -66,14 +66,14 @@ internal fun NotificationListItem(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()
-                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
         )
         Text(
             text = notification.message.message,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
         )
         Spacer(modifier = Modifier.height(8.dp))
     }

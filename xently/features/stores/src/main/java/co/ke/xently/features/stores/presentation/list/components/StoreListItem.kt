@@ -39,8 +39,8 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.XentlyImage
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun StoreListItem(
@@ -108,7 +108,7 @@ fun StoreListItem(
                         .size(size = 60.dp)
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                 ) {
                     var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
@@ -137,7 +137,7 @@ fun StoreListItem(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = maxLines,
                 modifier = Modifier
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -153,7 +153,7 @@ fun StoreListItem(
                         .weight(1f)
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                     maxLines = 1,
                     fontWeight = FontWeight.Bold,

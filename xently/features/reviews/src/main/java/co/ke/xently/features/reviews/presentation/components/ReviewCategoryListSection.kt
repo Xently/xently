@@ -37,8 +37,8 @@ import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.asString
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun ReviewCategoryListSection(
@@ -129,7 +129,7 @@ internal fun ReviewCategoryListSection(
                         ReviewCategoryItem(
                             modifier = Modifier.placeholder(
                                 visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
+                                highlight = PlaceholderHighlight.fade(),
                             ),
                             category = category,
                             selected = selectedCategory?.name == category.name,

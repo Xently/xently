@@ -37,8 +37,8 @@ import co.ke.xently.libraries.location.tracker.domain.utils.Launcher
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.launch
 
 @Stable
@@ -144,7 +144,7 @@ internal fun StoreDetailListItem(
                 text = store.shop.name,
                 modifier = Modifier
                     .basicMarquee()
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
             )
         },
         supportingContent = {
@@ -163,7 +163,7 @@ internal fun StoreDetailListItem(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
             )
         },
@@ -175,7 +175,7 @@ internal fun StoreDetailListItem(
             CircularButton(
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
                 color = MaterialTheme.colorScheme.primary,
                 onClick = {

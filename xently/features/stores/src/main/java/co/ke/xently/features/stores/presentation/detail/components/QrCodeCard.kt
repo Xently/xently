@@ -20,8 +20,8 @@ import co.ke.xently.features.stores.R
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 internal fun QrCodeCard(
@@ -39,7 +39,7 @@ internal fun QrCodeCard(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                 )
             },
@@ -48,7 +48,7 @@ internal fun QrCodeCard(
                     onClick = onGetPointsAndReviewClick,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                     contentPadding = PaddingValues(horizontal = 10.dp),
                 ) {

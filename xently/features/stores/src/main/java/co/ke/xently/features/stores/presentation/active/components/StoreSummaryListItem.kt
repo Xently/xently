@@ -32,8 +32,8 @@ import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThu
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 
 @Composable
@@ -44,7 +44,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 text = store.shop.name,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .basicMarquee(),
             )
         },
@@ -56,7 +56,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -69,7 +69,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 size = 60.dp,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
             ) {
                 Icon(Icons.Default.Person, contentDescription = null)
@@ -80,7 +80,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 onClick = onClickEdit,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
                 content = {
                     Icon(

@@ -44,8 +44,8 @@ import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
@@ -66,7 +66,7 @@ internal fun ReviewCommentListItem(
                         .size(60.dp)
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         )
                 ) {
                     Icon(
@@ -86,7 +86,7 @@ internal fun ReviewCommentListItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                 )
             },
@@ -105,7 +105,7 @@ internal fun ReviewCommentListItem(
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                     )
 
@@ -117,7 +117,7 @@ internal fun ReviewCommentListItem(
                             .padding(horizontal = 8.dp)
                             .placeholder(
                                 visible = isLoading,
-                                highlight = PlaceholderHighlight.shimmer(),
+                                highlight = PlaceholderHighlight.fade(),
                             ),
                     )
 
@@ -136,7 +136,7 @@ internal fun ReviewCommentListItem(
                         },
                         modifier = Modifier.placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         )
                     )
                 }
@@ -147,7 +147,7 @@ internal fun ReviewCommentListItem(
                     contentDescription = null,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                 )
             },
@@ -160,7 +160,7 @@ internal fun ReviewCommentListItem(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
-                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                 .clickable(
                     role = Role.Checkbox,
                     indication = ripple(radius = 1_000.dp),

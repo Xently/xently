@@ -37,8 +37,8 @@ import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import co.ke.xently.libraries.ui.core.theme.LocalThemeIsDark
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlin.random.Random
 
 @Composable
@@ -129,7 +129,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
             )
             StarRatingRow(
@@ -138,7 +138,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 maximumStarRating = rating.maxStarRating,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
             )
             Text(
@@ -150,7 +150,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                 fontWeight = FontWeight.Light,
                 modifier = Modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
             )
         }
@@ -169,7 +169,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                         text = star.star.toString(),
                         modifier = Modifier.placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                     )
                     val progress = rememberSaveable(star.count, rating.totalReviews) {
@@ -182,7 +182,7 @@ private fun ReviewSummaryContent(rating: Rating, isDark: Boolean, isLoading: Boo
                             .weight(1f)
                             .placeholder(
                                 visible = isLoading,
-                                highlight = PlaceholderHighlight.shimmer(),
+                                highlight = PlaceholderHighlight.fade(),
                             ),
                     )
                 }

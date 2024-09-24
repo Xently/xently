@@ -64,8 +64,8 @@ import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.launch
 
 typealias StoreDetailContentScope = BoxScope
@@ -239,7 +239,7 @@ internal fun StoreDetailScreen(
                                 ),
                                 modifier = Modifier.placeholder(
                                     visible = state.isLoading,
-                                    highlight = PlaceholderHighlight.shimmer(),
+                                    highlight = PlaceholderHighlight.fade(),
                                 ),
                             ) {
                                 Text(
@@ -263,7 +263,7 @@ internal fun StoreDetailScreen(
                                         ),
                                         modifier = Modifier.placeholder(
                                             visible = state.isLoading,
-                                            highlight = PlaceholderHighlight.shimmer(),
+                                            highlight = PlaceholderHighlight.fade(),
                                         ),
                                     ) {
                                         Icon(Icons.Default.Link, contentDescription = null)

@@ -41,8 +41,8 @@ import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -122,7 +122,7 @@ internal fun MoreDetailsScreen(
                 Text(
                     modifier = Modifier.placeholder(
                         visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                     text = remember(store) {
                         buildString {
@@ -140,7 +140,7 @@ internal fun MoreDetailsScreen(
                 Text(
                     modifier = Modifier.placeholder(
                         visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                     text = remember(store.services) {
                         store.services.joinToString().ifBlank { "-" }
@@ -154,7 +154,7 @@ internal fun MoreDetailsScreen(
                 Text(
                     modifier = Modifier.placeholder(
                         visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                     text = remember(store.description) {
                         store.description?.ifBlank { "-" } ?: "-"
@@ -168,7 +168,7 @@ internal fun MoreDetailsScreen(
                 Text(
                     modifier = Modifier.placeholder(
                         visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                     text = remember(store.telephone, store.email) {
                         buildList {
@@ -196,7 +196,7 @@ internal fun MoreDetailsScreen(
                             text = "-",
                             modifier = Modifier.placeholder(
                                 visible = state.isLoading,
-                                highlight = PlaceholderHighlight.shimmer(),
+                                highlight = PlaceholderHighlight.fade(),
                             )
                         )
                     } else {

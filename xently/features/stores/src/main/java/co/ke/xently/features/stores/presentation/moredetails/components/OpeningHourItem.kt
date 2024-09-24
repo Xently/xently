@@ -18,8 +18,8 @@ import androidx.compose.ui.text.toLowerCase
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.domain.isCurrentlyOpen
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.datetime.DayOfWeek
 
 
@@ -45,7 +45,7 @@ internal fun OpeningHourItem(
             color = color,
             modifier = Modifier.placeholder(
                 visible = isLoading,
-                highlight = PlaceholderHighlight.shimmer(),
+                highlight = PlaceholderHighlight.fade(),
             ),
             text = buildString {
                 append(
@@ -61,7 +61,7 @@ internal fun OpeningHourItem(
             color = color,
             modifier = Modifier.placeholder(
                 visible = isLoading,
-                highlight = PlaceholderHighlight.shimmer(),
+                highlight = PlaceholderHighlight.fade(),
             ),
             text = remember(openingHour.openTime, openingHour.closeTime, timePickerState) {
                 buildString {

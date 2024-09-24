@@ -54,8 +54,8 @@ import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.image.XentlyImage
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -85,7 +85,7 @@ fun StoreItemCard(
             Box(
                 modifier = containerModifier.placeholder(
                     visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 )
             ) {}
         }

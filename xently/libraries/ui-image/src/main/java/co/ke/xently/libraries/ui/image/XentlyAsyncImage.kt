@@ -26,8 +26,8 @@ import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import timber.log.Timber
 
 
@@ -105,7 +105,7 @@ private fun XentlyAsyncImage(
             AsyncImage(
                 modifier = modifier.placeholder(
                     visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = PlaceholderHighlight.fade(),
                 ),
                 contentScale = contentScale,
                 contentDescription = contentDescription,

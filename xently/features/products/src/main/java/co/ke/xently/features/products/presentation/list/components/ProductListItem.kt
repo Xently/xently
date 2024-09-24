@@ -31,8 +31,8 @@ import co.ke.xently.libraries.ui.core.XentlyThemePreview
 import co.ke.xently.libraries.ui.core.domain.formatPrice
 import co.ke.xently.libraries.ui.image.XentlyImage
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
 import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 
 @Composable
 fun ProductListItem(
@@ -47,7 +47,7 @@ fun ProductListItem(
             Card(
                 modifier = Modifier
                     .size(size = 60.dp)
-                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
             ) {
                 var index by rememberSaveable(product.id) { mutableIntStateOf(0) }
                 XentlyImage(
@@ -67,7 +67,7 @@ fun ProductListItem(
                         .weight(1f)
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         ),
                     fontWeight = FontWeight.Bold,
                     maxLines = if (product.description.isNullOrBlank()) 3 else 2,
@@ -79,7 +79,7 @@ fun ProductListItem(
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
+                        highlight = PlaceholderHighlight.fade(),
                     ),
                 )
                 trailingTitleContent()
@@ -97,7 +97,7 @@ fun ProductListItem(
                     modifier = Modifier
                         .placeholder(
                             visible = isLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
+                            highlight = PlaceholderHighlight.fade(),
                         )
                         .clickable(
                             role = Role.Checkbox,
