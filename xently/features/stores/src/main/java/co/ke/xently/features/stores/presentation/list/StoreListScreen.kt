@@ -150,7 +150,13 @@ internal fun StoreListScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
         ) { store ->
-            if (store != null) {
+            if (store == null) {
+                StoreItemCard(
+                    store = Store.DEFAULT,
+                    isLoading = true,
+                    onClick = {},
+                )
+            } else {
                 StoreItemCard(
                     store = store,
                     isLoading = false,
@@ -182,12 +188,6 @@ internal fun StoreListScreen(
                         }
                     }
                 }
-            } else {
-                StoreItemCard(
-                    store = Store.DEFAULT,
-                    isLoading = true,
-                    onClick = {},
-                )
             }
         }
     }
