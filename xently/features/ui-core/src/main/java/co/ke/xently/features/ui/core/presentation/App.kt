@@ -19,7 +19,10 @@ fun App(
     content: @Composable () -> Unit,
 ) {
     setSingletonImageLoaderFactory { context ->
-        newImageLoader(context, BuildConfig.DEBUG)
+        newImageLoader(
+            context = context,
+            debug = BuildConfig.DEBUG,
+        )
     }
 
     CompositionLocalProvider(

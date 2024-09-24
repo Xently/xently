@@ -2,16 +2,10 @@ package co.ke.xently.features.shops.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.ShopFilters
 import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.source.ShopRepository
-import co.ke.xently.features.shops.presentation.utils.asUiText
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -39,15 +33,9 @@ internal class ShopListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(ShopFilters())
 
-    val shops: Flow<PagingData<Shop>> = _filters.flatMapLatest { filters ->
-        Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
-            XentlyPagingSource { url ->
-                repository.getShops(
-                    url = url,
-                    filters = filters,
-                )
-            }
-        }.flow
+    val shops = _filters.flatMapLatest { filters ->
+        val url = repository.getShopsUrlAssociatedWithCurrentUser()
+        repository.getShops(url = url, filters = filters)
     }.cachedIn(viewModelScope)
 
     fun onAction(action: ShopListAction) {
@@ -69,7 +57,7 @@ internal class ShopListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ShopListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )
@@ -95,7 +83,7 @@ internal class ShopListViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 ShopListEvent.Error(
-                                    result.error.asUiText(),
+                                    result.error.toUiText(),
                                     result.error
                                 )
                             )

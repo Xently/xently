@@ -2,15 +2,9 @@ package co.ke.xently.features.customers.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.CustomerFilters
 import co.ke.xently.features.customers.data.source.CustomerRepository
-import co.ke.xently.libraries.pagination.data.PagedResponse
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -36,23 +30,13 @@ internal open class CustomerScoreboardListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(CustomerFilters())
 
-    open val customers: Flow<PagingData<Customer>> = getCustomerPagingDataFlow()
-        .cachedIn(viewModelScope)
+    open val customers = getCustomerPagingDataFlow()
 
     protected fun getCustomerPagingDataFlow(dataUrl: String? = null) =
         _filters.flatMapLatest { filters ->
-            pager { url ->
-                repository.getCustomers(
-                    filters = filters,
-                    url = url ?: dataUrl,
-                )
-            }.flow
-        }
-
-    protected fun pager(call: suspend (String?) -> PagedResponse<Customer>) =
-        Pager(PagingConfig(pageSize = 20)) {
-            XentlyPagingSource(apiCall = call)
-        }
+            val url = dataUrl ?: repository.getCustomersUrl()
+            repository.getCustomers(url = url, filters = filters)
+        }.cachedIn(viewModelScope)
 
     fun onAction(action: CustomerListAction) {
         when (action) {

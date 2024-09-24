@@ -1,6 +1,6 @@
 package co.ke.xently.features.stores.presentation.list.selection
 
-import co.ke.xently.features.stores.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 internal sealed interface StoreSelectionListEvent {

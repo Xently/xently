@@ -55,8 +55,10 @@ import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.ui.core.XentlyPreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.presentation.imageState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 
 @Composable
 internal fun NonNullStoreContent(
@@ -86,10 +88,29 @@ internal fun NonNullStoreContent(
                 onClickUploadImage = onClickUploadImage,
             )
         }
-        if (images.isEmpty()) {
+        if (images.isEmpty() && !isLoading) {
             item(key = "empty_store_images", contentType = "empty_store_images") {
                 Spacer(modifier = Modifier.height(24.dp))
                 EmptyStoreImageListContent(modifier = Modifier.fillMaxWidth())
+            }
+        } else if (images.isEmpty()) {
+            items(
+                3,
+                key = { it },
+                contentType = { "loading-store-images" },
+            ) {
+                StoreImageListItem(
+                    image = Progress(),
+                    isLoading = false,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
+                    onClickConfirmDelete = { },
+                    onClickUpdate = { },
+                )
             }
         } else {
             itemsIndexed(
@@ -119,7 +140,10 @@ internal fun NonNullStoreContent(
                     isLoading = false,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                     onClickConfirmDelete = { onClickDeleteImage(index) },
                     onClickUpdate = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
                 )
@@ -154,7 +178,7 @@ private fun StoreDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -167,7 +191,7 @@ private fun StoreDetailContent(
             TextButton(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .shimmer(isLoading),
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
                 onClick = onClickMoreDetails,
                 contentPadding = PaddingValues(vertical = 12.dp),
                 content = {
@@ -189,7 +213,7 @@ private fun StoreDetailContent(
             onClick = onClickUploadImage,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .shimmer(isLoading),
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
         ) {
             AnimatedVisibility(isImageUploading) {

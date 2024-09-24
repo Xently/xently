@@ -8,10 +8,6 @@ plugins {
     id("kotlin-parcelize")
 }
 
-secrets {
-    propertiesFileName = "data.network.properties"
-}
-
 android {
     namespace = "co.ke.xently.libraries.data.network"
     compileSdk = libs.versions.android.compile.sdk.get().toInt()

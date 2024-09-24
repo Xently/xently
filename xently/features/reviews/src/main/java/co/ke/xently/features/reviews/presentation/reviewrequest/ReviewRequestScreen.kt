@@ -31,17 +31,18 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.toError
-import co.ke.xently.features.reviewcategory.presentation.utils.asUiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestEmptyState
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestLazyColumn
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
-import co.ke.xently.libraries.data.core.AuthorisationError
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.pagination.asListState
 
 @Composable
 fun ReviewRequestScreen(
@@ -115,8 +116,9 @@ internal fun ReviewRequestScreen(
             isRefreshing = isRefreshing,
             onRefresh = reviewCategories::refresh,
         ) {
-            when {
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(reviewCategories.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     ReviewRequestEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_review_categories_found),
@@ -124,25 +126,7 @@ internal fun ReviewRequestScreen(
                     )
                 }
 
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    ReviewRequestEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
-                        canRetry = error is RetryableError,
-                        onClickRetry = reviewCategories::retry,
-                    ) {
-                        if (error is AuthorisationError) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            LoginAndRetryButtonsRow(onRetry = reviewCategories::retry)
-                        }
-                    }
-                }
-
-                reviewCategories.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -151,7 +135,7 @@ internal fun ReviewRequestScreen(
                     )
                 }
 
-                else -> {
+                ListState.Ready -> {
                     ReviewRequestLazyColumn(
                         state = state,
                         onAction = onAction,
@@ -159,6 +143,21 @@ internal fun ReviewRequestScreen(
                         modifier = Modifier.matchParentSize(),
                         onClickSubmit = onClickBack,
                     )
+                }
+
+                is ListState.Error -> {
+                    ReviewRequestEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
+                        onClickRetry = reviewCategories::retry,
+                    ) {
+                        if (listState.error is AuthorisationError) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LoginAndRetryButtonsRow(onRetry = reviewCategories::retry)
+                        }
+                    }
                 }
             }
         }

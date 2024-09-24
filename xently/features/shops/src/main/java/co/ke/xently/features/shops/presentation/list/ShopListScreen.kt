@@ -53,20 +53,21 @@ import co.ke.xently.features.shops.data.domain.Shop
 import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.presentation.list.components.ShopListEmptyState
 import co.ke.xently.features.shops.presentation.list.components.ShopListLazyColumn
-import co.ke.xently.features.shops.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.data.core.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
+import co.ke.xently.libraries.ui.pagination.asListState
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ShopListScreen(
@@ -193,8 +194,9 @@ internal fun ShopListScreen(
             isRefreshing = isRefreshing,
             onRefresh = shops::refresh,
         ) {
-            when {
-                shops.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(shops.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     ShopListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_shops_found),
@@ -202,25 +204,7 @@ internal fun ShopListScreen(
                     )
                 }
 
-                shops.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
-                    ShopListEmptyState(
-                        modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
-                        canRetry = error is RetryableError,
-                        onClickRetry = shops::retry,
-                    ) {
-                        if (error is AuthorisationError) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            LoginAndRetryButtonsRow(onRetry = shops::retry)
-                        }
-                    }
-                }
-
-                shops.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
+                ListState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -229,7 +213,7 @@ internal fun ShopListScreen(
                     )
                 }
 
-                else -> {
+                ListState.Ready -> {
                     ShopListLazyColumn(
                         modifier = Modifier.matchParentSize(),
                         shops = shops,
@@ -237,6 +221,21 @@ internal fun ShopListScreen(
                         onShopSelected = { onAction(ShopListAction.SelectShop(it)) },
                         onClickConfirmDelete = { onAction(ShopListAction.DeleteShop(it)) },
                     )
+                }
+
+                is ListState.Error -> {
+                    ShopListEmptyState(
+                        modifier = Modifier.matchParentSize(),
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
+                        onClickRetry = shops::retry,
+                    ) {
+                        if (listState.error is AuthorisationError) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LoginAndRetryButtonsRow(onRetry = shops::retry)
+                        }
+                    }
                 }
             }
         }

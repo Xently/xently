@@ -1,7 +1,7 @@
 package co.ke.xently.libraries.data.image.domain
 
 import android.content.ContentResolver
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import java.io.ByteArrayOutputStream

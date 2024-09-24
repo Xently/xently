@@ -37,8 +37,10 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 
 @Composable
 internal fun StoreListItem(
@@ -104,7 +106,10 @@ fun StoreListItem(
                 Card(
                     modifier = Modifier
                         .size(size = 60.dp)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                 ) {
                     var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
                     XentlyImage(
@@ -132,7 +137,7 @@ fun StoreListItem(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = maxLines,
                 modifier = Modifier
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -146,7 +151,10 @@ fun StoreListItem(
                     text = store.shop.name,
                     modifier = Modifier
                         .weight(1f)
-                        .shimmer(isLoading),
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                     maxLines = 1,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,

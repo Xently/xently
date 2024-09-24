@@ -25,7 +25,9 @@ import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.ui.core.presentation.components.DropdownMenuWithUpdateAndDelete
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 
 @Composable
 internal fun ManipulatableProductListItem(
@@ -66,7 +68,12 @@ internal fun ManipulatableProductListItem(
     ProductListItem(product = product, isLoading = isLoading, modifier = modifier) {
         var expanded by rememberSaveable { mutableStateOf(false) }
 
-        Box(modifier = Modifier.shimmer(isLoading)) {
+        Box(
+            modifier = Modifier.placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.fade(),
+            )
+        ) {
             Icon(
                 Icons.Default.MoreVert,
                 contentDescription = stringResource(

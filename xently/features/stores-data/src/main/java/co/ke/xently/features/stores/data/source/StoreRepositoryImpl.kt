@@ -1,5 +1,10 @@
 package co.ke.xently.features.stores.data.source
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.openinghours.data.source.OpeningHourRepository
@@ -13,11 +18,15 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.local.StoreDatabase
 import co.ke.xently.features.stores.data.source.local.StoreEntity
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
 import co.ke.xently.libraries.data.image.domain.UriToByteArrayConverter
 import co.ke.xently.libraries.location.tracker.data.LocationSettingDelegate
+import co.ke.xently.libraries.pagination.data.DataManager
+import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse
+import co.ke.xently.libraries.pagination.data.RemoteMediator
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -32,25 +41,26 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import io.ktor.http.fullPath
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.Exception
 import kotlin.Long
+import kotlin.OptIn
 import kotlin.String
 import kotlin.Unit
-import kotlin.coroutines.coroutineContext
+import kotlin.apply
 import kotlin.let
 import kotlin.random.Random
 import kotlin.run
@@ -68,6 +78,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private val shopRepository: ShopRepository,
     private val converter: UriToByteArrayConverter,
     private val openingHourRepository: OpeningHourRepository,
+    private val dispatchersProvider: DispatchersProvider,
 ) : StoreRepository {
     private val storeDao = database.storeDao()
     private val currentLocation by LocationSettingDelegate(null)
@@ -123,7 +134,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -132,7 +143,7 @@ internal class StoreRepositoryImpl @Inject constructor(
     private suspend fun saveOpeningHours(
         storeOpeningHoursUrl: String,
         openingHours: List<OpeningHour>,
-    ): List<OpeningHour?> = coroutineScope {
+    ): List<OpeningHour?> = supervisorScope {
         openingHours.map {
             val selfHref = URLBuilder(storeOpeningHoursUrl)
                 .appendPathSegments(it.dayOfWeek.name.lowercase())
@@ -181,61 +192,92 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun getStores(url: String?, filters: StoreFilters): PagedResponse<Store> {
-        val urlString = url ?: accessControlRepository.getAccessControl().storesUrl
-        val location = filters.location?.takeIf { it.isUsable() }
-            ?: currentLocation
-        return httpClient.get(urlString = urlString) {
-            headers[HttpHeaders.Authorization] = ""
-            url {
-                encodedParameters.run {
-                    if (!filters.query.isNullOrBlank()) set("q", filters.query)
-                    if (location != null) {
-                        set("latitude", location.latitude.toString())
-                        set("longitude", location.longitude.toString())
-                    }
-                    if (!filters.minimumPrice.isNullOrBlank()) set("minPrice", filters.minimumPrice)
-                    if (!filters.maximumPrice.isNullOrBlank()) set("maxPrice", filters.maximumPrice)
-                    if (filters.storeCategories.isNotEmpty()) {
-                        appendMissing("storeCategory", filters.storeCategories.map { it.name })
-                    }
-                    appendMissing(
-                        "sort",
-                        filters.sortBy.ifEmpty {
-                            buildList {
-                                add("score,desc")
-                                if (location != null) {
-                                    add("distance,asc")
-                                }
+    override suspend fun getDefaultStoreFetchUrl(): String {
+        return accessControlRepository.getAccessControl().storesUrl
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getStores(url: String, filters: StoreFilters): Flow<PagingData<Store>> {
+        val pagingConfig = PagingConfig(
+            pageSize = 20,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
+        )
+
+        val urlString = URLBuilder(url).apply {
+            encodedParameters.run {
+                set("size", pagingConfig.pageSize.toString())
+                if (!filters.query.isNullOrBlank()) set("q", filters.query)
+                val location = filters.location?.takeIf { it.isUsable() } ?: currentLocation
+                if (location != null) {
+                    set("latitude", location.latitude.toString())
+                    set("longitude", location.longitude.toString())
+                }
+                if (!filters.minimumPrice.isNullOrBlank()) set("minPrice", filters.minimumPrice)
+                if (!filters.maximumPrice.isNullOrBlank()) set("maxPrice", filters.maximumPrice)
+                if (filters.storeCategories.isNotEmpty()) {
+                    appendMissing("storeCategory", filters.storeCategories.map { it.name })
+                }
+                appendMissing(
+                    "sort",
+                    filters.sortBy.ifEmpty {
+                        buildList {
+                            add("score,desc")
+                            if (location != null) {
+                                add("distance,asc")
                             }
-                        },
+                        }
+                    },
+                )
+                if (filters.productCategories.isNotEmpty()) {
+                    appendMissing(
+                        "productCategory",
+                        filters.productCategories.map { it.name },
                     )
-                    if (filters.productCategories.isNotEmpty()) {
-                        appendMissing(
-                            "productCategory",
-                            filters.productCategories.map { it.name },
-                        )
-                    }
                 }
             }
-        }.body<PagedResponse<Store>>().run {
-            val stores = embedded.values.firstOrNull() ?: emptyList()
-            coroutineScope {
-                launch {
-                    database.withTransactionFacade {
-                        val activated = storeDao.getActivated()
-                        storeDao.save(
-                            stores.map { store ->
-                                StoreEntity(
-                                    store,
-                                    isActivated = store.id == activated?.id,
-                                )
-                            },
+        }.build().fullPath
+        val keyManager = LookupKeyManager.URL(url = urlString)
+
+        val dataManager = object : DataManager<Store> {
+            override suspend fun insertAll(lookupKey: String, data: List<Store>) {
+                val activated = storeDao.getActivated()
+                storeDao.save(
+                    data.map { store ->
+                        StoreEntity(
+                            store = store,
+                            lookupKey = lookupKey,
+                            isActivated = store.id == activated?.id,
                         )
-                    }
-                }
+                    },
+                )
             }
-            copy(embedded = mapOf("views" to stores))
+
+            override suspend fun deleteByLookupKey(lookupKey: String) {
+                storeDao.deleteByLookupKey(lookupKey)
+            }
+
+            override suspend fun fetchData(url: String?): PagedResponse<Store> {
+                return httpClient.get(urlString = url ?: urlString) {
+                    headers[HttpHeaders.Authorization] = ""
+                }.body<PagedResponse<Store>>()
+            }
+        }
+        val lookupKey = keyManager.getLookupKey()
+        return Pager(
+            config = pagingConfig,
+            remoteMediator = RemoteMediator(
+                database = database,
+                keyManager = keyManager,
+                dataManager = dataManager,
+                dispatchersProvider = dispatchersProvider,
+            ),
+        ) {
+            storeDao.getStoresByLookupKey(lookupKey = lookupKey)
+        }.flow.map { pagingData ->
+            pagingData.map {
+                it.store
+            }
         }
     }
 
@@ -245,7 +287,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             delay(duration)
             return Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             return Result.Failure(ex.toError())
         }
@@ -267,7 +309,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -286,7 +328,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -305,7 +347,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }
@@ -318,7 +360,7 @@ internal class StoreRepositoryImpl @Inject constructor(
             updateActiveStoreWithUpdatedImages()
             Result.Success(Unit)
         } catch (ex: Exception) {
-            coroutineContext.ensureActive()
+            yield()
             Timber.e(ex)
             Result.Failure(ex.toError())
         }

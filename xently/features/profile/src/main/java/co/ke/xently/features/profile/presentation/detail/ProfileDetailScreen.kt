@@ -51,6 +51,7 @@ import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThu
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
 @Composable

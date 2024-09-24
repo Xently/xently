@@ -1,6 +1,6 @@
 package co.ke.xently.features.stores.domain
 
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import kotlinx.coroutines.withContext
 
@@ -18,7 +18,7 @@ data class SmallestDistanceUnit(val distance: String, val unit: DistanceUnit) {
     }
 }
 
-suspend fun DistanceInMeters.toSmallestDistanceUnit(dispatchersProvider: DispatchersProvider): SmallestDistanceUnit {
+suspend fun DistanceInMeters.toSmallestDistanceUnit(dispatchersProvider: DispatchersProvider = DispatchersProvider.Default): SmallestDistanceUnit {
     return withContext(dispatchersProvider.default) {
         val distanceDouble = toDouble()
         val formattedDistance = distanceDouble.coolFormat(decimalPlaces = 0)

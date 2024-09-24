@@ -31,7 +31,9 @@ import co.ke.xently.features.ui.core.presentation.components.CircularButton
 import co.ke.xently.features.ui.core.presentation.components.PlaceHolderImageThumbnail
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 
 
 @Composable
@@ -42,7 +44,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 text = store.shop.name,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .basicMarquee(),
             )
         },
@@ -54,7 +56,7 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .shimmer(isLoading)
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                     .clickable(
                         role = Role.Checkbox,
                         indication = ripple(radius = 1_000.dp),
@@ -63,14 +65,23 @@ internal fun StoreSummaryListItem(isLoading: Boolean, store: Store, onClickEdit:
             )
         },
         leadingContent = {
-            PlaceHolderImageThumbnail(size = 60.dp, modifier = Modifier.shimmer(isLoading)) {
+            PlaceHolderImageThumbnail(
+                size = 60.dp,
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ),
+            ) {
                 Icon(Icons.Default.Person, contentDescription = null)
             }
         },
         trailingContent = {
             CircularButton(
                 onClick = onClickEdit,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ),
                 content = {
                     Icon(
                         Icons.Outlined.Edit,

@@ -1,8 +1,8 @@
 package co.ke.xently.features.reviews.data.source.local
 
-import co.ke.xently.libraries.data.local.TransactionFacadeDatabase
+import co.ke.xently.libraries.pagination.data.RemoteKeyDatabase
 
-interface ReviewDatabase : TransactionFacadeDatabase {
+interface ReviewDatabase : RemoteKeyDatabase {
     fun reviewDao(): ReviewDao
     fun reviewRequestDao(): ReviewRequestDao
 }

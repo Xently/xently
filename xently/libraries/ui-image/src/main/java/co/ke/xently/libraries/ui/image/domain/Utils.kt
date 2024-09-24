@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.image.domain.File
 import co.ke.xently.libraries.data.image.domain.FileReader
 import co.ke.xently.libraries.data.image.domain.UploadRequest

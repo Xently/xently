@@ -1,3 +1,5 @@
 package co.ke.xently.features.productcategory.data.domain.error
 
-sealed interface Error
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
+
+sealed interface Error : UiTextError

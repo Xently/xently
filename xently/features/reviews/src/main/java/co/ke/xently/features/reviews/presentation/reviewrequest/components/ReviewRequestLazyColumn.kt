@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,18 +26,18 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviews.R
-import co.ke.xently.features.reviews.data.domain.error.Error
 import co.ke.xently.features.reviews.data.domain.error.toError
 import co.ke.xently.features.reviews.presentation.components.UnderlinedHeadline
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestAction
 import co.ke.xently.features.reviews.presentation.reviewrequest.ReviewRequestUiState
-import co.ke.xently.features.reviews.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.PrimaryButton
-import co.ke.xently.libraries.data.core.AuthorisationError
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.core.asString
+import co.ke.xently.libraries.ui.core.toUiTextError
 
 @Composable
 internal fun ReviewRequestLazyColumn(
@@ -79,9 +78,7 @@ internal fun ReviewRequestLazyColumn(
                     key = "Refresh Error",
                     contentType = "Refresh Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ReviewRequestErrorContent(
                         error = error,
                         onClickRetry = reviewCategories::refresh,
@@ -110,9 +107,7 @@ internal fun ReviewRequestLazyColumn(
                     key = "Prepend Error",
                     contentType = "Prepend Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ReviewRequestErrorContent(
                         error = error,
                         onClickRetry = reviewCategories::retry,
@@ -155,9 +150,7 @@ internal fun ReviewRequestLazyColumn(
                     key = "Append Error",
                     contentType = "Append Error",
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     ReviewRequestErrorContent(
                         error = error,
                         onClickRetry = reviewCategories::retry,
@@ -178,14 +171,14 @@ internal fun ReviewRequestLazyColumn(
 }
 
 @Composable
-private fun ReviewRequestErrorContent(error: Error, onClickRetry: () -> Unit) {
+private fun ReviewRequestErrorContent(error: UiTextError, onClickRetry: () -> Unit) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

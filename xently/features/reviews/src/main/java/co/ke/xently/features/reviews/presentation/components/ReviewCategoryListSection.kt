@@ -28,14 +28,17 @@ import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.ConfigurationError
 import co.ke.xently.features.reviewcategory.data.domain.error.DataError.Network
 import co.ke.xently.features.reviewcategory.presentation.components.ReviewCategoryItem
-import co.ke.xently.features.reviewcategory.presentation.utils.UiText
 import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviews.ReviewCategoriesResponse
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import co.ke.xently.libraries.ui.core.asString
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 
 @Composable
 internal fun ReviewCategoryListSection(
@@ -124,7 +127,10 @@ internal fun ReviewCategoryListSection(
                     }
                     for (category in categories) {
                         ReviewCategoryItem(
-                            modifier = Modifier.shimmer(true),
+                            modifier = Modifier.placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.fade(),
+                            ),
                             category = category,
                             selected = selectedCategory?.name == category.name,
                             onClick = { },

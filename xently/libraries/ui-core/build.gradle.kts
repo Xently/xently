@@ -65,4 +65,5 @@ dependencies {
     implementation(project(":xently:libraries:data-auth"))
     implementation(project(":xently:libraries:data-core"))
     api(project(":xently:libraries:ui-image"))
+    api(project(":xently:libraries:placeholder-material3"))
 }

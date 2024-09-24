@@ -35,8 +35,10 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.utils.Launcher
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import kotlinx.coroutines.launch
 
 @Stable
@@ -142,7 +144,7 @@ internal fun StoreDetailListItem(
                 text = store.shop.name,
                 modifier = Modifier
                     .basicMarquee()
-                    .shimmer(isLoading),
+                    .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
             )
         },
         supportingContent = {
@@ -159,7 +161,10 @@ internal fun StoreDetailListItem(
                 text = supportingTest,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ),
             )
         },
         trailingContent = {
@@ -168,7 +173,10 @@ internal fun StoreDetailListItem(
                 snackbarHostState = snackbarHostState,
             )
             CircularButton(
-                modifier = Modifier.shimmer(isLoading),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ),
                 color = MaterialTheme.colorScheme.primary,
                 onClick = {
                     scope.launch {

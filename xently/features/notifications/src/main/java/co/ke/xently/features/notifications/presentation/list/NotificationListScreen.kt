@@ -41,15 +41,16 @@ import co.ke.xently.features.notifications.data.domain.error.DataError
 import co.ke.xently.features.notifications.data.domain.error.toError
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListEmptyState
 import co.ke.xently.features.notifications.presentation.list.components.NotificationListLazyColumn
-import co.ke.xently.features.notifications.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import co.ke.xently.libraries.ui.pagination.ListState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
+import co.ke.xently.libraries.ui.pagination.asListState
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 
 @Composable
@@ -132,8 +133,9 @@ internal fun NotificationListScreen(
             isRefreshing = isRefreshing,
             onRefresh = notifications::refresh,
         ) {
-            when {
-                notifications.itemCount == 0 && refreshLoadState is LoadState.NotLoading -> {
+            when (val listState =
+                refreshLoadState.asListState(notifications.itemCount, Throwable::toError)) {
+                ListState.Empty -> {
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
                         message = stringResource(R.string.message_no_notifications_found),
@@ -141,17 +143,30 @@ internal fun NotificationListScreen(
                     )
                 }
 
-                notifications.itemCount == 0 && refreshLoadState is LoadState.Error -> {
-                    val error = remember(refreshLoadState) {
-                        runBlocking { refreshLoadState.error.toError() }
-                    }
+                ListState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    )
+                }
+
+                ListState.Ready -> {
+                    NotificationListLazyColumn(
+                        notifications = notifications,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
+
+                is ListState.Error -> {
                     NotificationListEmptyState(
                         modifier = Modifier.matchParentSize(),
-                        message = error.asUiText().asString(),
-                        canRetry = error is RetryableError,
+                        message = listState.error.asString(),
+                        canRetry = listState.error is RetryableError,
                         onClickRetry = notifications::retry,
                     ) {
-                        when (error) {
+                        when (listState.error) {
                             DataError.Network.Unauthorized -> {
                                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -161,22 +176,6 @@ internal fun NotificationListScreen(
                             else -> Unit
                         }
                     }
-                }
-
-                notifications.itemCount == 0 && refreshLoadState is LoadState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-
-                else -> {
-                    NotificationListLazyColumn(
-                        notifications = notifications,
-                        modifier = Modifier.matchParentSize(),
-                    )
                 }
             }
         }

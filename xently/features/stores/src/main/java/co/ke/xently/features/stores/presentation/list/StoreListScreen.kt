@@ -51,6 +51,7 @@ import co.ke.xently.features.stores.presentation.list.components.StoreListScreen
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
@@ -149,7 +150,13 @@ internal fun StoreListScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 16.dp, end = 16.dp, start = 16.dp),
         ) { store ->
-            if (store != null) {
+            if (store == null) {
+                StoreItemCard(
+                    store = Store.DEFAULT,
+                    isLoading = true,
+                    onClick = {},
+                )
+            } else {
                 StoreItemCard(
                     store = store,
                     isLoading = false,
@@ -181,12 +188,6 @@ internal fun StoreListScreen(
                         }
                     }
                 }
-            } else {
-                StoreItemCard(
-                    store = Store.DEFAULT,
-                    isLoading = true,
-                    onClick = {},
-                )
             }
         }
     }

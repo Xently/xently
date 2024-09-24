@@ -1,0 +1,916 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "86be1bea7fa0fd77105e0c13ac840563",
+    "entities": [
+      {
+        "tableName": "remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lookupKey` TEXT NOT NULL COLLATE NOCASE, `dateRecorded` INTEGER NOT NULL, `prev` TEXT, `next` TEXT, `last` TEXT, `self` TEXT, `first` TEXT, PRIMARY KEY(`lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateRecorded",
+            "columnName": "dateRecorded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "links.prev",
+            "columnName": "prev",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links.next",
+            "columnName": "next",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links.last",
+            "columnName": "last",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links.self",
+            "columnName": "self",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "links.first",
+            "columnName": "first",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "lookupKey"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "recommendations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recommendation` TEXT NOT NULL, `id` INTEGER NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "recommendation",
+            "columnName": "recommendation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_recommendations_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommendations_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_recommendations_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommendations_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_recommendations_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommendations_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "review_requests",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`baseUrl` TEXT NOT NULL, `star` INTEGER NOT NULL, `message` TEXT, PRIMARY KEY(`baseUrl`))",
+        "fields": [
+          {
+            "fieldPath": "baseUrl",
+            "columnName": "baseUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "star",
+            "columnName": "star",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "baseUrl"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "profile_statistics",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`statistic` TEXT NOT NULL, `id` INTEGER NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "statistic",
+            "columnName": "statistic",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "server_response_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "access_controls",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessControl` TEXT NOT NULL, `id` INTEGER NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "accessControl",
+            "columnName": "accessControl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "user",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `email` TEXT, `emailVerified` INTEGER NOT NULL, `name` TEXT, `profilePicUrl` TEXT, `refreshToken` TEXT, `accessToken` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "emailVerified",
+            "columnName": "emailVerified",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profilePicUrl",
+            "columnName": "profilePicUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "refreshToken",
+            "columnName": "refreshToken",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accessToken",
+            "columnName": "accessToken",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "shops",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shop` TEXT NOT NULL, `id` INTEGER NOT NULL, `isActivated` INTEGER NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "shop",
+            "columnName": "shop",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActivated",
+            "columnName": "isActivated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_shops_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_shops_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_shops_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_shops_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_shops_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_shops_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "stores",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`store` TEXT NOT NULL, `id` INTEGER NOT NULL, `isActivated` INTEGER NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "store",
+            "columnName": "store",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActivated",
+            "columnName": "isActivated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_stores_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stores_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_stores_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stores_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_stores_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stores_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "store_categories",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`storeCategory` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "storeCategory",
+            "columnName": "storeCategory",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "store_services",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`storeService` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "storeService",
+            "columnName": "storeService",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "reviews",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`review` TEXT NOT NULL, `id` TEXT NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "review",
+            "columnName": "review",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_reviews_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reviews_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_reviews_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reviews_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_reviews_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reviews_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "review_categories",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`reviewCategory` TEXT NOT NULL, `name` TEXT NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`name`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "reviewCategory",
+            "columnName": "reviewCategory",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_review_categories_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_review_categories_name` ON `${TABLE_NAME}` (`name`)"
+          },
+          {
+            "name": "index_review_categories_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_review_categories_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_review_categories_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_review_categories_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "products",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`product` TEXT NOT NULL, `id` INTEGER NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "product",
+            "columnName": "product",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_products_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_products_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_products_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_products_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_products_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_products_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "product_categories",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productCategory` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "productCategory",
+            "columnName": "productCategory",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "customers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`customer` TEXT NOT NULL, `id` TEXT NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "customer",
+            "columnName": "customer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_customers_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_customers_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_customers_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_customers_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_customers_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_customers_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "notifications",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`notification` TEXT NOT NULL, `id` INTEGER NOT NULL, `lookupKey` TEXT NOT NULL DEFAULT '_default_', `dateSaved` INTEGER NOT NULL DEFAULT 32400000, PRIMARY KEY(`id`, `lookupKey`))",
+        "fields": [
+          {
+            "fieldPath": "notification",
+            "columnName": "notification",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookupKey",
+            "columnName": "lookupKey",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_default_'"
+          },
+          {
+            "fieldPath": "dateSaved",
+            "columnName": "dateSaved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "32400000"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "lookupKey"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_notifications_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_notifications_lookupKey",
+            "unique": false,
+            "columnNames": [
+              "lookupKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_lookupKey` ON `${TABLE_NAME}` (`lookupKey`)"
+          },
+          {
+            "name": "index_notifications_dateSaved",
+            "unique": false,
+            "columnNames": [
+              "dateSaved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_dateSaved` ON `${TABLE_NAME}` (`dateSaved`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "notification_topics",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`notificationTopic` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "notificationTopic",
+            "columnName": "notificationTopic",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86be1bea7fa0fd77105e0c13ac840563')"
+    ]
+  }
+}

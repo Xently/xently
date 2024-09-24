@@ -1,6 +1,7 @@
 package co.ke.xently.features.reviewcategory.data.domain.error
 
 
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import co.ke.xently.libraries.data.network.ApiErrorResponse
 import io.ktor.client.call.DoubleReceiveException
 import io.ktor.client.call.NoTransformationFoundException
@@ -12,7 +13,7 @@ import io.ktor.serialization.JsonConvertException
 import timber.log.Timber
 
 
-sealed interface Error
+sealed interface Error : UiTextError
 
 suspend fun Throwable.toError(): Error {
     return when (this) {

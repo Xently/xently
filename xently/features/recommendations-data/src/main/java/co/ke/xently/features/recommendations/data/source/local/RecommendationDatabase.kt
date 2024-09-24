@@ -1,7 +1,7 @@
 package co.ke.xently.features.recommendations.data.source.local
 
-import co.ke.xently.libraries.data.local.TransactionFacadeDatabase
+import co.ke.xently.libraries.pagination.data.RemoteKeyDatabase
 
-interface RecommendationDatabase : TransactionFacadeDatabase {
+interface RecommendationDatabase : RemoteKeyDatabase {
     fun recommendationDao(): RecommendationDao
 }

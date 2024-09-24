@@ -2,7 +2,6 @@ package co.ke.xently.libraries.ui.image
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material3.MaterialTheme
@@ -14,23 +13,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import co.ke.xently.libraries.data.image.domain.Progress
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
-import co.ke.xently.libraries.data.network.urlWithSchemaMatchingBaseURL
 import coil3.Extras
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import com.valentinilk.shimmer.shimmer
-import io.ktor.http.URLBuilder
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import timber.log.Timber
 
 
@@ -59,8 +56,7 @@ fun XentlyImage(
             is UploadResponse -> {
                 val url by remember {
                     derivedStateOf {
-                        URLBuilder(it.url()).urlWithSchemaMatchingBaseURL()
-                            .buildString()
+                        it.url()
                     }
                 }
                 XentlyAsyncImage(
@@ -82,15 +78,6 @@ fun XentlyImage(
                 )
             }
         }
-    }
-}
-
-private fun Modifier.shimmer(shimmer: Boolean, color: Color? = null): Modifier {
-    return composed {
-        if (shimmer) {
-            background(color ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
-                .shimmer()
-        } else Modifier
     }
 }
 
@@ -116,7 +103,10 @@ private fun XentlyAsyncImage(
         } else if (!LocalInspectionMode.current) {
             var isLoading by rememberSaveable(data) { mutableStateOf(false) }
             AsyncImage(
-                modifier = modifier.shimmer(isLoading),
+                modifier = modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ),
                 contentScale = contentScale,
                 contentDescription = contentDescription,
                 placeholder = ColorPainter(MaterialTheme.colorScheme.surface),

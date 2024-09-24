@@ -1,17 +1,16 @@
 package co.ke.xently.business
 
-import co.ke.xently.features.auth.presentation.utils.UiText as AuthUiText
-import co.ke.xently.features.shops.presentation.utils.UiText as ShopUiText
+import co.ke.xently.libraries.data.core.UiText
 
 
 sealed interface MainEvent {
     data class Error(
-        val error: AuthUiText,
+        val error: UiText,
         val type: co.ke.xently.features.auth.data.domain.error.Error,
     ) : MainEvent
 
     data class ShopError(
-        val error: ShopUiText,
+        val error: UiText,
         val type: co.ke.xently.features.shops.data.domain.error.Error,
     ) : MainEvent
 

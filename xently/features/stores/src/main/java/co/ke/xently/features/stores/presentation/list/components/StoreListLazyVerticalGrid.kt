@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,15 +26,15 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.data.domain.error.Error
 import co.ke.xently.features.stores.data.domain.error.toError
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.features.ui.core.presentation.LocalEventHandler
 import co.ke.xently.features.ui.core.presentation.components.ScrollToTheTopEffectIfNecessary
-import co.ke.xently.libraries.data.core.AuthorisationError
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
-import kotlinx.coroutines.runBlocking
+import co.ke.xently.libraries.ui.core.asString
+import co.ke.xently.libraries.ui.core.toUiTextError
 
 @Composable
 internal fun StoreListLazyVerticalGrid(
@@ -58,16 +57,7 @@ internal fun StoreListLazyVerticalGrid(
         columns = GridCells.Adaptive(160.dp),
     ) {
         when (val loadState = stores.loadState.refresh) {
-            is LoadState.NotLoading -> Unit
-            LoadState.Loading -> {
-                item(
-                    key = "Refresh Loading",
-                    contentType = "Refresh Loading",
-                    span = { GridItemSpan(maxLineSpan) },
-                ) {
-                    // Ignore loading state for refresh...
-                }
-            }
+            is LoadState.NotLoading, LoadState.Loading -> Unit
 
             is LoadState.Error -> {
                 item(
@@ -75,9 +65,7 @@ internal fun StoreListLazyVerticalGrid(
                     contentType = "Refresh Error",
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     StoreListErrorContent(
                         error = error,
                         onClickRetry = stores::refresh,
@@ -108,9 +96,7 @@ internal fun StoreListLazyVerticalGrid(
                     contentType = "Prepend Error",
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     StoreListErrorContent(
                         error = error,
                         onClickRetry = stores::retry,
@@ -151,9 +137,7 @@ internal fun StoreListLazyVerticalGrid(
                     contentType = "Append Error",
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    val error = remember(loadState.error) {
-                        runBlocking { loadState.error.toError() }
-                    }
+                    val error = loadState.error.toUiTextError { it.toError() } ?: return@item
                     StoreListErrorContent(
                         error = error,
                         onClickRetry = stores::retry,
@@ -165,14 +149,14 @@ internal fun StoreListLazyVerticalGrid(
 }
 
 @Composable
-private fun StoreListErrorContent(error: Error, onClickRetry: () -> Unit) {
+private fun StoreListErrorContent(error: UiTextError, onClickRetry: () -> Unit) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = error.asUiText().asString(),
+            text = error.asString(),
             modifier = Modifier.weight(1f),
         )
         if (error is RetryableError) {

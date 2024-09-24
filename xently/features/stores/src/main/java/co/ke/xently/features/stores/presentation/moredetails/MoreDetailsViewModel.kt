@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.domain.error.toError
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -41,7 +40,7 @@ internal class MoreDetailsViewModel @Inject constructor(
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
                 .catch { throwable ->
                     val error = throwable.toError()
-                    _event.send(MoreDetailsEvent.Error(error = error.asUiText(), type = error))
+                    _event.send(MoreDetailsEvent.Error(error = error.toUiText(), type = error))
                     _uiState.update { it.copy(isLoading = false) }
                 }
                 .flatMapLatest(repository::findById)
@@ -51,7 +50,7 @@ internal class MoreDetailsViewModel @Inject constructor(
                             _uiState.update { it.copy(isLoading = false) }
                             _event.send(
                                 MoreDetailsEvent.Error(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
                             )

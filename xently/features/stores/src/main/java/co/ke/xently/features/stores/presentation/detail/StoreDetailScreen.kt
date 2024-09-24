@@ -60,9 +60,12 @@ import co.ke.xently.libraries.location.tracker.domain.error.PermissionError
 import co.ke.xently.libraries.location.tracker.presentation.rememberEnableLocationGPSLauncher
 import co.ke.xently.libraries.location.tracker.presentation.rememberLocationPermissionLauncher
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import kotlinx.coroutines.launch
 
 typealias StoreDetailContentScope = BoxScope
@@ -234,7 +237,10 @@ internal fun StoreDetailScreen(
                                 colors = ButtonDefaults.textButtonColors(
                                     contentColor = MaterialTheme.colorScheme.onBackground,
                                 ),
-                                modifier = Modifier.shimmer(state.isLoading),
+                                modifier = Modifier.placeholder(
+                                    visible = state.isLoading,
+                                    highlight = PlaceholderHighlight.fade(),
+                                ),
                             ) {
                                 Text(
                                     text = stringResource(R.string.action_more_details),
@@ -255,7 +261,10 @@ internal fun StoreDetailScreen(
                                         colors = ButtonDefaults.textButtonColors(
                                             contentColor = MaterialTheme.colorScheme.onBackground,
                                         ),
-                                        modifier = Modifier.shimmer(state.isLoading),
+                                        modifier = Modifier.placeholder(
+                                            visible = state.isLoading,
+                                            highlight = PlaceholderHighlight.fade(),
+                                        ),
                                     ) {
                                         Icon(Icons.Default.Link, contentDescription = null)
                                         Spacer(modifier = Modifier.width(2.dp))

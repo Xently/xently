@@ -1,6 +1,16 @@
 package co.ke.xently.features.customers.data.domain.error
 
+import co.ke.xently.features.customers.data.R
+import co.ke.xently.libraries.data.core.UiText
+
 enum class ConfigurationError : Error {
-    StoreSelectionRequired,
     ShopSelectionRequired,
+    StoreSelectionRequired;
+
+    override suspend fun toUiText(): UiText {
+        return when (this) {
+            StoreSelectionRequired -> UiText.StringResource(R.string.error_store_not_selected)
+            ShopSelectionRequired -> UiText.StringResource(R.string.error_shop_not_selected)
+        }
+    }
 }

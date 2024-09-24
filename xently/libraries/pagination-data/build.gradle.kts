@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -50,5 +51,13 @@ dependencies {
     api(libs.androidx.paging.runtime)
     implementation(project(":xently:libraries:data-core"))
 
+    implementation(libs.timber)
+    implementation(libs.date.time)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
+
+    testImplementation(libs.androidx.room.testing)
     testImplementation(libs.androidx.paging.common)
 }

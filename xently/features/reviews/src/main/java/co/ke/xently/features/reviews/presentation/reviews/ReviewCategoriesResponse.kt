@@ -2,7 +2,7 @@ package co.ke.xently.features.reviews.presentation.reviews
 
 import co.ke.xently.features.reviewcategory.data.domain.ReviewCategory
 import co.ke.xently.features.reviewcategory.data.domain.error.Error
-import co.ke.xently.features.reviewcategory.presentation.utils.UiText
+import co.ke.xently.libraries.data.core.UiText
 
 internal sealed interface ReviewCategoriesResponse {
     data object Loading : ReviewCategoriesResponse

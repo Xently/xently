@@ -45,10 +45,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.profile.R
 import co.ke.xently.features.profile.data.domain.ProfileStatistic
 import co.ke.xently.features.profile.data.domain.error.NameError
-import co.ke.xently.features.profile.presentation.utils.toUiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 
@@ -154,7 +154,7 @@ internal fun ProfileEditDetailScreen(
                 ),
                 isError = !state.firstNameError.isNullOrEmpty(),
                 supportingText = state.firstNameError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -174,7 +174,7 @@ internal fun ProfileEditDetailScreen(
                 ),
                 isError = !state.lastNameError.isNullOrEmpty(),
                 supportingText = state.lastNameError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
             OutlinedTextField(
@@ -193,7 +193,7 @@ internal fun ProfileEditDetailScreen(
                 ),
                 isError = !state.emailError.isNullOrEmpty(),
                 supportingText = state.emailError?.let {
-                    { Text(text = it.toUiText()) }
+                    { Text(text = it.asString()) }
                 },
             )
 

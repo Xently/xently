@@ -1,6 +1,5 @@
 package co.ke.xently.features.access.control.data
 
-import co.ke.xently.features.access.control.BuildConfig.BASE_URL
 import co.ke.xently.features.access.control.data.local.AccessControlDatabase
 import co.ke.xently.features.access.control.data.local.AccessControlEntity
 import co.ke.xently.features.access.control.domain.AccessControl
@@ -36,10 +35,11 @@ internal class AccessControlRepositoryImpl @Inject constructor(
             if (accessControl != null) return accessControl.accessControl
 
             Timber.tag(TAG).i("Saving access control response...")
-            return httpClient.get(BASE_URL).body<AccessControl>().also {
-                accessControlDao
-                    .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
-            }
+            return httpClient.get("/api/v1")
+                .body<AccessControl>().also {
+                    accessControlDao
+                        .save(AccessControlEntity(it.copyWithDefaultMissingKeys()))
+                }
         }
         return accessControlDao.findFirst()
             .map { it?.accessControl ?: save() }

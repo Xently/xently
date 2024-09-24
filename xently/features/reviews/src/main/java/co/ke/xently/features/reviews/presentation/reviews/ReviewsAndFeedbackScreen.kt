@@ -32,9 +32,10 @@ import co.ke.xently.features.reviews.presentation.components.GeneralReviewSummar
 import co.ke.xently.features.reviews.presentation.components.ReviewCategoryListSection
 import co.ke.xently.features.reviews.presentation.components.ReviewContent
 import co.ke.xently.features.reviews.presentation.theme.STAR_RATING_COLOURS
-import co.ke.xently.features.reviews.presentation.utils.UiText
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
+import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.ui.core.XentlyPreview
+import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import co.ke.xently.libraries.ui.pagination.PullRefreshBox
 import com.aay.compose.barChart.model.BarParameters

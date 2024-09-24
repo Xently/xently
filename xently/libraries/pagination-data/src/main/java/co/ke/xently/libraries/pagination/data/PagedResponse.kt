@@ -9,10 +9,19 @@ data class PagedResponse<T>(
     @SerialName("_embedded")
     val embedded: Map<String, List<T>> = emptyMap(),
     @SerialName("_links")
-    val links: Map<String, Link> = emptyMap(),
+    val links: Links = Links(),
     @SerialName("page")
     val page: Page = Page(0, 0, 0, 0),
 ) {
+    @Serializable
+    data class Links(
+        val prev: Link? = null,
+        val next: Link? = null,
+        val last: Link? = null,
+        val self: Link? = null,
+        val first: Link? = null,
+    )
+
     fun get(lookupKey: String? = null): List<T> {
         return getNullable(lookupKey)!!
     }

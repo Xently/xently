@@ -6,7 +6,6 @@ import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.ConfigurationError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.features.stores.presentation.utils.asUiText
 import co.ke.xently.libraries.data.image.domain.Upload
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse
@@ -104,7 +103,7 @@ internal class ActiveStoreViewModel @Inject constructor(
                             is Result.Failure -> {
                                 _event.send(
                                     ActiveStoreEvent.Error(
-                                        error = result.error.asUiText(),
+                                        error = result.error.toUiText(),
                                         type = result.error,
                                     )
                                 )
@@ -145,7 +144,7 @@ internal class ActiveStoreViewModel @Inject constructor(
                             is Result.Failure -> {
                                 _event.send(
                                     ActiveStoreEvent.Error(
-                                        error = result.error.asUiText(),
+                                        error = result.error.toUiText(),
                                         type = result.error,
                                     )
                                 )
@@ -183,7 +182,7 @@ internal class ActiveStoreViewModel @Inject constructor(
                             is Result.Failure -> {
                                 _event.send(
                                     ActiveStoreEvent.Error(
-                                        error = result.error.asUiText(),
+                                        error = result.error.toUiText(),
                                         type = result.error,
                                     )
                                 )

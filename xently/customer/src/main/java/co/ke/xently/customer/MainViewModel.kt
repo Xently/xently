@@ -6,7 +6,6 @@ import co.ke.xently.features.access.control.data.AccessControlRepository
 import co.ke.xently.features.auth.data.domain.error.Result
 import co.ke.xently.features.auth.data.source.UserRepository
 import co.ke.xently.features.auth.domain.GoogleAuthenticationHandler
-import co.ke.xently.features.auth.presentation.utils.asUiText
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.location.tracker.domain.LocationTracker
 import co.ke.xently.libraries.location.tracker.domain.MissingPermissionBehaviour
@@ -43,6 +42,7 @@ internal class MainViewModel @Inject constructor(
     )
 
     val currentLocation = locationTracker.observeLocation(
+        minimumEmissionDistanceMeters = 100,
         permissionBehaviour = MissingPermissionBehaviour.REPEAT_CHECK,
     ).shareIn(
         viewModelScope,
@@ -77,7 +77,7 @@ internal class MainViewModel @Inject constructor(
                         is Result.Failure -> {
                             _event.send(
                                 MainEvent.Error(
-                                    error = result.error.asUiText(),
+                                    error = result.error.toUiText(),
                                     type = result.error,
                                 )
                             )

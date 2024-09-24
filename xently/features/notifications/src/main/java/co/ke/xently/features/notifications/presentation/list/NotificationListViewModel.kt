@@ -2,14 +2,9 @@ package co.ke.xently.features.notifications.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import co.ke.xently.features.notifications.data.domain.Notification
 import co.ke.xently.features.notifications.data.domain.NotificationFilters
 import co.ke.xently.features.notifications.data.source.NotificationRepository
-import co.ke.xently.libraries.pagination.data.XentlyPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -28,7 +23,6 @@ import javax.inject.Inject
 internal class NotificationListViewModel @Inject constructor(
     private val repository: NotificationRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(NotificationListUiState())
     val uiState: StateFlow<NotificationListUiState> = _uiState.asStateFlow()
 
@@ -37,19 +31,9 @@ internal class NotificationListViewModel @Inject constructor(
 
     private val _filters = MutableStateFlow(NotificationFilters())
 
-    val notifications: Flow<PagingData<Notification>> = _filters.flatMapLatest { filters ->
-        Pager(
-            PagingConfig(
-                pageSize = 20,
-            )
-        ) {
-            XentlyPagingSource { url ->
-                repository.getNotifications(
-                    url = url,
-                    filters = filters,
-                )
-            }
-        }.flow
+    val notifications = _filters.flatMapLatest { filters ->
+        val url = repository.getNotificationsUrl()
+        repository.getNotifications(url = url, filters = filters)
     }.cachedIn(viewModelScope)
 
     fun onAction(action: NotificationListAction) {

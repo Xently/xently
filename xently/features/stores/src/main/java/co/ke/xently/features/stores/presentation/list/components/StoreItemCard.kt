@@ -38,30 +38,19 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
-import co.ke.xently.features.stores.domain.IsCurrentlyOpen
 import co.ke.xently.features.stores.domain.IsOpen
-import co.ke.xently.features.stores.domain.isCurrentlyOpen
-import co.ke.xently.features.stores.domain.toSmallestDistanceUnit
+import co.ke.xently.features.stores.domain.flowOfDistanceAndCurrentlyOpen
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
-import co.ke.xently.libraries.data.core.DispatchersProvider
-import co.ke.xently.libraries.location.tracker.domain.Location
-import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
 import co.ke.xently.libraries.ui.image.XentlyImage
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 typealias Expanded = Boolean
 typealias OnClose = () -> Unit
@@ -83,7 +72,10 @@ fun StoreItemCard(
             var index by rememberSaveable(store.id) { mutableIntStateOf(0) }
             XentlyImage(
                 data = store.images.getOrNull(index),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.fade(),
+                ).fillMaxSize(),
                 onError = {
                     if (index != store.images.lastIndex) index += 1
                 },
@@ -100,10 +92,19 @@ fun StoreItemCard(
             ) {
                 when (it) {
                     null -> Unit
-                    false -> Badge { Text(stringResource(R.string.closed)) }
+                    false -> Badge(
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
+                    ) { Text(stringResource(R.string.closed)) }
                     true -> Badge(
                         contentColor = Color.Black,
                         containerColor = Color.Green.copy(alpha = 0.5f),
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                     ) { Text(stringResource(R.string.open)) }
                 }
             }
@@ -116,15 +117,21 @@ fun StoreItemCard(
                     androidx.compose.animation.AnimatedVisibility(overlineText.isNotBlank()) {
                         Text(
                             text = overlineText,
-                            modifier = Modifier.shimmer(isLoading),
+                            modifier = Modifier.placeholder(
+                                visible = isLoading,
+                                highlight = PlaceholderHighlight.fade(),
+                            ),
                         )
                     }
                 },
                 headlineContent = {
                     Text(
                         text = store.shop.name,
-                        modifier = Modifier.shimmer(isLoading),
                         style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                     )
                 },
                 supportingContent = {
@@ -135,13 +142,16 @@ fun StoreItemCard(
                     ) {
                         Text(
                             text = store.name,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier
                                 .weight(1f)
-                                .shimmer(isLoading),
-                            style = MaterialTheme.typography.bodySmall,
+                                .placeholder(
+                                    visible = isLoading,
+                                    highlight = PlaceholderHighlight.fade(),
+                                ),
                         )
                         if (dropDownMenu != null) {
-                            var expanded by rememberSaveable {
+                            var expanded by rememberSaveable(store.id) {
                                 mutableStateOf(false)
                             }
 
@@ -153,11 +163,16 @@ fun StoreItemCard(
                                         store.name,
                                         store.shop.name,
                                     ),
-                                    modifier = Modifier.clickable(
-                                        role = Role.Checkbox,
-                                        indication = ripple(bounded = false),
-                                        interactionSource = remember { MutableInteractionSource() },
-                                    ) { expanded = !isLoading },
+                                    modifier = Modifier
+                                        .placeholder(
+                                            visible = isLoading,
+                                            highlight = PlaceholderHighlight.fade(),
+                                        )
+                                        .clickable(
+                                            role = Role.Checkbox,
+                                            indication = ripple(bounded = false),
+                                            interactionSource = remember { MutableInteractionSource() },
+                                        ) { expanded = !expanded },
                                 )
 
                                 dropDownMenu(expanded to { expanded = false })
@@ -204,83 +219,6 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
         }
     }
 }
-
-private suspend fun getDistanceAndIsCurrentlyOpen(
-    currentLocation: Location?,
-    location: Location,
-    fallbackDistanceMeters: Double?,
-    openingHours: List<OpeningHour>,
-    dispatcher: DispatchersProvider,
-): Pair<String, IsCurrentlyOpen> = withContext(dispatcher.default) {
-    val deferredDistance = async {
-        val distanceMeters = currentLocation?.toAndroidLocation()
-            ?.distanceTo(location.toAndroidLocation())
-            ?: fallbackDistanceMeters
-        distanceMeters?.toSmallestDistanceUnit(dispatchersProvider = dispatcher)?.toString() ?: ""
-    }
-    val deferredIsCurrentlyOpen = async {
-        openingHours.isCurrentlyOpen(dispatchersProvider = dispatcher)
-    }
-    deferredDistance.await() to deferredIsCurrentlyOpen.await()
-}
-
-private fun flowOfDistanceAndCurrentlyOpen(
-    currentLocation: Location?,
-    is24hour: Boolean,
-    location: Location,
-    fallbackDistanceMeters: Double?,
-    openingHours: List<OpeningHour>,
-    dispatcher: DispatchersProvider,
-) = flow {
-    while (true) {
-        emit(
-            getDistanceAndIsCurrentlyOpen(
-                location = location,
-                dispatcher = dispatcher,
-                openingHours = openingHours,
-                currentLocation = currentLocation,
-                fallbackDistanceMeters = fallbackDistanceMeters,
-            )
-        )
-        delay(1_000)
-    }
-}.distinctUntilChanged { a, b ->
-    val (distanceA, isCurrentlyOpenA) = a
-    val (distanceB, isCurrentlyOpenB) = b
-    val (dayOfWeekA, isOpenA, _) = isCurrentlyOpenA
-    val (dayOfWeekB, isOpenB, _) = isCurrentlyOpenB
-
-    dayOfWeekA == dayOfWeekB
-            && isOpenA == isOpenB
-            && distanceA == distanceB
-}.map { (distance, isCurrentlyOpen) ->
-    val (dayOfWeek, isOpen, operationHours) = isCurrentlyOpen
-
-    val formattedOperationTime =
-        operationHours.joinToString(separator = " • ") { (hour, _) ->
-            buildString {
-                append(hour.openTime.toString(is24hour))
-                append(" - ")
-                append(hour.closeTime.toString(is24hour))
-            }
-        }
-
-    val text = buildString {
-        var separator = ""
-        if (distance.isNotBlank()) {
-            append(distance)
-            separator = " | "
-        }
-        if (formattedOperationTime.isNotBlank()) {
-            append(separator)
-            append(formattedOperationTime)
-            append(" | ")
-            append(dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() })
-        }
-    }
-
-    isOpen to text
-}.flowOn(dispatcher.default)
 
 private data class StoreCardParameter(
     val store: Store,

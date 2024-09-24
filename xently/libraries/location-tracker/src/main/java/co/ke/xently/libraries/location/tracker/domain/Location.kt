@@ -23,7 +23,7 @@ data class Location(
     @Transient
     val name: String? = null,
     @Transient
-    val isCached: Boolean = false
+    val isCached: Boolean = false,
 ) : Parcelable {
     fun isUsable() = (!latitude.isNaN()
             || !longitude.isNaN())

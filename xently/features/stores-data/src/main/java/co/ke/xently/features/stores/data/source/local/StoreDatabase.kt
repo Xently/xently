@@ -1,7 +1,7 @@
 package co.ke.xently.features.stores.data.source.local
 
-import co.ke.xently.libraries.data.local.TransactionFacadeDatabase
+import co.ke.xently.libraries.pagination.data.RemoteKeyDatabase
 
-interface StoreDatabase : TransactionFacadeDatabase {
+interface StoreDatabase : RemoteKeyDatabase {
     fun storeDao(): StoreDao
 }

@@ -43,7 +43,9 @@ import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyThemePreview
-import co.ke.xently.libraries.ui.core.components.shimmer
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.fade
+import com.google.accompanist.placeholder.material3.placeholder
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
@@ -62,7 +64,10 @@ internal fun ReviewCommentListItem(
                 Card(
                     modifier = Modifier
                         .size(60.dp)
-                        .shimmer(isLoading)
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
@@ -79,7 +84,10 @@ internal fun ReviewCommentListItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.fade(),
+                    ),
                 )
             },
             supportingContent = {
@@ -95,7 +103,10 @@ internal fun ReviewCommentListItem(
                         ),
                         fontWeight = FontWeight.Light,
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.shimmer(isLoading),
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        ),
                     )
 
                     Icon(
@@ -104,7 +115,10 @@ internal fun ReviewCommentListItem(
                         modifier = Modifier
                             .size(20.dp)
                             .padding(horizontal = 8.dp)
-                            .shimmer(isLoading),
+                            .placeholder(
+                                visible = isLoading,
+                                highlight = PlaceholderHighlight.fade(),
+                            ),
                     )
 
                     val timePickerState = rememberTimePickerState()
@@ -120,7 +134,10 @@ internal fun ReviewCommentListItem(
                                     "${it.date} - ${time.toString(timePickerState.is24hour)}"
                                 }
                         },
-                        modifier = Modifier.shimmer(isLoading),
+                        modifier = Modifier.placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.fade(),
+                        )
                     )
                 }
             },
@@ -128,7 +145,10 @@ internal fun ReviewCommentListItem(
                 Icon(
                     Icons.Default.MoreVert,
                     contentDescription = null,
-                    modifier = Modifier.shimmer(isLoading),
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.fade(),
+                    ),
                 )
             },
         )
@@ -140,7 +160,7 @@ internal fun ReviewCommentListItem(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
-                .shimmer(isLoading)
+                .placeholder(visible = isLoading, highlight = PlaceholderHighlight.fade())
                 .clickable(
                     role = Role.Checkbox,
                     indication = ripple(radius = 1_000.dp),

@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.hilt.android)
+    implementation(project(":xently:libraries:pagination-data"))
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.room)
