@@ -206,8 +206,8 @@ internal class ReviewRepositoryImpl @Inject constructor(
     override fun getReviews(url: String, filters: ReviewFilters): Flow<PagingData<Review>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {

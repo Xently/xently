@@ -62,8 +62,8 @@ internal class RecommendationRepositoryImpl @Inject constructor(
     ): Flow<PagingData<RecommendationResponse>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {

@@ -94,8 +94,8 @@ internal class ShopRepositoryImpl @Inject constructor(
     override fun getShops(url: String, filters: ShopFilters): Flow<PagingData<Shop>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {

@@ -40,8 +40,8 @@ internal class NotificationRepositoryImpl @Inject constructor(
     override fun getNotifications(url: String, filters: Any): Flow<PagingData<Notification>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {

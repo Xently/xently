@@ -165,8 +165,8 @@ internal class ProductRepositoryImpl @Inject constructor(
     ): Flow<PagingData<Product>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {

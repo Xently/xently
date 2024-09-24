@@ -44,8 +44,8 @@ internal class CustomerRepositoryImpl @Inject constructor(
     ): Flow<PagingData<Customer>> {
         val pagingConfig = PagingConfig(
             pageSize = 20,
-            initialLoadSize = 20,
-            prefetchDistance = 0,
+//            initialLoadSize = 20,
+//            prefetchDistance = 0,
         )
 
         val urlString = URLBuilder(url).apply {
