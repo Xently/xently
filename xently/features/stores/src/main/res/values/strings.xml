@@ -101,4 +101,6 @@
     <string name="action_visit_website">Visit website</string>
     <string name="open">Now open</string>
     <string name="closed">Now closed</string>
+    <string name="opens_in">Opens in %1$s</string>
+    <string name="closes_in">Closes in %1$s</string>
 </resources>

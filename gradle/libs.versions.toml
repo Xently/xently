@@ -10,6 +10,7 @@ android-target-sdk = "34"
 android-version-code = "56"
 android-version-name = "3.10-beta03"
 androidx-paging = "3.3.2"
+assertk = "0.28.1"
 charts = "Beta-0.0.5"
 chip-text-field = "0.7.0-alpha05"
 coil-kt = "3.0.0-alpha10"
@@ -57,6 +58,7 @@ coroutines = "1.9.0"
 compose = "1.7.2"
 
 [libraries]
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
 compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
 compose-foundation-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }

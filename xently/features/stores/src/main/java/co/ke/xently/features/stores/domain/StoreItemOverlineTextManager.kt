@@ -7,12 +7,15 @@ import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 fun timeAndEmit(emissionsPerDuration: Int = 1, duration: Duration = 1.seconds): Flow<Duration> {
@@ -28,6 +31,17 @@ fun timeAndEmit(emissionsPerDuration: Int = 1, duration: Duration = 1.seconds): 
             startTime = endTime
             emit(timeLapse)
         }
+    }
+}
+
+fun operationStartOrClosureFlow(
+    openingHours: List<OpeningHour>,
+    dispatchersProvider: DispatchersProvider,
+): Flow<DurationToOperationStartOrClosure> {
+    return timeAndEmit(duration = 1.minutes).map {
+        openingHours.toOperationStartOrClosure(dispatchersProvider = dispatchersProvider)
+    }.filter {
+        it.duration < 1.hours // Longer durations will seem like too early a warning
     }
 }
 
