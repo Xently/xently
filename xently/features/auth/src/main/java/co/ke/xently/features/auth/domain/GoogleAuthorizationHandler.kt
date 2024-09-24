@@ -3,7 +3,7 @@ package co.ke.xently.features.auth.domain
 import android.accounts.Account
 import android.content.Context
 import android.os.CancellationSignal
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity

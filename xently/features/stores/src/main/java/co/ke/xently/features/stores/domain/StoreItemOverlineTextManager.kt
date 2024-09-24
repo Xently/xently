@@ -1,7 +1,7 @@
 package co.ke.xently.features.stores.domain
 
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.location.tracker.domain.Location
 import co.ke.xently.libraries.location.tracker.domain.toAndroidLocation
 import kotlinx.coroutines.delay

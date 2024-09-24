@@ -20,7 +20,7 @@ import co.ke.xently.features.reviews.data.source.local.ReviewEntity
 import co.ke.xently.features.reviews.data.source.local.ReviewRequestEntity
 import co.ke.xently.features.shops.data.source.ShopRepository
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse

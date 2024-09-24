@@ -1,6 +1,6 @@
 package co.ke.xently.features.profile.data.domain.error
 
-import co.ke.xently.libraries.data.core.UiTextError
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import co.ke.xently.libraries.data.network.ApiErrorResponse
 import io.ktor.client.call.DoubleReceiveException
 import io.ktor.client.call.NoTransformationFoundException

@@ -10,7 +10,7 @@ import co.ke.xently.features.customers.data.domain.Customer
 import co.ke.xently.features.customers.data.domain.CustomerFilters
 import co.ke.xently.features.customers.data.source.local.CustomerDatabase
 import co.ke.xently.features.customers.data.source.local.CustomerEntity
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse

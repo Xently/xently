@@ -14,7 +14,7 @@ import co.ke.xently.features.reviewcategory.data.domain.error.toError
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryDatabase
 import co.ke.xently.features.reviewcategory.data.source.local.ReviewCategoryEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse

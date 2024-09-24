@@ -2,7 +2,7 @@ package co.ke.xently.libraries.ui.image.domain
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt

@@ -13,7 +13,7 @@ import co.ke.xently.features.recommendations.data.domain.error.Result
 import co.ke.xently.features.recommendations.data.source.local.RecommendationDatabase
 import co.ke.xently.features.recommendations.data.source.local.RecommendationEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse

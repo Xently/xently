@@ -3,7 +3,7 @@ package co.ke.xently.features.settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.xently.features.settings.data.SettingKeys
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.ui.core.components.ThemeSetting
 import com.russhwolf.settings.Settings
 import dagger.hilt.android.lifecycle.HiltViewModel

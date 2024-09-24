@@ -10,7 +10,7 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.location.tracker.data.LocationSettingDelegate
 import co.ke.xently.libraries.location.tracker.domain.error.Error
 import co.ke.xently.libraries.location.tracker.domain.error.LocationRequestError

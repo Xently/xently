@@ -16,7 +16,7 @@ import co.ke.xently.features.shops.data.domain.error.Result
 import co.ke.xently.features.shops.data.domain.error.toError
 import co.ke.xently.features.shops.data.source.local.ShopDatabase
 import co.ke.xently.features.shops.data.source.local.ShopEntity
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.pagination.data.DataManager
 import co.ke.xently.libraries.pagination.data.LookupKeyManager
 import co.ke.xently.libraries.pagination.data.PagedResponse

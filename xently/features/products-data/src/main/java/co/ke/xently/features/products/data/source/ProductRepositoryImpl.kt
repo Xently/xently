@@ -15,7 +15,7 @@ import co.ke.xently.features.products.data.domain.error.toError
 import co.ke.xently.features.products.data.source.local.ProductDatabase
 import co.ke.xently.features.products.data.source.local.ProductEntity
 import co.ke.xently.features.stores.data.source.StoreRepository
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.image.domain.Upload
 import co.ke.xently.libraries.data.image.domain.UploadRequest
 import co.ke.xently.libraries.data.image.domain.UploadResponse

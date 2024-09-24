@@ -35,8 +35,8 @@ import co.ke.xently.features.reviews.R
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestEmptyState
 import co.ke.xently.features.reviews.presentation.reviewrequest.components.ReviewRequestLazyColumn
 import co.ke.xently.features.ui.core.presentation.components.LoginAndRetryButtonsRow
-import co.ke.xently.libraries.data.core.AuthorisationError
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState

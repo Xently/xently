@@ -1,6 +1,6 @@
 package co.ke.xently.features.stores.domain
 
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.ui.core.domain.coolFormat
 import kotlinx.coroutines.withContext
 

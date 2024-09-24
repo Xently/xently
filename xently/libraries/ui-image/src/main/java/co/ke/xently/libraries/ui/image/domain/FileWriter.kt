@@ -1,7 +1,7 @@
 package co.ke.xently.libraries.ui.image.domain
 
 import androidx.core.net.toUri
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import kotlinx.coroutines.withContext
 import java.io.File
 

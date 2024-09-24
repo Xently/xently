@@ -55,7 +55,7 @@ import co.ke.xently.features.reviews.presentation.comments.components.ReviewList
 import co.ke.xently.features.reviews.presentation.comments.components.ReviewListLazyColumn
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Link
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton

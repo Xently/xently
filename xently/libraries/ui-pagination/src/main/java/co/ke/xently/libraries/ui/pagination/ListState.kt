@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.produceState
 import androidx.paging.LoadState
-import co.ke.xently.libraries.data.core.UiTextError
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import co.ke.xently.libraries.ui.core.LocalDispatchersProvider
 import kotlinx.coroutines.async
 

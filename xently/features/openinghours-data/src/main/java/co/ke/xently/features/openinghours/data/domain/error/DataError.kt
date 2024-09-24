@@ -1,8 +1,8 @@
 package co.ke.xently.features.openinghours.data.domain.error
 
 import co.ke.xently.features.openinghours.data.R
-import co.ke.xently.libraries.data.core.AuthorisationError
-import co.ke.xently.libraries.data.core.RetryableError
+import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
+import co.ke.xently.libraries.data.core.domain.error.RetryableError
 import co.ke.xently.libraries.data.core.UiText
 
 sealed interface DataError : Error {

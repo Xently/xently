@@ -1,6 +1,6 @@
 package co.ke.xently.libraries.ui.image
 
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.network.BuildConfig
 import coil3.ImageLoader
 import coil3.PlatformContext

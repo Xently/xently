@@ -2,7 +2,7 @@ package co.ke.xently.features.auth.data.source.di
 
 import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.auth.data.source.UserEntity
-import co.ke.xently.libraries.data.core.DispatchersProvider
+import co.ke.xently.libraries.data.core.domain.DispatchersProvider
 import co.ke.xently.libraries.data.network.AccessTokenManager
 import dagger.Binds
 import dagger.Module

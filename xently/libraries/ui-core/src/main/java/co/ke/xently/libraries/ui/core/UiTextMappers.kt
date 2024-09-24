@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.data.core.UiText.DynamicString
 import co.ke.xently.libraries.data.core.UiText.StringResource
-import co.ke.xently.libraries.data.core.UiTextError
+import co.ke.xently.libraries.data.core.domain.error.UiTextError
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 
