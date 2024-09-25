@@ -13,6 +13,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -20,7 +21,9 @@ import io.ktor.http.contentType
 import io.ktor.http.set
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import okhttp3.OkHttpClient
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -31,6 +34,15 @@ class HttpClientFactory private constructor(
     private val httpClient: HttpClient
         get() = HttpClient(OkHttp) {
             expectSuccess = true
+            // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
+            engine {
+                preconfigured = OkHttpClient.Builder()
+                    .pingInterval(20, TimeUnit.SECONDS)
+                    .build()
+            }
+            install(WebSockets){
+                pingInterval = 20_000
+            }
             install(HttpRedirect) {
                 checkHttpMethod = false
             }
