@@ -8,6 +8,7 @@ import kotlinx.serialization.Transient
 @Serializable
 data class ProductCategory(
     val name: String,
+    val isMain: Boolean = false,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
     @Transient

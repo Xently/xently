@@ -43,7 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -69,7 +68,6 @@ import co.ke.xently.features.stores.data.domain.error.NameError
 import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
-import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
 import co.ke.xently.features.ui.core.presentation.components.XentlyOutlinedChipTextField
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
@@ -77,7 +75,6 @@ import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
-import com.dokar.chiptextfield.Chip
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
@@ -183,14 +180,6 @@ internal fun StoreEditDetailScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            AddCategorySection(
-                name = state.categoryName,
-                onNameValueChange = { onAction(StoreEditDetailAction.ChangeCategoryName(it)) },
-                onAddClick = { onAction(StoreEditDetailAction.ClickAddCategory) },
-                shape = RectangleShape,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             if (categories.isNotEmpty()) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -307,7 +296,7 @@ internal fun StoreEditDetailScreen(
 
             XentlyOutlinedChipTextField(
                 enabled = !state.disableFields,
-                chips = state.services.map { Chip(it.name) },
+                chips = state.services,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -321,6 +310,35 @@ internal fun StoreEditDetailScreen(
                     Text(text = stringResource(R.string.text_field_placeholder_services))
                 },
             )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.additionalCategories,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                onSubmit = {
+                    onAction(StoreEditDetailAction.AddAdditionalCategory(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_store_additional_categories))
+                },
+            )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.paymentMethods,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                onSubmit = {
+                    onAction(StoreEditDetailAction.AddPaymentMethod(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_store_payment_methods))
+                },
+            )
+
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.description,

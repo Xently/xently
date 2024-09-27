@@ -1,22 +1,15 @@
-package co.ke.xently.features.storecategory.data.domain
+package co.ke.xently.features.stores.data.domain
 
-import android.os.Parcelable
 import co.ke.xently.libraries.data.core.Link
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
-@Parcelize
-data class StoreCategory(
+data class StorePaymentMethod(
     val name: String,
-    val isMain: Boolean = false,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
-    @Transient
-    val selected: Boolean = false,
-) : Parcelable {
+) {
     override fun toString(): String {
         return name
     }
@@ -29,7 +22,7 @@ data class StoreCategory(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as StoreCategory
+        other as StorePaymentMethod
 
         return name == other.name
     }

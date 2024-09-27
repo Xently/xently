@@ -8,12 +8,14 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreDataValidator
+import co.ke.xently.features.stores.data.domain.StorePaymentMethod
 import co.ke.xently.features.stores.data.domain.error.RemoteFieldError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
+import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -120,21 +122,21 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 savedStateHandle[KEY] = storeCategories - action.category.name
             }
 
-            is StoreEditDetailAction.ChangeCategoryName -> {
+            is StoreEditDetailAction.AddService -> {
                 _uiState.update {
-                    it.copy(categoryName = action.name)
+                    it.copy(services = it.services + Chip(action.service))
                 }
             }
 
-            is StoreEditDetailAction.ClickAddCategory -> {
-                val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
-                savedStateHandle[KEY] = storeCategories + _uiState.value.categoryName.trim()
-                _uiState.update { it.copy(categoryName = "") }
+            is StoreEditDetailAction.AddPaymentMethod -> {
+                _uiState.update {
+                    it.copy(paymentMethods = it.paymentMethods + Chip(action.paymentMethod))
+                }
             }
 
-            is StoreEditDetailAction.AddService -> {
+            is StoreEditDetailAction.AddAdditionalCategory -> {
                 _uiState.update {
-                    it.copy(services = it.services + StoreService(action.service))
+                    it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
                 }
             }
 
@@ -283,12 +285,13 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private fun validatedStore(state: StoreEditDetailUiState): Store {
         var store = state.store.copy(
             name = state.name,
-            services = state.services,
+            services = state.services.map { StoreService(it.text) },
+            paymentMethods = state.paymentMethods.map { StorePaymentMethod(it.text) },
             openingHours = state.openingHours,
             description = state.description.trim().takeIf { it.isNotBlank() },
             categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
                 StoreCategory(name = it)
-            },
+            } + state.additionalCategories.map { StoreCategory(name = it.text) },
         )
 
         when (val result = dataValidator.validatedLocation(state.locationString)) {

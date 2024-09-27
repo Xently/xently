@@ -7,10 +7,8 @@ import kotlinx.datetime.DayOfWeek
 internal sealed interface StoreEditDetailAction {
     data object ClickSave : StoreEditDetailAction
     data object ClickSaveAndAddAnother : StoreEditDetailAction
-    data object ClickAddCategory : StoreEditDetailAction
     data object ClearFieldsForNewStore : StoreEditDetailAction
 
-    class ChangeCategoryName(val name: String) : StoreEditDetailAction
     class SelectCategory(val category: StoreCategory) : StoreEditDetailAction
     class RemoveCategory(val category: StoreCategory) : StoreEditDetailAction
     class ChangeName(val name: String) : StoreEditDetailAction
@@ -18,11 +16,14 @@ internal sealed interface StoreEditDetailAction {
     class ChangeLocation(val location: Location) : StoreEditDetailAction
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
+    class AddPaymentMethod(val paymentMethod: String) : StoreEditDetailAction
+    class AddAdditionalCategory(val category: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction
+
     class ChangeOpeningHourOpenStatus(val dayOfWeekIsOpen: Pair<DayOfWeek, Boolean>) :
         StoreEditDetailAction
-
     class ChangeDescription(val description: String) : StoreEditDetailAction
+
     class ChangeOpeningHourTime(val dayOfWeekChangeOpeningHour: Pair<DayOfWeek, co.ke.xently.features.openinghours.domain.ChangeOpeningHourTime>) :
         StoreEditDetailAction
 }

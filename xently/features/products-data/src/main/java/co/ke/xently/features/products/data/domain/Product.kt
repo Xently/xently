@@ -22,6 +22,8 @@ data class Product(
     val slug: String = "",
     @SerialName("categories")
     val categories: List<ProductCategory> = emptyList(),
+    @SerialName("synonyms")
+    val synonyms: List<ProductSynonym> = emptyList(),
     @SerialName("unitPrice")
     val unitPrice: Double = 0.0,
     @SerialName("description")

@@ -37,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -58,7 +57,7 @@ import co.ke.xently.features.products.data.domain.error.PriceError
 import co.ke.xently.features.products.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
-import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
+import co.ke.xently.features.ui.core.presentation.components.XentlyOutlinedChipTextField
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
@@ -154,14 +153,6 @@ internal fun ProductEditDetailScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            AddCategorySection(
-                name = state.categoryName,
-                onNameValueChange = { onAction(ProductEditDetailAction.ChangeCategoryName(it)) },
-                onAddClick = { onAction(ProductEditDetailAction.ClickAddCategory) },
-                shape = RectangleShape,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             if (categories.isNotEmpty()) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -224,6 +215,35 @@ internal fun ProductEditDetailScreen(
                     { Text(text = it.asString()) }
                 },
             )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.additionalCategories,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                onSubmit = {
+                    onAction(ProductEditDetailAction.AddAdditionalCategory(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_product_additional_categories))
+                },
+            )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.synonyms,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                onSubmit = {
+                    onAction(ProductEditDetailAction.AddSynonym(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_product_synonyms))
+                },
+            )
+
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.description,

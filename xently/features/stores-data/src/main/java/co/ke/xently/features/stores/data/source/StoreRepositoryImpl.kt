@@ -94,6 +94,7 @@ internal class StoreRepositoryImpl @Inject constructor(
                 email = store.email,
                 description = store.description,
                 services = store.services,
+                paymentMethods = store.paymentMethods,
                 categories = store.categories.toSet(),
             )
             setBody(body)

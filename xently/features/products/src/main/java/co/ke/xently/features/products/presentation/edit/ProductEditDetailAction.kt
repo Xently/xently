@@ -6,9 +6,7 @@ import co.ke.xently.libraries.data.image.domain.File
 internal sealed interface ProductEditDetailAction {
     data object ClickSave : ProductEditDetailAction
     data object ClickSaveAndAddAnother : ProductEditDetailAction
-    data object ClickAddCategory : ProductEditDetailAction
     data object ClearFieldsForNewProduct : ProductEditDetailAction
-    class ChangeCategoryName(val name: String) : ProductEditDetailAction
     class SelectCategory(val category: ProductCategory) : ProductEditDetailAction
     class RemoveCategory(val category: ProductCategory) : ProductEditDetailAction
     class ChangeName(val name: String) : ProductEditDetailAction
@@ -16,4 +14,6 @@ internal sealed interface ProductEditDetailAction {
     class ChangeDescription(val description: String) : ProductEditDetailAction
     class ProcessImageData(val data: Pair<Int, File?>) : ProductEditDetailAction
     class RemoveImageAtPosition(val position: Int) : ProductEditDetailAction
+    class AddAdditionalCategory(val category: String) : ProductEditDetailAction
+    class AddSynonym(val synonym: String) : ProductEditDetailAction
 }

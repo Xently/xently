@@ -7,12 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.TextFieldValue
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.m3.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
@@ -33,7 +32,7 @@ fun XentlyOutlinedChipTextField(
         chipState.chips = chips
     }
 
-    var value by remember { mutableStateOf(TextFieldValue()) }
+    var value by rememberSaveable { mutableStateOf("") }
 
     OutlinedChipTextField(
         shape = CardDefaults.shape,
@@ -45,18 +44,18 @@ fun XentlyOutlinedChipTextField(
         placeholder = placeholder,
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
         onValueChange = {
-            var text = it.text.trimEnd()
+            var text = it.trimEnd()
             value = if (!text.endsWith(",")) it else {
                 text = text.replace("\\s*,\\s*$".toRegex(), "").trimStart()
                 if (text.isNotBlank()) {
                     onSubmit(text)
                     chipState.addChip(Chip(text))
                 }
-                TextFieldValue()
+                ""
             }
         },
         onSubmit = {
-            val text = it.text.trim()
+            val text = it.trim()
             if (text.isBlank()) {
                 focusManager.clearFocus()
             } else {

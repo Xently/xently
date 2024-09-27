@@ -7,10 +7,12 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductDataValidator
+import co.ke.xently.features.products.data.domain.ProductSynonym
 import co.ke.xently.features.products.data.domain.error.RemoteFieldError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.libraries.data.image.domain.Upload
+import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -117,16 +119,16 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 savedStateHandle[KEY] = productCategories - action.category.name
             }
 
-            is ProductEditDetailAction.ChangeCategoryName -> {
+            is ProductEditDetailAction.AddSynonym -> {
                 _uiState.update {
-                    it.copy(categoryName = action.name)
+                    it.copy(synonyms = it.synonyms + Chip(action.synonym))
                 }
             }
 
-            is ProductEditDetailAction.ClickAddCategory -> {
-                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
-                savedStateHandle[KEY] = productCategories + _uiState.value.categoryName.trim()
-                _uiState.update { it.copy(categoryName = "") }
+            is ProductEditDetailAction.AddAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
             }
 
             is ProductEditDetailAction.ChangeDescription -> {
@@ -222,9 +224,10 @@ internal class ProductEditDetailViewModel @Inject constructor(
 
     private fun validatedProduct(state: ProductEditDetailUiState): Product {
         var product = state.product.copy(
+            synonyms = state.synonyms.map { ProductSynonym(name = it.text) },
             categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
                 ProductCategory(name = it)
-            },
+            } + state.additionalCategories.map { ProductCategory(name = it.text) },
         )
 
         when (val result = dataValidator.validatedPrice(state.unitPrice)) {
