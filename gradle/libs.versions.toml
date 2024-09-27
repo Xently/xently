@@ -189,6 +189,7 @@ ui = [
     "androidx-ui-tooling-preview",
     "androidx-material3",
     "androidx-material-icons-extended",
+    "chip-text-field",
 ]
 ui-debug = [
     "androidx-ui-tooling",

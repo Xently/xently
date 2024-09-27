@@ -39,7 +39,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,7 +50,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -72,6 +70,7 @@ import co.ke.xently.features.stores.data.domain.error.PhoneError
 import co.ke.xently.features.stores.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.stores.presentation.components.StoreCategoryFilterChip
 import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
+import co.ke.xently.features.ui.core.presentation.components.XentlyOutlinedChipTextField
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.ui.core.XentlyPreview
@@ -79,8 +78,6 @@ import co.ke.xently.libraries.ui.core.asString
 import co.ke.xently.libraries.ui.core.components.NavigateBackIconButton
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import com.dokar.chiptextfield.Chip
-import com.dokar.chiptextfield.m3.OutlinedChipTextField
-import com.dokar.chiptextfield.rememberChipTextFieldState
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
@@ -308,38 +305,14 @@ internal fun StoreEditDetailScreen(
                 },
             )
 
-            val chipState = rememberChipTextFieldState<Chip>()
-
-            LaunchedEffect(chipState, state.services) {
-                chipState.chips = state.services.map { Chip(it.name) }
-            }
-
-            var serviceValue by remember { mutableStateOf(TextFieldValue()) }
-
-            OutlinedChipTextField(
-                shape = CardDefaults.shape,
-                state = chipState,
+            XentlyOutlinedChipTextField(
                 enabled = !state.disableFields,
-                value = serviceValue,
-                onValueChange = {
-                    val text = it.text.trimEnd()
-                    serviceValue = if (!text.endsWith(",")) it else {
-                        val service = text.replace("\\s*,\\s*$".toRegex(), "").trimStart()
-                        if (service.isNotBlank()) {
-                            onAction(StoreEditDetailAction.AddService(service))
-                            chipState.addChip(Chip(service))
-                        }
-                        TextFieldValue()
-                    }
-                },
+                chips = state.services.map { Chip(it.name) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 onSubmit = {
-                    val service = it.text.trim()
-                    if (service.isBlank()) {
-                        focusManager.clearFocus()
-                    } else {
-                        onAction(StoreEditDetailAction.AddService(service))
-                    }
-                    Chip(service)
+                    onAction(StoreEditDetailAction.AddService(it))
                 },
                 label = {
                     Text(text = stringResource(R.string.text_field_label_store_services))
@@ -347,10 +320,6 @@ internal fun StoreEditDetailScreen(
                 placeholder = {
                     Text(text = stringResource(R.string.text_field_placeholder_services))
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
             OutlinedTextField(
                 shape = CardDefaults.shape,
