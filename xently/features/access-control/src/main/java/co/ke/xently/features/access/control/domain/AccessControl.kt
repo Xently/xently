@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 private fun baseURLs(): Map<String, Link> {
     return mapOf(
         "product-categories" to Link(href = "/api/v1/categories/products"),
+        "product-synonyms" to Link(href = "/api/v1/synonyms/products"),
         "my-notifications" to Link(href = "/api/v1/notifications"),
         "remove-fcm-device-id" to Link(href = "/api/v1/firebase-devices"),
         "shops-associated-with-my-account" to Link(href = "/api/v1/shops/associated-with-me"),
@@ -53,6 +54,8 @@ data class AccessControl(
         get() = this["store-payment-methods"].hrefWithoutQueryParamTemplates()
     val productCategoriesUrl: String
         get() = this["product-categories"].hrefWithoutQueryParamTemplates()
+    val productSynonymsUrl: String
+        get() = this["product-synonyms"].hrefWithoutQueryParamTemplates()
     val myNotificationsUrl: String
         get() = this["my-notifications"].hrefWithoutQueryParamTemplates()
     val upsertFcmDeviceIdUrl: String
