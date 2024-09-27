@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.m3.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
@@ -42,6 +43,8 @@ fun XentlyOutlinedChipTextField(
         modifier = modifier,
         label = label,
         placeholder = placeholder,
+        chipVerticalSpacing = 8.dp,
+        chipHorizontalSpacing = 8.dp,
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
         onValueChange = {
             var text = it.trimEnd()
