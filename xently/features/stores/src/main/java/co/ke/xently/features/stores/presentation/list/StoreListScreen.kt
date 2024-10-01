@@ -88,6 +88,10 @@ fun StoreListScreen(
 
     StoreListScreen(
         state = state,
+        retrieveSuggestions = {
+            val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
+            searchSuggestions
+        },
         snackbarHostState = snackbarHostState,
         stores = stores,
         modifier = modifier,
@@ -105,6 +109,7 @@ internal fun StoreListScreen(
     snackbarHostState: SnackbarHostState,
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
+    retrieveSuggestions: @Composable () -> List<String> = { emptyList() },
     onClickStore: (Store) -> Unit,
     onAction: (StoreListAction) -> Unit,
     onClickFilterStores: () -> Unit,
@@ -127,6 +132,7 @@ internal fun StoreListScreen(
                 }
                 SearchBar(
                     query = state.query,
+                    retrieveSuggestions = retrieveSuggestions,
                     placeholder = stringResource(R.string.search_stores_placeholder),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
