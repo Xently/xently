@@ -48,7 +48,7 @@ fun SearchBar(
     horizontalPadding: Dp? = null,
     exitSearchIcon: ImageVector? = null,
     clearSearchQueryIcon: ImageVector? = null,
-    suggestions: List<String> = emptyList(),
+    retrieveSuggestions: @Composable () -> List<String> = { emptyList() },
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onExpandedChange: (Boolean) -> Unit = {},
@@ -132,6 +132,7 @@ fun SearchBar(
                     expanded = false
                 }
             }
+            val suggestions = retrieveSuggestions()
             suggestions.forEach { suggestion ->
                 SuggestionListItem(suggestion = suggestion) {
                     onSearch(suggestion)
