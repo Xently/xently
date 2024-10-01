@@ -41,8 +41,10 @@ junitVersion = "1.2.1"
 kmpauthUihelper = "2.0.0"
 kotlin = "2.0.0"
 kotlinxSerializationJson = "1.7.3"
+krossbowStomp = "7.0.0"
 ksp = "2.0.0-1.0.22"
 ktor = "2.3.12"
+ktorClientCio = "2.3.10"
 lifecycleRuntimeKtx = "2.8.6"
 mapsCompose = "6.1.2"
 multiplatformSettings = "1.2.0"
@@ -114,7 +116,12 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauthUihelper" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+krossbow-stomp-core = { module = "org.hildan.krossbow:krossbow-stomp-core", version.ref = "krossbowStomp" }
+krossbow-stomp-kxserialization = { module = "org.hildan.krossbow:krossbow-stomp-kxserialization", version.ref = "krossbowStomp" }
+krossbow-stomp-kxserialization-json = { module = "org.hildan.krossbow:krossbow-stomp-kxserialization-json", version.ref = "krossbowStomp" }
+krossbow-websocket-ktor = { module = "org.hildan.krossbow:krossbow-websocket-ktor", version.ref = "krossbowStomp" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
@@ -168,6 +175,7 @@ firebase = [
 ]
 ktor = [
     "ktor-client-auth",
+    "ktor-client-cio",
     "ktor-client-contentNegotiation",
     "ktor-client-core",
     "ktor-client-logging",
@@ -175,6 +183,10 @@ ktor = [
     "ktor-client-okhttp-jvm",
     "ktor-client-serialization",
     "ktor-client-websockets",
+    "krossbow-stomp-core",
+    "krossbow-stomp-kxserialization",
+    "krossbow-stomp-kxserialization-json",
+    "krossbow-websocket-ktor",
 ]
 map = [
     "maps-compose",

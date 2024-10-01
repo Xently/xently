@@ -40,7 +40,7 @@ class HttpClientFactory private constructor(
                     .pingInterval(20, TimeUnit.SECONDS)
                     .build()
             }
-            install(WebSockets){
+            install(WebSockets) {
                 pingInterval = 20_000
             }
             install(HttpRedirect) {

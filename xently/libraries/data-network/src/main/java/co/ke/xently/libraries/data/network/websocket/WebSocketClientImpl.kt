@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.pow
@@ -24,6 +26,7 @@ import kotlin.time.Duration
 internal class WebSocketClientImpl @Inject constructor(
     private val httpClient: HttpClient,
 ) : WebSocketClient {
+    private val mutex = Mutex()
     private var session: WebSocketSession? = null
 
     override suspend fun sendMessage(message: Frame) {
@@ -37,7 +40,9 @@ internal class WebSocketClientImpl @Inject constructor(
         shouldRetry: suspend (Throwable) -> Boolean,
     ): Flow<Frame> {
         return callbackFlow {
-            session = httpClient.webSocketSession(urlString = url)
+            mutex.withLock {
+                session = httpClient.webSocketSession(urlString = url)
+            }
 
             session?.let { session ->
                 session
