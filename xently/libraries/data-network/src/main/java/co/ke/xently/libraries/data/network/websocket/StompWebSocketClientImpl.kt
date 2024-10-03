@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.config.HeartBeat
@@ -27,18 +26,6 @@ import kotlin.math.roundToLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-@Serializable
-data class OutputMessage(val from: String, val text: String, val time: String) {
-    override fun toString(): String {
-        return "[$time] $from: $text"
-    }
-}
-
-@Serializable
-data class Message(
-    val from: String,
-    val text: String,
-)
 
 @Singleton
 internal class StompWebSocketClientImpl @Inject constructor(
@@ -87,7 +74,7 @@ internal class StompWebSocketClientImpl @Inject constructor(
 
     override fun <T : Any> watch(
         url: String,
-        maxRetries: Int,
+        maxRetries: MaxRetries,
         initialRetryDelay: Duration,
         shouldRetry: suspend (Throwable) -> Boolean,
         results: suspend StompSessionWithKxSerialization.() -> Flow<T>,
@@ -108,7 +95,10 @@ internal class StompWebSocketClientImpl @Inject constructor(
                 2f.pow(attempt.toInt())
                     .roundToLong() * initialRetryDelay.inWholeMilliseconds
             delay(timeMillis)
-            attempt < maxRetries
+            when (maxRetries) {
+                is MaxRetries.Infinite -> true
+                is MaxRetries.Finite -> attempt < maxRetries.retries
+            }
         } else false
     }
 }

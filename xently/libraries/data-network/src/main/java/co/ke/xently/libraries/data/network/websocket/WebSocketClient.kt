@@ -9,7 +9,7 @@ interface WebSocketClient {
     suspend fun sendMessage(message: Frame)
     fun listenToSocket(
         url: String,
-        maxRetries: Int = 3,
+        maxRetries: MaxRetries = MaxRetries.Infinite,
         initialRetryDelay: Duration = 2.seconds,
         shouldRetry: suspend (Throwable) -> Boolean = { true },
     ): Flow<Frame>

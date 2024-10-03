@@ -35,7 +35,7 @@ internal class WebSocketClientImpl @Inject constructor(
 
     override fun listenToSocket(
         url: String,
-        maxRetries: Int,
+        maxRetries: MaxRetries,
         initialRetryDelay: Duration,
         shouldRetry: suspend (Throwable) -> Boolean,
     ): Flow<Frame> {
@@ -69,7 +69,10 @@ internal class WebSocketClientImpl @Inject constructor(
                 val timeMillis =
                     2f.pow(attempt.toInt()).roundToLong() * initialRetryDelay.inWholeMilliseconds
                 delay(timeMillis)
-                attempt < maxRetries
+                when (maxRetries) {
+                    is MaxRetries.Infinite -> true
+                    is MaxRetries.Finite -> attempt < maxRetries.retries
+                }
             } else false
         }
     }
