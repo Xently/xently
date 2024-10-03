@@ -119,10 +119,7 @@ internal fun StoreListScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Column(
-                modifier = Modifier
-                    .windowInsetsPadding(TopAppBarDefaults.windowInsets),
-            ) {
+            Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 var initSearch by rememberSaveable { mutableStateOf(false) }
                 if (!initSearch) {
                     topBar()
