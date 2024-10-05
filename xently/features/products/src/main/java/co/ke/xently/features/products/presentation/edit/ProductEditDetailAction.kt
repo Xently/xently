@@ -15,5 +15,7 @@ internal sealed interface ProductEditDetailAction {
     class ProcessImageData(val data: Pair<Int, File?>) : ProductEditDetailAction
     class RemoveImageAtPosition(val position: Int) : ProductEditDetailAction
     class AddAdditionalCategory(val category: String) : ProductEditDetailAction
+    class OnCategoryQueryChange(val query: String) : ProductEditDetailAction
     class AddSynonym(val synonym: String) : ProductEditDetailAction
+    class OnSynonymQueryChange(val query: String) : ProductEditDetailAction
 }

@@ -54,6 +54,7 @@ playServicesAuth = "21.2.0"
 playServicesLocation = "21.3.0"
 room = "2.6.1"
 secrets = "2.0.1"
+statelyConcurrentCollections = "2.0.0"
 timber = "5.0.1"
 work-manager = "2.9.1"
 coroutines = "1.9.0"
@@ -133,6 +134,7 @@ maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = 
 maps-compose-widgets = { module = "com.google.maps.android:maps-compose-widgets", version.ref = "mapsCompose" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "statelyConcurrentCollections" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp-logging" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }

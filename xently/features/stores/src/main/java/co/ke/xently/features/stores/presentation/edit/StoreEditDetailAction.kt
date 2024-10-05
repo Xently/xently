@@ -16,8 +16,11 @@ internal sealed interface StoreEditDetailAction {
     class ChangeLocation(val location: Location) : StoreEditDetailAction
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
+    class OnServiceQueryChange(val query: String) : StoreEditDetailAction
     class AddPaymentMethod(val paymentMethod: String) : StoreEditDetailAction
+    class OnPaymentMethodQueryChange(val query: String) : StoreEditDetailAction
     class AddAdditionalCategory(val category: String) : StoreEditDetailAction
+    class OnCategoryQueryChange(val query: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction
 
     class ChangeOpeningHourOpenStatus(val dayOfWeekIsOpen: Pair<DayOfWeek, Boolean>) :

@@ -70,6 +70,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
+    implementation(libs.stately.concurrent.collections)
 
     testImplementation(libs.androidx.room.testing)
     implementation(libs.timber)

@@ -1,7 +1,6 @@
 package co.ke.xently.libraries.data.network.websocket
 
 import io.ktor.client.HttpClient
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
@@ -9,8 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import org.hildan.krossbow.stomp.StompClient
@@ -20,6 +17,7 @@ import org.hildan.krossbow.stomp.conversions.kxserialization.StompSessionWithKxS
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
 import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.pow
@@ -45,38 +43,38 @@ class StompWebSocketClientImpl @Inject constructor(
             10.seconds,
         ) // wide margin to account for heroku cold start
     }
-    private val sessionMutex = Mutex()
-    private var session = atomic<StompSessionWithKxSerialization?>(null)
+    private val sessions = ConcurrentHashMap<String, StompSessionWithKxSerialization>()
 
     private suspend fun ensureSessionInitialized(url: String): StompSessionWithKxSerialization {
-        return sessionMutex.withLock {
-            if (session.value == null) {
-                Timber.tag(TAG).d("Initializing session. Connecting to %s", url)
-                session.value = stompClient.connect(url = url).withJsonConversions(json = json)
+        return sessions.getOrPut(url) {
+            Timber.tag(TAG).d("Initializing session. Connecting to %s", url)
+            stompClient.connect(url = url).withJsonConversions(json = json).also {
+                Timber.tag(TAG)
+                    .d("Initialized session for %s. Total connections: %d", url, sessions.size)
             }
-            session.value!!
         }
     }
 
-    private suspend fun disconnect() {
-        Timber.tag(TAG).i("Closing session")
-        sessionMutex.withLock {
-            session.value?.disconnect()
-            session.value = null
-            Timber.tag(TAG).i("Closed session")
-        }
+    private suspend fun disconnect(url: String) {
+        Timber.tag(TAG).i("Closing session...")
+        sessions[url]?.disconnect()
+        sessions.remove(url)
+        Timber.tag(TAG).i("Closed session")
     }
 
     override suspend fun sendMessage(
         url: String,
+        submissionDelay: Duration,
         send: suspend StompSessionWithKxSerialization.() -> Unit,
     ) {
+        delay(submissionDelay)
+        Timber.tag(TAG).d("Sending message...")
         try {
-            ensureSessionInitialized(url = url)
-                .send()
+            ensureSessionInitialized(url = url).send()
+            Timber.tag(TAG).d("Sent message!")
         } catch (ex: Exception) {
             yield()
-            Timber.tag(TAG).e(ex)
+            Timber.tag(TAG).e(ex, "Error sending message")
         }
     }
 
@@ -90,8 +88,7 @@ class StompWebSocketClientImpl @Inject constructor(
         ensureSessionInitialized(url = url).results().retryWhen { cause, attempt ->
             if (shouldRetry(cause)) {
                 val timeMillis =
-                    2f.pow(attempt.toInt())
-                        .roundToLong() * initialRetryDelay.inWholeMilliseconds
+                    2f.pow(attempt.toInt()).roundToLong() * initialRetryDelay.inWholeMilliseconds
                 delay(timeMillis)
                 when (maxRetries) {
                     is MaxRetries.Infinite -> true
@@ -105,14 +102,13 @@ class StompWebSocketClientImpl @Inject constructor(
 
         awaitClose {
             launch(NonCancellable) {
-                disconnect()
+                disconnect(url = url)
             }
         }
     }.retryWhen { cause, attempt ->
         if (shouldRetry(cause)) {
             val timeMillis =
-                2f.pow(attempt.toInt())
-                    .roundToLong() * initialRetryDelay.inWholeMilliseconds
+                2f.pow(attempt.toInt()).roundToLong() * initialRetryDelay.inWholeMilliseconds
             delay(timeMillis)
             when (maxRetries) {
                 is MaxRetries.Infinite -> true

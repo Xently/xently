@@ -5,12 +5,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.hildan.krossbow.stomp.conversions.kxserialization.StompSessionWithKxSerialization
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private const val URL = "wss://$BASE_HOST/ws"
 
 interface StompWebSocketClient {
-    suspend fun sendMessage(url: String = URL, send: suspend StompSessionWithKxSerialization.() -> Unit)
+    suspend fun sendMessage(
+        url: String = URL,
+        submissionDelay: Duration = 100.milliseconds,
+        send: suspend StompSessionWithKxSerialization.() -> Unit,
+    )
     fun <T: Any> watch(
         url: String = URL,
         maxRetries: MaxRetries = MaxRetries.Infinite,
@@ -22,6 +27,7 @@ interface StompWebSocketClient {
     companion object Noop : StompWebSocketClient {
         override suspend fun sendMessage(
             url: String,
+            submissionDelay: Duration,
             send: suspend StompSessionWithKxSerialization.() -> Unit,
         ) {
         }

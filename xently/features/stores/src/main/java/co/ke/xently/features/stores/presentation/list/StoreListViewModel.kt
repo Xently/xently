@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class StoreListViewModel @Inject constructor(
     private val repository: StoreRepository,
-    private val websockets: StompWebSocketClient,
+    private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
     companion object {
         private val TAG = StoreListViewModel::class.java.simpleName
@@ -49,7 +49,7 @@ internal class StoreListViewModel @Inject constructor(
         repository.getStores(filters = filters, url = url)
     }.cachedIn(viewModelScope)
 
-    val searchSuggestions = websockets.watch {
+    val searchSuggestions = webSocketClient.watch {
         subscribe<List<String>>(destination = "/type-ahead/results/stores")
     }.catch {
         Timber.tag(TAG).e(it, "An unexpected error was encountered.")
@@ -63,8 +63,7 @@ internal class StoreListViewModel @Inject constructor(
                 _uiState.update { it.copy(query = action.query) }
                 typeAheadJob?.cancel()
                 typeAheadJob = viewModelScope.launch {
-                    delay(300)
-                    websockets.sendMessage {
+                    webSocketClient.sendMessage {
                         convertAndSend(
                             destination = "/app/type-ahead/stores",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),

@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.location.picker.presentation.PickLocationDialog
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
@@ -129,6 +130,24 @@ fun StoreEditDetailScreen(
         modifier = modifier,
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
+        retrieveServicesSuggestions = {
+            viewModel.storeServicesSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
+        retrieveCategoriesSuggestions = {
+            viewModel.storeCategoriesSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
+        retrievePaymentMethodsSuggestions = {
+            viewModel.storePaymentMethodsSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
     )
 }
 
@@ -141,6 +160,9 @@ internal fun StoreEditDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (StoreEditDetailAction) -> Unit,
+    retrieveServicesSuggestions: @Composable () -> List<String> = { emptyList() },
+    retrieveCategoriesSuggestions: @Composable () -> List<String> = { emptyList() },
+    retrievePaymentMethodsSuggestions: @Composable () -> List<String> = { emptyList() },
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -300,6 +322,10 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveServicesSuggestions,
+                onTextChange = {
+                    onAction(StoreEditDetailAction.OnServiceQueryChange(it))
+                },
                 onSubmit = {
                     onAction(StoreEditDetailAction.AddService(it))
                 },
@@ -317,6 +343,10 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveCategoriesSuggestions,
+                onTextChange = {
+                    onAction(StoreEditDetailAction.OnCategoryQueryChange(it))
+                },
                 onSubmit = {
                     onAction(StoreEditDetailAction.AddAdditionalCategory(it))
                 },
@@ -331,6 +361,10 @@ internal fun StoreEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrievePaymentMethodsSuggestions,
+                onTextChange = {
+                    onAction(StoreEditDetailAction.OnPaymentMethodQueryChange(it))
+                },
                 onSubmit = {
                     onAction(StoreEditDetailAction.AddPaymentMethod(it))
                 },

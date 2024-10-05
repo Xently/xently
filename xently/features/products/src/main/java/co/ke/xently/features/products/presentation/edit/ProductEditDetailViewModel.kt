@@ -12,9 +12,11 @@ import co.ke.xently.features.products.data.domain.error.RemoteFieldError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.libraries.data.image.domain.Upload
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
 import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +32,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
+import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,6 +43,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
     private val dataValidator: ProductDataValidator,
+    private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
     private companion object {
         private val KEY =
@@ -64,6 +69,14 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 initialValue = emptyList(),
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             )
+
+    val productSynonymsSearchSuggestions = webSocketClient.watch {
+        subscribe<List<String>>(destination = "/type-ahead/results/product-synonyms")
+    }
+
+    val productCategoriesSearchSuggestions = webSocketClient.watch {
+        subscribe<List<String>>(destination = "/type-ahead/results/product-categories")
+    }
 
     init {
         viewModelScope.launch {
@@ -92,6 +105,10 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
         }
     }
+
+    private var productSynonymsSearchSuggestionsJob: Job? = null
+
+    private var productCategoriesSearchSuggestionsJob: Job? = null
 
     fun onAction(action: ProductEditDetailAction) {
         when (action) {
@@ -125,9 +142,33 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is ProductEditDetailAction.OnSynonymQueryChange -> {
+                productSynonymsSearchSuggestionsJob?.cancel()
+                productSynonymsSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead/product-synonyms",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
             is ProductEditDetailAction.AddAdditionalCategory -> {
                 _uiState.update {
                     it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
+            }
+
+            is ProductEditDetailAction.OnCategoryQueryChange -> {
+                productCategoriesSearchSuggestionsJob?.cancel()
+                productCategoriesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead/product-categories",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
                 }
             }
 

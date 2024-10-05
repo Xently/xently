@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
@@ -110,6 +111,18 @@ fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Un
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
         categories = categories,
+        retrieveSynonymsSuggestions = {
+            viewModel.productSynonymsSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
+        retrieveCategoriesSuggestions = {
+            viewModel.productCategoriesSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
     )
 }
 
@@ -122,6 +135,8 @@ internal fun ProductEditDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ProductEditDetailAction) -> Unit,
+    retrieveSynonymsSuggestions: @Composable () -> List<String> = { emptyList() },
+    retrieveCategoriesSuggestions: @Composable () -> List<String> = { emptyList() },
 ) {
     val focusManager = LocalFocusManager.current
     Scaffold(
@@ -222,6 +237,10 @@ internal fun ProductEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveCategoriesSuggestions,
+                onTextChange = {
+                    onAction(ProductEditDetailAction.OnCategoryQueryChange(it))
+                },
                 onSubmit = {
                     onAction(ProductEditDetailAction.AddAdditionalCategory(it))
                 },
@@ -236,6 +255,10 @@ internal fun ProductEditDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveSynonymsSuggestions,
+                onTextChange = {
+                    onAction(ProductEditDetailAction.OnSynonymQueryChange(it))
+                },
                 onSubmit = {
                     onAction(ProductEditDetailAction.AddSynonym(it))
                 },

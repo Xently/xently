@@ -14,10 +14,12 @@ import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
 import co.ke.xently.libraries.location.tracker.domain.Location
 import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +35,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
+import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,6 +46,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val repository: StoreRepository,
     private val storeCategoryRepository: StoreCategoryRepository,
     private val dataValidator: StoreDataValidator,
+    private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
     private companion object {
         private val KEY =
@@ -53,6 +58,18 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
     private val _event = Channel<StoreEditDetailEvent>()
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
+
+    val storeServicesSearchSuggestions = webSocketClient.watch {
+        subscribe<List<String>>(destination = "/type-ahead/results/store-services")
+    }
+
+    val storeCategoriesSearchSuggestions = webSocketClient.watch {
+        subscribe<List<String>>(destination = "/type-ahead/results/store-categories")
+    }
+
+    val storePaymentMethodsSearchSuggestions = webSocketClient.watch {
+        subscribe<List<String>>(destination = "/type-ahead/results/store-payment-methods")
+    }
 
     val categories: StateFlow<List<StoreCategory>> =
         savedStateHandle.getStateFlow(KEY, emptySet<String>())
@@ -91,6 +108,12 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
     }
 
+    private var storeServicesSearchSuggestionsJob: Job? = null
+
+    private var storeCategoriesSearchSuggestionsJob: Job? = null
+
+    private var storePaymentMethodsSearchSuggestionsJob: Job? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
@@ -128,9 +151,44 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is StoreEditDetailAction.OnServiceQueryChange -> {
+                storeServicesSearchSuggestionsJob?.cancel()
+                storeServicesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead/store-services",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
+            is StoreEditDetailAction.OnCategoryQueryChange -> {
+                storeCategoriesSearchSuggestionsJob?.cancel()
+                storeCategoriesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead/store-categories",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
             is StoreEditDetailAction.AddPaymentMethod -> {
                 _uiState.update {
                     it.copy(paymentMethods = it.paymentMethods + Chip(action.paymentMethod))
+                }
+            }
+            is StoreEditDetailAction.OnPaymentMethodQueryChange -> {
+                storePaymentMethodsSearchSuggestionsJob?.cancel()
+                storePaymentMethodsSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead/store-payment-methods",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
                 }
             }
 
