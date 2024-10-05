@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.config.HeartBeat
@@ -28,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 
 
 @Singleton
-internal class StompWebSocketClientImpl @Inject constructor(
+class StompWebSocketClientImpl @Inject constructor(
     httpClient: HttpClient,
     private val json: Json,
 ) : StompWebSocketClient {
@@ -62,6 +63,7 @@ internal class StompWebSocketClientImpl @Inject constructor(
         sessionMutex.withLock {
             session.value?.disconnect()
             session.value = null
+            Timber.tag(TAG).i("Closed session")
         }
     }
 
@@ -69,7 +71,13 @@ internal class StompWebSocketClientImpl @Inject constructor(
         url: String,
         send: suspend StompSessionWithKxSerialization.() -> Unit,
     ) {
-        ensureSessionInitialized(url = url).send()
+        try {
+            ensureSessionInitialized(url = url)
+                .send()
+        } catch (ex: Exception) {
+            yield()
+            Timber.tag(TAG).e(ex)
+        }
     }
 
     override fun <T : Any> watch(
@@ -79,7 +87,18 @@ internal class StompWebSocketClientImpl @Inject constructor(
         shouldRetry: suspend (Throwable) -> Boolean,
         results: suspend StompSessionWithKxSerialization.() -> Flow<T>,
     ) = callbackFlow {
-        ensureSessionInitialized(url = url).results().collect {
+        ensureSessionInitialized(url = url).results().retryWhen { cause, attempt ->
+            if (shouldRetry(cause)) {
+                val timeMillis =
+                    2f.pow(attempt.toInt())
+                        .roundToLong() * initialRetryDelay.inWholeMilliseconds
+                delay(timeMillis)
+                when (maxRetries) {
+                    is MaxRetries.Infinite -> true
+                    is MaxRetries.Finite -> attempt < maxRetries.retries
+                }
+            } else false
+        }.collect {
             Timber.tag(TAG).d("Received message: %s", it)
             send(it)
         }

@@ -56,6 +56,7 @@ import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
+
 @Composable
 fun StoreListScreen(
     modifier: Modifier = Modifier,
@@ -89,8 +90,10 @@ fun StoreListScreen(
     StoreListScreen(
         state = state,
         retrieveSuggestions = {
-            val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
-            searchSuggestions
+            viewModel.searchSuggestions.collectAsStateWithLifecycle(
+                emptyList(),
+                minActiveState = androidx.lifecycle.Lifecycle.State.RESUMED,
+            ).value
         },
         snackbarHostState = snackbarHostState,
         stores = stores,

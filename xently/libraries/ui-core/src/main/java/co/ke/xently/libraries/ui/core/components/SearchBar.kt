@@ -126,16 +126,24 @@ fun SearchBar(
         },
     ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
+            val suggestions = retrieveSuggestions()
             if (!isQueryBlank) {
-                SuggestionListItem(suggestion = query) {
-                    onSearch(query)
-                    expanded = false
+                val isSameQuery by remember(query, suggestions) {
+                    derivedStateOf {
+                        query.trim() == suggestions.firstOrNull()?.trim()
+                    }
+                }
+                if (!isSameQuery) {
+                    SuggestionListItem(suggestion = query) {
+                        onSearch(query)
+                        expanded = false
+                    }
                 }
             }
-            val suggestions = retrieveSuggestions()
             suggestions.forEach { suggestion ->
                 SuggestionListItem(suggestion = suggestion) {
                     onSearch(suggestion)
+                    onQueryChange(suggestion)
                     expanded = false
                 }
             }
