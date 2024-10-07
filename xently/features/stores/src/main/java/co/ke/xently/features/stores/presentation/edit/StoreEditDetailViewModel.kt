@@ -151,6 +151,12 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is StoreEditDetailAction.RemoveService -> {
+                _uiState.update {
+                    it.copy(services = it.services - action.service)
+                }
+            }
+
             is StoreEditDetailAction.OnServiceQueryChange -> {
                 storeServicesSearchSuggestionsJob?.cancel()
                 storeServicesSearchSuggestionsJob = viewModelScope.launch {
@@ -180,6 +186,13 @@ internal class StoreEditDetailViewModel @Inject constructor(
                     it.copy(paymentMethods = it.paymentMethods + Chip(action.paymentMethod))
                 }
             }
+
+            is StoreEditDetailAction.RemovePaymentMethod -> {
+                _uiState.update {
+                    it.copy(paymentMethods = it.paymentMethods - action.paymentMethod)
+                }
+            }
+
             is StoreEditDetailAction.OnPaymentMethodQueryChange -> {
                 storePaymentMethodsSearchSuggestionsJob?.cancel()
                 storePaymentMethodsSearchSuggestionsJob = viewModelScope.launch {
@@ -195,6 +208,12 @@ internal class StoreEditDetailViewModel @Inject constructor(
             is StoreEditDetailAction.AddAdditionalCategory -> {
                 _uiState.update {
                     it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
+            }
+
+            is StoreEditDetailAction.RemoveAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories - action.category)
                 }
             }
 

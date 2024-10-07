@@ -142,6 +142,12 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 }
             }
 
+            is ProductEditDetailAction.RemoveSynonym -> {
+                _uiState.update {
+                    it.copy(synonyms = it.synonyms - action.synonym)
+                }
+            }
+
             is ProductEditDetailAction.OnSynonymQueryChange -> {
                 productSynonymsSearchSuggestionsJob?.cancel()
                 productSynonymsSearchSuggestionsJob = viewModelScope.launch {
@@ -157,6 +163,12 @@ internal class ProductEditDetailViewModel @Inject constructor(
             is ProductEditDetailAction.AddAdditionalCategory -> {
                 _uiState.update {
                     it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
+            }
+
+            is ProductEditDetailAction.RemoveAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories - action.category)
                 }
             }
 

@@ -247,6 +247,9 @@ internal fun ProductEditDetailScreen(
                 label = {
                     Text(text = stringResource(R.string.text_field_label_product_additional_categories))
                 },
+                onClickTrailingIcon = {
+                    onAction(ProductEditDetailAction.RemoveAdditionalCategory(it))
+                },
             )
 
             XentlyOutlinedChipTextField(
@@ -264,6 +267,9 @@ internal fun ProductEditDetailScreen(
                 },
                 label = {
                     Text(text = stringResource(R.string.text_field_label_product_synonyms))
+                },
+                onClickTrailingIcon = {
+                    onAction(ProductEditDetailAction.RemoveSynonym(it))
                 },
             )
 

@@ -2,6 +2,7 @@ package co.ke.xently.features.stores.presentation.edit
 
 import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.libraries.location.tracker.domain.Location
+import com.dokar.chiptextfield.Chip
 import kotlinx.datetime.DayOfWeek
 
 internal sealed interface StoreEditDetailAction {
@@ -16,10 +17,13 @@ internal sealed interface StoreEditDetailAction {
     class ChangeLocation(val location: Location) : StoreEditDetailAction
     class ChangeEmailAddress(val email: String) : StoreEditDetailAction
     class AddService(val service: String) : StoreEditDetailAction
+    class RemoveService(val service: Chip) : StoreEditDetailAction
     class OnServiceQueryChange(val query: String) : StoreEditDetailAction
     class AddPaymentMethod(val paymentMethod: String) : StoreEditDetailAction
+    class RemovePaymentMethod(val paymentMethod: Chip) : StoreEditDetailAction
     class OnPaymentMethodQueryChange(val query: String) : StoreEditDetailAction
     class AddAdditionalCategory(val category: String) : StoreEditDetailAction
+    class RemoveAdditionalCategory(val category: Chip) : StoreEditDetailAction
     class OnCategoryQueryChange(val query: String) : StoreEditDetailAction
     class ChangePhoneNumber(val phone: String) : StoreEditDetailAction
 

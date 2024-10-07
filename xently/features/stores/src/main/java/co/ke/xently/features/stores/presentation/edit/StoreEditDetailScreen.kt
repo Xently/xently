@@ -335,6 +335,9 @@ internal fun StoreEditDetailScreen(
                 placeholder = {
                     Text(text = stringResource(R.string.text_field_placeholder_services))
                 },
+                onClickTrailingIcon = {
+                    onAction(StoreEditDetailAction.RemoveService(it))
+                },
             )
 
             XentlyOutlinedChipTextField(
@@ -353,6 +356,9 @@ internal fun StoreEditDetailScreen(
                 label = {
                     Text(text = stringResource(R.string.text_field_label_store_additional_categories))
                 },
+                onClickTrailingIcon = {
+                    onAction(StoreEditDetailAction.RemoveAdditionalCategory(it))
+                },
             )
 
             XentlyOutlinedChipTextField(
@@ -370,6 +376,9 @@ internal fun StoreEditDetailScreen(
                 },
                 label = {
                     Text(text = stringResource(R.string.text_field_label_store_payment_methods))
+                },
+                onClickTrailingIcon = {
+                    onAction(StoreEditDetailAction.RemovePaymentMethod(it))
                 },
             )
 
