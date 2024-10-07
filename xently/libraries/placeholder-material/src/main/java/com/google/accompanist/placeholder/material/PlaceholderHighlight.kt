@@ -21,8 +21,6 @@ import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.runtime.Composable
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.fade
-import com.google.accompanist.placeholder.shimmer
 
 /**
  * Creates a [PlaceholderHighlight] which fades in an appropriate color, using the

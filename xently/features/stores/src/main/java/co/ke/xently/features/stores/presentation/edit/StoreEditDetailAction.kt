@@ -29,6 +29,7 @@ internal sealed interface StoreEditDetailAction {
 
     class ChangeOpeningHourOpenStatus(val dayOfWeekIsOpen: Pair<DayOfWeek, Boolean>) :
         StoreEditDetailAction
+
     class ChangeDescription(val description: String) : StoreEditDetailAction
 
     class ChangeOpeningHourTime(val dayOfWeekChangeOpeningHour: Pair<DayOfWeek, co.ke.xently.features.openinghours.domain.ChangeOpeningHourTime>) :

@@ -123,7 +123,7 @@ fun StoreDetailScreen(
                     val actionLabel = when (event.type) {
                         LocationRequestError.UNKNOWN,
                         LocationRequestError.NO_KNOWN_LOCATION,
-                        -> null
+                            -> null
 
                         PermissionError.GPS_DISABLED -> {
                             context.getString(R.string.action_enable_gps)
@@ -143,7 +143,7 @@ fun StoreDetailScreen(
                         SnackbarResult.ActionPerformed -> when (event.type) {
                             LocationRequestError.UNKNOWN,
                             LocationRequestError.NO_KNOWN_LOCATION,
-                            -> Unit
+                                -> Unit
 
                             PermissionError.GPS_DISABLED -> enableGPSLauncher.launch()
                             PermissionError.PERMISSION_DENIED -> locationPermissionLauncher.launch()

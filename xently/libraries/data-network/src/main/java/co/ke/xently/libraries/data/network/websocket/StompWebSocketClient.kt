@@ -16,7 +16,8 @@ interface StompWebSocketClient {
         submissionDelay: Duration = 100.milliseconds,
         send: suspend StompSessionWithKxSerialization.() -> Unit,
     )
-    fun <T: Any> watch(
+
+    fun <T : Any> watch(
         url: String = URL,
         maxRetries: MaxRetries = MaxRetries.Infinite,
         initialRetryDelay: Duration = 2.seconds,
