@@ -44,7 +44,6 @@ kotlinxSerializationJson = "1.7.3"
 krossbowStomp = "7.3.0"
 ksp = "2.0.0-1.0.22"
 ktor = "2.3.12"
-ktorClientCio = "2.3.12"
 lifecycleRuntimeKtx = "2.8.6"
 mapsCompose = "6.1.2"
 multiplatformSettings = "1.2.0"
@@ -122,7 +121,7 @@ krossbow-stomp-kxserialization = { module = "org.hildan.krossbow:krossbow-stomp-
 krossbow-stomp-kxserialization-json = { module = "org.hildan.krossbow:krossbow-stomp-kxserialization-json", version.ref = "krossbowStomp" }
 krossbow-websocket-ktor = { module = "org.hildan.krossbow:krossbow-websocket-ktor", version.ref = "krossbowStomp" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
