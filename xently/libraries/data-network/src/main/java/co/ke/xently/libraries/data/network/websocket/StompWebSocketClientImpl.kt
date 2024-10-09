@@ -1,5 +1,6 @@
 package co.ke.xently.libraries.data.network.websocket
 
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient.Noop.TAG
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
@@ -31,10 +32,6 @@ class StompWebSocketClientImpl @Inject constructor(
     httpClient: HttpClient,
     private val json: Json,
 ) : StompWebSocketClient {
-    companion object {
-        private const val TAG = "StompWebSocketClient"
-    }
-
     private val wsClient = KtorWebSocketClient(httpClient = httpClient)
     private val stompClient = StompClient(webSocketClient = wsClient) {
         heartBeat = HeartBeat(10.seconds, 10.seconds)

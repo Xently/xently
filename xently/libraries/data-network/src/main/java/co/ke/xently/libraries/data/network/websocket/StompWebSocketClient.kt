@@ -26,6 +26,7 @@ interface StompWebSocketClient {
     ): Flow<T>
 
     companion object Noop : StompWebSocketClient {
+        const val TAG = "StompWebSocketClient"
         override suspend fun sendMessage(
             url: String,
             submissionDelay: Duration,
