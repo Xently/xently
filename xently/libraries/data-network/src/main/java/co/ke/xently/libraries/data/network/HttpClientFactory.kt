@@ -1,7 +1,9 @@
 package co.ke.xently.libraries.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpSend
@@ -13,6 +15,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -20,8 +23,32 @@ import io.ktor.http.contentType
 import io.ktor.http.set
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import okhttp3.OkHttpClient
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
+
+const val DEFAULT_SCHEME = "https"
+
+inline fun HttpClientConfig<*>.withBaseConfiguration(
+    crossinline defRequest: DefaultRequest.DefaultRequestBuilder.() -> Unit = {},
+) {
+    defaultRequest {
+        url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
+        defRequest()
+    }
+    install(Logging) {
+        logger = Logger.ANDROID
+        level = if (BuildConfig.DEBUG) {
+            LogLevel.INFO
+        } else {
+            LogLevel.NONE
+        }
+        sanitizeHeader { header ->
+            header == HttpHeaders.Authorization
+        }
+    }
+}
 
 
 class HttpClientFactory private constructor(
@@ -31,6 +58,15 @@ class HttpClientFactory private constructor(
     private val httpClient: HttpClient
         get() = HttpClient(OkHttp) {
             expectSuccess = true
+            // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
+            engine {
+                preconfigured = OkHttpClient.Builder()
+                    .pingInterval(20, TimeUnit.SECONDS)
+                    .build()
+            }
+            install(WebSockets) {
+                pingInterval = 20_000
+            }
             install(HttpRedirect) {
                 checkHttpMethod = false
             }
@@ -46,20 +82,8 @@ class HttpClientFactory private constructor(
             install(ContentNegotiation) {
                 json(json = this@HttpClientFactory.json)
             }
-            defaultRequest {
-                url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
+            withBaseConfiguration {
                 contentType(ContentType.Application.Json)
-            }
-            install(Logging) {
-                logger = Logger.ANDROID
-                level = if (BuildConfig.DEBUG) {
-                    LogLevel.INFO
-                } else {
-                    LogLevel.NONE
-                }
-                sanitizeHeader { header ->
-                    header == HttpHeaders.Authorization
-                }
             }
             install(HttpTimeout) {
                 val timeout = 30000L
@@ -123,7 +147,6 @@ class HttpClientFactory private constructor(
 
     companion object {
         private const val TAG = "HttpClientFactory"
-        private const val DEFAULT_SCHEME = "https"
         operator fun invoke(
             json: Json,
             accessTokenManager: AccessTokenManager,

@@ -30,11 +30,10 @@ kotlin {
 
 android {
     namespace = "com.google.accompanist.placeholder.material3"
-
-    compileSdk = 34
+    compileSdk = libs.versions.android.compile.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.android.min.sdk.get().toInt()
         // targetSdkVersion has no effect for libraries. This is only used for the test APK
         targetSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -43,6 +42,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.valueOf(libs.versions.android.jvm.compatibility.get())
         targetCompatibility = JavaVersion.valueOf(libs.versions.android.jvm.compatibility.get())
+    }
+
+    kotlinOptions {
+        jvmTarget = libs.versions.android.jvm.target.get()
     }
 
     buildFeatures {

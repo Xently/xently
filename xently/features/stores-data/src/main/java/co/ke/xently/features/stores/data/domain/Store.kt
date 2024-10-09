@@ -25,6 +25,7 @@ data class Store(
     val location: Location = Location(Double.NaN, Double.NaN),
     val name: String = "",
     val services: List<StoreService> = emptyList(),
+    val paymentMethods: List<StorePaymentMethod> = emptyList(),
     val images: List<UploadResponse> = emptyList(),
     val description: String? = null,
     val slug: String = "",

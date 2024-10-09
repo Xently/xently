@@ -37,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -48,6 +47,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.products.R
@@ -58,7 +58,7 @@ import co.ke.xently.features.products.data.domain.error.PriceError
 import co.ke.xently.features.products.data.domain.error.UnclassifiedFieldError
 import co.ke.xently.features.products.presentation.components.ProductCategoryFilterChip
 import co.ke.xently.features.products.presentation.edit.components.EditProductImagesCard
-import co.ke.xently.features.ui.core.presentation.components.AddCategorySection
+import co.ke.xently.features.ui.core.presentation.components.XentlyOutlinedChipTextField
 import co.ke.xently.features.ui.core.presentation.theme.XentlyTheme
 import co.ke.xently.libraries.ui.core.XentlyPreview
 import co.ke.xently.libraries.ui.core.asString
@@ -111,6 +111,18 @@ fun ProductEditDetailScreen(modifier: Modifier = Modifier, onClickBack: () -> Un
         onClickBack = onClickBack,
         onAction = viewModel::onAction,
         categories = categories,
+        retrieveSynonymsSuggestions = {
+            viewModel.productSynonymsSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
+        retrieveCategoriesSuggestions = {
+            viewModel.productCategoriesSearchSuggestions.collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                minActiveState = Lifecycle.State.RESUMED,
+            ).value
+        },
     )
 }
 
@@ -123,6 +135,8 @@ internal fun ProductEditDetailScreen(
     modifier: Modifier = Modifier,
     onClickBack: () -> Unit,
     onAction: (ProductEditDetailAction) -> Unit,
+    retrieveSynonymsSuggestions: @Composable () -> List<String> = { emptyList() },
+    retrieveCategoriesSuggestions: @Composable () -> List<String> = { emptyList() },
 ) {
     val focusManager = LocalFocusManager.current
     Scaffold(
@@ -154,14 +168,6 @@ internal fun ProductEditDetailScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            AddCategorySection(
-                name = state.categoryName,
-                onNameValueChange = { onAction(ProductEditDetailAction.ChangeCategoryName(it)) },
-                onAddClick = { onAction(ProductEditDetailAction.ClickAddCategory) },
-                shape = RectangleShape,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             if (categories.isNotEmpty()) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -224,6 +230,49 @@ internal fun ProductEditDetailScreen(
                     { Text(text = it.asString()) }
                 },
             )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.additionalCategories,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveCategoriesSuggestions,
+                onTextChange = {
+                    onAction(ProductEditDetailAction.OnCategoryQueryChange(it))
+                },
+                onSubmit = {
+                    onAction(ProductEditDetailAction.AddAdditionalCategory(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_product_additional_categories))
+                },
+                onClickTrailingIcon = {
+                    onAction(ProductEditDetailAction.RemoveAdditionalCategory(it))
+                },
+            )
+
+            XentlyOutlinedChipTextField(
+                enabled = !state.disableFields,
+                chips = state.synonyms,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                retrieveSuggestions = retrieveSynonymsSuggestions,
+                onTextChange = {
+                    onAction(ProductEditDetailAction.OnSynonymQueryChange(it))
+                },
+                onSubmit = {
+                    onAction(ProductEditDetailAction.AddSynonym(it))
+                },
+                label = {
+                    Text(text = stringResource(R.string.text_field_label_product_synonyms))
+                },
+                onClickTrailingIcon = {
+                    onAction(ProductEditDetailAction.RemoveSynonym(it))
+                },
+            )
+
             OutlinedTextField(
                 shape = CardDefaults.shape,
                 value = state.description,

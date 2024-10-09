@@ -8,14 +8,18 @@ import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.StoreDataValidator
+import co.ke.xently.features.stores.data.domain.StorePaymentMethod
 import co.ke.xently.features.stores.data.domain.error.RemoteFieldError
 import co.ke.xently.features.stores.data.domain.error.Result
 import co.ke.xently.features.stores.data.source.StoreRepository
 import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
 import co.ke.xently.libraries.location.tracker.domain.Location
+import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +35,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
+import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +47,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private val repository: StoreRepository,
     private val storeCategoryRepository: StoreCategoryRepository,
     private val dataValidator: StoreDataValidator,
+    private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
     private companion object {
         private val KEY =
@@ -51,6 +59,27 @@ internal class StoreEditDetailViewModel @Inject constructor(
 
     private val _event = Channel<StoreEditDetailEvent>()
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
+
+    val storeServicesSearchSuggestions = webSocketClient.watch {
+        val destination = "/user/queue/type-ahead.store-services"
+//        val destination = "/queue/type-ahead.store-services"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
+    }
+
+    val storeCategoriesSearchSuggestions = webSocketClient.watch {
+        val destination = "/user/queue/type-ahead.store-categories"
+//        val destination = "/queue/type-ahead.store-categories"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
+    }
+
+    val storePaymentMethodsSearchSuggestions = webSocketClient.watch {
+        val destination = "/user/queue/type-ahead.store-payment-methods"
+//        val destination = "/queue/type-ahead.store-payment-methods"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
+    }
 
     val categories: StateFlow<List<StoreCategory>> =
         savedStateHandle.getStateFlow(KEY, emptySet<String>())
@@ -89,6 +118,12 @@ internal class StoreEditDetailViewModel @Inject constructor(
         }
     }
 
+    private var storeServicesSearchSuggestionsJob: Job? = null
+
+    private var storeCategoriesSearchSuggestionsJob: Job? = null
+
+    private var storePaymentMethodsSearchSuggestionsJob: Job? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     fun onAction(action: StoreEditDetailAction) {
         when (action) {
@@ -120,21 +155,75 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 savedStateHandle[KEY] = storeCategories - action.category.name
             }
 
-            is StoreEditDetailAction.ChangeCategoryName -> {
+            is StoreEditDetailAction.AddService -> {
                 _uiState.update {
-                    it.copy(categoryName = action.name)
+                    it.copy(services = it.services + Chip(action.service))
                 }
             }
 
-            is StoreEditDetailAction.ClickAddCategory -> {
-                val storeCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
-                savedStateHandle[KEY] = storeCategories + _uiState.value.categoryName.trim()
-                _uiState.update { it.copy(categoryName = "") }
+            is StoreEditDetailAction.RemoveService -> {
+                _uiState.update {
+                    it.copy(services = it.services - action.service)
+                }
             }
 
-            is StoreEditDetailAction.AddService -> {
+            is StoreEditDetailAction.OnServiceQueryChange -> {
+                storeServicesSearchSuggestionsJob?.cancel()
+                storeServicesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead.store-services",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
+            is StoreEditDetailAction.OnCategoryQueryChange -> {
+                storeCategoriesSearchSuggestionsJob?.cancel()
+                storeCategoriesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead.store-categories",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
+            is StoreEditDetailAction.AddPaymentMethod -> {
                 _uiState.update {
-                    it.copy(services = it.services + StoreService(action.service))
+                    it.copy(paymentMethods = it.paymentMethods + Chip(action.paymentMethod))
+                }
+            }
+
+            is StoreEditDetailAction.RemovePaymentMethod -> {
+                _uiState.update {
+                    it.copy(paymentMethods = it.paymentMethods - action.paymentMethod)
+                }
+            }
+
+            is StoreEditDetailAction.OnPaymentMethodQueryChange -> {
+                storePaymentMethodsSearchSuggestionsJob?.cancel()
+                storePaymentMethodsSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead.store-payment-methods",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
+            is StoreEditDetailAction.AddAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
+            }
+
+            is StoreEditDetailAction.RemoveAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories - action.category)
                 }
             }
 
@@ -283,12 +372,13 @@ internal class StoreEditDetailViewModel @Inject constructor(
     private fun validatedStore(state: StoreEditDetailUiState): Store {
         var store = state.store.copy(
             name = state.name,
-            services = state.services,
+            services = state.services.map { StoreService(it.text) },
+            paymentMethods = state.paymentMethods.map { StorePaymentMethod(it.text) },
             openingHours = state.openingHours,
             description = state.description.trim().takeIf { it.isNotBlank() },
             categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
                 StoreCategory(name = it)
-            },
+            } + state.additionalCategories.map { StoreCategory(name = it.text) },
         )
 
         when (val result = dataValidator.validatedLocation(state.locationString)) {

@@ -78,6 +78,7 @@ internal class ProductRepositoryImpl @Inject constructor(
                 packCount = product.packCount,
                 description = product.description,
                 categories = product.categories.toSet(),
+                synonyms = product.synonyms.toSet(),
             )
             setBody(body)
         }

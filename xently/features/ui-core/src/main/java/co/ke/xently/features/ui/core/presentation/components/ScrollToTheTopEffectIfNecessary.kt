@@ -11,8 +11,8 @@ import kotlinx.coroutines.withContext
 
 @Composable
 @OptIn(ExperimentalStdlibApi::class)
-fun ScrollToTheTopEffectIfNecessary(state: LazyListState) {
-    if (LocalScrollToTheTop.current) {
+fun ScrollToTheTopEffectIfNecessary(state: LazyListState, scroll: Boolean = false) {
+    if (LocalScrollToTheTop.current || scroll) {
         LaunchedEffect(Unit) {
             withContext(coroutineContext[CoroutineDispatcher]!! + NonCancellable) {
                 state.animateScrollToItem(0)
@@ -23,8 +23,8 @@ fun ScrollToTheTopEffectIfNecessary(state: LazyListState) {
 
 @Composable
 @OptIn(ExperimentalStdlibApi::class)
-fun ScrollToTheTopEffectIfNecessary(state: LazyGridState) {
-    if (LocalScrollToTheTop.current) {
+fun ScrollToTheTopEffectIfNecessary(state: LazyGridState, scroll: Boolean = false) {
+    if (LocalScrollToTheTop.current || scroll) {
         LaunchedEffect(Unit) {
             withContext(coroutineContext[CoroutineDispatcher]!! + NonCancellable) {
                 state.animateScrollToItem(0)

@@ -4,15 +4,14 @@ import androidx.compose.runtime.Stable
 import co.ke.xently.features.openinghours.data.domain.OpeningHour
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.data.domain.error.LocalFieldError
-import co.ke.xently.features.storeservice.data.domain.StoreService
 import co.ke.xently.libraries.data.core.Time
 import co.ke.xently.libraries.location.tracker.domain.Location
+import com.dokar.chiptextfield.Chip
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 
 @Stable
 data class StoreEditDetailUiState(
-    val categoryName: String = "",
     val store: Store = Store(),
     val name: String = store.name,
     val nameError: List<LocalFieldError>? = null,
@@ -24,7 +23,10 @@ data class StoreEditDetailUiState(
     val descriptionError: List<LocalFieldError>? = null,
     val location: Location = store.location,
     val locationError: List<LocalFieldError>? = null,
-    val services: List<StoreService> = store.services,
+    val services: List<Chip> = store.services.map { Chip(it.name) },
+    val paymentMethods: List<Chip> = store.paymentMethods.map { Chip(it.name) },
+    val additionalCategories: List<Chip> = store.categories.filter { !it.isMain }
+        .map { Chip(it.name) },
     val locationString: String = location.takeIf(Location::isUsable)
         ?.coordinatesString() ?: "",
     @Stable

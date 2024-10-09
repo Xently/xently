@@ -11,6 +11,7 @@ import kotlinx.serialization.Transient
 @Parcelize
 data class StoreCategory(
     val name: String,
+    val isMain: Boolean = false,
     @SerialName("_links")
     val links: Map<String, Link> = emptyMap(),
     @Transient

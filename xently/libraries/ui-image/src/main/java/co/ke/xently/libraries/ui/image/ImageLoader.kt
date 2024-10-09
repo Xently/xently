@@ -1,6 +1,6 @@
 package co.ke.xently.libraries.ui.image
 
-import co.ke.xently.libraries.data.network.BuildConfig
+import co.ke.xently.libraries.data.network.withBaseConfiguration
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
@@ -10,33 +10,8 @@ import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.ANDROID
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.contentType
 import okio.FileSystem
 
-private val HTTP_CLIENT = HttpClient {
-    defaultRequest {
-        url(scheme = "https", host = BuildConfig.BASE_HOST)
-        contentType(ContentType.Application.Json)
-    }
-    install(Logging) {
-        logger = Logger.ANDROID
-        level = if (BuildConfig.DEBUG) {
-            LogLevel.INFO
-        } else {
-            LogLevel.NONE
-        }
-        sanitizeHeader { header ->
-            header == HttpHeaders.Authorization
-        }
-    }
-}
 
 fun newImageLoader(
     context: PlatformContext,
@@ -50,7 +25,9 @@ fun newImageLoader(
             add(SvgDecoder.Factory())
             add(
                 KtorNetworkFetcherFactory {
-                    HTTP_CLIENT
+                    HttpClient {
+                        withBaseConfiguration()
+                    }
                 },
             )
         }

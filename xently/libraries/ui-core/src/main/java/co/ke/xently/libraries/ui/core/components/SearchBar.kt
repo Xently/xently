@@ -48,7 +48,7 @@ fun SearchBar(
     horizontalPadding: Dp? = null,
     exitSearchIcon: ImageVector? = null,
     clearSearchQueryIcon: ImageVector? = null,
-    suggestions: List<String> = emptyList(),
+    retrieveSuggestions: @Composable () -> List<String> = { emptyList() },
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onExpandedChange: (Boolean) -> Unit = {},
@@ -126,15 +126,24 @@ fun SearchBar(
         },
     ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
+            val suggestions = retrieveSuggestions()
             if (!isQueryBlank) {
-                SuggestionListItem(suggestion = query) {
-                    onSearch(query)
-                    expanded = false
+                val isSameQuery by remember(query, suggestions) {
+                    derivedStateOf {
+                        query.trim() == suggestions.firstOrNull()?.trim()
+                    }
+                }
+                if (!isSameQuery) {
+                    SuggestionListItem(suggestion = query) {
+                        onSearch(query)
+                        expanded = false
+                    }
                 }
             }
             suggestions.forEach { suggestion ->
                 SuggestionListItem(suggestion = suggestion) {
                     onSearch(suggestion)
+                    onQueryChange(suggestion)
                     expanded = false
                 }
             }

@@ -1,9 +1,9 @@
 package co.ke.xently.features.notification.topic.data.domain.error
 
 import co.ke.xently.features.notification.topic.data.R
+import co.ke.xently.libraries.data.core.UiText
 import co.ke.xently.libraries.data.core.domain.error.AuthorisationError
 import co.ke.xently.libraries.data.core.domain.error.RetryableError
-import co.ke.xently.libraries.data.core.UiText
 
 sealed interface DataError : Error {
     sealed interface Network : DataError {

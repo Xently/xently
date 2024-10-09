@@ -5,6 +5,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import co.ke.xently.libraries.data.core.domain.DispatchersProvider
+import io.ktor.http.fullPath
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.datetime.Clock
@@ -76,7 +77,7 @@ class RemoteMediator<Key : Any, Value : Any, Data>(
                     // If you receive null for APPEND, that means you have
                     // reached the end of pagination and there are no more
                     // items to load.
-                    remoteKey?.links?.first?.hrefWithoutQueryParamTemplates()
+                    remoteKey?.links?.first?.urlWithoutQueryParamTemplates()
                 }
 
                 LoadType.PREPEND -> {
@@ -99,13 +100,13 @@ class RemoteMediator<Key : Any, Value : Any, Data>(
                     // If you receive null for APPEND, that means you have
                     // reached the end of pagination and there are no more
                     // items to load.
-                    remoteKey?.links?.next?.hrefWithoutQueryParamTemplates()
+                    remoteKey?.links?.next?.urlWithoutQueryParamTemplates()
                         ?: return MediatorResult.Success(endOfPaginationReached = true).also {
                             Timber.tag(TAG)
                                 .d("%s(%s): Reached end of pagination.", loadType, lookupKey)
                         }
                 }
-            }
+            }?.fullPath
 
             Timber.tag(TAG).d("%s(%s): Fetching data from [%s]", loadType, lookupKey, url)
 

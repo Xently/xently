@@ -7,12 +7,16 @@ import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.products.data.domain.Product
 import co.ke.xently.features.products.data.domain.ProductDataValidator
+import co.ke.xently.features.products.data.domain.ProductSynonym
 import co.ke.xently.features.products.data.domain.error.RemoteFieldError
 import co.ke.xently.features.products.data.domain.error.Result
 import co.ke.xently.features.products.data.source.ProductRepository
 import co.ke.xently.libraries.data.image.domain.Upload
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
+import com.dokar.chiptextfield.Chip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +32,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
+import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,6 +44,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val repository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
     private val dataValidator: ProductDataValidator,
+    private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
     private companion object {
         private val KEY =
@@ -62,6 +70,20 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 initialValue = emptyList(),
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             )
+
+    val productSynonymsSearchSuggestions = webSocketClient.watch {
+        val destination = "/user/queue/type-ahead.product-synonyms"
+//        val destination = "/queue/type-ahead.product-synonyms"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
+    }
+
+    val productCategoriesSearchSuggestions = webSocketClient.watch {
+        val destination = "/user/queue/type-ahead.product-categories"
+//        val destination = "/queue/type-ahead.product-categories"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
+    }
 
     init {
         viewModelScope.launch {
@@ -91,6 +113,10 @@ internal class ProductEditDetailViewModel @Inject constructor(
         }
     }
 
+    private var productSynonymsSearchSuggestionsJob: Job? = null
+
+    private var productCategoriesSearchSuggestionsJob: Job? = null
+
     fun onAction(action: ProductEditDetailAction) {
         when (action) {
             is ProductEditDetailAction.ClearFieldsForNewProduct -> {
@@ -117,16 +143,52 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 savedStateHandle[KEY] = productCategories - action.category.name
             }
 
-            is ProductEditDetailAction.ChangeCategoryName -> {
+            is ProductEditDetailAction.AddSynonym -> {
                 _uiState.update {
-                    it.copy(categoryName = action.name)
+                    it.copy(synonyms = it.synonyms + Chip(action.synonym))
                 }
             }
 
-            is ProductEditDetailAction.ClickAddCategory -> {
-                val productCategories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet())
-                savedStateHandle[KEY] = productCategories + _uiState.value.categoryName.trim()
-                _uiState.update { it.copy(categoryName = "") }
+            is ProductEditDetailAction.RemoveSynonym -> {
+                _uiState.update {
+                    it.copy(synonyms = it.synonyms - action.synonym)
+                }
+            }
+
+            is ProductEditDetailAction.OnSynonymQueryChange -> {
+                productSynonymsSearchSuggestionsJob?.cancel()
+                productSynonymsSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead.product-synonyms",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
+            }
+
+            is ProductEditDetailAction.AddAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories + Chip(action.category))
+                }
+            }
+
+            is ProductEditDetailAction.RemoveAdditionalCategory -> {
+                _uiState.update {
+                    it.copy(additionalCategories = it.additionalCategories - action.category)
+                }
+            }
+
+            is ProductEditDetailAction.OnCategoryQueryChange -> {
+                productCategoriesSearchSuggestionsJob?.cancel()
+                productCategoriesSearchSuggestionsJob = viewModelScope.launch {
+                    webSocketClient.sendMessage {
+                        convertAndSend(
+                            destination = "/app/type-ahead.product-categories",
+                            body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
+                        )
+                    }
+                }
             }
 
             is ProductEditDetailAction.ChangeDescription -> {
@@ -222,9 +284,10 @@ internal class ProductEditDetailViewModel @Inject constructor(
 
     private fun validatedProduct(state: ProductEditDetailUiState): Product {
         var product = state.product.copy(
+            synonyms = state.synonyms.map { ProductSynonym(name = it.text) },
             categories = (savedStateHandle.get<Set<String>>(KEY) ?: emptySet()).map {
                 ProductCategory(name = it)
-            },
+            } + state.additionalCategories.map { ProductCategory(name = it.text) },
         )
 
         when (val result = dataValidator.validatedPrice(state.unitPrice)) {

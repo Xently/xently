@@ -40,13 +40,14 @@ import co.ke.xently.libraries.ui.core.toUiTextError
 internal fun StoreListLazyVerticalGrid(
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
+    scrollToTheTop: Boolean = false,
     verticalArrangement: Arrangement.HorizontalOrVertical,
     contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
 ) {
     val state = rememberLazyGridState()
 
-    ScrollToTheTopEffectIfNecessary(state = state)
+    ScrollToTheTopEffectIfNecessary(state = state, scroll = scrollToTheTop)
 
     LazyVerticalGrid(
         state = state,

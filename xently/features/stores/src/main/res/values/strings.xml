@@ -103,4 +103,6 @@
     <string name="closed">Now closed</string>
     <string name="opens_in">Opens in %1$s</string>
     <string name="closes_in">Closes in %1$s</string>
+    <string name="text_field_label_store_additional_categories">Additional categories</string>
+    <string name="text_field_label_store_payment_methods">Supported payment methods</string>
 </resources>

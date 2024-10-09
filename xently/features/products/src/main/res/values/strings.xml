@@ -60,4 +60,6 @@
     <string name="content_desc_remove_from_selected_categories">Remove %1$s from selected categories</string>
     <string name="search_products_placeholder">Search Product or Category</string>
     <string name="action_copy_product">Clone Products</string>
+    <string name="text_field_label_product_additional_categories">Additional categories</string>
+    <string name="text_field_label_product_synonyms">How else can this product be found?</string>
 </resources>

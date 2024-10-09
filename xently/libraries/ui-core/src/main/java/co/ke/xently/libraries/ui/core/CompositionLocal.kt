@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.data.core.domain.DispatchersProvider
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClientConnector
 
 @Immutable
 fun interface AuthenticationEventHandler {
@@ -20,6 +21,9 @@ val LocalAuthenticationEventHandler = staticCompositionLocalOf {
 }
 val LocalDispatchersProvider = staticCompositionLocalOf<DispatchersProvider> {
     DispatchersProvider.Default
+}
+val LocalStompWebsocketClientConnector = staticCompositionLocalOf<StompWebSocketClientConnector> {
+    StompWebSocketClientConnector.Noop
 }
 
 val LocalAuthenticationState = compositionLocalOf<State<AuthenticationState>> {

@@ -38,6 +38,7 @@ fun StoreListScreenContent(
     stores: LazyPagingItems<Store>,
     verticalArrangement: Arrangement.HorizontalOrVertical,
     modifier: Modifier = Modifier,
+    scrollToTheTop: Boolean = false,
     emptyMessage: String = stringResource(R.string.message_no_stores_found),
     contentPadding: PaddingValues = PaddingValues(),
     storeListItem: @Composable (Store?) -> Unit,
@@ -73,6 +74,7 @@ fun StoreListScreenContent(
             ListState.Ready -> {
                 StoreListLazyVerticalGrid(
                     stores = stores,
+                    scrollToTheTop = scrollToTheTop,
                     modifier = Modifier.matchParentSize(),
                     storeListItem = storeListItem,
                     contentPadding = contentPadding,

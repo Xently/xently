@@ -1,6 +1,7 @@
 package co.ke.xently.libraries.data.core
 
 import android.os.Parcelable
+import io.ktor.http.Url
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -17,13 +18,25 @@ data class Link(
         return hrefWithoutContentsFrom('{')
     }
 
+    fun urlWithoutQueryParamTemplates(): Url {
+        return Url(hrefWithoutQueryParamTemplates())
+    }
+
     fun hrefWithoutQueryParams(): String {
         return hrefWithoutContentsFrom('?')
     }
 
+    fun urlWithoutQueryParams(): Url {
+        return Url(hrefWithoutQueryParams())
+    }
+
     @Suppress("MemberVisibilityCanBePrivate")
     fun hrefWithoutContentsFrom(delimiter: Char): String {
-        return href.replaceAfter(delimiter, "")
-            .removeSuffix("$delimiter")
+        return href.replaceAfter(delimiter, "").removeSuffix("$delimiter")
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun urlWithoutContentsFrom(delimiter: Char): Url {
+        return Url(hrefWithoutContentsFrom(delimiter))
     }
 }

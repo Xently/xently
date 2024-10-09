@@ -56,6 +56,7 @@ import co.ke.xently.libraries.ui.core.components.SearchBar
 import co.ke.xently.libraries.ui.core.rememberSnackbarHostState
 import kotlinx.coroutines.flow.flowOf
 
+
 @Composable
 fun StoreListScreen(
     modifier: Modifier = Modifier,
@@ -88,6 +89,12 @@ fun StoreListScreen(
 
     StoreListScreen(
         state = state,
+        retrieveSuggestions = {
+            viewModel.searchSuggestions.collectAsStateWithLifecycle(
+                emptyList(),
+                minActiveState = androidx.lifecycle.Lifecycle.State.RESUMED,
+            ).value
+        },
         snackbarHostState = snackbarHostState,
         stores = stores,
         modifier = modifier,
@@ -105,6 +112,7 @@ internal fun StoreListScreen(
     snackbarHostState: SnackbarHostState,
     stores: LazyPagingItems<Store>,
     modifier: Modifier = Modifier,
+    retrieveSuggestions: @Composable () -> List<String> = { emptyList() },
     onClickStore: (Store) -> Unit,
     onAction: (StoreListAction) -> Unit,
     onClickFilterStores: () -> Unit,
@@ -114,10 +122,7 @@ internal fun StoreListScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Column(
-                modifier = Modifier
-                    .windowInsetsPadding(TopAppBarDefaults.windowInsets),
-            ) {
+            Column(modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                 var initSearch by rememberSaveable { mutableStateOf(false) }
                 if (!initSearch) {
                     topBar()
@@ -127,6 +132,7 @@ internal fun StoreListScreen(
                 }
                 SearchBar(
                     query = state.query,
+                    retrieveSuggestions = retrieveSuggestions,
                     placeholder = stringResource(R.string.search_stores_placeholder),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onQueryChange = { onAction(StoreListAction.ChangeQuery(it)) },
