@@ -9,7 +9,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
-import co.ke.xently.libraries.data.network.websocket.StompWebSocketClientImpl
 import kotlinx.coroutines.flow.collectLatest
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 
@@ -41,12 +40,8 @@ inline fun <reified T : Any> getWebSocketResults(
 
 @Composable
 fun rememberStompWebSocketClient(): StompWebSocketClient {
-    val json = LocalJson.current
-    val httpClient = LocalHttpClient.current
-    return remember(httpClient, json) {
-        StompWebSocketClientImpl(
-            json = json,
-            httpClient = httpClient,
-        )
+    val connector = LocalStompWebsocketClientConnector.current
+    return remember(connector) {
+        StompWebSocketClient(connector = connector)
     }
 }

@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import co.ke.xently.libraries.data.auth.AuthenticationState
 import co.ke.xently.libraries.data.core.domain.DispatchersProvider
-import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
-import io.ktor.client.HttpClient
-import kotlinx.serialization.json.Json
+import co.ke.xently.libraries.data.network.websocket.StompWebSocketClientConnector
 
 @Immutable
 fun interface AuthenticationEventHandler {
@@ -24,16 +22,8 @@ val LocalAuthenticationEventHandler = staticCompositionLocalOf {
 val LocalDispatchersProvider = staticCompositionLocalOf<DispatchersProvider> {
     DispatchersProvider.Default
 }
-val LocalStompWebsocketClient = staticCompositionLocalOf<StompWebSocketClient> {
-    StompWebSocketClient.Noop
-}
-val LocalHttpClient = staticCompositionLocalOf<HttpClient> {
-    HttpClient()
-}
-val LocalJson = staticCompositionLocalOf<Json> {
-    Json {
-        ignoreUnknownKeys = true
-    }
+val LocalStompWebsocketClientConnector = staticCompositionLocalOf<StompWebSocketClientConnector> {
+    StompWebSocketClientConnector.Noop
 }
 
 val LocalAuthenticationState = compositionLocalOf<State<AuthenticationState>> {
