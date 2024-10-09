@@ -49,7 +49,10 @@ internal class StoreListViewModel @Inject constructor(
     }.cachedIn(viewModelScope)
 
     val searchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/stores")
+        val destination = "/user/queue/type-ahead.stores"
+//        val destination = "/queue/type-ahead.stores"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }.catch {
         Timber.tag(TAG).e(it, "An unexpected error was encountered.")
     }
@@ -64,7 +67,7 @@ internal class StoreListViewModel @Inject constructor(
                 typeAheadJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/stores",
+                            destination = "/app/type-ahead.stores",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }

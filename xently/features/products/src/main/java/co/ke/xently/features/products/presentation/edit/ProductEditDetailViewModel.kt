@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -71,11 +72,17 @@ internal class ProductEditDetailViewModel @Inject constructor(
             )
 
     val productSynonymsSearchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/product-synonyms")
+        val destination = "/user/queue/type-ahead.product-synonyms"
+//        val destination = "/queue/type-ahead.product-synonyms"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }
 
     val productCategoriesSearchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/product-categories")
+        val destination = "/user/queue/type-ahead.product-categories"
+//        val destination = "/queue/type-ahead.product-categories"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }
 
     init {
@@ -153,7 +160,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 productSynonymsSearchSuggestionsJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/product-synonyms",
+                            destination = "/app/type-ahead.product-synonyms",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }
@@ -177,7 +184,7 @@ internal class ProductEditDetailViewModel @Inject constructor(
                 productCategoriesSearchSuggestionsJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/product-categories",
+                            destination = "/app/type-ahead.product-categories",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }

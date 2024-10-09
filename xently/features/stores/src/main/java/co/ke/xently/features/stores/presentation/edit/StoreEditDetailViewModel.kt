@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,15 +61,24 @@ internal class StoreEditDetailViewModel @Inject constructor(
     val event: Flow<StoreEditDetailEvent> = _event.receiveAsFlow()
 
     val storeServicesSearchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/store-services")
+        val destination = "/user/queue/type-ahead.store-services"
+//        val destination = "/queue/type-ahead.store-services"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }
 
     val storeCategoriesSearchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/store-categories")
+        val destination = "/user/queue/type-ahead.store-categories"
+//        val destination = "/queue/type-ahead.store-categories"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }
 
     val storePaymentMethodsSearchSuggestions = webSocketClient.watch {
-        subscribe<List<String>>(destination = "/type-ahead/results/store-payment-methods")
+        val destination = "/user/queue/type-ahead.store-payment-methods"
+//        val destination = "/queue/type-ahead.store-payment-methods"
+        Timber.tag(StompWebSocketClient.TAG).d("Subscribing to: $destination")
+        subscribe<List<String>>(destination = destination)
     }
 
     val categories: StateFlow<List<StoreCategory>> =
@@ -162,7 +172,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 storeServicesSearchSuggestionsJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/store-services",
+                            destination = "/app/type-ahead.store-services",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }
@@ -174,7 +184,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 storeCategoriesSearchSuggestionsJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/store-categories",
+                            destination = "/app/type-ahead.store-categories",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }
@@ -198,7 +208,7 @@ internal class StoreEditDetailViewModel @Inject constructor(
                 storePaymentMethodsSearchSuggestionsJob = viewModelScope.launch {
                     webSocketClient.sendMessage {
                         convertAndSend(
-                            destination = "/app/type-ahead/store-payment-methods",
+                            destination = "/app/type-ahead.store-payment-methods",
                             body = co.ke.xently.libraries.data.core.TypeAheadSearchRequest(query = action.query),
                         )
                     }
