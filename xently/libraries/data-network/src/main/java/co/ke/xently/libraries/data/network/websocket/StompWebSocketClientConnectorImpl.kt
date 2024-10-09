@@ -34,7 +34,10 @@ class StompWebSocketClientConnectorImpl @Inject constructor(
     override suspend fun ensureSessionInitialized(url: String): StompSessionWithKxSerialization {
         return sessions.getOrPut(url) {
             Timber.tag(TAG).d("Initializing session. Connecting to [%s]", url)
-            stompClient.connect(url = url).withJsonConversions(json = json)
+            stompClient.connect(url = url).withJsonConversions(json = json).also {
+                Timber.tag(TAG)
+                    .d("Connected to [%s] for the first time.", url)
+            }
         }.also {
             Timber.tag(TAG)
                 .d("Successfully connected to [%s]. Total connections: %d", url, sessions.size)
@@ -43,9 +46,12 @@ class StompWebSocketClientConnectorImpl @Inject constructor(
 
     override suspend fun disconnect(url: String) {
         Timber.tag(TAG).i("Closing session...")
-        sessions[url]?.disconnect()
-        sessions.remove(url)
-        Timber.tag(TAG).i("Closed session")
+        try {
+            sessions[url]?.disconnect()
+        } finally {
+            sessions.remove(url)
+            Timber.tag(TAG).i("Closed session")
+        }
     }
 
     companion object {
