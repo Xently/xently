@@ -1,6 +1,5 @@
 package co.ke.xently.libraries.ui.image
 
-import co.ke.xently.libraries.data.network.withBaseConfiguration
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
@@ -16,6 +15,7 @@ import okio.FileSystem
 fun newImageLoader(
     context: PlatformContext,
     debug: Boolean,
+    httpClient: HttpClient,
 ): ImageLoader {
     return ImageLoader.Builder(context)
         // TODO: Investigate why this causes images to flicker on
@@ -25,9 +25,7 @@ fun newImageLoader(
             add(SvgDecoder.Factory())
             add(
                 KtorNetworkFetcherFactory {
-                    HttpClient {
-                        withBaseConfiguration()
-                    }
+                    httpClient
                 },
             )
         }

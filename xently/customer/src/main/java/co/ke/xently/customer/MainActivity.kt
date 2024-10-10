@@ -38,20 +38,21 @@ import co.ke.xently.features.stores.presentation.detail.StoreDetailScreen
 import co.ke.xently.features.stores.presentation.moredetails.MoreDetailsScreen
 import co.ke.xently.features.ui.core.presentation.App
 import co.ke.xently.features.ui.core.presentation.EventHandler
-import co.ke.xently.libraries.data.network.websocket.StompWebSocketClientConnector
 import co.ke.xently.libraries.location.tracker.presentation.LocalLocationState
 import co.ke.xently.libraries.ui.core.LocalAuthenticationState
-import co.ke.xently.libraries.ui.core.LocalStompWebsocketClientConnector
+import co.ke.xently.libraries.ui.core.LocalHttpClient
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.client.HttpClient
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var stompWebSocketClientConnector: StompWebSocketClientConnector
+    lateinit var httpClient: HttpClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
                 val authenticationState =
                     mainViewModel.authenticationState.collectAsStateWithLifecycle()
                 CompositionLocalProvider(
-                    LocalStompWebsocketClientConnector provides stompWebSocketClientConnector,
+                    LocalHttpClient provides httpClient,
                     LocalLocationState provides currentLocationState,
                     LocalAuthenticationState provides authenticationState,
                 ) {
