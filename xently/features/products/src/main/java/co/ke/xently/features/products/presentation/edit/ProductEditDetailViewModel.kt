@@ -23,8 +23,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -36,13 +36,14 @@ import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.collections.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class ProductEditDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ProductRepository,
-    private val productCategoryRepository: ProductCategoryRepository,
+    productCategoryRepository: ProductCategoryRepository,
     private val dataValidator: ProductDataValidator,
     private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
@@ -57,20 +58,20 @@ internal class ProductEditDetailViewModel @Inject constructor(
     private val _event = Channel<ProductEditDetailEvent>()
     val event: Flow<ProductEditDetailEvent> = _event.receiveAsFlow()
 
-    val categories: StateFlow<List<ProductCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptySet<String>())
-            .flatMapLatest { selectedCategories ->
-                productCategoryRepository.getCategories(null).map { categories ->
-                    (selectedCategories.map {
-                        ProductCategory(name = it, selected = true)
-                    }.sortedBy { it.name } + categories).distinctBy { it.name }
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                initialValue = emptyList(),
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            )
-
+    val categories = productCategoryRepository.getCategories().combine(
+        savedStateHandle.getStateFlow(
+            KEY,
+            emptySet<String>(),
+        )
+    ) { categories, selectedCategories ->
+        categories.map {
+            it.copy(selected = selectedCategories.contains(it.name))
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = emptyList(),
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+    )
     val productSynonymsSearchSuggestions = webSocketClient.watch {
         val destination = "/user/queue/type-ahead.product-synonyms"
 //        val destination = "/queue/type-ahead.product-synonyms"
