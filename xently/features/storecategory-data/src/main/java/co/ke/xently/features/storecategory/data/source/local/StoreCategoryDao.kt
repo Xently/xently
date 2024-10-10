@@ -13,6 +13,6 @@ interface StoreCategoryDao {
     @Query("DELETE FROM store_categories")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM store_categories ORDER BY name")
+    @Query("SELECT * FROM store_categories")
     suspend fun getAll(): List<StoreCategoryEntity>
 }

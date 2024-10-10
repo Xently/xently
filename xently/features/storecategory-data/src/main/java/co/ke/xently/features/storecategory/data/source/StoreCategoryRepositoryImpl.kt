@@ -5,6 +5,7 @@ import co.ke.xently.features.storecategory.data.source.local.StoreCategoryDataba
 import co.ke.xently.features.storecategory.data.source.local.StoreCategoryEntity
 import co.ke.xently.libraries.data.network.websocket.StompWebSocketClient
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
@@ -32,6 +33,6 @@ internal class StoreCategoryRepositoryImpl @Inject constructor(
         }.onStart {
             // Position after onEach to avoid re-caching cached data
             emit(storeCategoryDao.getAll().map { it.storeCategory })
-        }
+        }.map { it.sortedBy { it.name } }
     }
 }

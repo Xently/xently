@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,7 +38,7 @@ internal class StoreSelectionListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: StoreRepository,
     shopRepository: ShopRepository,
-    private val storeCategoryRepository: StoreCategoryRepository,
+    storeCategoryRepository: StoreCategoryRepository,
 ) : ViewModel() {
     private companion object {
         private val KEY =
@@ -54,12 +53,10 @@ internal class StoreSelectionListViewModel @Inject constructor(
 
     private val _selectedCategories = savedStateHandle.getStateFlow(KEY, emptySet<String>())
 
-    val categories: StateFlow<List<StoreCategory>> =
-        _selectedCategories.flatMapLatest { selectedCategories ->
-            storeCategoryRepository.getCategories(null).map { categories ->
-                (selectedCategories.map {
-                    StoreCategory(name = it, selected = true)
-                }.sortedBy { it.name } + categories).distinctBy { it.name }
+    val categories = storeCategoryRepository.getCategories()
+        .combine(_selectedCategories) { categories, selectedCategories ->
+            categories.map {
+                it.copy(selected = selectedCategories.contains(it.name))
             }
         }.stateIn(
             scope = viewModelScope,

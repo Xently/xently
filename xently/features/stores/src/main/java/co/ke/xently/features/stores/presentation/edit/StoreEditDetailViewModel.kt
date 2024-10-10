@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -39,13 +39,14 @@ import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.collections.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class StoreEditDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: StoreRepository,
-    private val storeCategoryRepository: StoreCategoryRepository,
+    storeCategoryRepository: StoreCategoryRepository,
     private val dataValidator: StoreDataValidator,
     private val webSocketClient: StompWebSocketClient,
 ) : ViewModel() {
@@ -81,19 +82,20 @@ internal class StoreEditDetailViewModel @Inject constructor(
         subscribe<List<String>>(destination = destination)
     }
 
-    val categories: StateFlow<List<StoreCategory>> =
-        savedStateHandle.getStateFlow(KEY, emptySet<String>())
-            .flatMapLatest { selectedCategories ->
-                storeCategoryRepository.getCategories(null).map { categories ->
-                    (selectedCategories.map {
-                        StoreCategory(name = it, selected = true)
-                    }.sortedBy { it.name } + categories).distinctBy { it.name }
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                initialValue = emptyList(),
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            )
+    val categories = storeCategoryRepository.getCategories().combine(
+        savedStateHandle.getStateFlow(
+            KEY,
+            emptySet<String>(),
+        )
+    ) { categories, selectedCategories ->
+        categories.map {
+            it.copy(selected = selectedCategories.contains(it.name))
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = emptyList(),
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+    )
 
     init {
         viewModelScope.launch {
