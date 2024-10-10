@@ -1,7 +1,7 @@
 package co.ke.xently.libraries.data.network.di
 
-import co.ke.xently.libraries.data.network.AccessTokenManager
 import co.ke.xently.libraries.data.network.HttpClientFactory
+import co.ke.xently.libraries.data.network.UserSessionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +26,11 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(
         json: Json,
-        accessTokenManager: AccessTokenManager,
+        sessionManager: UserSessionManager,
     ): HttpClient {
         return HttpClientFactory(
             json = json,
-            accessTokenManager = accessTokenManager,
+            sessionManager = sessionManager,
         )
     }
 }
