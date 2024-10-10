@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import co.ke.xently.features.productcategory.data.domain.ProductCategory
 import co.ke.xently.features.productcategory.data.source.ProductCategoryRepository
 import co.ke.xently.features.recommendations.data.domain.RecommendationRequest
 import co.ke.xently.features.recommendations.data.domain.ShoppingListItem
 import co.ke.xently.features.recommendations.data.source.RecommendationRepository
-import co.ke.xently.features.storecategory.data.domain.StoreCategory
 import co.ke.xently.features.storecategory.data.source.StoreCategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,8 +34,8 @@ import javax.inject.Inject
 class RecommendationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: RecommendationRepository,
-    private val storeCategoryRepository: StoreCategoryRepository,
-    private val productCategoryRepository: ProductCategoryRepository,
+    storeCategoryRepository: StoreCategoryRepository,
+    productCategoryRepository: ProductCategoryRepository,
 ) : ViewModel() {
     private companion object {
         private val SHOPPING_LIST_KEY =
@@ -57,12 +55,10 @@ class RecommendationViewModel @Inject constructor(
     private val _selectedProductCategories =
         savedStateHandle.getStateFlow(PRODUCT_CAT_KEY, emptySet<String>())
 
-    val productCategories: StateFlow<List<ProductCategory>> =
-        _selectedProductCategories.flatMapLatest { selectedCategories ->
-            productCategoryRepository.getCategories(null).map { categories ->
-                (selectedCategories.map {
-                    ProductCategory(name = it, selected = true)
-                }.sortedBy { it.name } + categories).distinctBy { it.name }
+    val productCategories = productCategoryRepository.getCategories()
+        .combine(_selectedProductCategories) { categories, selectedCategories ->
+            categories.map {
+                it.copy(selected = selectedCategories.contains(it.name))
             }
         }.stateIn(
             scope = viewModelScope,
@@ -73,12 +69,10 @@ class RecommendationViewModel @Inject constructor(
     private val _selectedStoreCategories =
         savedStateHandle.getStateFlow(STORE_CAT_KEY, emptySet<String>())
 
-    val storeCategories: StateFlow<List<StoreCategory>> =
-        _selectedStoreCategories.flatMapLatest { selectedCategories ->
-            storeCategoryRepository.getCategories(null).map { categories ->
-                (selectedCategories.map {
-                    StoreCategory(name = it, selected = true)
-                }.sortedBy { it.name } + categories).distinctBy { it.name }
+    val storeCategories = storeCategoryRepository.getCategories()
+        .combine(_selectedStoreCategories) { categories, selectedCategories ->
+            categories.map {
+                it.copy(selected = selectedCategories.contains(it.name))
             }
         }.stateIn(
             scope = viewModelScope,
