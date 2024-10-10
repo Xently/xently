@@ -1,9 +1,7 @@
 package co.ke.xently.features.storecategory.data.domain
 
 import android.os.Parcelable
-import co.ke.xently.libraries.data.core.Link
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -12,8 +10,6 @@ import kotlinx.serialization.Transient
 data class StoreCategory(
     val name: String,
     val isMain: Boolean = false,
-    @SerialName("_links")
-    val links: Map<String, Link> = emptyMap(),
     @Transient
     val selected: Boolean = false,
 ) : Parcelable {
