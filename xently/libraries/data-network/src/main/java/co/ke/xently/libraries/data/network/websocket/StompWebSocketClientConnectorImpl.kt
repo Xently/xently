@@ -38,9 +38,6 @@ class StompWebSocketClientConnectorImpl @Inject constructor(
                 Timber.tag(TAG)
                     .d("Connected to [%s] for the first time.", url)
             }
-        }.also {
-            Timber.tag(TAG)
-                .d("Successfully connected to [%s]. Total connections: %d", url, sessions.size)
         }
     }
 
