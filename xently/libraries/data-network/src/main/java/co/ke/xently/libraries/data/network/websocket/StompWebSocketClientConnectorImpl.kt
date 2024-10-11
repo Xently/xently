@@ -27,7 +27,7 @@ class StompWebSocketClientConnectorImpl @Inject constructor(
         heartBeatTolerance = HeartBeatTolerance(
             Duration.ZERO,
             10.seconds,
-        ) // wide margin to account for heroku cold start
+        ) // wide margin to account for cold start
     }
     private val sessions = ConcurrentHashMap<String, StompSessionWithKxSerialization>()
 
