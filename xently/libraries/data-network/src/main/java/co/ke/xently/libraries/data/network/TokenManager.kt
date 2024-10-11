@@ -9,6 +9,6 @@ interface TokenManager {
     suspend fun getFreshTokens(
         client: HttpClient,
         oldTokens: BearerTokens?,
-        block: HttpRequestBuilder.() -> Unit,
+        config: HttpRequestBuilder.() -> Unit,
     ): BearerTokens?
 }
