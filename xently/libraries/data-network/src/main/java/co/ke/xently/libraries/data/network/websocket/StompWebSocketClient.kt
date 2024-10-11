@@ -79,8 +79,8 @@ class StompWebSocketClient @Inject constructor(
     }.retryWhen { cause, attempt ->
         if (shouldRetry(cause)) {
             val timeMillis = NextRetryDelayMilliseconds(
-                // Restart the attempt count after 5 retries
-                attempt = attempt.toInt() % 5,
+                attemptRestart = 5,
+                attempt = attempt.toInt(),
                 initialRetryDelay = initialRetryDelay,
             )
             Timber.tag(TAG).d(
