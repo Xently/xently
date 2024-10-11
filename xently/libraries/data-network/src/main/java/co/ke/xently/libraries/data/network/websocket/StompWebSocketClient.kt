@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
+import org.hildan.krossbow.stomp.ConnectionTimeout
 import org.hildan.krossbow.stomp.WebSocketClosedUnexpectedly
 import org.hildan.krossbow.stomp.conversions.kxserialization.StompSessionWithKxSerialization
 import timber.log.Timber
@@ -63,9 +64,16 @@ class StompWebSocketClient @Inject constructor(
             }
         }
     }.catch {
-        if (it is WebSocketClosedUnexpectedly) {
-            Timber.tag(TAG).d("WebSocket closed unexpectedly. Reconnecting...")
-            connector.disconnect(url = url)
+        when (it) {
+            is WebSocketClosedUnexpectedly,
+            is ConnectionTimeout,
+                -> {
+                Timber.tag(TAG).d(
+                    "[%s] error was encountered. Reconnecting...",
+                    it.javaClass.simpleName,
+                )
+                connector.disconnect(url = url)
+            }
         }
         throw it
     }.retryWhen { cause, attempt ->

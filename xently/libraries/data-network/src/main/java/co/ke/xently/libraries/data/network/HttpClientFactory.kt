@@ -1,62 +1,39 @@
 package co.ke.xently.libraries.data.network
 
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.HttpRequestRetry
-import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.plugin
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.http.set
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
-const val DEFAULT_SCHEME = "https"
 
-inline fun HttpClientConfig<*>.withBaseConfiguration(
-    crossinline defRequest: DefaultRequest.DefaultRequestBuilder.() -> Unit = {},
-) {
-    defaultRequest {
-        url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
-        defRequest()
-    }
-    install(Logging) {
-        logger = Logger.ANDROID
-        level = if (BuildConfig.DEBUG) {
-            LogLevel.INFO
-        } else {
-            LogLevel.NONE
-        }
-        sanitizeHeader { header ->
-            header == HttpHeaders.Authorization
-        }
-    }
-}
-
-
-class HttpClientFactory private constructor(
-    private val json: Json,
-    private val accessTokenManager: AccessTokenManager,
-) {
-    private val httpClient: HttpClient
-        get() = HttpClient(OkHttp) {
+object HttpClientFactory {
+    operator fun invoke(json: Json, sessionManager: UserSessionManager): HttpClient {
+        return HttpClient(OkHttp) {
             expectSuccess = true
             // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
             engine {
@@ -64,8 +41,13 @@ class HttpClientFactory private constructor(
                     .pingInterval(20, TimeUnit.SECONDS)
                     .build()
             }
+            defaultRequest {
+                url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
+                contentType(ContentType.Application.Json)
+            }
             install(WebSockets) {
                 pingInterval = 20_000
+                contentConverter = KotlinxWebsocketSerializationConverter(Json)
             }
             install(HttpRedirect) {
                 checkHttpMethod = false
@@ -80,81 +62,63 @@ class HttpClientFactory private constructor(
                 }
             }
             install(ContentNegotiation) {
-                json(json = this@HttpClientFactory.json)
+                json(json = json)
             }
-            withBaseConfiguration {
-                contentType(ContentType.Application.Json)
+            install(Logging) {
+                logger = Logger.ANDROID
+                level = if (BuildConfig.DEBUG) {
+                    LogLevel.ALL
+                } else {
+                    LogLevel.NONE
+                }
+                sanitizeHeader { header ->
+                    header == HttpHeaders.Authorization
+                }
             }
             install(HttpTimeout) {
-                val timeout = 30000L
+                val timeout = 30.seconds.inWholeMilliseconds
                 connectTimeoutMillis = timeout
                 requestTimeoutMillis = timeout
                 socketTimeoutMillis = timeout
             }
-        }.withPlugins()
-
-    private fun HttpClient.withPlugins(): HttpClient {
-        plugin(HttpSend).intercept { request ->
-            request.url {
-                if (it.host == BuildConfig.BASE_HOST) {
-                    set(scheme = DEFAULT_SCHEME)
-                }
-            }
-            val authenticationCredentials = request.headers[HttpHeaders.Authorization]
-
-            if (authenticationCredentials == "") {
-                // Signals authentication is not required
-                request.headers.remove(HttpHeaders.Authorization)
-            } else if (authenticationCredentials == null) {
-                Timber.tag(TAG)
-                    .i("Configuring authentication credentials...")
-                val accessToken = accessTokenManager.getAccessToken()
-                if (!accessToken.isNullOrBlank()) {
-                    Timber.tag(TAG)
-                        .i("Successfully configured authentication credentials...")
-                    request.headers[HttpHeaders.Authorization] = "Bearer $accessToken"
-                }
-            }
-
-            val originalCall = execute(request)
-
-            if (originalCall.response.status.value == HttpStatusCode.Unauthorized.value) {
-                Timber.tag(TAG)
-                    .i("Unauthorized. Attempting to re-authenticate using refresh token...")
-                val accessToken = accessTokenManager.getFreshAccessToken(this@withPlugins)
-                if (accessToken.isNullOrBlank()) {
-                    accessTokenManager.clearUserSession()
-                    Timber.tag(TAG)
-                        .w("Failed to configure authentication credentials from refresh token")
-                    originalCall
-                } else {
-                    Timber.tag(TAG).i("Successfully configured authentication credentials...")
-                    request.headers[HttpHeaders.Authorization] = "Bearer $accessToken"
-                    execute(request).also {
-                        if (it.response.status.value == HttpStatusCode.Unauthorized.value) {
-                            accessTokenManager.clearUserSession()
-                            Timber.tag(TAG)
-                                .w("Cleared user session. Failed to configure authentication credentials from refresh token")
+            install(Auth) {
+                bearer {
+                    loadTokens {
+                        sessionManager.getTokens()
+                    }
+                    refreshTokens {
+                        Timber.tag(TAG).i("Refreshing bearer tokens...")
+                        val refreshToken = oldTokens?.refreshToken
+                            ?: sessionManager.getTokens()?.refreshToken
+                        val bearerTokens = try {
+                            client.post(urlString = "/api/v1/auth/refresh") {
+                                headers[HttpHeaders.Authorization] = ""
+                                setBody(mapOf("refreshToken" to refreshToken))
+                                markAsRefreshTokenRequest()
+                            }.bodyAsText().let { userJson ->
+                                Timber.tag(TAG).i("Caching bearer tokens for future use...")
+                                sessionManager.saveSession(userJson = userJson).also {
+                                    Timber.tag(TAG).i("Successfully refreshed bearer tokens.")
+                                }
+                            }
+                        } catch (ex: Exception) {
+                            yield()
+                            Timber.tag(TAG).e(ex, "Failed to refresh bearer tokens.")
+                            null
                         }
+                        if (bearerTokens == null) {
+                            sessionManager.clearSession()
+                        }
+                        bearerTokens
+                    }
+                    sendWithoutRequest { request ->
+                        request.headers[HttpHeaders.Authorization] != ""
                     }
                 }
-            } else {
-                originalCall
             }
         }
-        return this
     }
 
-    companion object {
-        private const val TAG = "HttpClientFactory"
-        operator fun invoke(
-            json: Json,
-            accessTokenManager: AccessTokenManager,
-        ): HttpClient {
-            return HttpClientFactory(
-                json = json,
-                accessTokenManager = accessTokenManager,
-            ).httpClient
-        }
-    }
+    private const val DEFAULT_SCHEME = "https"
+    private val TAG = HttpClientFactory::class.java.simpleName
 }
