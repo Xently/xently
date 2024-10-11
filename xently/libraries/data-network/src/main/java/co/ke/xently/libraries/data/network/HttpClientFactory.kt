@@ -57,8 +57,8 @@ object HttpClientFactory {
                 delayMillis { retry ->
                     NextRetryDelayMilliseconds(
                         attempt = retry,
+                        delay = 3.seconds,
                         attemptRestart = 10,
-                        initialRetryDelay = 3.seconds,
                     )
                 }
             }

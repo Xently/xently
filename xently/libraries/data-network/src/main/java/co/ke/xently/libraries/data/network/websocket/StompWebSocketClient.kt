@@ -80,7 +80,7 @@ class StompWebSocketClient @Inject constructor(
             val timeMillis = NextRetryDelayMilliseconds(
                 attemptRestart = 5,
                 attempt = attempt.toInt(),
-                initialRetryDelay = initialRetryDelay,
+                delay = initialRetryDelay,
             )
             Timber.tag(TAG).d(
                 cause,
