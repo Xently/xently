@@ -1,13 +1,11 @@
 package co.ke.xently.libraries.data.network
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -18,6 +16,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -69,7 +68,7 @@ object HttpClientFactory {
             install(Logging) {
                 logger = Logger.ANDROID
                 level = if (BuildConfig.DEBUG) {
-                    LogLevel.INFO
+                    LogLevel.ALL
                 } else {
                     LogLevel.NONE
                 }
@@ -78,7 +77,7 @@ object HttpClientFactory {
                 }
             }
             install(HttpTimeout) {
-                val timeout = 30000L
+                val timeout = 30.seconds.inWholeMilliseconds
                 connectTimeoutMillis = timeout
                 requestTimeoutMillis = timeout
                 socketTimeoutMillis = timeout
@@ -97,8 +96,12 @@ object HttpClientFactory {
                             client.post(urlString = refreshTokenPath) {
                                 setBody(mapOf("refreshToken" to refreshToken))
                                 markAsRefreshTokenRequest()
-                            }.body<Map<String, Any?>>()
-                                .getBearerTokens(sessionManager)
+                            }.bodyAsText().let { userJson ->
+                                Timber.tag(TAG).i("Caching bearer tokens for future use...")
+                                sessionManager.saveSession(userJson = userJson).also {
+                                    Timber.tag(TAG).i("Successfully refreshed bearer tokens.")
+                                }
+                            }
                         } catch (ex: Exception) {
                             yield()
                             Timber.tag(TAG).e(ex, "Failed to refresh bearer tokens.")
@@ -110,22 +113,11 @@ object HttpClientFactory {
                         bearerTokens
                     }
                     sendWithoutRequest { request ->
-                        request.url.encodedPath == refreshTokenPath
+                        request.url.encodedPath != refreshTokenPath
+                                && request.headers[HttpHeaders.Authorization] != ""
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun Map<String, Any?>.getBearerTokens(sessionManager: UserSessionManager): BearerTokens {
-        Timber.tag(TAG)
-            .i("Caching bearer tokens for future use...")
-        sessionManager.saveSession(this)
-        return BearerTokens(
-            accessToken = (this["accessToken"] as String),
-            refreshToken = (this["refreshToken"] as String),
-        ).also {
-            Timber.tag(TAG).i("Successfully refreshed bearer tokens.")
         }
     }
 
