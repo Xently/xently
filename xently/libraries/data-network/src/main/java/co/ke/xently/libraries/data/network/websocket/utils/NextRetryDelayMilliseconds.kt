@@ -4,12 +4,18 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 import kotlin.time.Duration
 
-internal fun interface NextRetryDelayMilliseconds {
-    operator fun invoke(attempt: Int, initialRetryDelay: Duration): Long
+internal interface NextRetryDelayMilliseconds {
+    operator fun invoke(attempt: Int, initialRetryDelay: Duration, attemptRestart: Int = 1): Long
 
     companion object ExponentialBackoff : NextRetryDelayMilliseconds {
-        override operator fun invoke(attempt: Int, initialRetryDelay: Duration): Long {
-            return 2f.pow(attempt).roundToLong() * initialRetryDelay.inWholeMilliseconds
+        override operator fun invoke(
+            attempt: Int,
+            initialRetryDelay: Duration,
+            attemptRestart: Int,
+        ): Long {
+            assert(attemptRestart > 0) { "`attemptRestart` must be greater than 0" }
+            return 2f.pow(attempt % attemptRestart)
+                .roundToLong() * initialRetryDelay.inWholeMilliseconds
         }
     }
 }

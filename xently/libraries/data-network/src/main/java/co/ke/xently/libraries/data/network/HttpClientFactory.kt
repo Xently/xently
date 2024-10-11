@@ -1,5 +1,7 @@
 package co.ke.xently.libraries.data.network
 
+import co.ke.xently.libraries.data.network.websocket.utils.NextRetryDelayMilliseconds
+import co.ke.xently.libraries.data.network.websocket.utils.NextRetryDelayMilliseconds.ExponentialBackoff.invoke
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpRedirect
@@ -14,25 +16,20 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 
 object HttpClientFactory {
-    operator fun invoke(json: Json, sessionManager: UserSessionManager): HttpClient {
+    operator fun invoke(json: Json, tokenManager: TokenManager): HttpClient {
         return HttpClient(OkHttp) {
             expectSuccess = true
             // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
@@ -42,7 +39,7 @@ object HttpClientFactory {
                     .build()
             }
             defaultRequest {
-                url(scheme = DEFAULT_SCHEME, host = BuildConfig.BASE_HOST)
+                url(scheme = "https", host = BuildConfig.BASE_HOST)
                 contentType(ContentType.Application.Json)
             }
             install(WebSockets) {
@@ -58,7 +55,11 @@ object HttpClientFactory {
                             || response.status.value in 500..599
                 }
                 delayMillis { retry ->
-                    (3.seconds * retry).inWholeMilliseconds
+                    NextRetryDelayMilliseconds(
+                        attempt = retry,
+                        attemptRestart = 10,
+                        initialRetryDelay = 3.seconds,
+                    )
                 }
             }
             install(ContentNegotiation) {
@@ -84,32 +85,12 @@ object HttpClientFactory {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        sessionManager.getTokens()
+                        tokenManager.getTokens()
                     }
                     refreshTokens {
-                        Timber.tag(TAG).i("Refreshing bearer tokens...")
-                        val refreshToken = oldTokens?.refreshToken
-                            ?: sessionManager.getTokens()?.refreshToken
-                        val bearerTokens = try {
-                            client.post(urlString = "/api/v1/auth/refresh") {
-                                headers[HttpHeaders.Authorization] = ""
-                                setBody(mapOf("refreshToken" to refreshToken))
-                                markAsRefreshTokenRequest()
-                            }.bodyAsText().let { userJson ->
-                                Timber.tag(TAG).i("Caching bearer tokens for future use...")
-                                sessionManager.saveSession(userJson = userJson).also {
-                                    Timber.tag(TAG).i("Successfully refreshed bearer tokens.")
-                                }
-                            }
-                        } catch (ex: Exception) {
-                            yield()
-                            Timber.tag(TAG).e(ex, "Failed to refresh bearer tokens.")
-                            null
+                        tokenManager.getFreshTokens(client = client, oldTokens = oldTokens) {
+                            markAsRefreshTokenRequest()
                         }
-                        if (bearerTokens == null) {
-                            sessionManager.clearSession()
-                        }
-                        bearerTokens
                     }
                     sendWithoutRequest { request ->
                         request.headers[HttpHeaders.Authorization] != ""
@@ -118,7 +99,4 @@ object HttpClientFactory {
             }
         }
     }
-
-    private const val DEFAULT_SCHEME = "https"
-    private val TAG = HttpClientFactory::class.java.simpleName
 }
