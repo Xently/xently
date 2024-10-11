@@ -21,7 +21,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.yield
@@ -84,7 +83,6 @@ object HttpClientFactory {
             }
             install(Auth) {
                 bearer {
-                    val refreshTokenPath = "/api/v1/auth/refresh"
                     loadTokens {
                         sessionManager.getTokens()
                     }
@@ -93,7 +91,8 @@ object HttpClientFactory {
                         val refreshToken = oldTokens?.refreshToken
                             ?: sessionManager.getTokens()?.refreshToken
                         val bearerTokens = try {
-                            client.post(urlString = refreshTokenPath) {
+                            client.post(urlString = "/api/v1/auth/refresh") {
+                                headers[HttpHeaders.Authorization] = ""
                                 setBody(mapOf("refreshToken" to refreshToken))
                                 markAsRefreshTokenRequest()
                             }.bodyAsText().let { userJson ->
@@ -113,8 +112,7 @@ object HttpClientFactory {
                         bearerTokens
                     }
                     sendWithoutRequest { request ->
-                        request.url.encodedPath != refreshTokenPath
-                                && request.headers[HttpHeaders.Authorization] != ""
+                        request.headers[HttpHeaders.Authorization] != ""
                     }
                 }
             }
