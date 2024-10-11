@@ -5,23 +5,21 @@ import co.ke.xently.features.auth.data.source.AuthenticationDatabase
 import co.ke.xently.features.auth.data.source.UserEntity
 import co.ke.xently.libraries.data.network.TokenManager
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TokenManagerImpl @Inject constructor(
-    private val json: Json,
     private val database: AuthenticationDatabase,
 ) : TokenManager {
     private val userDao = database.userDao()
@@ -39,7 +37,7 @@ class TokenManagerImpl @Inject constructor(
     override suspend fun getFreshTokens(
         client: HttpClient,
         oldTokens: BearerTokens?,
-        block: HttpRequestBuilder.() -> Unit,
+        config: HttpRequestBuilder.() -> Unit,
     ): BearerTokens? {
         val refreshToken = oldTokens?.refreshToken
             ?: getTokens()?.refreshToken
@@ -47,16 +45,15 @@ class TokenManagerImpl @Inject constructor(
 
         Timber.tag(TAG).i("Refreshing bearer tokens...")
         return try {
-            val userJson = client.post(urlString = "/api/v1/auth/refresh") {
+            val user = client.post(urlString = "/api/v1/auth/refresh") {
+                config()
                 headers[HttpHeaders.Authorization] = ""
                 setBody(mapOf("refreshToken" to refreshToken))
-                block()
-            }.bodyAsText()
+            }.body<UserEntity>()
 
             Timber.tag(TAG).i("Caching bearer tokens for future use...")
             database.withTransactionFacade {
                 userDao.deleteAll()
-                val user = json.decodeFromString<UserEntity>(userJson)
                 userDao.save(user)
                 BearerTokens(
                     accessToken = user.accessToken!!,
