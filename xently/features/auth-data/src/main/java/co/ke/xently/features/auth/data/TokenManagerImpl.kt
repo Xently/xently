@@ -39,6 +39,7 @@ class TokenManagerImpl @Inject constructor(
         oldTokens: BearerTokens?,
         config: HttpRequestBuilder.() -> Unit,
     ): BearerTokens? {
+        Timber.tag(TAG).i("Attempting token refresh...")
         val refreshToken = oldTokens?.refreshToken
             ?: getTokens()?.refreshToken
             ?: return null
