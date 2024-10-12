@@ -42,7 +42,6 @@ class StompWebSocketClient @Inject constructor(
             yield()
             Timber.tag(TAG).e(ex, "Error sending message")
             connector.disconnect(url = url)
-            sendMessage(url = url, submissionDelay = Duration.ZERO, send = send)
         }
     }
 
@@ -79,9 +78,9 @@ class StompWebSocketClient @Inject constructor(
     }.retryWhen { cause, attempt ->
         if (shouldRetry(cause)) {
             val timeMillis = NextRetryDelayMilliseconds(
-                // Restart the attempt count after 5 retries
-                attempt = attempt.toInt() % 5,
-                initialRetryDelay = initialRetryDelay,
+                attemptRestart = 5,
+                attempt = attempt.toInt(),
+                delay = initialRetryDelay,
             )
             Timber.tag(TAG).d(
                 cause,
