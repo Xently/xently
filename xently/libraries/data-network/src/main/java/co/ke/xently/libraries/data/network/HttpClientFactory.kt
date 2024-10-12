@@ -20,6 +20,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.http.isWebsocket
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -94,6 +95,7 @@ object HttpClientFactory {
                     }
                     sendWithoutRequest { request ->
                         request.headers[HttpHeaders.Authorization] != ""
+                                && !request.url.protocol.isWebsocket()
                     }
                 }
             }
