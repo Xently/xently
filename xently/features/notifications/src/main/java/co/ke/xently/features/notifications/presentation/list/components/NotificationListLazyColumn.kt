@@ -52,11 +52,11 @@ internal fun NotificationListLazyColumn(
         when (val loadState = notifications.loadState.refresh) {
             is LoadState.NotLoading -> Unit
             LoadState.Loading -> {
-                item(
-                    key = "Refresh Loading",
-                    contentType = "Refresh Loading",
-                ) {
-                    // Ignore loading state for refresh...
+                items(count = 20) {
+                    NotificationListItem(
+                        isLoading = true,
+                        notification = Notification.DEFAULT,
+                    )
                 }
             }
 

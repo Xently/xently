@@ -58,7 +58,12 @@ internal fun StoreListLazyVerticalGrid(
         columns = GridCells.Adaptive(160.dp),
     ) {
         when (val loadState = stores.loadState.refresh) {
-            is LoadState.NotLoading, LoadState.Loading -> Unit
+            is LoadState.NotLoading -> Unit
+            is LoadState.Loading -> {
+                items(count = 20) {
+                    storeListItem(null)
+                }
+            }
 
             is LoadState.Error -> {
                 item(
