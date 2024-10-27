@@ -242,7 +242,7 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
     val dispatcher = LocalDispatchersProvider.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycle = lifecycleOwner.lifecycle
-    val minActiveState = Lifecycle.State.RESUMED
+    val minActiveState = Lifecycle.State.STARTED
     return produceState(
         isOpenCache to overlineTextCache,
         lifecycle,
@@ -277,7 +277,7 @@ private fun operationStartOrClosureState(store: Store): State<DurationToOperatio
     val dispatcher = LocalDispatchersProvider.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycle = lifecycleOwner.lifecycle
-    val minActiveState = Lifecycle.State.RESUMED
+    val minActiveState = Lifecycle.State.STARTED
     return produceState(
         operationStartOrClosureCache,
         lifecycle,
