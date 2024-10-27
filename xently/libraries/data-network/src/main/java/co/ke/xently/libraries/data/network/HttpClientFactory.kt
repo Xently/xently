@@ -29,74 +29,79 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 
-object HttpClientFactory {
-    operator fun invoke(json: Json, tokenManager: TokenManager): HttpClient {
-        return HttpClient(OkHttp) {
-            expectSuccess = true
-            // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
-            engine {
-                preconfigured = OkHttpClient.Builder()
-                    .pingInterval(20, TimeUnit.SECONDS)
-                    .build()
+internal object HttpClientFactory {
+    operator fun invoke(
+        json: Json,
+        tokenManager: TokenManager,
+        baseHost: String,
+        isBaseHostSecure: Boolean,
+        baseHostPort: Int,
+        logLevel: LogLevel,
+    ): HttpClient = HttpClient(OkHttp) {
+        expectSuccess = true
+        // Refer to - https://ktor.io/docs/client-websockets.html#configure_plugin
+        engine {
+            preconfigured = OkHttpClient.Builder()
+                .pingInterval(20, TimeUnit.SECONDS)
+                .build()
+        }
+        defaultRequest {
+            val scheme = if (isBaseHostSecure) "https" else "http"
+            url(scheme = scheme, host = baseHost, port = baseHostPort)
+            contentType(ContentType.Application.Json)
+        }
+        install(WebSockets) {
+            pingInterval = 20_000
+            contentConverter = KotlinxWebsocketSerializationConverter(Json)
+        }
+        install(HttpRedirect) {
+            checkHttpMethod = false
+        }
+        install(HttpRequestRetry) {
+            retryIf(maxRetries = 3) { _, response ->
+                response.status == HttpStatusCode.RequestTimeout
+                        || response.status.value in 500..599
             }
-            defaultRequest {
-                url(scheme = "https", host = BuildConfig.BASE_HOST)
-                contentType(ContentType.Application.Json)
+            delayMillis { retry ->
+                NextRetryDelayMilliseconds(
+                    attempt = retry,
+                    delay = 3.seconds,
+                    attemptRestart = 10,
+                )
             }
-            install(WebSockets) {
-                pingInterval = 20_000
-                contentConverter = KotlinxWebsocketSerializationConverter(Json)
+        }
+        install(ContentNegotiation) {
+            json(json = json)
+        }
+        install(Logging) {
+            logger = Logger.ANDROID
+            level = logLevel
+            filter {
+                it.url.host == baseHost
             }
-            install(HttpRedirect) {
-                checkHttpMethod = false
+            sanitizeHeader { header ->
+                header == HttpHeaders.Authorization
             }
-            install(HttpRequestRetry) {
-                retryIf(maxRetries = 3) { _, response ->
-                    response.status == HttpStatusCode.RequestTimeout
-                            || response.status.value in 500..599
+        }
+        install(HttpTimeout) {
+            val timeout = 30.seconds.inWholeMilliseconds
+            connectTimeoutMillis = timeout
+            requestTimeoutMillis = timeout
+            socketTimeoutMillis = timeout
+        }
+        install(Auth) {
+            bearer {
+                loadTokens {
+                    tokenManager.getTokens()
                 }
-                delayMillis { retry ->
-                    NextRetryDelayMilliseconds(
-                        attempt = retry,
-                        delay = 3.seconds,
-                        attemptRestart = 10,
-                    )
-                }
-            }
-            install(ContentNegotiation) {
-                json(json = json)
-            }
-            install(Logging) {
-                logger = Logger.ANDROID
-                level = if (BuildConfig.DEBUG) {
-                    LogLevel.ALL
-                } else {
-                    LogLevel.NONE
-                }
-                sanitizeHeader { header ->
-                    header == HttpHeaders.Authorization
-                }
-            }
-            install(HttpTimeout) {
-                val timeout = 30.seconds.inWholeMilliseconds
-                connectTimeoutMillis = timeout
-                requestTimeoutMillis = timeout
-                socketTimeoutMillis = timeout
-            }
-            install(Auth) {
-                bearer {
-                    loadTokens {
-                        tokenManager.getTokens()
+                refreshTokens {
+                    tokenManager.getFreshTokens(client = client, oldTokens = oldTokens) {
+                        markAsRefreshTokenRequest()
                     }
-                    refreshTokens {
-                        tokenManager.getFreshTokens(client = client, oldTokens = oldTokens) {
-                            markAsRefreshTokenRequest()
-                        }
-                    }
-                    sendWithoutRequest { request ->
-                        request.headers[HttpHeaders.Authorization] != ""
-                                && !request.url.protocol.isWebsocket()
-                    }
+                }
+                sendWithoutRequest { request ->
+                    request.headers[HttpHeaders.Authorization] != ""
+                            && !request.url.protocol.isWebsocket()
                 }
             }
         }

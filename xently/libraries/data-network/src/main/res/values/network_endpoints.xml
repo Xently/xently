@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="base_host" translatable="false">api.xently.co.ke</string>
+    <bool name="is_base_host_secure">true</bool>
+    <integer name="base_host_port" translatable="false">443</integer>
+</resources>

@@ -36,7 +36,7 @@ android {
         jvmTarget = libs.versions.android.jvm.target.get()
     }
     buildFeatures {
-        buildConfig = true
+        buildConfig = false
     }
     packaging {
         resources {
