@@ -38,6 +38,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import co.ke.xently.features.stores.R
 import co.ke.xently.features.stores.data.domain.Store
 import co.ke.xently.features.stores.domain.DurationToOperationStartOrClosure
@@ -237,23 +240,30 @@ private fun overlineTextState(store: Store): State<Pair<IsOpen?, String>> {
     val is24hour = timePickerState.is24hour
     val currentLocation by LocalLocationState.current
     val dispatcher = LocalDispatchersProvider.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle = lifecycleOwner.lifecycle
+    val minActiveState = Lifecycle.State.STARTED
     return produceState(
         isOpenCache to overlineTextCache,
+        lifecycle,
+        minActiveState,
         store.distance,
         store.openingHours,
         is24hour,
     ) {
-        flowOfDistanceAndCurrentlyOpen(
-            currentLocation = currentLocation,
-            is24hour = is24hour,
-            location = store.location,
-            fallbackDistanceMeters = store.distance,
-            openingHours = store.openingHours,
-            dispatcher = dispatcher,
-        ).collectLatest { (isOpen, text) ->
-            isOpenCache = isOpen
-            overlineTextCache = text
-            value = isOpen to text
+        lifecycle.repeatOnLifecycle(minActiveState) {
+            flowOfDistanceAndCurrentlyOpen(
+                currentLocation = currentLocation,
+                is24hour = is24hour,
+                location = store.location,
+                fallbackDistanceMeters = store.distance,
+                openingHours = store.openingHours,
+                dispatcher = dispatcher,
+            ).collectLatest { (isOpen, text) ->
+                isOpenCache = isOpen
+                overlineTextCache = text
+                value = isOpen to text
+            }
         }
     }
 }
@@ -265,16 +275,23 @@ private fun operationStartOrClosureState(store: Store): State<DurationToOperatio
     }
 
     val dispatcher = LocalDispatchersProvider.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle = lifecycleOwner.lifecycle
+    val minActiveState = Lifecycle.State.STARTED
     return produceState(
         operationStartOrClosureCache,
+        lifecycle,
+        minActiveState,
         store.openingHours,
     ) {
-        operationStartOrClosureFlow(
-            openingHours = store.openingHours,
-            dispatchersProvider = dispatcher,
-        ).collectLatest { operationStartOrClosure ->
-            operationStartOrClosureCache = operationStartOrClosure
-            value = operationStartOrClosure
+        lifecycle.repeatOnLifecycle(minActiveState) {
+            operationStartOrClosureFlow(
+                openingHours = store.openingHours,
+                dispatchersProvider = dispatcher,
+            ).collectLatest { operationStartOrClosure ->
+                operationStartOrClosureCache = operationStartOrClosure
+                value = operationStartOrClosure
+            }
         }
     }
 }
