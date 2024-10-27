@@ -46,12 +46,14 @@ internal fun ShopListLazyColumn(
     ) {
         when (val loadState = shops.loadState.refresh) {
             is LoadState.NotLoading -> Unit
-            LoadState.Loading -> {
-                item(
-                    key = "Refresh Loading",
-                    contentType = "Refresh Loading",
-                ) {
-                    // Ignore loading state for refresh...
+            is LoadState.Loading -> {
+                items(count = 20) {
+                    ShopListItem(
+                        shop = Shop.DEFAULT,
+                        isLoading = true,
+                        onClickUpdate = {},
+                        onClickConfirmDelete = {},
+                    )
                 }
             }
 

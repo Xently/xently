@@ -54,11 +54,8 @@ internal fun ProductListLazyColumn(
         when (val loadState = products.loadState.refresh) {
             is LoadState.NotLoading -> Unit
             LoadState.Loading -> {
-                item(
-                    key = "Refresh Loading",
-                    contentType = "Refresh Loading",
-                ) {
-                    // Ignore loading state for refresh...
+                items(count = 20) {
+                    productListItem(null)
                 }
             }
 
