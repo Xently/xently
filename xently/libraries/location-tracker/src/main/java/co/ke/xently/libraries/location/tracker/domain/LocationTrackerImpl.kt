@@ -82,7 +82,7 @@ class LocationTrackerImpl @Inject constructor(
                     cancellationSignal,
                     context.mainExecutor,
                 ) {
-                    continuation.resume(it.toLocationResult()) {}
+                    continuation.resume(it.toLocationResult()) { cause, _, _ -> }
                 }
             }
         }
@@ -183,7 +183,7 @@ class LocationTrackerImpl @Inject constructor(
     @RequiresPermission(anyOf = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"])
     private fun CancellableContinuation<Result<Location, Error>>.getBelowRLocation() {
         client.lastLocation.addOnSuccessListener {
-            resume(it.toLocationResult()) {}
+            resume(it.toLocationResult()) { cause, _, _ -> }
         }.addOnFailureListener {
             val error = if (it is SecurityException) {
                 Timber.tag(TAG).e(it, "Security exception")
@@ -192,7 +192,7 @@ class LocationTrackerImpl @Inject constructor(
                 Timber.tag(TAG).e(it, "Unexpected error")
                 LocationRequestError.UNKNOWN
             }
-            resume(Result.Failure(error)) {}
+            resume(Result.Failure(error)) { cause, _, _ -> }
         }.addOnCanceledListener {
             cancel() // Cancel the coroutine
         }

@@ -1,8 +1,10 @@
 package co.ke.xently.libraries.data.network.websocket
 
 
-import co.ke.xently.libraries.data.network.BuildConfig.BASE_HOST
+import android.content.Context
+import co.ke.xently.libraries.data.network.R
 import co.ke.xently.libraries.data.network.websocket.utils.NextRetryDelayMilliseconds
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
@@ -25,10 +27,20 @@ import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class StompWebSocketClient @Inject constructor(
+    @ApplicationContext
+    context: Context,
     private val connector: StompWebSocketClientConnector,
 ) {
+    private val defaultUrl = buildString {
+        append(if (context.resources.getBoolean(R.bool.is_base_host_secure)) "wss" else "ws")
+        append("://")
+        append(context.getString(R.string.base_host))
+        append(":")
+        append(context.resources.getInteger(R.integer.base_host_port))
+        append("/ws")
+    }
     suspend fun sendMessage(
-        url: String = URL,
+        url: String = defaultUrl,
         submissionDelay: Duration = 100.milliseconds,
         send: suspend StompSessionWithKxSerialization.() -> Unit,
     ) {
@@ -46,7 +58,7 @@ class StompWebSocketClient @Inject constructor(
     }
 
     fun <T : Any> watch(
-        url: String = URL,
+        url: String = defaultUrl,
         maxRetries: MaxRetries = MaxRetries.Infinite,
         initialRetryDelay: Duration = 2.seconds,
         shouldRetry: suspend (Throwable) -> Boolean = { true },
@@ -99,6 +111,5 @@ class StompWebSocketClient @Inject constructor(
 
     companion object {
         const val TAG = "StompWebSocketClient"
-        private const val URL = "wss://$BASE_HOST/ws"
     }
 }

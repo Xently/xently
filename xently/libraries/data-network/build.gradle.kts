@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.secrets)
     id("kotlin-parcelize")
 }
 
@@ -36,7 +35,7 @@ android {
         jvmTarget = libs.versions.android.jvm.target.get()
     }
     buildFeatures {
-        buildConfig = true
+        buildConfig = false
     }
     packaging {
         resources {

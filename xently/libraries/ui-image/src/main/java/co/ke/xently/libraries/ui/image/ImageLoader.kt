@@ -4,7 +4,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
-import coil3.network.ktor.KtorNetworkFetcherFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
@@ -23,11 +23,7 @@ fun newImageLoader(
 //        .coroutineContext(dispatchersProvider.io)
         .components {
             add(SvgDecoder.Factory())
-            add(
-                KtorNetworkFetcherFactory {
-                    httpClient
-                },
-            )
+            add(KtorNetworkFetcherFactory(httpClient = httpClient))
         }
         .memoryCache {
             MemoryCache.Builder()

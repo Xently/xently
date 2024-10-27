@@ -2,7 +2,9 @@ package co.ke.xently.libraries.data.network.websocket
 
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.serialization.json.Json
+import org.hildan.krossbow.stomp.StompReceipt
 import org.hildan.krossbow.stomp.StompSession
+import org.hildan.krossbow.stomp.UnsafeStompSessionApi
 import org.hildan.krossbow.stomp.conversions.kxserialization.StompSessionWithKxSerialization
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
 import org.hildan.krossbow.stomp.frame.FrameBody
@@ -22,6 +24,11 @@ interface StompWebSocketClientConnector {
                 headers: StompSendHeaders,
                 body: FrameBody?,
             ) = null
+
+            @UnsafeStompSessionApi
+            override suspend fun sendRawFrameAndMaybeAwaitReceipt(frame: StompFrame): StompReceipt? {
+                return null
+            }
 
             override suspend fun subscribe(headers: StompSubscribeHeaders) =
                 emptyFlow<StompFrame.Message>()
