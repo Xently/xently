@@ -22,7 +22,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
--keepnames class * extends androidx.lifecycle.ViewModel
+-keepnames class * extends androidx.lifecycle.ViewModel { void <init>(); }
 -keep class * extends java.lang.Throwable { *; }
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn org.slf4j.impl.StaticMDCBinder
@@ -30,6 +30,8 @@
 -keepnames enum * {
     public *;
 }
+-dontwarn java.net.http.HttpResponse
+-dontwarn java.net.http.WebSocketHandshakeException
 
 #######################################
 # Kotlinx serialization
@@ -45,7 +47,7 @@
 # see https://github.com/Kotlin/kotlinx.serialization/issues/2050
 
 -if @kotlinx.serialization.Serializable class **
--keep, allowshrinking, allowoptimization, allowobfuscation, allowaccessmodification class <1>
+-keep, allowshrinking, allowoptimization, allowobfuscation, allowaccessmodification class <1> { void <init>(); }
 
 ##################################################################################################
 # Extra kotlinx serialization proguard
